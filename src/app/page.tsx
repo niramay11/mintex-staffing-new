@@ -313,7 +313,7 @@ on paper.
 
         <div className="mt-11 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {industries.map((industry) => {
-            const label = industry.name.replace(/\s*Staffing$/i, "");
+            const label = industry.name;
             const achievement = industryStats.find((s) => s.industry_slug === industry.slug);
             return (
               <a
