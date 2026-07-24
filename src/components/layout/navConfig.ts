@@ -14,7 +14,7 @@ export const navItems: NavItem[] = [
     label: "Get Hired",
     href: "/get-hired",
     children: [
-      { label: "Apply to Jobs", href: "/get-hired#apply-to-jobs" },
+      { label: "Apply to Jobs", href: "/get-hired?section=apply-to-jobs" },
       { label: "Share Your Resume", href: "/get-hired/share-resume" },
     ],
   },

@@ -5,6 +5,7 @@ import Section from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import JobBoard from "@/components/jobs/JobBoard";
 import BrowseRolesButton from "@/components/jobs/BrowseRolesButton";
+import ScrollToQueryTarget from "@/components/jobs/ScrollToQueryTarget";
 import { IconBriefcase } from "@/components/jobs/icons";
 import { getSiteImages } from "@/lib/siteImages";
 import { getCachedJobs } from "@/lib/jobsCache";
@@ -43,6 +44,9 @@ export default async function GetHiredPage() {
   const siteImages = await getSiteImages();
   return (
     <>
+      <Suspense fallback={null}>
+        <ScrollToQueryTarget paramName="section" />
+      </Suspense>
       <Section background="navy" className="!py-12 sm:!py-14 lg:!py-16">
         <div className="relative mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-14">
           <div>

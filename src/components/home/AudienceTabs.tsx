@@ -30,7 +30,7 @@ const seekerServices = [
   {
     title: "Search Jobs",
     description: "Browse open roles across every industry we staff.",
-    href: "/get-hired#apply-to-jobs",
+    href: "/get-hired?section=apply-to-jobs",
   },
   {
     title: "Share Your Resume",
@@ -40,12 +40,12 @@ const seekerServices = [
   {
     title: "Job Alerts",
     description: "Get emailed the moment a matching role goes live.",
-    href: "/get-hired#apply-to-jobs",
+    href: "/get-hired?section=apply-to-jobs",
   },
   {
     title: "Interview Prep",
     description: "Practical guidance and an AI question generator to help you prepare.",
-    href: "/get-hired#interview-prep",
+    href: "/get-hired?section=interview-prep",
   },
 ];
 
