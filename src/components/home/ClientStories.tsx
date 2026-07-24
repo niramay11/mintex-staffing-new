@@ -64,12 +64,23 @@ function PlayButton({ size }: { size: "lg" | "sm" }) {
 export default function ClientStories() {
   const [stories, setStories] = useState<ClientStory[]>([]);
   const [active, setActive] = useState<ClientStory | null>(null);
+  // null = not yet checked; default to visible until told otherwise so the
+  // common case (section enabled) never flashes. Checked fresh on every
+  // page load — this section's admin on/off toggle needs to be reliable
+  // every time, not dependent on this static homepage's own server-render
+  // catching up (see page.tsx for why that path was dropped).
+  const [enabled, setEnabled] = useState<boolean | null>(null);
 
   useEffect(() => {
     fetch("/api/client-stories")
       .then((r) => r.json())
       .then((data) => setStories(Array.isArray(data) ? data : []))
       .catch(() => setStories([]));
+
+    fetch("/api/client-stories/section")
+      .then((r) => r.json())
+      .then((d) => setEnabled(d.enabled !== false))
+      .catch(() => setEnabled(true));
   }, []);
 
   useEffect(() => {
@@ -83,9 +94,26 @@ export default function ClientStories() {
 
   const [featured, secondary] = stories;
 
+  if (enabled === false) return null;
+
   return (
     <>
-      <div className="mt-11 grid gap-5 lg:grid-cols-[1.6fr_1fr]">
+    <div className="px-4 sm:px-6 lg:px-8">
+      <section className="relative mx-auto mt-6 max-w-[1920px] overflow-hidden rounded-[32px] bg-white px-6 py-16 shadow-[0_1px_3px_rgba(0,48,96,0.05)] sm:px-10 sm:py-20 lg:px-16 lg:py-24">
+      <div className="relative mx-auto max-w-2xl text-center">
+        <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
+          Client stories
+        </p>
+        <h2 className="mt-3.5 font-heading text-[36px] font-semibold leading-tight text-navy sm:text-[40px]">
+          You need to see it to believe it
+        </h2>
+        <p className="mt-4 text-lg text-steel">
+          Let our work do the talking while we help businesses <b>lower the time to</b> fill a specific role, help beat the AI resumes and connect them with pre-qualified talents to solve their
+hiring challenges with intentional staffing solutions created for solving the hiring issues.
+        </p>
+      </div>
+
+      <div className="relative mt-11 grid gap-5 lg:grid-cols-[1.6fr_1fr]">
         {featured ? (
           <button
             type="button"
@@ -147,6 +175,8 @@ export default function ClientStories() {
             </p>
           </div>
         </div>
+      </div>
+      </section>
       </div>
 
       {active && (
