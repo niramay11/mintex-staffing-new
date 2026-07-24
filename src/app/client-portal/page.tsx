@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { cookies } from "next/headers";
 import PortalClient from "./PortalClient";
 import { getSiteImages } from "@/lib/siteImages";
@@ -11,7 +12,10 @@ export const metadata: Metadata = {
   description: "Sign in to view your job postings, submissions, and placements with Mintex Staffing.",
 };
 
-export default async function ClientPortalPage() {
+// Everything that depends on cookies()/Ceipal lives in here, isolated behind
+// its own Suspense boundary below — so the route itself resolves instantly
+// instead of the browser sitting on a blank tab until auth + jobs finish.
+async function PortalDashboard() {
   const cookieStore = await cookies();
   const token = cookieStore.get("portal_token")?.value;
 
@@ -30,4 +34,20 @@ export default async function ClientPortalPage() {
     : undefined;
 
   return <PortalClient siteImages={siteImages} initialClient={client} initialJobs={jobs} />;
+}
+
+function PortalSkeleton() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-cream">
+      <div className="h-10 w-10 animate-spin rounded-full border-2 border-navy/15 border-t-steel" />
+    </div>
+  );
+}
+
+export default function ClientPortalPage() {
+  return (
+    <Suspense fallback={<PortalSkeleton />}>
+      <PortalDashboard />
+    </Suspense>
+  );
 }

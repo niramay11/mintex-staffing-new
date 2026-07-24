@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Image from "next/image";
 import Section from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
@@ -20,15 +21,25 @@ export const metadata: Metadata = {
 // be fresh (cache-TTL-fresh) on every request, not a frozen build-time snapshot.
 export const dynamic = "force-dynamic";
 
+// Isolated in its own Suspense boundary so the hero above never has to wait on
+// Ceipal — the shell streams to the browser immediately and this section pops
+// in once the (warm-cache-fast, cold-cache-timed-out) jobs fetch resolves.
+async function JobBoardSection() {
+  const { jobs } = await withTimeout(getCachedJobs(), 3000, { jobs: [] as unknown[], cachedAt: Date.now(), stale: true });
+  return <JobBoard initialJobs={jobs as CeipalJob[]} />;
+}
+
+function JobBoardSkeleton() {
+  return (
+    <div className="mt-6 flex flex-col items-center justify-center rounded-lg border border-navy/10 bg-white py-16">
+      <div className="h-10 w-10 animate-spin rounded-full border-2 border-navy/15 border-t-steel" />
+      <p className="mt-4 text-sm font-medium uppercase tracking-wide text-navy/40">Loading open roles…</p>
+    </div>
+  );
+}
+
 export default async function GetHiredPage() {
-  const [siteImages, { jobs }] = await Promise.all([
-    getSiteImages(),
-    // Warm cache → jobs come back almost instantly. Cold cache (Ceipal can
-    // take up to ~2min) → give up after 3s so the page still opens quickly;
-    // JobBoard falls back to its own client-side fetch (with a spinner) when
-    // it receives an empty list.
-    withTimeout(getCachedJobs(), 3000, { jobs: [] as unknown[], cachedAt: Date.now(), stale: true }),
-  ]);
+  const siteImages = await getSiteImages();
   return (
     <>
       <Section background="navy" className="!py-12 sm:!py-14 lg:!py-16">
@@ -96,7 +107,9 @@ our talent network to stay ahead of new roles as they go live.
           Explore current openings across every industry we staff.
         </p>
         <div className="mt-8">
-          <JobBoard initialJobs={jobs as CeipalJob[]} />
+          <Suspense fallback={<JobBoardSkeleton />}>
+            <JobBoardSection />
+          </Suspense>
         </div>
       </Section>
 

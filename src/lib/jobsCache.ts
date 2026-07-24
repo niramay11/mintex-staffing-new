@@ -168,6 +168,25 @@ const getCachedAllJobs = unstable_cache(fetchAllJobs, [CACHE_TAG], {
   tags: [CACHE_TAG],
 });
 
+// Single-flight guard: unstable_cache does NOT coalesce concurrent calls that
+// land before the first one finishes populating the Data Cache — confirmed
+// live, every request that hit a cold/expired cache launched its own
+// independent ~300-page Ceipal pull in parallel, each one competing for the
+// same rate-limited/slow API (causing far more per-page timeouts than a
+// single pull would) and each landing on a DIFFERENT partial job count
+// (seen: 284, 610, 660, 684, 784 jobs across 5 overlapping requests in under
+// a minute), with whichever fetch finished last silently overwriting the
+// cache regardless of which one actually got further. Coalescing concurrent
+// callers onto one shared in-flight promise (same pattern as the token
+// single-flight guards in ceipal.ts) removes that race.
+let inflightAllJobs: Promise<unknown[]> | null = null;
+function getCachedAllJobsSingleFlight(): Promise<unknown[]> {
+  if (!inflightAllJobs) {
+    inflightAllJobs = getCachedAllJobs().finally(() => { inflightAllJobs = null; });
+  }
+  return inflightAllJobs;
+}
+
 // Shared by /api/jobs (client-side refetches, force-refresh) and any Server
 // Component that wants to prefetch jobs before first paint (see
 // src/app/get-hired/page.tsx).
@@ -178,7 +197,7 @@ export async function getCachedJobs(opts?: { forceRefresh?: boolean }): Promise<
 }> {
   try {
     if (opts?.forceRefresh) revalidateTag(CACHE_TAG, 'max');
-    const jobs = await getCachedAllJobs();
+    const jobs = await getCachedAllJobsSingleFlight();
     return { jobs, cachedAt: Date.now(), stale: false };
   } catch (err) {
     console.error('[jobs] getCachedJobs error:', err);
