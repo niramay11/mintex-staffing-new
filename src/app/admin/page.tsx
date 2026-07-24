@@ -1692,6 +1692,8 @@ function ClientStoriesTab({ password }: { password: string }) {
   const [error, setError]       = useState("");
   const [uploadingId, setUploadingId] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState("");
+  const [sectionEnabled, setSectionEnabled] = useState<boolean | null>(null);
+  const [togglingSection, setTogglingSection] = useState(false);
 
   const fetchData = () =>
     fetch("/api/client-stories")
@@ -1704,7 +1706,24 @@ function ClientStoriesTab({ password }: { password: string }) {
         setLoaded(true);
       });
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => {
+    fetchData();
+    fetch("/api/client-stories/section")
+      .then((r) => r.json())
+      .then((d) => setSectionEnabled(d.enabled !== false));
+  }, []);
+
+  const toggleSection = async () => {
+    const next = !sectionEnabled;
+    setTogglingSection(true);
+    const res = await fetch("/api/client-stories/section", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password, enabled: next }),
+    });
+    if (res.ok) setSectionEnabled(next);
+    setTogglingSection(false);
+  };
 
   const addStory = () => {
     setStories((prev) => [...prev, {
@@ -1762,12 +1781,23 @@ function ClientStoriesTab({ password }: { password: string }) {
 
   return (
     <div>
-      <div className="mb-5">
-        <h2 className="text-xl font-semibold text-navy">Client Story Videos</h2>
-        <p className="text-sm text-navy/60 mt-1">
-          Shown in the homepage &ldquo;You need to see it to believe it&rdquo; section. The first
-          entry is the large featured video, the second is the smaller card.
-        </p>
+      <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-semibold text-navy">Client Story Videos</h2>
+          <p className="text-sm text-navy/60 mt-1">
+            Shown in the homepage &ldquo;You need to see it to believe it&rdquo; section. The first
+            entry is the large featured video, the second is the smaller card.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${sectionEnabled ? "bg-green-100 text-green-800" : "bg-white text-navy/50 border border-navy/10"}`}>
+            {sectionEnabled === null ? "…" : sectionEnabled ? "Visible on site" : "Hidden from site"}
+          </span>
+          <button type="button" onClick={toggleSection} disabled={sectionEnabled === null || togglingSection}
+            className="px-3 py-1.5 rounded-full border border-navy/10 bg-white hover:bg-mist text-navy text-xs font-medium transition-colors disabled:opacity-50">
+            {togglingSection ? "Updating…" : sectionEnabled ? "Hide Section" : "Show Section"}
+          </button>
+        </div>
       </div>
 
       <form onSubmit={save} className="space-y-4">

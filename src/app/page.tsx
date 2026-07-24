@@ -4,9 +4,13 @@ import { ButtonLink } from "@/components/ui/Button";
 import ClientStories from "@/components/home/ClientStories";
 import { industries } from "@/content/industries";
 import { getIndustryStats } from "@/lib/industryStats";
+import { getSectionEnabled } from "@/lib/siteSectionSettings";
 
 export default async function HomePage() {
-  const industryStats = await getIndustryStats();
+  const [industryStats, clientStoriesEnabled] = await Promise.all([
+    getIndustryStats(),
+    getSectionEnabled("client_stories"),
+  ]);
   return (
     <>
       {/* Sec 1 — Hero */}
@@ -145,23 +149,25 @@ export default async function HomePage() {
         </div>
       </div>
 
-      {/* Sec 2 — You need to see it to believe it */}
-      <Section background="white">
-        <div className="mx-auto max-w-2xl text-center">
-          <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
-            Client stories
-          </p>
-          <h2 className="mt-3.5 font-heading text-[36px] font-semibold leading-tight text-navy sm:text-[40px]">
-            You need to see it to believe it
-          </h2>
-          <p className="mt-4 text-lg text-steel">
-            Let our work do the talking while we help businesses <b>lower the time to</b> fill a specific role, help beat the AI resumes and connect them with pre-qualified talents to solve their 
-hiring challenges with intentional staffing solutions created for solving the hiring issues. 
-          </p>
-        </div>
+      {/* Sec 2 — You need to see it to believe it (admin can hide this whole section from /admin) */}
+      {clientStoriesEnabled && (
+        <Section background="white">
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
+              Client stories
+            </p>
+            <h2 className="mt-3.5 font-heading text-[36px] font-semibold leading-tight text-navy sm:text-[40px]">
+              You need to see it to believe it
+            </h2>
+            <p className="mt-4 text-lg text-steel">
+              Let our work do the talking while we help businesses <b>lower the time to</b> fill a specific role, help beat the AI resumes and connect them with pre-qualified talents to solve their
+hiring challenges with intentional staffing solutions created for solving the hiring issues.
+            </p>
+          </div>
 
-        <ClientStories />
-      </Section>
+          <ClientStories />
+        </Section>
+      )}
 
       {/* Sec 3 — Why Us? */}
       <Section background="white">
