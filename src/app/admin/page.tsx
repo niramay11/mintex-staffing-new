@@ -1694,6 +1694,7 @@ function ClientStoriesTab({ password }: { password: string }) {
   const [uploadError, setUploadError] = useState("");
   const [sectionEnabled, setSectionEnabled] = useState<boolean | null>(null);
   const [togglingSection, setTogglingSection] = useState(false);
+  const [sectionToggleError, setSectionToggleError] = useState("");
 
   const fetchData = () =>
     fetch("/api/client-stories")
@@ -1716,12 +1717,22 @@ function ClientStoriesTab({ password }: { password: string }) {
   const toggleSection = async () => {
     const next = !sectionEnabled;
     setTogglingSection(true);
+    setSectionToggleError("");
     const res = await fetch("/api/client-stories/section", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ password, enabled: next }),
     });
-    if (res.ok) setSectionEnabled(next);
+    const json = await res.json().catch(() => ({}));
+    if (res.ok) {
+      setSectionEnabled(next);
+    } else {
+      setSectionToggleError(
+        json.error?.includes("site_section_settings")
+          ? "Database table missing — run migration 013_site_section_settings.sql in Supabase first."
+          : json.error ?? "Failed to update"
+      );
+    }
     setTogglingSection(false);
   };
 
@@ -1799,6 +1810,9 @@ function ClientStoriesTab({ password }: { password: string }) {
           </button>
         </div>
       </div>
+      {sectionToggleError && (
+        <p className="mb-5 -mt-3 text-sm text-red-600">{sectionToggleError}</p>
+      )}
 
       <form onSubmit={save} className="space-y-4">
         {stories.map((story, i) => (
