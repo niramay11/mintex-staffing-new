@@ -192,10 +192,20 @@ async function fetchAllJobs(): Promise<unknown[]> {
   // force-refreshed). Still return what was collected (never a hard
   // failure), but immediately mark the cache stale so the VERY NEXT request
   // retries instead of also being stuck with this same partial result for
-  // the rest of the 15-minute window. This threshold is a rough tripwire,
-  // not a precise measurement — revisit it if the real job count ever
-  // naturally drifts below it.
-  const MIN_PLAUSIBLE_JPC_JOBS = 800;
+  // the rest of the cache window. This threshold is a rough tripwire, not a
+  // precise measurement — revisit it if the real job count ever naturally
+  // drifts below it.
+  //
+  // Raised from 800 to 1300 after confirming live that 800 was too low
+  // relative to the real ~1,500-1,600 total: an 834-job cycle (~55%
+  // complete) slipped through as "plausible," and — now that the cache
+  // window is an hour instead of 15 minutes — that meant Get Hired, the
+  // Client Portal, and Admin all served a clearly-incomplete job list for
+  // up to an hour before it would have self-corrected. A longer cache
+  // window raises the cost of the floor being too low, so the floor needed
+  // to move closer to "actually complete," not stay where it was tuned for
+  // a much shorter window.
+  const MIN_PLAUSIBLE_JPC_JOBS = 1300;
   if (jpc.length < MIN_PLAUSIBLE_JPC_JOBS) {
     console.warn(
       `[jobs] only ${jpc.length} JPC jobs this cycle (expected ${MIN_PLAUSIBLE_JPC_JOBS}+) — looks like a partial pull; marking the cache stale so the next request retries instead of trusting this for the full ${CACHE_TTL_SECONDS}s window`

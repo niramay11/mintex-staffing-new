@@ -1,17 +1,15 @@
 import { NextResponse } from 'next/server';
-import { ceipalFetch } from '@/lib/ceipal';
+import { fetchJobSubmissions } from '@/lib/ceipal-submissions';
 
 export async function GET(req: import('next/server').NextRequest) {
   const jobId = new URL(req.url).searchParams.get('job_id');
   if (!jobId) return NextResponse.json({ error: 'Missing job_id' }, { status: 400 });
 
   try {
-    const res = await ceipalFetch(
-      `https://api.ceipal.com/v2/getSubmissionsList?jobId=${encodeURIComponent(jobId)}`
-    );
-    if (!res.ok) return NextResponse.json({ error: `CEIPAL ${res.status}` }, { status: res.status });
-    const data = await res.json();
-    const list = Array.isArray(data) ? data : Array.isArray(data?.results) ? data.results : [];
+    // Same retry-protected fetch the portal routes use — this used to call
+    // Ceipal directly with no retry, meaning one slow/transient response
+    // here looked identical to "this job has no submissions."
+    const list = await fetchJobSubmissions(jobId);
     return NextResponse.json(list);
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });

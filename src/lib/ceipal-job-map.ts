@@ -133,8 +133,14 @@ async function fetchAllV2Jobs(): Promise<JobData[]> {
   // this fetch hitting the time budget or a page-failure streak early. Still
   // return what was collected, but mark the cache stale immediately so the
   // next request retries instead of every client-portal lookup being stuck
-  // against this same truncated map for the rest of the 5-minute window.
-  const MIN_PLAUSIBLE_JOBS = 800;
+  // against this same truncated map for the rest of the cache window.
+  //
+  // Raised from 800 to 1200 for the same reason as jobsCache.ts's identical
+  // change: with a 30-minute window instead of 5, a floor that's too low
+  // relative to the real total (~1,500+) means a barely-passing partial map
+  // sits there breaking admin/portal job-detail and submissions lookups for
+  // up to half an hour instead of self-correcting quickly.
+  const MIN_PLAUSIBLE_JOBS = 1200;
   if (all.length < MIN_PLAUSIBLE_JOBS) {
     console.warn(
       `[v2-job-map] only ${all.length} jobs this cycle (expected ${MIN_PLAUSIBLE_JOBS}+) — looks like a partial pull; marking the cache stale so the next request retries`
