@@ -14,8 +14,16 @@ const RETRY_DELAY = 800;
 // pull — and if Ceipal happens to answer badly at that exact moment, that one
 // visitor sees an empty/partial result (confirmed live). A longer window means
 // fewer chances per hour to roll that dice, at the cost of slightly staler data
-// — an easy trade for a jobs board where 15-minute-old postings are irrelevant.
-const CACHE_TTL_SECONDS = 15 * 60;
+// — an easy trade for a jobs board where a new posting appearing an hour late
+// is a total non-issue. Stretched from 15 min to 1 hour specifically to cut
+// down how often ANY visitor (not just right after a deploy) has to be the
+// one who pays the cold-start cost — the sanity floor further down still
+// catches a bad cycle immediately regardless of how long this window is, so
+// lengthening it doesn't trade away correctness, just how often a fetch
+// happens at all. `npm run warm-cache` (or the admin "Sync Now" button)
+// still forces an immediate refresh whenever genuinely-fresh data is needed
+// sooner than that.
+const CACHE_TTL_SECONDS = 60 * 60;
 const CACHE_TAG = 'ceipal-public-jobs';
 
 // ceipalFetch's own internal timeout is 20s — meaning one slow/hanging page

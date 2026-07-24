@@ -21,7 +21,14 @@ const RETRY_DELAY  = 800;
 // for any job past the truncation point would come back empty even though
 // real data existed. unstable_cache persists this across invocations, and the
 // retry + time-budget below stop one bad page from nuking the whole map.
-const CACHE_TTL_SECONDS = 5 * 60;
+//
+// Stretched from 5 min to 30 min for the same reason as jobsCache.ts: a
+// job's v2 id essentially never changes once assigned, so there's little
+// value in refreshing this often — but there's a real cost, since every
+// expiry is another chance for a client-portal visitor to be the one stuck
+// waiting on a cold rebuild. 30 min (vs. jobsCache's 60) keeps newly-posted
+// jobs reasonably soon-mappable for submissions/details lookups.
+const CACHE_TTL_SECONDS = 30 * 60;
 const CACHE_TAG = 'ceipal-v2-job-map';
 // Ceipal has been measured taking 8-12+ seconds for a normal, successful
 // page response — an 8s per-attempt cutoff was aborting real responses as
