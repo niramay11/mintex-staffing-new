@@ -228,6 +228,11 @@ export default function JobBoard({ initialJobs }: { initialJobs?: CeipalJob[] })
   const [jobs, setJobs] = useState<CeipalJob[]>(initialJobs ?? []);
   const [loading, setLoading] = useState(!hasInitialJobs);
   const [error, setError] = useState<string | null>(null);
+  // Right after a fresh deploy (or any 15-min gap in traffic), the very
+  // first visitor's request can take up to ~40s while the job list
+  // refetches from Ceipal — a bare spinner for that long reads as "broken."
+  // Swapping the message after a few seconds keeps it honest instead.
+  const [slowLoad, setSlowLoad] = useState(false);
 
   const [search, setSearch] = useState("");
   const [zip, setZip] = useState("");
@@ -250,6 +255,8 @@ export default function JobBoard({ initialJobs }: { initialJobs?: CeipalJob[] })
     if (hasInitialJobs) return;
 
     let cancelled = false;
+    const slowTimer = setTimeout(() => { if (!cancelled) setSlowLoad(true); }, 6000);
+
     async function load() {
       setLoading(true);
       setError(null);
@@ -268,6 +275,7 @@ export default function JobBoard({ initialJobs }: { initialJobs?: CeipalJob[] })
     load();
     return () => {
       cancelled = true;
+      clearTimeout(slowTimer);
     };
   }, [hasInitialJobs]);
 
@@ -530,9 +538,14 @@ export default function JobBoard({ initialJobs }: { initialJobs?: CeipalJob[] })
 
           {/* Loading state */}
           {loading && (
-            <div className="mt-6 flex flex-col items-center justify-center py-16">
+            <div className="mt-6 flex flex-col items-center justify-center py-16 text-center">
               <div className="h-10 w-10 animate-spin rounded-full border-2 border-navy/15 border-t-steel" />
               <p className="mt-4 text-sm font-medium uppercase tracking-wide text-navy/40">Loading positions…</p>
+              {slowLoad && (
+                <p className="mt-2 max-w-xs text-xs text-navy/40">
+                  Still working — this can take up to a minute right after things update. Thanks for your patience.
+                </p>
+              )}
             </div>
           )}
 

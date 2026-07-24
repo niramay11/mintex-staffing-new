@@ -745,6 +745,10 @@ export default function PortalClient({
     const [jobs, setJobs]               = useState<Job[]>((initialJobs as Job[]) ?? []);
     const [loading, setLoading]         = useState(false);
     const [error, setError]             = useState<string | null>(null);
+    // Same reasoning as JobBoard.tsx: right after a fresh deploy or any gap
+    // in traffic, this can legitimately take up to ~40s — a bare spinner
+    // that long reads as broken without a message explaining why.
+    const [slowLoad, setSlowLoad]       = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState("All");
     const [selectedJob, setSelectedJob] = useState<Job | null>(null);
@@ -783,6 +787,8 @@ export default function PortalClient({
     const fetchJobs = useCallback(async (force = false) => {
         if (force) setSyncing(true); else setLoading(true);
         setError(null);
+        setSlowLoad(false);
+        const slowTimer = setTimeout(() => setSlowLoad(true), 6000);
         try {
             const url = force ? "/api/portal/jobs?refresh=1" : "/api/portal/jobs";
             const res = await fetch(url);
@@ -792,7 +798,7 @@ export default function PortalClient({
             setLastSynced(new Date());
         } catch (err) {
             setError(err instanceof Error ? err.message : "Failed to load jobs");
-        } finally { setLoading(false); setSyncing(false); }
+        } finally { setLoading(false); setSyncing(false); clearTimeout(slowTimer); }
     }, []);
 
     useEffect(() => {
@@ -1000,6 +1006,11 @@ export default function PortalClient({
                             <div className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-steel" />
                         </div>
                         <p className="text-xs tracking-[0.25em] uppercase text-navy/50">Loading postings…</p>
+                        {slowLoad && (
+                            <p className="mt-2 max-w-xs text-center text-xs text-navy/40">
+                                Still working — this can take up to a minute right after things update. Thanks for your patience.
+                            </p>
+                        )}
                     </div>
                 )}
 
