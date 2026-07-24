@@ -1,6 +1,12 @@
 import { unstable_cache, revalidateTag } from 'next/cache';
 import { ceipalFetch, CEIPAL_JOBS_URL } from '@/lib/ceipal';
 
+// Vercel sets this automatically; it's absent in local `next dev`/`next
+// start`. Several budgets below are only tight because of Vercel's 60s
+// serverless hard-kill — that constraint doesn't exist locally, so those
+// budgets are relaxed there instead of applying unconditionally everywhere.
+const RUNNING_ON_VERCEL = !!process.env.VERCEL;
+
 const PAGE_SIZE  = 50;
 const BATCH_SIZE = 8;
 const RETRY_DELAY = 800;
@@ -16,11 +22,20 @@ const CACHE_TAG = 'ceipal-public-jobs';
 // (first attempt 20s + retry-delay 800ms + retry attempt 20s ≈ 41s) can, all
 // by itself, blow past the between-rounds TIME_BUDGET_MS check below, since
 // that check only runs BEFORE starting a new round, not during one already
-// in flight. Racing each individual attempt against a much shorter 8s here
-// caps a single page's worst case at ~17s instead of ~41s, so one bad page
-// can no longer single-handedly push the whole function past Vercel's 60s
-// hard limit.
-const PAGE_ATTEMPT_TIMEOUT_MS = 8_000;
+// in flight. Racing each individual attempt against a much shorter budget
+// here caps a single page's worst case, so one bad page can no longer
+// single-handedly push the whole function past Vercel's 60s hard limit.
+//
+// On Vercel this stays tight (8s) to protect that hard limit. Locally it
+// only made things worse: measured Ceipal itself taking 8-12+ seconds for a
+// perfectly normal, successful page response (confirmed live, direct to the
+// API, outside this app entirely) — an 8s local cutoff was aborting real,
+// eventually-successful responses as "failed" before they finished, which
+// is exactly why a local fetch could run for minutes and still land on 0
+// jobs: nearly every page kept getting cut off just before it would have
+// succeeded. Locally there's no 60s kill to protect, so give individual
+// attempts the same 20s ceipalFetch itself already allows internally.
+const PAGE_ATTEMPT_TIMEOUT_MS = RUNNING_ON_VERCEL ? 8_000 : 20_000;
 
 function jobCodeNum(code: unknown): number {
   const m = String(code ?? '').match(/(\d+)/);
@@ -71,7 +86,13 @@ async function fetchPageWithRetry(page: number): Promise<unknown[] | null> {
 // function always finishes successfully; worst case on a slow Ceipal day is a
 // shorter-than-usual (but real, valid, cached) job list instead of a hard
 // failure on every single request.
-const TIME_BUDGET_MS = 40_000;
+//
+// That 60s kill only exists on Vercel — `next dev`/`next start` on a local
+// machine has no such limit, so truncating early there was pure downside
+// (confirmed live: the exact same partial-job-list bug this budget exists to
+// contain on Vercel was also reproducible locally, purely because this
+// budget applied unconditionally everywhere).
+const TIME_BUDGET_MS = RUNNING_ON_VERCEL ? 40_000 : 5 * 60_000;
 
 async function fetchAllJobs(): Promise<unknown[]> {
   const startedAt = Date.now();
@@ -152,6 +173,26 @@ async function fetchAllJobs(): Promise<unknown[]> {
   // slow-but-real answer this exists to avoid.
   if (jpc.length === 0) {
     throw new Error('[jobs] fetchAllJobs returned zero jobs — refusing to cache this as a valid result');
+  }
+
+  // This site has had 1,000+ JPC job postings for as long as it's been
+  // tracked — a cycle that comes back with far fewer isn't "the job market
+  // shrank," it's this fetch hitting the time budget early or a burst of
+  // page failures (confirmed live: a 521-job partial result, missing every
+  // job code above 534, got cached and served site-wide — 0 "Active" jobs
+  // shown on the public board and in the client portal — until manually
+  // force-refreshed). Still return what was collected (never a hard
+  // failure), but immediately mark the cache stale so the VERY NEXT request
+  // retries instead of also being stuck with this same partial result for
+  // the rest of the 15-minute window. This threshold is a rough tripwire,
+  // not a precise measurement — revisit it if the real job count ever
+  // naturally drifts below it.
+  const MIN_PLAUSIBLE_JPC_JOBS = 800;
+  if (jpc.length < MIN_PLAUSIBLE_JPC_JOBS) {
+    console.warn(
+      `[jobs] only ${jpc.length} JPC jobs this cycle (expected ${MIN_PLAUSIBLE_JPC_JOBS}+) — looks like a partial pull; marking the cache stale so the next request retries instead of trusting this for the full ${CACHE_TTL_SECONDS}s window`
+    );
+    revalidateTag(CACHE_TAG, 'max');
   }
 
   return trimmed;

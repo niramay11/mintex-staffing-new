@@ -6,6 +6,11 @@ const V2_JOBS_URL = 'https://api.ceipal.com/v2/getJobPostingsList/';
 type JobMap  = Record<string, string>;                  // job_code → v2 id
 type JobData = Record<string, unknown>;
 
+// See src/lib/jobsCache.ts for the full reasoning — several budgets below
+// are only tight because of Vercel's 60s serverless hard-kill, which doesn't
+// exist locally, so they're relaxed there instead of applying everywhere.
+const RUNNING_ON_VERCEL = !!process.env.VERCEL;
+
 const PAGE_SIZE   = 100;
 const RETRY_DELAY  = 800;
 // Same reasoning as src/lib/jobsCache.ts: this used to be cached in a plain
@@ -18,8 +23,13 @@ const RETRY_DELAY  = 800;
 // retry + time-budget below stop one bad page from nuking the whole map.
 const CACHE_TTL_SECONDS = 5 * 60;
 const CACHE_TAG = 'ceipal-v2-job-map';
-const PAGE_ATTEMPT_TIMEOUT_MS = 8_000;
-const TIME_BUDGET_MS = 40_000;
+// Ceipal has been measured taking 8-12+ seconds for a normal, successful
+// page response — an 8s per-attempt cutoff was aborting real responses as
+// "failed" before they finished. Only Vercel actually needs this tight (to
+// protect its 60s hard kill); locally, give attempts the same 20s ceiling
+// ceipalFetch itself already allows internally.
+const PAGE_ATTEMPT_TIMEOUT_MS = RUNNING_ON_VERCEL ? 8_000 : 20_000;
+const TIME_BUDGET_MS = RUNNING_ON_VERCEL ? 40_000 : 5 * 60_000;
 
 function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -109,6 +119,20 @@ async function fetchAllV2Jobs(): Promise<JobData[]> {
   // that failure as if it were valid data for the full revalidate window.
   if (all.length === 0) {
     throw new Error('[v2-job-map] fetchAllV2Jobs returned zero jobs — refusing to cache this as a valid result');
+  }
+
+  // Same guard as src/lib/jobsCache.ts: a cycle that comes back with far
+  // fewer jobs than this business has ever actually had isn't real data, it's
+  // this fetch hitting the time budget or a page-failure streak early. Still
+  // return what was collected, but mark the cache stale immediately so the
+  // next request retries instead of every client-portal lookup being stuck
+  // against this same truncated map for the rest of the 5-minute window.
+  const MIN_PLAUSIBLE_JOBS = 800;
+  if (all.length < MIN_PLAUSIBLE_JOBS) {
+    console.warn(
+      `[v2-job-map] only ${all.length} jobs this cycle (expected ${MIN_PLAUSIBLE_JOBS}+) — looks like a partial pull; marking the cache stale so the next request retries`
+    );
+    revalidateTag(CACHE_TAG, 'max');
   }
 
   return all;
