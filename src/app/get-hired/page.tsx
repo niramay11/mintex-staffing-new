@@ -4,6 +4,7 @@ import Image from "next/image";
 import Section from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import JobBoard from "@/components/jobs/JobBoard";
+import BrowseRolesButton from "@/components/jobs/BrowseRolesButton";
 import { IconBriefcase } from "@/components/jobs/icons";
 import { getSiteImages } from "@/lib/siteImages";
 import { getCachedJobs } from "@/lib/jobsCache";
@@ -56,9 +57,7 @@ recruitment team for future roles, we are happy to help you find the right fit. 
 our talent network to stay ahead of new roles as they go live. 
             </p>
             <div className="mt-7 flex flex-wrap gap-3.5">
-              <ButtonLink href="#apply-to-jobs" variant="primary">
-                Browse Open Roles
-              </ButtonLink>
+              <BrowseRolesButton />
             </div>
           </div>
 
