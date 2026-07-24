@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy: #003060;
+  --color-navy-secondary: #013d79;
+  --color-navy-deep: #01376d;
+  --color-blue: #003060;
+
+  --color-steel: #4a738c;
+  --color-steel-light: #8fa6b8;
+  --color-steel-lighter: #afc0ce;
+
+  --color-tan: #bfae99;
+  --color-tan-light: #d8cbb6;
+
+  --color-cream: #edeae4;
+  --color-mist: #f2f2f2;
+  --color-mist-dark: #e9e7e2;
+
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-poppins);
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-navy);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading), var(--font-sans), sans-serif;
+  letter-spacing: -0.02em;
+}
+
+::selection {
+  background: var(--color-tan);
+  color: var(--color-navy);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-steel);
+  outline-offset: 2px;
+}
+
+.bg-grid-pattern {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(circle at 50% 40%, #000 0%, transparent 72%);
+  -webkit-mask-image: radial-gradient(circle at 50% 40%, #000 0%, transparent 72%);
+}
+
+.bg-dot-pattern-light {
+  background-image: radial-gradient(rgba(74, 115, 140, 0.28) 1.6px, transparent 1.6px);
+  background-size: 20px 20px;
+}
+
+@keyframes floatUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-float-up {
+  animation: floatUp 0.5s ease both;
+}
