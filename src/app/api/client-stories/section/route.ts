@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { verifyAdminPassword } from "@/lib/portal-auth";
 import { getSectionEnabled, setSectionEnabled } from "@/lib/siteSectionSettings";
 
@@ -23,6 +24,10 @@ export async function PUT(req: NextRequest) {
 
   const { error } = await setSectionEnabled(SECTION_KEY, !!enabled);
   if (error) return NextResponse.json({ error }, { status: 500 });
+
+  // The homepage is statically rendered — without this, the new value
+  // wouldn't show up there until the next full rebuild/redeploy.
+  revalidatePath("/");
 
   return NextResponse.json({ success: true, enabled: !!enabled });
 }

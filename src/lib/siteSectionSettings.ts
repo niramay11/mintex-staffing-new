@@ -5,23 +5,25 @@ import { supabase, supabaseAdmin } from "./supabase";
 // without deleting its underlying content. Defaults to `true` (visible) if
 // the row doesn't exist yet or the query fails, so a Supabase hiccup never
 // silently hides content that was never meant to be hidden.
-const CACHE_TTL = 60_000; // 1 minute
-const cache = new Map<string, { enabled: boolean; at: number }>();
-
+//
+// Deliberately NOT cached in-process: the homepage that reads this is a
+// single cheap primary-key lookup, not a heavy paginated pull like the
+// Ceipal caches — caching it bought nothing but stale-toggle confusion (an
+// admin's "enable" not showing up because a previous "disable" was still
+// sitting in a 60s-old in-memory cache in the same server process). The
+// route that writes this also calls `revalidatePath("/")` so the homepage
+// itself re-renders with the fresh value on the very next visit.
 export async function getSectionEnabled(sectionKey: string): Promise<boolean> {
-  const now = Date.now();
-  const hit = cache.get(sectionKey);
-  if (hit && now - hit.at < CACHE_TTL) return hit.enabled;
-
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("site_section_settings")
     .select("enabled")
     .eq("section_key", sectionKey)
     .maybeSingle();
 
-  const enabled = data?.enabled ?? true;
-  cache.set(sectionKey, { enabled, at: now });
-  return enabled;
+  if (error) {
+    console.error(`[siteSectionSettings] getSectionEnabled(${sectionKey}) error:`, error.message);
+  }
+  return data?.enabled ?? true;
 }
 
 export async function setSectionEnabled(
@@ -32,6 +34,5 @@ export async function setSectionEnabled(
     .from("site_section_settings")
     .upsert({ section_key: sectionKey, enabled, updated_at: new Date().toISOString() });
 
-  if (!error) cache.delete(sectionKey);
   return { error: error?.message ?? null };
 }
