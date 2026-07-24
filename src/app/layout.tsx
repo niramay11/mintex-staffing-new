@@ -18,13 +18,13 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: {
-    default: "Mintex Staffing | Connecting Exceptional Talent With Leading Employers",
+    default: "Mintex Staffing | IT, Healthcare & Engineering Staffing Agency",
     template: "%s | Mintex Staffing",
   },
   description:
     "Mintex Staffing connects exceptional talent with leading employers across IT, healthcare, engineering, manufacturing, finance, and more.",
   openGraph: {
-    title: "Mintex Staffing",
+    title: "Mintex Staffing | IT, Healthcare & Engineering Staffing Agency",
     description:
       "Mintex Staffing connects exceptional talent with leading employers across IT, healthcare, engineering, manufacturing, finance, and more.",
     type: "website",
