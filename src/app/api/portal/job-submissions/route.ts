@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifySession } from '@/lib/portal-auth';
 import { ceipalFetch } from '@/lib/ceipal';
 import { getJobMap } from '@/lib/ceipal-job-map';
+import { fetchJobSubmissions } from '@/lib/ceipal-submissions';
 
 async function fetchApplicantName(jobSeekerId: string): Promise<string> {
   try {
@@ -35,12 +36,7 @@ export async function GET(req: NextRequest) {
 
     if (!v2Id) return NextResponse.json([]);
 
-    const res = await ceipalFetch(`https://api.ceipal.com/v2/getSubmissionsList?jobId=${encodeURIComponent(v2Id)}`);
-    if (!res.ok) return NextResponse.json([]);
-
-    const data = await res.json();
-    const submissions: Record<string, unknown>[] = Array.isArray(data) ? data
-      : Array.isArray(data?.results) ? data.results : [];
+    const submissions = await fetchJobSubmissions(v2Id);
 
     const permissions = (client.permissions as Record<string, boolean>) ?? {};
 

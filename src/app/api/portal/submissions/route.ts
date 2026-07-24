@@ -3,6 +3,7 @@ import { verifySession } from '@/lib/portal-auth';
 import { ceipalFetch } from '@/lib/ceipal';
 import { getJobMap } from '@/lib/ceipal-job-map';
 import { getAllJobs } from '@/lib/data-cache';
+import { fetchJobSubmissions } from '@/lib/ceipal-submissions';
 
 export const maxDuration = 60;
 
@@ -22,15 +23,6 @@ async function fetchApplicantName(jobSeekerId: string): Promise<string> {
       `${d.firstname ?? d.first_name ?? ''} ${d.lastname ?? d.last_name ?? ''}`.trim()
     ).trim();
   } catch { return ''; }
-}
-
-async function fetchJobSubmissions(v2Id: string): Promise<Record<string, unknown>[]> {
-  try {
-    const res = await ceipalFetch(`https://api.ceipal.com/v2/getSubmissionsList?jobId=${encodeURIComponent(v2Id)}`);
-    if (!res.ok) return [];
-    const data = await res.json();
-    return Array.isArray(data) ? data : Array.isArray(data?.results) ? data.results : [];
-  } catch { return []; }
 }
 
 export async function GET(req: NextRequest) {
