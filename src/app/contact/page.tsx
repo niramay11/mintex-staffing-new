@@ -136,6 +136,20 @@ export default function ContactPage() {
           </div>
         </div>
       </Section>
+
+      <Section background="cream" className="!pt-0">
+        <div className="overflow-hidden rounded-3xl shadow-[0_1px_3px_rgba(0,48,96,0.05)]">
+          <iframe
+            title="Mintex Staffing office location — 2163 Oak Tree Rd, Edison, NJ 08820"
+            src="https://www.google.com/maps?q=2163+Oak+Tree+Rd,+Edison,+NJ+08820&output=embed"
+            width="100%"
+            height="360"
+            style={{ border: 0 }}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
+        </div>
+      </Section>
     </>
   );
 }
