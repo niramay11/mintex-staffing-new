@@ -88,7 +88,16 @@ export default function Footer({ siteImages }: { siteImages: Record<string, stri
         </div>
 
         <div className="flex flex-col items-start justify-between gap-3 pt-6 text-[13.5px] text-steel-light sm:flex-row sm:items-center">
-          <p>&copy; {new Date().getFullYear()} Mintex Staffing. All rights reserved.</p>
+          <p className="flex flex-wrap items-center gap-x-2">
+            <span>&copy; {new Date().getFullYear()} Mintex Staffing. All rights reserved.</span>
+            <Link href="/privacy" className="underline-offset-2 hover:text-white hover:underline">
+              Privacy Policy
+            </Link>
+            <span aria-hidden="true">&middot;</span>
+            <Link href="/terms" className="underline-offset-2 hover:text-white hover:underline">
+              Terms of Service
+            </Link>
+          </p>
           <p>2163 Oak Tree Rd, Edison, NJ 08820 &middot; +1 (732) 983-5723</p>
         </div>
       </footer>

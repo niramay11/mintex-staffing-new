@@ -60,7 +60,7 @@ export default async function InsightPostPage({
           // eslint-disable-next-line @next/next/no-img-element -- arbitrary admin-supplied URL
           <img
             src={post.image_url}
-            alt=""
+            alt={post.title}
             className="mb-10 aspect-[16/9] w-full max-w-2xl rounded-2xl object-cover"
           />
         )}
