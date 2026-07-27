@@ -10,6 +10,7 @@ import { withTimeout } from "@/lib/withTimeout";
 export const metadata: Metadata = {
   title: "Client Portal",
   description: "Sign in to view your job postings, submissions, and placements with Mintex Staffing.",
+  robots: { index: false, follow: false },
 };
 
 // Everything that depends on cookies()/Ceipal lives in here, isolated behind

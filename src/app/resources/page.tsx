@@ -3,12 +3,14 @@ import Image from "next/image";
 import Link from "next/link";
 import Section from "@/components/ui/Section";
 import { getSiteImages } from "@/lib/siteImages";
+import { pageMetadata } from "@/lib/pageMetadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Resources",
   description:
     "Hiring calculators and an AI interview question generator from Mintex Staffing.",
-};
+  path: "/resources",
+});
 
 const tools = [
   {

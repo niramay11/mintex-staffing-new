@@ -3,12 +3,14 @@ import Image from "next/image";
 import Section from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import { getSiteImages } from "@/lib/siteImages";
+import { pageMetadata } from "@/lib/pageMetadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "How We Work",
   description:
     "See how Mintex Staffing scopes, sources, and supports every search, plus how existing clients sign in to the client portal.",
-};
+  path: "/seek-talent/how-we-work",
+});
 
 function IconSearchTalent({ className }: { className?: string }) {
   return (

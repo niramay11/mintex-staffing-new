@@ -3,12 +3,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/Button";
 import { getSiteImages } from "@/lib/siteImages";
+import { pageMetadata } from "@/lib/pageMetadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "About Us",
   description:
     "We connect exceptional talent with leading employers and build lasting partnerships across the United States.",
-};
+  path: "/about",
+});
 
 function IconShield({ className }: { className?: string }) {
   return (

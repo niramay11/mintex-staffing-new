@@ -3,11 +3,13 @@ import Section from "@/components/ui/Section";
 import TestimonialCard from "@/components/ui/TestimonialCard";
 import { supabase } from "@/lib/supabase";
 import type { CaseStudy } from "@/content/types";
+import { pageMetadata } from "@/lib/pageMetadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Case Studies",
   description: "Client testimonials, candidate testimonials, and other Mintex Staffing case studies.",
-};
+  path: "/case-studies",
+});
 
 export const revalidate = 60;
 

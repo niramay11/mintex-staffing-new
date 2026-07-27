@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import GetHiredContent from "@/components/get-hired/GetHiredContent";
+import ScrollToSection from "@/components/get-hired/ScrollToSection";
 import { pageMetadata } from "@/lib/pageMetadata";
 
+// Same content as /get-hired, scrolled to the "Apply to Jobs" section — the
+// canonical stays on /get-hired so search engines don't index this as
+// duplicate content.
 export const metadata: Metadata = pageMetadata({
   title: "Get Hired",
   description:
@@ -9,11 +13,13 @@ export const metadata: Metadata = pageMetadata({
   path: "/get-hired",
 });
 
-// Without this, Next would statically prerender this page at build time and
-// bake the Ceipal jobs fetched below into the HTML permanently — jobs need to
-// be fresh (cache-TTL-fresh) on every request, not a frozen build-time snapshot.
 export const dynamic = "force-dynamic";
 
-export default function GetHiredPage() {
-  return <GetHiredContent />;
+export default function ApplyToJobsPage() {
+  return (
+    <>
+      <ScrollToSection id="apply-to-jobs" />
+      <GetHiredContent />
+    </>
+  );
 }

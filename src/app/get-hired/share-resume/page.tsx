@@ -3,12 +3,14 @@ import Image from "next/image";
 import Section from "@/components/ui/Section";
 import ResumeForm from "@/components/forms/ResumeForm";
 import { getSiteImages } from "@/lib/siteImages";
+import { pageMetadata } from "@/lib/pageMetadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Share Your Resume",
   description:
     "Share your resume with Mintex Staffing and stay visible to our recruiters across every industry we serve.",
-};
+  path: "/get-hired/share-resume",
+});
 
 function IconRadar({ className }: { className?: string }) {
   return (

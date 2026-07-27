@@ -14,7 +14,7 @@ export const navItems: NavItem[] = [
     label: "Get Hired",
     href: "/get-hired",
     children: [
-      { label: "Apply to Jobs", href: "/get-hired?section=apply-to-jobs" },
+      { label: "Apply to Jobs", href: "/get-hired/apply-to-jobs" },
       { label: "Share Your Resume", href: "/get-hired/share-resume" },
     ],
   },
@@ -40,9 +40,9 @@ export const navItems: NavItem[] = [
     label: "Insights",
     href: "/insights",
     children: [
-      { label: "Career Insights", href: "/insights?category=career" },
-      { label: "Job Market Insights", href: "/insights?category=market" },
-      { label: "Ongoing Hiring Trends", href: "/insights?category=trends" },
+      { label: "Career Insights", href: "/insights/category/career" },
+      { label: "Job Market Insights", href: "/insights/category/market" },
+      { label: "Ongoing Hiring Trends", href: "/insights/category/trends" },
       { label: "All Blog Posts", href: "/insights" },
     ],
   },

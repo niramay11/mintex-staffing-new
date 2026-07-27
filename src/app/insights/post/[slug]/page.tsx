@@ -4,6 +4,7 @@ import Link from "next/link";
 import Section from "@/components/ui/Section";
 import { supabase } from "@/lib/supabase";
 import type { InsightPost } from "@/content/types";
+import { pageMetadata } from "@/lib/pageMetadata";
 
 export const revalidate = 60;
 
@@ -21,10 +22,11 @@ export async function generateMetadata({
   const post = await getInsightBySlug(slug);
   if (!post) return {};
 
-  return {
+  return pageMetadata({
     title: post.title,
     description: post.excerpt,
-  };
+    path: `/insights/post/${post.slug}`,
+  });
 }
 
 export default async function InsightPostPage({

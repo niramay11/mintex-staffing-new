@@ -3,11 +3,13 @@ import Section from "@/components/ui/Section";
 import HiringCostCalculator from "@/components/tools/HiringCostCalculator";
 import CostBreakdownPreview from "@/components/tools/CostBreakdownPreview";
 import { HiringCostProvider } from "@/components/tools/HiringCostCalculatorContext";
+import { pageMetadata } from "@/lib/pageMetadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Hiring Cost Calculator",
   description: "Estimate your true cost-per-hire across ad spend, agency fees, and internal time.",
-};
+  path: "/resources/hiring-cost-calculator",
+});
 
 export default function HiringCostCalculatorPage() {
   return (

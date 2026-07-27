@@ -6,12 +6,14 @@ import { ButtonLink } from "@/components/ui/Button";
 import { IconBriefcase, IconPeople } from "@/components/jobs/icons";
 import { hiringServices } from "@/content/hiringServices";
 import { getSiteImages } from "@/lib/siteImages";
+import { pageMetadata } from "@/lib/pageMetadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Seek Talent",
   description:
     "Hire contract, permanent, or executive talent with Mintex Staffing, built around how your team actually works.",
-};
+  path: "/seek-talent",
+});
 
 function IconArrowRight({ className }: { className?: string }) {
   return (

@@ -3,6 +3,8 @@ import { Inter, Poppins } from "next/font/google";
 import Script from "next/script";
 import SiteChrome from "@/components/layout/SiteChrome";
 import { getSiteImages } from "@/lib/siteImages";
+import { getLocalBusinessSchema } from "@/lib/localBusinessSchema";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const inter = Inter({
@@ -17,6 +19,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Mintex Staffing | IT, Healthcare & Engineering Staffing Agency",
     template: "%s | Mintex Staffing",
@@ -29,6 +32,12 @@ export const metadata: Metadata = {
       "Mintex Staffing connects exceptional talent with leading employers across IT, healthcare, engineering, manufacturing, finance, and more.",
     type: "website",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Mintex Staffing | IT, Healthcare & Engineering Staffing Agency",
+    description:
+      "Mintex Staffing connects exceptional talent with leading employers across IT, healthcare, engineering, manufacturing, finance, and more.",
+  },
 };
 
 export default async function RootLayout({
@@ -36,11 +45,19 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const siteImages = await getSiteImages();
+  const [siteImages, localBusinessSchema] = await Promise.all([
+    getSiteImages(),
+    getLocalBusinessSchema(),
+  ]);
 
   return (
-    <html lang="en" className={`${inter.variable} ${poppins.variable} h-full antialiased`}>
+    <html lang="en-US" className={`${inter.variable} ${poppins.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col bg-cream">
+        <Script
+          id="local-business-schema"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+        />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-X8S5R27JY4"
           strategy="afterInteractive"

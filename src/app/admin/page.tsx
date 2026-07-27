@@ -2832,7 +2832,7 @@ function InsightsTab({ password }: { password: string }) {
                   <p className="text-sm font-semibold text-navy truncate">{post.title}</p>
                 </div>
                 <p className="text-xs text-navy/50 mt-1">
-                  /insights/{post.slug} · {post.author} · {new Date(post.published_at).toLocaleDateString([], { day: "2-digit", month: "short", year: "numeric" })}
+                  /insights/post/{post.slug} · {post.author} · {new Date(post.published_at).toLocaleDateString([], { day: "2-digit", month: "short", year: "numeric" })}
                 </p>
               </div>
               <button onClick={() => openEdit(post)}

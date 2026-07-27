@@ -1,14 +1,16 @@
 import type { MetadataRoute } from "next";
 import { industries } from "@/content/industries";
+import { hiringServices } from "@/content/hiringServices";
 import { supabase } from "@/lib/supabase";
+import { SITE_URL } from "@/lib/site";
 
-// TODO: replace with the real production domain once it's registered/confirmed.
-const baseUrl = "https://www.mintexstaffing.com";
+const baseUrl = SITE_URL;
 
 const staticRoutes = [
   "",
   "/get-hired",
   "/seek-talent",
+  "/seek-talent/how-we-work",
   "/resources",
   "/resources/hiring-cost-calculator",
   "/resources/ai-interview-generator",
@@ -29,11 +31,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(),
   }));
 
+  const hiringServiceEntries = hiringServices.map((service) => ({
+    url: `${baseUrl}/seek-talent/${service.slug}`,
+    lastModified: new Date(),
+  }));
+
   const { data: insightPosts } = await supabase.from("insights").select("slug, published_at");
   const insightEntries = (insightPosts ?? []).map((post) => ({
-    url: `${baseUrl}/insights/${post.slug}`,
+    url: `${baseUrl}/insights/post/${post.slug}`,
     lastModified: new Date(post.published_at),
   }));
 
-  return [...staticEntries, ...industryEntries, ...insightEntries];
+  const { data: insightCategories } = await supabase.from("insight_categories").select("slug");
+  const insightCategoryEntries = (insightCategories ?? []).map((category) => ({
+    url: `${baseUrl}/insights/category/${category.slug}`,
+    lastModified: new Date(),
+  }));
+
+  return [
+    ...staticEntries,
+    ...industryEntries,
+    ...hiringServiceEntries,
+    ...insightEntries,
+    ...insightCategoryEntries,
+  ];
 }

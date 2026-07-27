@@ -2,6 +2,7 @@ import { randomBytes } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 import { sendJobAlertConfirmation } from "@/lib/mailer";
+import { SITE_URL } from "@/lib/site";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -28,7 +29,7 @@ export async function POST(req: NextRequest) {
   });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://mintexstaffing.com";
+  const siteUrl = SITE_URL;
   const unsubscribeUrl = `${siteUrl}/api/job-alerts/unsubscribe?token=${unsubscribeToken}`;
 
   try {

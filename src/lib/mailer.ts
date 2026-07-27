@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import path from 'path';
+import { SITE_URL } from './site';
 
 // Referenced as `cid:${LOGO_CID}` in email HTML and attached inline below —
 // mail clients block/can't reach the localhost dev URL a plain <img src>
@@ -33,7 +34,7 @@ function createTransporter() {
 }
 
 function siteUrl(): string {
-  return process.env.NEXT_PUBLIC_SITE_URL || 'https://mintexstaffing.com';
+  return SITE_URL;
 }
 
 // Every branded email goes through here so the logo attachment is never forgotten.

@@ -7,6 +7,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { hiringServices, getHiringServiceBySlug } from "@/content/hiringServices";
 import HiringInquiryForm from "@/components/forms/HiringInquiryForm";
 import { getSiteImages } from "@/lib/siteImages";
+import { pageMetadata } from "@/lib/pageMetadata";
 
 export function generateStaticParams() {
   return hiringServices.map((service) => ({ slug: service.slug }));
@@ -21,10 +22,11 @@ export async function generateMetadata({
   const service = getHiringServiceBySlug(slug);
   if (!service) return {};
 
-  return {
+  return pageMetadata({
     title: service.name,
     description: service.tagline,
-  };
+    path: `/seek-talent/${service.slug}`,
+  });
 }
 
 function IconArrowLeft({ className }: { className?: string }) {

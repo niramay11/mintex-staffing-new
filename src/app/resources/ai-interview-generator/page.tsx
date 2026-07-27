@@ -3,11 +3,13 @@ import Image from "next/image";
 import Section from "@/components/ui/Section";
 import AiInterviewGenerator from "@/components/tools/AiInterviewGenerator";
 import { getSiteImages } from "@/lib/siteImages";
+import { pageMetadata } from "@/lib/pageMetadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "AI Interview Question Generator",
   description: "Generate tailored interview questions by industry and role level.",
-};
+  path: "/resources/ai-interview-generator",
+});
 
 export default async function AiInterviewGeneratorPage() {
   const siteImages = await getSiteImages();

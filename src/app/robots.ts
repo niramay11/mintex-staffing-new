@@ -1,14 +1,13 @@
 import type { MetadataRoute } from "next";
-
-// TODO: replace with the real production domain once it's registered/confirmed.
-const baseUrl = "https://www.mintexstaffing.com";
+import { SITE_URL } from "@/lib/site";
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: "*",
       allow: "/",
+      disallow: ["/admin", "/client-portal", "/api/"],
     },
-    sitemap: `${baseUrl}/sitemap.xml`,
+    sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }

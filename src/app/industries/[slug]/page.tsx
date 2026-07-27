@@ -7,6 +7,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { industries, getIndustryBySlug } from "@/content/industries";
 import { getJobsByIndustry } from "@/content/jobs";
 import { getIndustryStats } from "@/lib/industryStats";
+import { pageMetadata } from "@/lib/pageMetadata";
 
 export const revalidate = 60;
 
@@ -23,10 +24,11 @@ export async function generateMetadata({
   const industry = getIndustryBySlug(slug);
   if (!industry) return {};
 
-  return {
+  return pageMetadata({
     title: industry.heroTitle,
     description: industry.seoSubheading,
-  };
+    path: `/industries/${industry.slug}`,
+  });
 }
 
 export default async function IndustryPage({

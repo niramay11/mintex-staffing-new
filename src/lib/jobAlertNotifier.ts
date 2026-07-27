@@ -1,6 +1,7 @@
 import { getAllJobs } from "@/lib/data-cache";
 import { supabaseAdmin } from "@/lib/supabase";
 import { sendJobAlertDigest } from "@/lib/mailer";
+import { SITE_URL } from "@/lib/site";
 
 interface JobAlertRow {
   id: string;
@@ -69,7 +70,7 @@ export async function checkForNewJobsAndNotify(): Promise<void> {
     }
     if (!alerts || alerts.length === 0) return;
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://mintexstaffing.com";
+    const siteUrl = SITE_URL;
 
     for (const alert of alerts as JobAlertRow[]) {
       const matchedJobs = newJobs.filter((job) =>

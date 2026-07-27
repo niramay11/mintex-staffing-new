@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Section from "@/components/ui/Section";
 import ContactForm from "@/components/forms/ContactForm";
+import { pageMetadata } from "@/lib/pageMetadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Contact Us",
   description: "Get in touch with Mintex Staffing by phone, email, or contact form.",
-};
+  path: "/contact",
+});
 
 function IconPin({ className }: { className?: string }) {
   return (

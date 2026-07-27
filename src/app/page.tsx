@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Section from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
@@ -5,6 +6,10 @@ import ClientStories from "@/components/home/ClientStories";
 import { industries } from "@/content/industries";
 import { getIndustryStats } from "@/lib/industryStats";
 import { getSiteImages } from "@/lib/siteImages";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 export default async function HomePage() {
   const industryStats = await getIndustryStats();
