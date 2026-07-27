@@ -85,7 +85,7 @@ function LoginForm({ onLogin, siteImages }: { onLogin: (client: ClientInfo) => v
             <header className={`fixed top-0 left-0 right-0 z-50 bg-white/85 backdrop-blur-md border-b border-navy/10 transition-shadow duration-300 ${scrolled ? 'shadow-[0_4px_20px_rgba(0,48,96,0.08)]' : ''}`}>
                 <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-[60px]">
                     <Link href="/" className="flex items-center">
-                        <Image src={siteImages["client-portal:header-logo"]} alt="Mintex Staffing" width={148} height={20} priority className="h-5 w-auto" />
+                        <Image src={siteImages["client-portal:header-logo"]} alt="Mintex Staffing" width={148} height={20} preload className="h-5 w-auto" />
                     </Link>
                     <span className="rounded-full bg-cream px-3 py-1 text-[11px] font-semibold text-navy">
                         Client Portal
@@ -876,7 +876,7 @@ export default function PortalClient({
             <header className={`fixed top-0 left-0 right-0 z-50 bg-white/85 backdrop-blur-md border-b border-navy/10 transition-shadow duration-300 ${scrolled ? 'shadow-[0_4px_20px_rgba(0,48,96,0.08)]' : ''}`}>
                 <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-[60px]">
                     <Link href="/" className="flex items-center">
-                        <Image src={siteImages["client-portal:header-logo"]} alt="Mintex Staffing" width={148} height={20} priority className="h-5 w-auto" />
+                        <Image src={siteImages["client-portal:header-logo"]} alt="Mintex Staffing" width={148} height={20} preload className="h-5 w-auto" />
                     </Link>
                     <div className="flex items-center gap-4">
                         <div className="hidden sm:flex flex-col items-end">

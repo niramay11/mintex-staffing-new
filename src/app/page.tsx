@@ -21,7 +21,7 @@ export default async function HomePage() {
         background="navy"
         backgroundMedia={
           <>
-            <Image src={siteImages["home:hero-banner"]} alt="" fill priority className="object-cover object-center" />
+            <Image src={siteImages["home:hero-banner"]} alt="" fill preload fetchPriority="high" className="object-cover object-center" />
             <div className="absolute inset-0 bg-[linear-gradient(90deg,#012340_0%,rgba(1,35,64,0.97)_18%,rgba(1,35,64,0.86)_32%,rgba(1,35,64,0.62)_46%,rgba(1,35,64,0.32)_60%,rgba(1,35,64,0.08)_74%,rgba(1,35,64,0)_86%)]" />
             <div className="absolute inset-0 bg-gradient-to-t from-navy/40 via-transparent to-transparent" />
           </>
@@ -52,7 +52,7 @@ export default async function HomePage() {
             </p>
             <div className="mt-7 flex flex-wrap items-center gap-3.5">
               <ButtonLink
-                href="/client-portal"
+                href="/seek-talent"
                 variant="primary"
                 className="gap-2 shadow-[0_14px_36px_-10px_rgba(191,174,153,0.55)] transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_44px_-8px_rgba(191,174,153,0.65)]"
               >
@@ -358,7 +358,7 @@ on paper.
               Whether you&apos;re hiring or looking to be hired, we&apos;ll get you there faster.
             </p>
             <div className="mt-8 flex flex-wrap gap-3.5">
-              <ButtonLink href="/client-portal" variant="primary">
+              <ButtonLink href="/seek-talent" variant="primary">
                 Hire a Talent
               </ButtonLink>
               <ButtonLink

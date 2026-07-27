@@ -114,7 +114,7 @@ export default async function AboutPage() {
               src={siteImages["about:hero-visual"]}
               alt="Mintex Staffing office"
               fill
-              priority
+              preload
               quality={95}
               sizes="(min-width: 1024px) 60vw, 100vw"
               className="object-cover lg:[mask-image:linear-gradient(to_right,transparent_0%,black_22%)] lg:[-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_22%)]"
