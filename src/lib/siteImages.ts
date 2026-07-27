@@ -1,18 +1,14 @@
+import { unstable_cache, revalidateTag } from "next/cache";
 import { supabase } from "./supabase";
 import { IMAGE_LOCATIONS } from "./imageLocations";
 
 export { IMAGE_LOCATIONS };
 export type { ImageLocation } from "./imageLocations";
 
-const CACHE_TTL = 60_000; // 1 minute
-let cache: { data: Record<string, string>; at: number } | null = null;
+const CACHE_TAG = "site-images";
+const CACHE_TTL_SECONDS = 60;
 
-// Server-side only: merged map of every known location's effective URL
-// (override if one exists in the DB, else its coded default), keyed by locationKey.
-export async function getSiteImages(): Promise<Record<string, string>> {
-  const now = Date.now();
-  if (cache && now - cache.at < CACHE_TTL) return cache.data;
-
+async function fetchSiteImages(): Promise<Record<string, string>> {
   const defaults = Object.fromEntries(IMAGE_LOCATIONS.map((loc) => [loc.locationKey, loc.defaultSrc]));
   const { data } = await supabase
     .from("site_images")
@@ -23,10 +19,25 @@ export async function getSiteImages(): Promise<Record<string, string>> {
     if (row.file_path) defaults[row.location_key as string] = row.file_path;
   }
 
-  cache = { data: defaults, at: now };
   return defaults;
 }
 
+// unstable_cache persists via Next's shared Data Cache rather than plain
+// in-process memory — a hand-rolled `let cache` variable resets on every
+// fresh serverless invocation, so a warm instance and a cold one could
+// disagree on whether an admin's image update had landed yet (same class of
+// bug fixed in jobsCache.ts).
+const getCachedSiteImages = unstable_cache(fetchSiteImages, [CACHE_TAG], {
+  revalidate: CACHE_TTL_SECONDS,
+  tags: [CACHE_TAG],
+});
+
+// Server-side only: merged map of every known location's effective URL
+// (override if one exists in the DB, else its coded default), keyed by locationKey.
+export async function getSiteImages(): Promise<Record<string, string>> {
+  return getCachedSiteImages();
+}
+
 export function invalidateSiteImagesCache() {
-  cache = null;
+  revalidateTag(CACHE_TAG, "max");
 }

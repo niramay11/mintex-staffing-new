@@ -4,9 +4,11 @@ import { ButtonLink } from "@/components/ui/Button";
 import ClientStories from "@/components/home/ClientStories";
 import { industries } from "@/content/industries";
 import { getIndustryStats } from "@/lib/industryStats";
+import { getSiteImages } from "@/lib/siteImages";
 
 export default async function HomePage() {
   const industryStats = await getIndustryStats();
+  const siteImages = await getSiteImages();
   return (
     <>
       {/* Sec 1 — Hero */}
@@ -14,7 +16,7 @@ export default async function HomePage() {
         background="navy"
         backgroundMedia={
           <>
-            <Image src="/hero-office-3.png" alt="" fill priority className="object-cover object-center" />
+            <Image src={siteImages["home:hero-banner"]} alt="" fill priority className="object-cover object-center" />
             <div className="absolute inset-0 bg-[linear-gradient(90deg,#012340_0%,rgba(1,35,64,0.97)_18%,rgba(1,35,64,0.86)_32%,rgba(1,35,64,0.62)_46%,rgba(1,35,64,0.32)_60%,rgba(1,35,64,0.08)_74%,rgba(1,35,64,0)_86%)]" />
             <div className="absolute inset-0 bg-gradient-to-t from-navy/40 via-transparent to-transparent" />
           </>
@@ -276,7 +278,7 @@ on paper.
       {/* Sec 4 — Industries we served */}
       <Section id="industries" background="cream">
         <Image
-          src="/mintex-m-navy.svg"
+          src={siteImages["home:industries-mark"]}
           alt=""
           aria-hidden="true"
           width={784}
@@ -339,7 +341,7 @@ on paper.
               className="absolute right-0 top-[8%] h-[80%] w-[80%] rounded-[2.5rem] border-2 border-steel/40"
             />
             <div className="absolute left-0 top-0 h-[80%] w-[80%] overflow-hidden rounded-[2.5rem] shadow-[0_25px_60px_-20px_rgba(1,35,64,0.25)]">
-              <Image src="/collage-2.webp" alt="" fill className="object-cover" />
+              <Image src={siteImages["home:industries-collage"]} alt="" fill className="object-cover" />
             </div>
           </div>
 

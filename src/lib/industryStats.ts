@@ -1,9 +1,10 @@
+import { unstable_cache, revalidateTag } from "next/cache";
 import { supabase, supabaseAdmin } from "@/lib/supabase";
 
 const BUCKET = "site-config";
 const FILE = "industry-stats.json";
-const CACHE_TTL = 60_000; // 1 minute
-let cache: { data: IndustryStat[]; at: number } | null = null;
+const CACHE_TAG = "industry-stats";
+const CACHE_TTL_SECONDS = 60;
 
 export type IndustryStat = { industry_slug: string; label: string; value: string };
 
@@ -54,28 +55,31 @@ async function ensureBucket() {
   return error;
 }
 
+async function fetchIndustryStats(): Promise<IndustryStat[]> {
+  const { data: publicUrlData } = supabase.storage.from(BUCKET).getPublicUrl(FILE);
+  try {
+    const res = await fetch(`${publicUrlData.publicUrl}?t=${Date.now()}`, { cache: "no-store" });
+    if (!res.ok) return DEFAULT_STATS;
+    const parsed = await res.json();
+    return Array.isArray(parsed) ? parsed : DEFAULT_STATS;
+  } catch {
+    return DEFAULT_STATS;
+  }
+}
+
+// unstable_cache persists via Next's shared Data Cache rather than plain
+// in-process memory — see the matching comment in siteImages.ts.
+const getCachedIndustryStats = unstable_cache(fetchIndustryStats, [CACHE_TAG], {
+  revalidate: CACHE_TTL_SECONDS,
+  tags: [CACHE_TAG],
+});
+
 export async function getIndustryStats(): Promise<IndustryStat[]> {
-  const now = Date.now();
-  if (cache && now - cache.at < CACHE_TTL) return cache.data;
-
-  const stats = await (async () => {
-    const { data: publicUrlData } = supabase.storage.from(BUCKET).getPublicUrl(FILE);
-    try {
-      const res = await fetch(`${publicUrlData.publicUrl}?t=${now}`, { cache: "no-store" });
-      if (!res.ok) return DEFAULT_STATS;
-      const parsed = await res.json();
-      return Array.isArray(parsed) ? parsed : DEFAULT_STATS;
-    } catch {
-      return DEFAULT_STATS;
-    }
-  })();
-
-  cache = { data: stats, at: now };
-  return stats;
+  return getCachedIndustryStats();
 }
 
 export function invalidateIndustryStatsCache() {
-  cache = null;
+  revalidateTag(CACHE_TAG, "max");
 }
 
 export async function saveIndustryStats(stats: IndustryStat[]): Promise<{ error: string | null }> {

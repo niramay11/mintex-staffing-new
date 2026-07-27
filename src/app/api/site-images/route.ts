@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase";
 import { verifyAdminPassword } from "@/lib/portal-auth";
 import { IMAGE_LOCATIONS, invalidateSiteImagesCache } from "@/lib/siteImages";
@@ -74,5 +75,8 @@ export async function PUT(req: NextRequest) {
   }
 
   invalidateSiteImagesCache();
+  // Every page reading getSiteImages() is statically prerendered, so the DB
+  // write above is invisible until the whole app's cache is revalidated.
+  revalidatePath("/", "layout");
   return NextResponse.json({ success: true, data: clean });
 }

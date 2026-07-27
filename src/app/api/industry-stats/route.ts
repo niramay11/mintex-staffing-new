@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { verifyAdminPassword } from "@/lib/portal-auth";
 import { getIndustryStats, saveIndustryStats, type IndustryStat } from "@/lib/industryStats";
 
@@ -31,5 +32,8 @@ export async function PUT(req: NextRequest) {
   const { error } = await saveIndustryStats(clean);
   if (error) return NextResponse.json({ error }, { status: 500 });
 
+  // Home page embeds industry stats directly and has no revalidate export,
+  // so it stays static/stale until explicitly revalidated here.
+  revalidatePath("/");
   return NextResponse.json({ success: true, data: clean });
 }
