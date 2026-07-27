@@ -223,7 +223,15 @@ function LocationSelect({ value, onChange }: { value: string; onChange: (v: stri
   );
 }
 
-export default function JobBoard({ initialJobs }: { initialJobs?: CeipalJob[] }) {
+interface JobBoardProps {
+  initialJobs?: CeipalJob[];
+  // Server-prefetched descriptions for the first page's jobs (see
+  // GetHiredContent.tsx) — seeded straight into descCacheRef below so the
+  // very first render already has them, no client fetch needed at all.
+  initialDescriptions?: Record<string, { job_description: string; public_job_description: string }>;
+}
+
+export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardProps) {
   const hasInitialJobs = Boolean(initialJobs && initialJobs.length > 0);
   const [jobs, setJobs] = useState<CeipalJob[]>(initialJobs ?? []);
   const [loading, setLoading] = useState(!hasInitialJobs);
@@ -360,6 +368,31 @@ export default function JobBoard({ initialJobs }: { initialJobs?: CeipalJob[] })
   const totalPages = Math.max(1, Math.ceil(filteredJobs.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
   const pageJobs = filteredJobs.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+
+  // /api/jobs/description is a live, sometimes-slow (8-12s) Ceipal call — the
+  // route caches it server-side per job, but that still means whoever opens a
+  // given job's modal FIRST pays that cost live. Prefetching every visible
+  // card's description in the background as soon as the page renders means
+  // by the time a real click happens (which takes at least a moment of human
+  // reaction time), the answer is usually already sitting in this ref — so
+  // opening the modal reads it synchronously instead of waiting on a fetch.
+  const descCacheRef = useRef<Map<string, { job_description: string; public_job_description: string }>>(
+    new Map(Object.entries(initialDescriptions ?? {}))
+  );
+  const descPrefetchedRef = useRef<Set<string>>(new Set(Object.keys(initialDescriptions ?? {})));
+  useEffect(() => {
+    for (const job of pageJobs) {
+      const code = job.job_code;
+      if (!code || descPrefetchedRef.current.has(code)) continue;
+      descPrefetchedRef.current.add(code);
+      fetch(`/api/jobs/description?job_code=${encodeURIComponent(code)}`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data) => {
+          if (data) descCacheRef.current.set(code, data);
+        })
+        .catch(() => {});
+    }
+  }, [pageJobs]);
 
   const activeFilterCount =
     typeFilter.size +
@@ -725,7 +758,12 @@ export default function JobBoard({ initialJobs }: { initialJobs?: CeipalJob[] })
       )}
 
       {detailJob && (
-        <JobDetailModal job={detailJob} onClose={() => setDetailJob(null)} onApply={() => openApplyForOne(detailJob)} />
+        <JobDetailModal
+          job={detailJob}
+          prefetchedDescription={descCacheRef.current.get(detailJob.job_code)}
+          onClose={() => setDetailJob(null)}
+          onApply={() => openApplyForOne(detailJob)}
+        />
       )}
 
       {applyOpen && <ApplyModal jobs={applyJobs} onClose={closeApply} onSuccess={handleApplySuccess} />}

@@ -183,36 +183,6 @@ async function fetchAllJobs(): Promise<unknown[]> {
     throw new Error('[jobs] fetchAllJobs returned zero jobs — refusing to cache this as a valid result');
   }
 
-  // This site has had 1,000+ JPC job postings for as long as it's been
-  // tracked — a cycle that comes back with far fewer isn't "the job market
-  // shrank," it's this fetch hitting the time budget early or a burst of
-  // page failures (confirmed live: a 521-job partial result, missing every
-  // job code above 534, got cached and served site-wide — 0 "Active" jobs
-  // shown on the public board and in the client portal — until manually
-  // force-refreshed). Still return what was collected (never a hard
-  // failure), but immediately mark the cache stale so the VERY NEXT request
-  // retries instead of also being stuck with this same partial result for
-  // the rest of the cache window. This threshold is a rough tripwire, not a
-  // precise measurement — revisit it if the real job count ever naturally
-  // drifts below it.
-  //
-  // Raised from 800 to 1300 after confirming live that 800 was too low
-  // relative to the real ~1,500-1,600 total: an 834-job cycle (~55%
-  // complete) slipped through as "plausible," and — now that the cache
-  // window is an hour instead of 15 minutes — that meant Get Hired, the
-  // Client Portal, and Admin all served a clearly-incomplete job list for
-  // up to an hour before it would have self-corrected. A longer cache
-  // window raises the cost of the floor being too low, so the floor needed
-  // to move closer to "actually complete," not stay where it was tuned for
-  // a much shorter window.
-  const MIN_PLAUSIBLE_JPC_JOBS = 1300;
-  if (jpc.length < MIN_PLAUSIBLE_JPC_JOBS) {
-    console.warn(
-      `[jobs] only ${jpc.length} JPC jobs this cycle (expected ${MIN_PLAUSIBLE_JPC_JOBS}+) — looks like a partial pull; marking the cache stale so the next request retries instead of trusting this for the full ${CACHE_TTL_SECONDS}s window`
-    );
-    revalidateTag(CACHE_TAG, 'max');
-  }
-
   return trimmed;
 }
 
@@ -246,6 +216,30 @@ function getCachedAllJobsSingleFlight(): Promise<unknown[]> {
   return inflightAllJobs;
 }
 
+// This site has had 1,000+ JPC job postings for as long as it's been
+// tracked — a cycle that comes back with far fewer isn't "the job market
+// shrank," it's this fetch hitting the time budget early or a burst of
+// page failures (confirmed live: a 521-job partial result, missing every
+// job code above 534, got cached and served site-wide — 0 "Active" jobs
+// shown on the public board and in the client portal — until manually
+// force-refreshed). Still return what was collected (never a hard
+// failure), but immediately mark the cache stale so the VERY NEXT request
+// retries instead of also being stuck with this same partial result for
+// the rest of the cache window. This threshold is a rough tripwire, not a
+// precise measurement — revisit it if the real job count ever naturally
+// drifts below it.
+//
+// Raised from 800 to 1300 after confirming live that 800 was too low
+// relative to the real ~1,500-1,600 total: an 834-job cycle (~55%
+// complete) slipped through as "plausible," and — now that the cache
+// window is an hour instead of 15 minutes — that meant Get Hired, the
+// Client Portal, and Admin all served a clearly-incomplete job list for
+// up to an hour before it would have self-corrected. A longer cache
+// window raises the cost of the floor being too low, so the floor needed
+// to move closer to "actually complete," not stay where it was tuned for
+// a much shorter window.
+const MIN_PLAUSIBLE_JPC_JOBS = 1300;
+
 // Shared by /api/jobs (client-side refetches, force-refresh) and any Server
 // Component that wants to prefetch jobs before first paint (see
 // src/app/get-hired/page.tsx).
@@ -257,6 +251,19 @@ export async function getCachedJobs(opts?: { forceRefresh?: boolean }): Promise<
   try {
     if (opts?.forceRefresh) revalidateTag(CACHE_TAG, 'max');
     const jobs = await getCachedAllJobsSingleFlight();
+    // This check (and the revalidateTag it triggers) has to live out here,
+    // not inside fetchAllJobs — Next.js does not allow revalidateTag to be
+    // called from inside a function that's itself wrapped by unstable_cache
+    // (confirmed live: it throws "used ... during render ... unsupported"),
+    // and that throw was being silently swallowed by this same try/catch,
+    // discarding the partial-but-real job list and returning completely
+    // empty instead — worse than doing nothing.
+    if ((jobs as unknown[]).length < MIN_PLAUSIBLE_JPC_JOBS) {
+      console.warn(
+        `[jobs] only ${(jobs as unknown[]).length} JPC jobs in cache (expected ${MIN_PLAUSIBLE_JPC_JOBS}+) — looks like a partial pull; marking the cache stale so the next request retries instead of trusting this for the full ${CACHE_TTL_SECONDS}s window`
+      );
+      revalidateTag(CACHE_TAG, 'max');
+    }
     return { jobs, cachedAt: Date.now(), stale: false };
   } catch (err) {
     console.error('[jobs] getCachedJobs error:', err);

@@ -7,15 +7,55 @@ import BrowseRolesButton from "@/components/jobs/BrowseRolesButton";
 import { IconBriefcase } from "@/components/jobs/icons";
 import { getSiteImages } from "@/lib/siteImages";
 import { getCachedJobs } from "@/lib/jobsCache";
+import { getJobMap } from "@/lib/ceipal-job-map";
+import { getCachedDescription, type JobDescription } from "@/lib/jobDescriptionCache";
 import { withTimeout } from "@/lib/withTimeout";
+import { isActiveJob } from "@/components/jobs/utils";
 import type { CeipalJob } from "@/components/jobs/types";
+
+// Matches JobBoard's own PAGE_SIZE — no point prefetching more than the
+// first page can show before the user has even paged or filtered.
+const PREFETCH_DESCRIPTION_COUNT = 8;
 
 // Isolated in its own Suspense boundary so the hero above never has to wait on
 // Ceipal — the shell streams to the browser immediately and this section pops
 // in once the (warm-cache-fast, cold-cache-timed-out) jobs fetch resolves.
 async function JobBoardSection() {
   const { jobs } = await withTimeout(getCachedJobs(), 3000, { jobs: [] as unknown[], cachedAt: Date.now(), stale: true });
-  return <JobBoard initialJobs={jobs as CeipalJob[]} />;
+  const typedJobs = jobs as CeipalJob[];
+
+  // Embed the first page's descriptions directly into this server render.
+  // On a warm cache (the normal case in production — see
+  // jobDescriptionCache.ts's warmJobDescriptions) this costs nothing extra
+  // and means opening the modal for any of these jobs needs ZERO client-side
+  // fetch — not "probably already prefetched," but literally already in the
+  // HTML. Bounded by withTimeout so a cold cache can never hold up the page
+  // itself; any job that doesn't resolve in time just falls back to
+  // JobDetailModal's own on-demand client fetch, same as before this existed.
+  const jobMap = await withTimeout(getJobMap(), 2000, {} as Record<string, string>);
+  // JobBoard's default (unfiltered) view only shows isActiveJob() jobs, so
+  // prefetching the raw list's first N misses whatever got filtered out
+  // ahead of it — mirror that same filter here or this prefetches the wrong
+  // jobs entirely (confirmed live: zero overlap with what page 1 actually showed).
+  const activeJobs = typedJobs.filter(isActiveJob);
+  const prefetchedEntries = await withTimeout(
+    Promise.all(
+      activeJobs.slice(0, PREFETCH_DESCRIPTION_COUNT).map(async (job): Promise<[string, JobDescription] | null> => {
+        const id = jobMap[job.job_code];
+        if (!id) return null;
+        try {
+          return [job.job_code, await getCachedDescription(job.job_code, id)];
+        } catch {
+          return null;
+        }
+      })
+    ),
+    2500,
+    []
+  );
+  const initialDescriptions = Object.fromEntries(prefetchedEntries.filter((e): e is [string, JobDescription] => e !== null));
+
+  return <JobBoard initialJobs={typedJobs} initialDescriptions={initialDescriptions} />;
 }
 
 function JobBoardSkeleton() {

@@ -2,6 +2,7 @@ import { getAllJobs, getAllPlacements } from "@/lib/data-cache";
 import { getCachedJobs } from "@/lib/jobsCache";
 import { warmPortalJobsCache } from "@/lib/portalJobsCache";
 import { warmV2JobMapCache } from "@/lib/ceipal-job-map";
+import { warmJobDescriptions } from "@/lib/jobDescriptionCache";
 
 // Every Ceipal-backed cache in this app is stored via unstable_cache (Next's
 // Data Cache), which on Vercel persists across serverless invocations — but it
@@ -22,5 +23,8 @@ export async function warmAllJobCaches(): Promise<void> {
     // job_code → v2 id map — without warming it here it only gets rebuilt
     // whenever a real client request happens to land after it expires.
     warmV2JobMapCache(),
+    // Keeps the newest job postings' descriptions warm so a real visitor
+    // opening the job board almost never lands on a cold, live Ceipal call.
+    warmJobDescriptions(),
   ]);
 }

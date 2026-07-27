@@ -89,6 +89,16 @@ export function experienceBucketKey(raw?: string): ExperienceBucketKey | null {
   return "senior";
 }
 
+// Ceipal's remote_job field isn't a strict yes/no — "Hybrid" and other free-text
+// values pass through as-is, so callers must not assume the label is always "Remote".
+export function workType(remote?: string): string | undefined {
+  if (!remote) return undefined;
+  const v = remote.toLowerCase();
+  if (v === "yes" || v === "remote") return "Remote";
+  if (v === "no") return "On-site";
+  return remote;
+}
+
 export function fmtPosted(s?: string): string | null {
   if (!s) return null;
   const d = new Date(s);

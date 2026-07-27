@@ -2,15 +2,19 @@
 
 import { useEffect, useState } from "react";
 import type { CeipalJob } from "./types";
-import { fmtPay, fmtPosted, jobLocation } from "./utils";
+import { fmtPay, fmtPosted, jobLocation, workType } from "./utils";
 
 interface JobDetailModalProps {
   job: CeipalJob;
   onClose: () => void;
   onApply: () => void;
+  // Set when JobBoard already prefetched this job's description in the
+  // background while its card was visible — lets the modal skip the network
+  // round-trip entirely instead of showing "Loading description…".
+  prefetchedDescription?: { job_description: string; public_job_description: string };
 }
 
-export default function JobDetailModal({ job, onClose, onApply }: JobDetailModalProps) {
+export default function JobDetailModal({ job, onClose, onApply, prefetchedDescription }: JobDetailModalProps) {
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
@@ -29,10 +33,18 @@ export default function JobDetailModal({ job, onClose, onApply }: JobDetailModal
   // The bulk jobs list no longer carries description text (see jobsCache.ts —
   // it made the cached payload too big for Next to store), so fetch this
   // one job's description on demand when the modal opens.
-  const [fetchedDescription, setFetchedDescription] = useState<string | null>(null);
-  const [descLoading, setDescLoading] = useState(true);
+  const [fetchedDescription, setFetchedDescription] = useState<string | null>(() =>
+    prefetchedDescription ? prefetchedDescription.public_job_description || prefetchedDescription.job_description || "" : null
+  );
+  const [descLoading, setDescLoading] = useState(!prefetchedDescription);
 
   useEffect(() => {
+    if (prefetchedDescription) {
+      setFetchedDescription(prefetchedDescription.public_job_description || prefetchedDescription.job_description || "");
+      setDescLoading(false);
+      return;
+    }
+
     let cancelled = false;
     setDescLoading(true);
     setFetchedDescription(null);
@@ -49,7 +61,7 @@ export default function JobDetailModal({ job, onClose, onApply }: JobDetailModal
     return () => {
       cancelled = true;
     };
-  }, [job.job_code]);
+  }, [job.job_code, prefetchedDescription]);
 
   const pay = fmtPay(job.pay_rate___salary);
   const posted = fmtPosted(job.career_portal_published_date);
@@ -63,7 +75,7 @@ export default function JobDetailModal({ job, onClose, onApply }: JobDetailModal
     { label: "Location", value: jobLocation(job) },
     { label: "Type", value: job.job_type },
     { label: "Experience", value: job.experience },
-    { label: "Remote", value: job.remote_job === "Yes" ? "Remote" : job.remote_job === "No" ? "On-site" : job.remote_job },
+    { label: "Work Type", value: workType(job.remote_job) },
     { label: "Industry", value: job.industry },
     { label: "Positions", value: job.number_of_positions },
     { label: "Work Authorization", value: job.work_authorization },

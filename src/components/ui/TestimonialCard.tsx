@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import type { CaseStudy } from "@/content/types";
 import { getVideoEmbed, getYoutubeId } from "@/lib/videoEmbed";
 
@@ -16,7 +17,6 @@ function PlayButton() {
 
 function VideoThumbnail({ caseStudy, onPlay }: { caseStudy: CaseStudy; onPlay: () => void }) {
   const youtubeId = caseStudy.thumbnail_url ? null : getYoutubeId(caseStudy.video_url ?? "");
-  const thumbSrc = caseStudy.thumbnail_url || (youtubeId ? `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg` : null);
 
   return (
     <button
@@ -25,9 +25,16 @@ function VideoThumbnail({ caseStudy, onPlay }: { caseStudy: CaseStudy; onPlay: (
       aria-label={`Play video: ${caseStudy.author}`}
       className="group relative mb-4 flex aspect-video w-full items-center justify-center overflow-hidden rounded-lg bg-navy"
     >
-      {thumbSrc ? (
+      {caseStudy.thumbnail_url ? (
         // eslint-disable-next-line @next/next/no-img-element -- arbitrary admin-supplied URL
-        <img src={thumbSrc} alt="" className="absolute inset-0 h-full w-full object-cover opacity-80" />
+        <img src={caseStudy.thumbnail_url} alt="" className="absolute inset-0 h-full w-full object-cover opacity-80" />
+      ) : youtubeId ? (
+        <Image
+          src={`https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`}
+          alt=""
+          fill
+          className="object-cover opacity-80"
+        />
       ) : null}
       <PlayButton />
     </button>

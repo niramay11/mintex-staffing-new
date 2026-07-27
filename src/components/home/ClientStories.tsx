@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { getVideoEmbed, getYoutubeId } from "@/lib/videoEmbed";
 
 type ClientStory = {
@@ -23,11 +24,11 @@ function CardVisual({ story, opacityClassName }: { story: ClientStory; opacityCl
   const youtubeId = getYoutubeId(story.video_url);
   if (youtubeId) {
     return (
-      // eslint-disable-next-line @next/next/no-img-element -- external thumbnail, can't be pre-configured for next/image
-      <img
+      <Image
         src={`https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`}
         alt=""
-        className={`absolute inset-0 h-full w-full object-cover ${opacityClassName}`}
+        fill
+        className={`object-cover ${opacityClassName}`}
       />
     );
   }

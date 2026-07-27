@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import ReactDOM from "react-dom";
 import { Inter, Poppins } from "next/font/google";
 import Script from "next/script";
+import DeferredAnalytics from "@/components/analytics/DeferredAnalytics";
 import SiteChrome from "@/components/layout/SiteChrome";
 import { getSiteImages } from "@/lib/siteImages";
 import { getLocalBusinessSchema } from "@/lib/localBusinessSchema";
@@ -52,6 +54,8 @@ export default async function RootLayout({
     getLocalBusinessSchema(),
   ]);
 
+  ReactDOM.preconnect("https://img.youtube.com");
+
   return (
     <html lang="en-US" className={`${inter.variable} ${poppins.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col bg-cream">
@@ -60,18 +64,7 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
         />
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-X8S5R27JY4"
-          strategy="lazyOnload"
-        />
-        <Script id="google-analytics" strategy="lazyOnload">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-X8S5R27JY4');
-          `}
-        </Script>
+        <DeferredAnalytics />
         <SiteChrome siteImages={siteImages}>{children}</SiteChrome>
       </body>
     </html>
