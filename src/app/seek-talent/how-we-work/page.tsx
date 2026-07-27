@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Script from "next/script";
 import Section from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
+import FaqAccordion from "@/components/ui/FaqAccordion";
 import { getSiteImages } from "@/lib/siteImages";
 import { pageMetadata } from "@/lib/pageMetadata";
 
@@ -61,10 +63,56 @@ const steps = [
   },
 ];
 
+const faqs = [
+  {
+    question: "How quickly can Mintex Staffing fill an open role?",
+    answer:
+      "Our average time to hire is 9 days, drawing from an active, pre-vetted talent network across every industry we serve.",
+  },
+  {
+    question: "What types of hiring arrangements do you offer?",
+    answer:
+      "Contract, permanent, and executive search placements, so you can pick the engagement model that fits your project or team.",
+  },
+  {
+    question: "Can a contract hire convert to a full-time employee?",
+    answer:
+      "Yes. Many of our contract placements are structured with a clear path to permanent hire once both sides confirm it's the right fit.",
+  },
+  {
+    question: "What industries does Mintex Staffing recruit for?",
+    answer:
+      "IT, healthcare, engineering, manufacturing, finance, administrative, sales, customer service, and logistics.",
+  },
+  {
+    question: "How do I get started?",
+    answer:
+      "Reach out through our contact form or submit a hiring inquiry, and our team will schedule a scoping call to understand your needs before we source any candidates.",
+  },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((faq) => ({
+    "@type": "Question",
+    name: faq.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: faq.answer,
+    },
+  })),
+};
+
 export default async function HowWeWorkPage() {
   const siteImages = await getSiteImages();
   return (
     <>
+      <Script
+        id="how-we-work-faq-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <Section background="navy" className="!py-12 sm:!py-14 lg:!py-16">
         <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-tan-light">
           Our process
@@ -142,6 +190,16 @@ export default async function HowWeWorkPage() {
             <ButtonLink href="/client-portal" variant="secondary" className="flex-shrink-0">
               Client Login
             </ButtonLink>
+          </div>
+
+          <div className="mt-16">
+            <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-tan">
+              Common questions
+            </p>
+            <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl">
+              Frequently asked questions
+            </h2>
+            <FaqAccordion items={faqs} />
           </div>
         </div>
       </Section>

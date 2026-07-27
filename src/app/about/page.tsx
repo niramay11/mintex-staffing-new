@@ -159,8 +159,8 @@ export default async function AboutPage() {
                   right opportunities.
                 </p>
                 <p>
-                  Today, we partner with organizations across the U.S. to deliver staffing
-                  solutions that help them grow, adapt, and succeed.
+                  Headquartered in Edison, New Jersey, we partner with organizations across the
+                  U.S. to deliver staffing solutions that help them grow, adapt, and succeed.
                 </p>
               </div>
               <div className="mt-8">

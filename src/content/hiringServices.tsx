@@ -55,7 +55,7 @@ export const hiringServices: HiringService[] = [
     badge: "Flexible staffing",
     tagline: "Flexible talent for projects, seasonal peaks, and interim needs.",
     intro:
-      "Scale your business with our contract talent solutions where we help you to connect with specialized professionals who are ready to step in, add immediate and can convert into full-time professionals.",
+      "Scale your business with our contract talent solutions where we help you to connect with specialized professionals who are ready to step in, add immediate and can convert into full-time professionals. Based in Edison, New Jersey, we place contract talent with employers across the state.",
     accent: "tan",
     icon: IconClock,
     points: [
@@ -87,7 +87,7 @@ export const hiringServices: HiringService[] = [
     badge: "Long-term hires",
     tagline: "Full-time hires vetted for skills, culture, and long-term fit.",
     intro:
-      "Our permanent staffing solutions focuses on high-calibre professionals and quicker hiring timeline, who align with your long-term vision and core company values. Finding exceptional talent shouldn't require compromising your timeline or budget, we take care of the recruitment, so your leadership stay completely focused on what matter the most.",
+      "Our permanent staffing solutions focuses on high-calibre professionals and quicker hiring timeline, who align with your long-term vision and core company values. Finding exceptional talent shouldn't require compromising your timeline or budget, we take care of the recruitment, so your leadership stay completely focused on what matter the most. Headquartered in Edison, NJ, we serve employers throughout New Jersey.",
     accent: "tan",
     icon: IconStar,
     points: [
@@ -114,7 +114,7 @@ export const hiringServices: HiringService[] = [
     badge: "Leadership hiring",
     tagline: "Confidential search for senior leaders and hard-to-fill roles.",
     intro:
-      "We connect you with the C-suite highly qualified professionals who will take your company ahead, and we make sure its sealed tight according to your policy and organization standards.",
+      "We connect you with the C-suite highly qualified professionals who will take your company ahead, and we make sure its sealed tight according to your policy and organization standards. Our Edison, New Jersey team runs confidential searches for organizations statewide and beyond.",
     accent: "steel",
     icon: IconBriefcase,
     points: [
