@@ -27,11 +27,12 @@ async function JobBoardSection() {
   // Embed the first page's descriptions directly into this server render.
   // On a warm cache (the normal case in production — see
   // jobDescriptionCache.ts's warmJobDescriptions) this costs nothing extra
-  // and means opening the modal for any of these jobs needs ZERO client-side
-  // fetch — not "probably already prefetched," but literally already in the
-  // HTML. Bounded by withTimeout so a cold cache can never hold up the page
-  // itself; any job that doesn't resolve in time just falls back to
-  // JobDetailModal's own on-demand client fetch, same as before this existed.
+  // and means the server-rendered Data Cache entry each job's own
+  // /get-hired/jobs/[job_code] page reads from is already warm by the time
+  // anyone clicks through — not "probably already prefetched," but literally
+  // already cached. Bounded by withTimeout so a cold cache can never hold up
+  // the page itself; any job that doesn't resolve in time just falls back to
+  // that page's own on-demand server fetch, same as before this existed.
   const jobMap = await withTimeout(getJobMap(), 2000, {} as Record<string, string>);
   // JobBoard's default (unfiltered) view only shows isActiveJob() jobs, so
   // prefetching the raw list's first N misses whatever got filtered out

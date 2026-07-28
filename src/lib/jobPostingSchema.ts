@@ -1,0 +1,111 @@
+import type { CeipalJob } from "@/components/jobs/types";
+import { BUSINESS, SITE_URL } from "@/lib/site";
+
+function toEmploymentType(raw?: string): string {
+  const s = (raw || "").toLowerCase();
+  if (s.includes("full")) return "FULL_TIME";
+  if (s.includes("part")) return "PART_TIME";
+  if (s.includes("intern")) return "INTERN";
+  if (s.includes("temp")) return "TEMPORARY";
+  if (s.includes("contract") || s.includes("c2h") || s.includes("1099") || s.includes("corp")) return "CONTRACTOR";
+  return "OTHER";
+}
+
+function toIsoDate(raw?: string): string | undefined {
+  if (!raw) return undefined;
+  const d = new Date(raw);
+  return isNaN(d.getTime()) ? undefined : d.toISOString();
+}
+
+function toCountryCode(raw?: string): string {
+  const s = (raw || "").trim().toLowerCase();
+  if (!s || s === "us" || s === "usa" || s.includes("united states")) return "US";
+  return raw!.trim();
+}
+
+function resolveCityState(job: CeipalJob): { city?: string; region?: string } {
+  if (job.city || job.states) return { city: job.city, region: job.states };
+  const parts = (job.location || "").split(",").map((s) => s.trim()).filter(Boolean);
+  return { city: parts[0], region: parts[1] };
+}
+
+// Ceipal's pay field is free text meant for display (e.g. "$90,000 - $120,000
+// / Year"). Google's JobPosting schema needs actual numbers, not a formatted
+// string, so this pulls out the raw min/max + unit instead of reusing
+// utils.ts's fmtPay (which rounds to "$90k" for on-page display only).
+function parseSalaryForSchema(raw?: string): { minValue: number; maxValue: number; unitText: "HOUR" | "YEAR" } | null {
+  const r = (raw || "").trim();
+  if (!r || r === "0" || r.toLowerCase() === "n/a") return null;
+
+  const nums = r.replace(/[$,\s]/g, "").match(/\d+(\.\d+)?/g);
+  if (!nums) return null;
+  const vals = nums.map(Number).filter((n) => n > 0);
+  if (vals.length === 0) return null;
+
+  const isHourly = /\bhr\b|\/hr|per\s*hour|hourly/i.test(r);
+  const isYearly = /\byr\b|\/yr|\/year|per\s*year|annual|salary/i.test(r);
+  const unitText: "HOUR" | "YEAR" = isHourly || (!isYearly && vals[0] < 500) ? "HOUR" : "YEAR";
+
+  return { minValue: Math.min(...vals), maxValue: Math.max(...vals), unitText };
+}
+
+// Builds a schema.org JobPosting object (see https://schema.org/JobPosting)
+// for Google's Jobs rich result. Only valid for a job's own dedicated,
+// crawlable page — Google won't credit structured data sitting inside a
+// click-triggered modal.
+export function buildJobPostingSchema(job: CeipalJob, description: string) {
+  const datePosted =
+    toIsoDate(job.career_portal_published_date) ?? toIsoDate(job.Modified) ?? toIsoDate(job.modified) ?? new Date().toISOString();
+  const validThrough = toIsoDate(job.job_end_date);
+  const isRemote = ["yes", "remote"].includes((job.remote_job || "").trim().toLowerCase());
+  const salary = parseSalaryForSchema(job.pay_rate___salary);
+  const { city, region } = resolveCityState(job);
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    title: job.job_title,
+    description: description.trim() || `${job.job_title} — apply now with ${BUSINESS.name}.`,
+    identifier: {
+      "@type": "PropertyValue",
+      name: BUSINESS.name,
+      value: job.job_code,
+    },
+    datePosted,
+    validThrough,
+    employmentType: toEmploymentType(job.job_type),
+    hiringOrganization: {
+      "@type": "Organization",
+      name: BUSINESS.name,
+      sameAs: SITE_URL,
+      logo: `${SITE_URL}/icon.png`,
+    },
+    jobLocationType: isRemote ? "TELECOMMUTE" : undefined,
+    applicantLocationRequirements: isRemote ? { "@type": "Country", name: "USA" } : undefined,
+    jobLocation:
+      city || region
+        ? {
+            "@type": "Place",
+            address: {
+              "@type": "PostalAddress",
+              addressLocality: city,
+              addressRegion: region,
+              postalCode: job.zip_code,
+              addressCountry: toCountryCode(job.country),
+            },
+          }
+        : undefined,
+    baseSalary: salary
+      ? {
+          "@type": "MonetaryAmount",
+          currency: "USD",
+          value: {
+            "@type": "QuantitativeValue",
+            minValue: salary.minValue,
+            maxValue: salary.maxValue,
+            unitText: salary.unitText,
+          },
+        }
+      : undefined,
+  };
+}

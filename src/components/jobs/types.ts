@@ -14,6 +14,7 @@ export interface CeipalJob {
   career_portal_published_date?: string;
   job_type?: string;
   job_status?: string;
+  job_end_date?: string;
   number_of_positions?: string | number;
   remote_job?: string;
   experience?: string;

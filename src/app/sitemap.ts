@@ -3,6 +3,15 @@ import { industries } from "@/content/industries";
 import { hiringServices } from "@/content/hiringServices";
 import { supabase } from "@/lib/supabase";
 import { SITE_URL } from "@/lib/site";
+import { getCachedJobs } from "@/lib/jobsCache";
+import { isActiveJob } from "@/components/jobs/utils";
+import type { CeipalJob } from "@/components/jobs/types";
+
+// Without this, Next tries to statically prerender the sitemap at build
+// time — same problem /get-hired's own page.tsx already forces dynamic to
+// avoid: a cold/unreachable Ceipal fetch would hang the build itself instead
+// of just this route resolving slowly on the next real request.
+export const dynamic = "force-dynamic";
 
 const baseUrl = SITE_URL;
 
@@ -53,11 +62,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(),
   }));
 
+  const { jobs } = await getCachedJobs();
+  const jobEntries = (jobs as CeipalJob[]).filter(isActiveJob).map((job) => ({
+    url: `${baseUrl}/get-hired/jobs/${encodeURIComponent(job.job_code)}`,
+    lastModified: new Date(),
+  }));
+
   return [
     ...staticEntries,
     ...industryEntries,
     ...hiringServiceEntries,
     ...insightEntries,
     ...insightCategoryEntries,
+    ...jobEntries,
   ];
 }

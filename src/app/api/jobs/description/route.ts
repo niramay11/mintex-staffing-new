@@ -6,8 +6,10 @@ import { getCachedDescription } from '@/lib/jobDescriptionCache';
 // public_job_description — including them pushed the cached payload past
 // Next's hard 2MB-per-item cache limit, which silently broke caching for the
 // entire jobs list (see src/lib/jobsCache.ts). This route fetches just one
-// job's description on demand, for JobDetailModal.tsx's public "Get Hired"
-// job popup. See jobDescriptionCache.ts for the caching/warming strategy.
+// job's description on demand — used by JobBoard.tsx's background prefetch
+// (which warms this cache for the individual /get-hired/jobs/[job_code] pages
+// before a visitor ever clicks into one). See jobDescriptionCache.ts for the
+// caching/warming strategy.
 //
 // getJobMap()'s own cache can be cold (confirmed ~70s to rebuild from
 // scratch), so this needs the same generous ceiling as /api/jobs rather than

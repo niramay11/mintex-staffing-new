@@ -3151,6 +3151,10 @@ function CaseStudiesTab({ password }: { password: string }) {
   const [draft, setDraft]       = useState<CaseStudyDraft | null>(null);
   const [saving, setSaving]     = useState(false);
   const [saveError, setSaveError] = useState("");
+  // Separate from saveError: that state only renders inside the edit modal
+  // (see the JSX below), but deleteItem is invoked from the list view where
+  // the modal isn't open — a delete failure needs its own visible spot.
+  const [deleteError, setDeleteError] = useState("");
   const [uploadingVideo, setUploadingVideo] = useState(false);
   const [uploadError, setUploadError] = useState("");
 
@@ -3216,8 +3220,20 @@ function CaseStudiesTab({ password }: { password: string }) {
 
   const deleteItem = async (cs: CaseStudy) => {
     if (!confirm(`Delete "${cs.title}"? This can't be undone.`)) return;
-    setItems((prev) => prev.filter((i) => i.id !== cs.id));
-    await fetch(`/api/admin/case-studies/${cs.id}`, { method: "DELETE", headers: { "x-admin-password": password } });
+    setDeleteError("");
+    const res = await fetch(`/api/admin/case-studies/${cs.id}`, { method: "DELETE", headers: { "x-admin-password": password } });
+    if (!res.ok) {
+      const json = await res.json().catch(() => ({}));
+      setDeleteError(json.error ?? "Failed to delete — it's still on the live site.");
+      return;
+    }
+    // Re-fetch from the server instead of trusting the optimistic removal —
+    // this is the source of the actual bug: the previous version removed the
+    // item from the UI unconditionally, before/without checking whether the
+    // DELETE request even succeeded, so a failed delete looked like it worked
+    // in the admin panel while the row (and therefore the live /case-studies
+    // page) was untouched.
+    fetchData();
   };
 
   if (!loaded) return (
@@ -3246,6 +3262,12 @@ function CaseStudiesTab({ password }: { password: string }) {
           {loadError.includes("case_studies") && (
             <> — run <code className="px-1 bg-red-100 rounded">supabase/migrations/009_case_studies.sql</code> in your Supabase SQL editor, then refresh.</>
           )}
+        </div>
+      )}
+
+      {deleteError && (
+        <div className="mb-6 px-4 py-3 rounded-lg text-sm font-medium bg-red-50 text-red-700 border border-red-200">
+          {deleteError}
         </div>
       )}
 

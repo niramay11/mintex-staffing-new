@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import Link from "next/link";
 import type { CeipalJob, SelectedJob } from "./types";
 import ApplyModal from "./ApplyModal";
-import JobDetailModal from "./JobDetailModal";
 import JobAlertModal from "./JobAlertModal";
 import {
   EXPERIENCE_BUCKETS,
@@ -250,7 +250,6 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
   const [experienceFilter, setExperienceFilter] = useState<Set<ExperienceBucketKey>>(new Set());
 
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [detailJob, setDetailJob] = useState<CeipalJob | null>(null);
   const [page, setPage] = useState(1);
 
   const [applyOpen, setApplyOpen] = useState(false);
@@ -409,12 +408,6 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
     setLocationFilter("");
     setSearch("");
     setZip("");
-  }
-
-  function openApplyForOne(job: CeipalJob) {
-    setApplyJobs([toSelectedJob(job)]);
-    setDetailJob(null);
-    setApplyOpen(true);
   }
 
   function openApplyForSelected() {
@@ -668,14 +661,13 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
 
                       <div className="mt-4 flex items-center justify-between border-t border-navy/10 pt-4 text-sm">
                         <span className="text-navy/50">{posted ? `Posted ${posted}` : ""}</span>
-                        <button
-                          type="button"
-                          onClick={() => setDetailJob(job)}
+                        <Link
+                          href={`/get-hired/jobs/${encodeURIComponent(job.job_code)}`}
                           className="inline-flex items-center gap-1.5 rounded-full bg-navy px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-navy-secondary"
                         >
                           View &amp; Apply
                           <IconArrowRight className="h-3.5 w-3.5" />
-                        </button>
+                        </Link>
                       </div>
                     </div>
                   );
@@ -755,15 +747,6 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
             </div>
           </div>
         </div>
-      )}
-
-      {detailJob && (
-        <JobDetailModal
-          job={detailJob}
-          prefetchedDescription={descCacheRef.current.get(detailJob.job_code)}
-          onClose={() => setDetailJob(null)}
-          onApply={() => openApplyForOne(detailJob)}
-        />
       )}
 
       {applyOpen && <ApplyModal jobs={applyJobs} onClose={closeApply} onSuccess={handleApplySuccess} />}

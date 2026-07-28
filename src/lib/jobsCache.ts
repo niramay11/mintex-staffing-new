@@ -8,8 +8,20 @@ import { ceipalFetch, CEIPAL_JOBS_URL } from '@/lib/ceipal';
 const RUNNING_ON_VERCEL = !!process.env.VERCEL;
 
 const PAGE_SIZE  = 50;
-const BATCH_SIZE = 8;
-const RETRY_DELAY = 800;
+// Measured live against Ceipal's actual API (2026-07-28): one request at a
+// time answers in ~1.4s every time, but firing 8 concurrent requests (the
+// old BATCH_SIZE) makes Ceipal itself degrade — latency climbed batch over
+// batch from ~4s to ~15s to one page taking 84s, entirely on Ceipal's side,
+// not ours. That's what was producing the "a page failed to fetch after
+// retry" spam: pages genuinely answering, just too slowly to beat the
+// timeout, because our own concurrent load was the thing slowing Ceipal
+// down. Lower concurrency trades a bit of total wall-clock time for far
+// fewer of these ~40s-wasted (timeout + retry + timeout) failures.
+const BATCH_SIZE = 3;
+// Widened from 800ms: since the slowdown above compounds with sustained
+// request rate, retrying almost immediately just adds another request into
+// the same congestion instead of giving Ceipal a moment to recover.
+const RETRY_DELAY = 2500;
 // Every time this window expires, the NEXT request has to trigger a live Ceipal
 // pull — and if Ceipal happens to answer badly at that exact moment, that one
 // visitor sees an empty/partial result (confirmed live). A longer window means
@@ -156,7 +168,8 @@ async function fetchAllJobs(): Promise<unknown[]> {
   // modals) actually reads directly off this object gets the full ~1,500-job
   // list to ~1MB — comfortably cacheable, with room to grow. The two
   // description fields are the big ones dropped here; they're fetched
-  // on-demand per job instead (see /api/jobs/description + JobDetailModal.tsx).
+  // on-demand per job instead (see /api/jobs/description + the
+  // /get-hired/jobs/[job_code] page).
   const KEEP_FIELDS = [
     'job_code', 'job_title', 'client', 'city', 'states', 'zip_code', 'country', 'location',
     'pay_rate___salary', 'career_portal_published_date', 'job_type', 'job_status',
