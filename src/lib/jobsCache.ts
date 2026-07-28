@@ -39,18 +39,21 @@ const BATCH_SIZE = RUNNING_ON_VERCEL ? 8 : 3;
 const RETRY_DELAY = RUNNING_ON_VERCEL ? 800 : 2500;
 // Every time this window expires, the NEXT request has to trigger a live Ceipal
 // pull — and if Ceipal happens to answer badly at that exact moment, that one
-// visitor sees an empty/partial result (confirmed live). A longer window means
-// fewer chances per hour to roll that dice, at the cost of slightly staler data
-// — an easy trade for a jobs board where a new posting appearing an hour late
-// is a total non-issue. Stretched from 15 min to 1 hour specifically to cut
-// down how often ANY visitor (not just right after a deploy) has to be the
-// one who pays the cold-start cost — the sanity floor further down still
-// catches a bad cycle immediately regardless of how long this window is, so
-// lengthening it doesn't trade away correctness, just how often a fetch
-// happens at all. `npm run warm-cache` (or the admin "Sync Now" button)
-// still forces an immediate refresh whenever genuinely-fresh data is needed
-// sooner than that.
-const CACHE_TTL_SECONDS = 60 * 60;
+// visitor sees an empty/partial result (confirmed live). That's why this
+// relies on an external pinger hitting /api/cron/warm-cache every ~4-5
+// minutes (see that route's own comment) to keep refreshing this BEFORE the
+// window lapses, rather than leaving it to whichever real visitor happens to
+// land on an expired cache. Shortened from 1 hour to 5 minutes specifically
+// so a newly-added job (now fetched first — see fetchLiveJobsSlice's
+// backward-pagination comment) shows up on the public site within minutes
+// instead of up to an hour later. Safe to run this often precisely because
+// of the Supabase merge below: each cycle only needs to re-confirm the
+// newest handful of pages, not re-pull the whole ~1,500-2,300 job list from
+// scratch. The sanity floor further down still catches a bad cycle
+// immediately regardless of how long this window is. `npm run warm-cache`
+// (or the admin "Sync Now" button) still forces an immediate refresh
+// on-demand, independent of this window.
+const CACHE_TTL_SECONDS = 5 * 60;
 const CACHE_TAG = 'ceipal-public-jobs';
 
 // ceipalFetch's own internal timeout is 20s — meaning one slow/hanging page
@@ -85,7 +88,12 @@ function raceTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T
   return Promise.race([promise, new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))]);
 }
 
-async function fetchPage(page: number): Promise<unknown[] | null> {
+type PageResult = { results: unknown[]; numPages: number | null };
+
+// Ceipal's response includes `num_pages`/`count` on every page, not just the
+// first — that's what lets fetchLiveJobsSlice() below learn the true end of
+// the list from whichever page it happens to fetch first.
+async function fetchPage(page: number): Promise<PageResult | null> {
   try {
     const res  = await ceipalFetch(`${CEIPAL_JOBS_URL}?paging_length=${PAGE_SIZE}&page=${page}`);
     if (!res.ok) return null;
@@ -93,18 +101,18 @@ async function fetchPage(page: number): Promise<unknown[] | null> {
     if (!text.trim().startsWith('{') && !text.trim().startsWith('[')) return null;
     const data    = JSON.parse(text);
     const results = Array.isArray(data?.results) ? data.results : [];
-    return results;
+    const numPages = typeof data?.num_pages === 'number' ? data.num_pages : null;
+    return { results, numPages };
   } catch { return null; }
 }
 
 // Returns null when the page genuinely could not be fetched (timed out /
 // errored on both attempts) — this must stay distinguishable from a
-// successful response containing zero results (which legitimately means
-// "past the last page, stop paginating"). Collapsing the two into the same
-// `[]` value was the actual bug: a single transient timeout on an early page
+// successful response containing zero results. Collapsing the two into the
+// same `[]` value was the actual bug: a single transient timeout on a page
 // used to be indistinguishable from "no more jobs", silently truncating (or
 // completely zeroing) the whole result for that fetch cycle.
-async function fetchPageWithRetry(page: number): Promise<unknown[] | null> {
+async function fetchPageWithRetry(page: number): Promise<PageResult | null> {
   const first = await raceTimeout(fetchPage(page), PAGE_ATTEMPT_TIMEOUT_MS, null);
   if (first !== null) return first;
   await sleep(RETRY_DELAY);
@@ -139,32 +147,64 @@ type JobRecord = Record<string, unknown>;
 // table instead of treating it as the whole truth, so an incomplete cycle
 // just leaves untouched jobs stale rather than making them (or their
 // description, on the job detail page) disappear from the site.
+//
+// Direction matters here: confirmed live that Ceipal returns page 1 = its
+// OLDEST postings (job_code 1, created 2018) and packs new postings onto the
+// LAST page. Walking forward from page 1 (the old approach) means a time-cut
+// cycle always loses ground starting with the NEWEST jobs first — exactly
+// backwards from what matters, since old jobs rarely change and new jobs are
+// both the ones missing from the site and the most likely to need a status
+// update soon. So this fetches page 1 once (to learn `num_pages` — every
+// response includes it — and to bank its data), then walks BACKWARD from the
+// last page toward page 2, so whatever this cycle covers, it covers the
+// newest postings first.
 async function fetchLiveJobsSlice(): Promise<JobRecord[]> {
   const startedAt = Date.now();
   const all: JobRecord[] = [];
 
-  for (let start = 1; start <= 300; start += BATCH_SIZE) {
-    if (Date.now() - startedAt > TIME_BUDGET_MS) {
-      console.warn(`[jobs] time budget exceeded after ${all.length} raw jobs — returning partial results this cycle`);
-      break;
-    }
+  const bootstrap = await fetchPageWithRetry(1);
+  if (bootstrap) all.push(...(bootstrap.results as JobRecord[]));
+  const lastPage = bootstrap?.numPages ?? null;
 
-    const pages   = Array.from({ length: BATCH_SIZE }, (_, i) => start + i);
-    const results = await Promise.all(pages.map(fetchPageWithRetry));
-
-    let reachedEnd = false;
-    for (const pageResults of results) {
-      // A hard failure (both attempts timed out/errored) is NOT the same as
-      // "no more jobs" — skip it and keep going instead of wrongly treating
-      // one bad page as the end of the whole list.
-      if (pageResults === null) {
-        console.warn('[jobs] a page failed to fetch after retry — skipping it, not treating as end of data');
-        continue;
+  if (lastPage === null) {
+    // Couldn't learn the page count (Ceipal didn't answer even after a
+    // retry, or returned an unexpected shape) — fall back to the old
+    // forward walk from page 2 rather than failing the whole cycle.
+    console.warn('[jobs] could not determine num_pages from Ceipal — falling back to a forward walk this cycle');
+    for (let start = 2; start <= 300; start += BATCH_SIZE) {
+      if (Date.now() - startedAt > TIME_BUDGET_MS) {
+        console.warn(`[jobs] time budget exceeded after ${all.length} raw jobs — returning partial results this cycle`);
+        break;
       }
-      all.push(...(pageResults as JobRecord[]));
-      if (pageResults.length < PAGE_SIZE) { reachedEnd = true; break; }
+      const pages   = Array.from({ length: BATCH_SIZE }, (_, i) => start + i);
+      const results = await Promise.all(pages.map(fetchPageWithRetry));
+      let reachedEnd = false;
+      for (const pageResult of results) {
+        if (pageResult === null) {
+          console.warn('[jobs] a page failed to fetch after retry — skipping it, not treating as end of data');
+          continue;
+        }
+        all.push(...(pageResult.results as JobRecord[]));
+        if (pageResult.results.length < PAGE_SIZE) { reachedEnd = true; break; }
+      }
+      if (reachedEnd) break;
     }
-    if (reachedEnd) break;
+  } else {
+    for (let start = lastPage; start >= 2; start -= BATCH_SIZE) {
+      if (Date.now() - startedAt > TIME_BUDGET_MS) {
+        console.warn(`[jobs] time budget exceeded after ${all.length} raw jobs (reached down to page ${start + BATCH_SIZE}) — returning partial results this cycle`);
+        break;
+      }
+      const pages = Array.from({ length: BATCH_SIZE }, (_, i) => start - i).filter(p => p >= 2);
+      const results = await Promise.all(pages.map(fetchPageWithRetry));
+      for (const pageResult of results) {
+        if (pageResult === null) {
+          console.warn('[jobs] a page failed to fetch after retry — skipping it');
+          continue;
+        }
+        all.push(...(pageResult.results as JobRecord[]));
+      }
+    }
   }
 
   const seen = new Set<string>();
