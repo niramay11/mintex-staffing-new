@@ -21,11 +21,12 @@ export async function GET(req: Request) {
   if (!jobCode) return NextResponse.json({ error: 'Missing job_code' }, { status: 400 });
 
   try {
+    const forceRefresh = new URL(req.url).searchParams.get('refresh') === '1';
     const map = await getJobMap();
     const id = map[jobCode];
     if (!id) return NextResponse.json({ error: 'Unknown job_code' }, { status: 404 });
 
-    const description = await getCachedDescription(jobCode, id);
+    const description = await getCachedDescription(jobCode, id, { forceRefresh });
     return NextResponse.json(description);
   } catch (err) {
     console.error('[jobs/description] error:', err);

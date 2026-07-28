@@ -1,4 +1,4 @@
-import { unstable_cache } from 'next/cache';
+import { unstable_cache, revalidateTag } from 'next/cache';
 import { ceipalFetch } from './ceipal';
 import { getJobMap } from './ceipal-job-map';
 import { getCachedJobs } from './jobsCache';
@@ -19,23 +19,56 @@ export type JobDescription = { job_description: string; public_job_description: 
 // afterward instead of only the first hour.
 const CACHE_TTL_SECONDS = 24 * 60 * 60;
 
-async function fetchDescription(jobCode: string, id: string): Promise<JobDescription> {
+async function fetchDescriptionOnce(jobCode: string, id: string): Promise<JobDescription> {
   const res = await ceipalFetch(`https://api.ceipal.com/v2/getJobPostingDetails/${id}/`);
   if (!res.ok) throw new Error(`CEIPAL ${res.status}`);
   const data = await res.json();
-  return {
-    job_description: data?.requisition_description ?? '',
-    public_job_description: data?.public_job_desc ?? '',
-  };
+  const job_description = data?.requisition_description ?? '';
+  const public_job_description = data?.public_job_desc ?? '';
+  // Confirmed live: Ceipal sometimes answers 200 OK with a degraded/
+  // incomplete body under load — neither description field populated even
+  // though the job genuinely has one. Treating that as success used to cache
+  // the empty result for a full 24h, silently blanking a job's description
+  // site-wide until the window happened to lapse. Throwing here instead
+  // means a transient bad response gets retried instead of poisoning the
+  // cache for a day.
+  if (!job_description && !public_job_description) {
+    throw new Error(`CEIPAL returned no description content for job ${jobCode} (id ${id})`);
+  }
+  return { job_description, public_job_description };
 }
 
-const getCachedDescriptionRaw = unstable_cache(fetchDescription, ['job-description'], {
+function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// One retry before giving up — Ceipal has been measured taking 8-12+ seconds
+// even for a normal response, so a single transient failure doesn't mean the
+// description is actually unavailable.
+async function fetchDescription(jobCode: string, id: string): Promise<JobDescription> {
+  try {
+    return await fetchDescriptionOnce(jobCode, id);
+  } catch {
+    await sleep(800);
+    return fetchDescriptionOnce(jobCode, id);
+  }
+}
+
+const CACHE_TAG = 'job-description';
+
+const getCachedDescriptionRaw = unstable_cache(fetchDescription, [CACHE_TAG], {
   revalidate: CACHE_TTL_SECONDS,
+  tags: [CACHE_TAG],
 });
 
 // Shared by /api/jobs/description (on-demand, single job) and
-// warmJobDescriptions() below (proactive, bounded batch).
-export async function getCachedDescription(jobCode: string, id: string): Promise<JobDescription> {
+// warmJobDescriptions() below (proactive, bounded batch). forceRefresh busts
+// EVERY cached job's description at once (there's no cheap way to target a
+// single job_code's entry specifically) — a one-time way to clear out any
+// descriptions that got poisoned by the empty-response bug fixed above,
+// before their own 24h window would otherwise have expired on its own.
+export async function getCachedDescription(jobCode: string, id: string, opts?: { forceRefresh?: boolean }): Promise<JobDescription> {
+  if (opts?.forceRefresh) revalidateTag(CACHE_TAG, 'max');
   return getCachedDescriptionRaw(jobCode, id);
 }
 
