@@ -12,7 +12,11 @@ const V2_JOBS_URL = 'https://api.ceipal.com/v2/getJobPostingsList/';
 // locally.
 const RUNNING_ON_VERCEL = !!process.env.VERCEL;
 
-const PAGE_SIZE = 100;
+// Requested purely for clarity/documentation — confirmed live that Ceipal
+// ignores this value for this endpoint and always sends back 20 per page
+// regardless. End-of-list is now detected from Ceipal's own `num_pages`
+// field, not from comparing against this number (see fetchLiveV2Slice).
+const PAGE_SIZE = 20;
 // Same Ceipal concurrency degradation confirmed for the main jobs list
 // applies here too (same account, same API family) — see jobsCache.ts's own
 // comment for the measured numbers. Same per-environment trade-off: Vercel
@@ -83,29 +87,41 @@ async function fetchPageWithRetry(page: number): Promise<PageResult | null> {
 // table instead of treating it as the whole truth, so an incomplete cycle
 // just leaves untouched entries stale rather than making them (and every
 // job's description that depends on resolving its id) disappear.
+//
+// Confirmed live (2026-07-29): this endpoint IGNORES the requested
+// paging_length entirely and always returns exactly 20 results per page,
+// no matter what's asked for. The old "results.length < PAGE_SIZE means
+// we've hit the last page" check was written assuming PAGE_SIZE (100) would
+// match what Ceipal actually sends — since it never does, every single page
+// looked like "the last page," so this stopped after page 1 every cycle,
+// discarding the other 7 pages of a BATCH_SIZE=8 batch that had ALREADY been
+// fetched successfully. Using Ceipal's own `num_pages` value (present on
+// every response) instead of guessing from page length is what actually
+// fixes this.
 async function fetchLiveV2Slice(): Promise<JobMapEntry[]> {
   const startedAt = Date.now();
   const all: JobMapEntry[] = [];
+  let knownLastPage: number | null = null;
 
   for (let start = 1; start <= 300; start += BATCH_SIZE) {
+    if (knownLastPage !== null && start > knownLastPage) break;
     if (Date.now() - startedAt > TIME_BUDGET_MS) {
       console.warn(`[v2-job-map] time budget exceeded after ${all.length} jobs — returning partial results this cycle`);
       break;
     }
 
-    const pages = Array.from({ length: BATCH_SIZE }, (_, i) => start + i);
+    const pages = Array.from({ length: BATCH_SIZE }, (_, i) => start + i)
+      .filter((p) => knownLastPage === null || p <= knownLastPage);
     const results = await Promise.all(pages.map(fetchPageWithRetry));
 
-    let reachedEnd = false;
     for (const pageResult of results) {
       if (pageResult === null) {
         console.warn('[v2-job-map] a page failed to fetch after retry — skipping it, not treating as end of data');
         continue;
       }
       all.push(...pageResult.results);
-      if (pageResult.results.length < PAGE_SIZE) { reachedEnd = true; break; }
+      if (pageResult.numPages !== null) knownLastPage = pageResult.numPages;
     }
-    if (reachedEnd) break;
   }
 
   return all;
