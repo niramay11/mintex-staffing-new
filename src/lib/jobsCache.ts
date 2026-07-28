@@ -9,19 +9,30 @@ const RUNNING_ON_VERCEL = !!process.env.VERCEL;
 
 const PAGE_SIZE  = 50;
 // Measured live against Ceipal's actual API (2026-07-28): one request at a
-// time answers in ~1.4s every time, but firing 8 concurrent requests (the
-// old BATCH_SIZE) makes Ceipal itself degrade — latency climbed batch over
-// batch from ~4s to ~15s to one page taking 84s, entirely on Ceipal's side,
-// not ours. That's what was producing the "a page failed to fetch after
-// retry" spam: pages genuinely answering, just too slowly to beat the
-// timeout, because our own concurrent load was the thing slowing Ceipal
-// down. Lower concurrency trades a bit of total wall-clock time for far
-// fewer of these ~40s-wasted (timeout + retry + timeout) failures.
-const BATCH_SIZE = 3;
-// Widened from 800ms: since the slowdown above compounds with sustained
-// request rate, retrying almost immediately just adds another request into
-// the same congestion instead of giving Ceipal a moment to recover.
-const RETRY_DELAY = 2500;
+// time answers in ~1.4s every time, but firing 8 concurrent requests makes
+// Ceipal itself degrade — latency climbed batch over batch from ~4s to ~15s
+// to one page taking 84s, entirely on Ceipal's side, not ours.
+//
+// The right trade-off differs by environment, though. Locally (5-minute
+// budget, see TIME_BUDGET_MS below) there's no reason to race Ceipal at all
+// — lower concurrency avoids nearly all of the "a page failed to fetch
+// after retry" spam at effectively zero cost, since there's plenty of time
+// to finish slower-but-reliably. On Vercel (hard-capped at 40s, see below)
+// the opposite is true: total pages COVERED before the clock runs out is
+// what matters, since Ceipal's own full-pull time has been observed at
+// 50s-2min even in the best case — meaning some truncation on a bad cycle
+// is unavoidable either way, and the only lever we have is maximizing how
+// far it gets. Dropping concurrency there (confirmed live) made that WORSE:
+// the public jobs list started consistently stopping around job code 1334
+// instead of reaching newer postings, because slower-but-reliable per page
+// covers strictly less ground in the same fixed 40s window.
+const BATCH_SIZE = RUNNING_ON_VERCEL ? 8 : 3;
+// Same reasoning: Vercel can't afford to spend its scarce 40s budget waiting
+// out a cooldown between retries, so it keeps the original short delay and
+// just moves on to the next page instead. Locally, a longer delay costs
+// nothing and gives Ceipal a moment to recover from the concurrency-caused
+// slowdown before retrying the same page.
+const RETRY_DELAY = RUNNING_ON_VERCEL ? 800 : 2500;
 // Every time this window expires, the NEXT request has to trigger a live Ceipal
 // pull — and if Ceipal happens to answer badly at that exact moment, that one
 // visitor sees an empty/partial result (confirmed live). A longer window means
