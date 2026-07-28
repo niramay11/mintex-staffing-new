@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase";
 import { verifyAdminPassword } from "@/lib/portal-auth";
 
@@ -53,5 +54,12 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  // /case-studies already self-refreshes within 60s (its own `revalidate`
+  // window) — this makes a new case study appear immediately instead of
+  // waiting out that window. The homepage teaser reads the same table
+  // (see getHomepageTestimonials) and is fully static, so it needs its own
+  // explicit revalidation too — it has no revalidate window at all otherwise.
+  revalidatePath("/case-studies");
+  revalidatePath("/");
   return NextResponse.json(data);
 }

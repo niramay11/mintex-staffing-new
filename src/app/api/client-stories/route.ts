@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { supabase, supabaseAdmin } from "@/lib/supabase";
 import { verifyAdminPassword } from "@/lib/portal-auth";
 
@@ -54,6 +55,12 @@ export async function PUT(req: NextRequest) {
     const { error: insertError } = await supabaseAdmin.from("client_stories").insert(clean);
     if (insertError) return NextResponse.json({ error: insertError.message }, { status: 500 });
   }
+
+  // The homepage is statically rendered (see /api/client-stories/section's
+  // matching comment) — without this, a saved video/quote change would never
+  // show up there until the next full rebuild/redeploy, even though the
+  // section-visibility toggle already revalidates it.
+  revalidatePath("/");
 
   return NextResponse.json({ success: true, data: clean });
 }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase";
 import { verifyAdminPassword } from "@/lib/portal-auth";
 
@@ -61,5 +62,11 @@ export async function POST(req: NextRequest) {
     if (error.code === "23505") return NextResponse.json({ error: "That slug is already in use" }, { status: 409 });
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+  // /insights and its category pages already self-refresh within 60s (their
+  // own `revalidate` window) — this makes a new post appear immediately
+  // instead of waiting out that window.
+  revalidatePath("/insights");
+  revalidatePath(`/insights/post/${slug}`);
+  revalidatePath(`/insights/category/${category}`);
   return NextResponse.json(data);
 }

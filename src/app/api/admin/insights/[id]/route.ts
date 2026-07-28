@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase";
 import { verifyAdminPassword } from "@/lib/portal-auth";
 
@@ -6,10 +7,21 @@ function adminGuard(req: NextRequest): boolean {
   return verifyAdminPassword(req.headers.get("x-admin-password") ?? "");
 }
 
+// A slug or category can change as part of an edit — revalidating only the
+// NEW path would leave the OLD post/category page frozen showing stale
+// content (or a since-moved post) until its own 60s window happened to lapse.
+function revalidateInsightPaths(slug: string, category: string) {
+  revalidatePath("/insights");
+  revalidatePath(`/insights/post/${slug}`);
+  revalidatePath(`/insights/category/${category}`);
+}
+
 // PUT /api/admin/insights/[id] — admin-guarded, updates an insight post.
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!adminGuard(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
+
+  const { data: before } = await supabaseAdmin.from("insights").select("slug, category").eq("id", id).single();
 
   const body = await req.json().catch(() => ({}));
   const updates: Record<string, unknown> = {};
@@ -34,6 +46,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     if (error.code === "23505") return NextResponse.json({ error: "That slug is already in use" }, { status: 409 });
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+  if (before) revalidateInsightPaths(before.slug, before.category);
+  revalidateInsightPaths(data.slug, data.category);
   return NextResponse.json(data);
 }
 
@@ -42,7 +56,10 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   if (!adminGuard(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
 
+  const { data: before } = await supabaseAdmin.from("insights").select("slug, category").eq("id", id).single();
+
   const { error } = await supabaseAdmin.from("insights").delete().eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (before) revalidateInsightPaths(before.slug, before.category);
   return NextResponse.json({ success: true });
 }
