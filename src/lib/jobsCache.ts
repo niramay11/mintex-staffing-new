@@ -39,21 +39,17 @@ const BATCH_SIZE = RUNNING_ON_VERCEL ? 8 : 3;
 const RETRY_DELAY = RUNNING_ON_VERCEL ? 800 : 2500;
 // Every time this window expires, the NEXT request has to trigger a live Ceipal
 // pull — and if Ceipal happens to answer badly at that exact moment, that one
-// visitor sees an empty/partial result (confirmed live). That's why this
-// relies on an external pinger hitting /api/cron/warm-cache every ~4-5
-// minutes (see that route's own comment) to keep refreshing this BEFORE the
-// window lapses, rather than leaving it to whichever real visitor happens to
-// land on an expired cache. Shortened from 1 hour to 5 minutes specifically
-// so a newly-added job (now fetched first — see fetchLiveJobsSlice's
-// backward-pagination comment) shows up on the public site within minutes
-// instead of up to an hour later. Safe to run this often precisely because
-// of the Supabase merge below: each cycle only needs to re-confirm the
-// newest handful of pages, not re-pull the whole ~1,500-2,300 job list from
-// scratch. The sanity floor further down still catches a bad cycle
-// immediately regardless of how long this window is. `npm run warm-cache`
-// (or the admin "Sync Now" button) still forces an immediate refresh
-// on-demand, independent of this window.
-const CACHE_TTL_SECONDS = 5 * 60;
+// visitor sees an empty/partial result (confirmed live). There's no external
+// pinger keeping this warm in the background (deliberately not set up), so
+// whoever's request lands right after this window expires pays that cost
+// themselves — confirmed live at 5 minutes, this was happening often enough
+// to make the site feel noticeably slow. 20 minutes is the middle ground:
+// still far fresher than the original 1 hour (and newest jobs are fetched
+// first regardless — see fetchLiveJobsSlice's backward-pagination comment),
+// but visitors hit the slow live-pull path roughly 3x less often than at 5
+// minutes. `npm run warm-cache` (or the admin "Sync Now" button) still
+// forces an immediate refresh on-demand, independent of this window.
+const CACHE_TTL_SECONDS = 20 * 60;
 const CACHE_TAG = 'ceipal-public-jobs';
 
 // ceipalFetch's own internal timeout is 20s — meaning one slow/hanging page
