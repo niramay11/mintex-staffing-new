@@ -13,6 +13,46 @@ export const metadata: Metadata = pageMetadata({
 
 export const revalidate = 60;
 
+function CaseStudyGroup({
+  id,
+  background,
+  eyebrow,
+  title,
+  intro,
+  emptyText,
+  studies,
+}: {
+  id: string;
+  background: "cream" | "white" | "mist";
+  eyebrow: string;
+  title: string;
+  intro: string;
+  emptyText: string;
+  studies: CaseStudy[];
+}) {
+  return (
+    <Section id={id} background={background}>
+      <div className="mx-auto max-w-2xl text-center">
+        <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">{eyebrow}</p>
+        <h2 className="mt-3.5 font-heading text-[32px] font-semibold leading-tight text-navy sm:text-[36px]">
+          {title}
+        </h2>
+        <p className="mt-4 text-lg text-steel">{intro}</p>
+      </div>
+
+      {studies.length > 0 ? (
+        <div className="mx-auto mt-11 grid max-w-5xl items-start gap-6 sm:grid-cols-2">
+          {studies.map((cs) => (
+            <TestimonialCard key={cs.id} caseStudy={cs} />
+          ))}
+        </div>
+      ) : (
+        <p className="mt-11 text-center text-sm text-navy/50">{emptyText}</p>
+      )}
+    </Section>
+  );
+}
+
 export default async function CaseStudiesPage() {
   const { data } = await supabase
     .from("case_studies")
@@ -28,40 +68,41 @@ export default async function CaseStudiesPage() {
     <>
       <Section background="navy" className="!py-12 sm:!py-14 lg:!py-16">
         <h1 className="text-4xl font-bold sm:text-5xl">Case Studies</h1>
+        <div className="mt-3 h-1 w-16 rounded-full bg-tan" />
         <p className="mt-4 max-w-2xl text-white/80">
           Real outcomes from the clients and candidates we&apos;ve partnered with.
         </p>
       </Section>
 
-      <Section id="client" background="cream">
-        <h2 className="text-3xl font-bold text-navy">Client Testimonials</h2>
-        <div className="mt-8 grid gap-6 sm:grid-cols-2">
-          {clientStudies.map((cs) => (
-            <TestimonialCard key={cs.id} caseStudy={cs} />
-          ))}
-        </div>
-        {clientStudies.length === 0 && <p className="mt-4 text-sm text-navy/50">No client testimonials yet.</p>}
-      </Section>
+      <CaseStudyGroup
+        id="client"
+        background="cream"
+        eyebrow="Client stories"
+        title="Client Testimonials"
+        intro="Hear directly from the hiring teams and leaders we've partnered with."
+        emptyText="No client testimonials yet."
+        studies={clientStudies}
+      />
 
-      <Section id="candidate" background="white">
-        <h2 className="text-3xl font-bold text-navy">Candidate Testimonials</h2>
-        <div className="mt-8 grid gap-6 sm:grid-cols-2">
-          {candidateStudies.map((cs) => (
-            <TestimonialCard key={cs.id} caseStudy={cs} />
-          ))}
-        </div>
-        {candidateStudies.length === 0 && <p className="mt-4 text-sm text-navy/50">No candidate testimonials yet.</p>}
-      </Section>
+      <CaseStudyGroup
+        id="candidate"
+        background="white"
+        eyebrow="Candidate stories"
+        title="Candidate Testimonials"
+        intro="Real career moves made possible by the right introduction at the right time."
+        emptyText="No candidate testimonials yet."
+        studies={candidateStudies}
+      />
 
-      <Section id="other" background="mist">
-        <h2 className="text-3xl font-bold text-navy">Other Case Studies</h2>
-        <div className="mt-8 grid gap-6 sm:grid-cols-2">
-          {otherStudies.map((cs) => (
-            <TestimonialCard key={cs.id} caseStudy={cs} />
-          ))}
-        </div>
-        {otherStudies.length === 0 && <p className="mt-4 text-sm text-navy/50">No other case studies yet.</p>}
-      </Section>
+      <CaseStudyGroup
+        id="other"
+        background="mist"
+        eyebrow="More outcomes"
+        title="Other Case Studies"
+        intro="Additional wins from across the industries we serve."
+        emptyText="No other case studies yet."
+        studies={otherStudies}
+      />
     </>
   );
 }

@@ -3,9 +3,11 @@ import Image from "next/image";
 import Section from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import ClientStories from "@/components/home/ClientStories";
+import Testimonials from "@/components/home/Testimonials";
 import { industries } from "@/content/industries";
 import { getIndustryStats } from "@/lib/industryStats";
 import { getSiteImages } from "@/lib/siteImages";
+import { getHomepageTestimonials } from "@/lib/caseStudies";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -14,6 +16,7 @@ export const metadata: Metadata = {
 export default async function HomePage() {
   const industryStats = await getIndustryStats();
   const siteImages = await getSiteImages();
+  const homepageTestimonials = await getHomepageTestimonials();
   return (
     <>
       {/* Sec 1 — Hero */}
@@ -65,7 +68,7 @@ export default async function HomePage() {
                     strokeLinejoin="round"
                   />
                 </svg>
-                Hire a Talent
+                Hire Talent
               </ButtonLink>
               <ButtonLink
                 href="/get-hired"
@@ -87,70 +90,6 @@ export default async function HomePage() {
           </div>
         </div>
       </Section>
-
-      {/* Stat bar — centered, bridging hero and next section */}
-      <div className="relative z-10 -mt-14 mb-8 flex justify-center px-4 sm:px-6 lg:-mt-16 lg:px-8">
-        <div className="grid w-full max-w-[1500px] grid-cols-2 gap-x-4 gap-y-7 rounded-[24px] border border-white/10 bg-navy-deep px-5 py-6 shadow-[0_30px_70px_-20px_rgba(1,35,64,0.65)] md:gap-x-6 lg:grid-cols-4 lg:gap-8 lg:divide-x lg:divide-white/10 lg:px-10 lg:py-10 [&_.stat-label]:whitespace-nowrap">
-          <div className="flex items-center gap-2.5 transition-transform hover:-translate-y-0.5 md:gap-3 lg:gap-4 lg:pl-2">
-            <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-white/10 text-tan-light md:h-12 md:w-12 lg:h-14 lg:w-14">
-              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5 md:h-6 md:w-6 lg:h-7 lg:w-7">
-                <path
-                  d="M17 20h5v-2a4 4 0 0 0-3-3.87M9 20H4v-2a4 4 0 0 1 3-3.87m5-3.13a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7 3a4 4 0 0 0-3-3.87"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </span>
-            <div>
-              <div className="font-heading text-[22px] font-semibold leading-none text-white md:text-[28px] lg:text-[34px]">14k+</div>
-              <div className="stat-label mt-1.5 text-xs text-steel-lighter lg:text-sm">Placements made</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2.5 transition-transform hover:-translate-y-0.5 md:gap-3 lg:gap-4 lg:pl-8">
-            <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-white/10 text-tan-light md:h-12 md:w-12 lg:h-14 lg:w-14">
-              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5 md:h-6 md:w-6 lg:h-7 lg:w-7">
-                <path
-                  d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinejoin="round"
-                />
-                <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </span>
-            <div>
-              <div className="font-heading text-[22px] font-semibold leading-none text-white md:text-[28px] lg:text-[34px]">93%</div>
-              <div className="stat-label mt-1.5 text-xs text-steel-lighter lg:text-sm">Client retention</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2.5 transition-transform hover:-translate-y-0.5 md:gap-3 lg:gap-4 lg:pl-8">
-            <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-white/10 text-tan-light md:h-12 md:w-12 lg:h-14 lg:w-14">
-              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5 md:h-6 md:w-6 lg:h-7 lg:w-7">
-                <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.6" />
-                <path d="M12 8v4l3 2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </span>
-            <div>
-              <div className="whitespace-nowrap font-heading text-[22px] font-semibold leading-none text-white md:text-[28px] lg:text-[34px]">9 days</div>
-              <div className="stat-label mt-1.5 text-xs text-steel-lighter lg:text-sm">Avg. time to fill</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2.5 transition-transform hover:-translate-y-0.5 md:gap-3 lg:gap-4 lg:pl-8">
-            <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-white/10 text-tan-light md:h-12 md:w-12 lg:h-14 lg:w-14">
-              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5 md:h-6 md:w-6 lg:h-7 lg:w-7">
-                <rect x="3" y="7" width="18" height="13" rx="2" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-                <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </span>
-            <div>
-              <div className="font-heading text-[22px] font-semibold leading-none text-white md:text-[28px] lg:text-[34px]">9+</div>
-              <div className="stat-label mt-1.5 text-xs text-steel-lighter lg:text-sm">Industries served</div>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Sec 2 — You need to see it to believe it. ClientStories owns its own
           Section-equivalent wrapper and the show/hide decision entirely
@@ -329,6 +268,11 @@ on paper.
         </div>
       </Section>
 
+      {/* Sec 5 — Testimonials, sourced from the same case_studies "client"
+          entries shown on /case-studies — a homepage teaser row, not a
+          separate content source to manage. */}
+      <Testimonials stories={homepageTestimonials} />
+
       {/* Sec — Final CTA */}
       <Section background="mist" className="!bg-transparent !py-14 sm:!py-16 lg:!py-20">
         <div className="relative mx-auto grid max-w-5xl items-center gap-12 lg:grid-cols-[0.85fr_1fr] lg:gap-16">
@@ -359,7 +303,7 @@ on paper.
             </p>
             <div className="mt-8 flex flex-wrap gap-3.5">
               <ButtonLink href="/seek-talent" variant="primary">
-                Hire a Talent
+                Hire Talent
               </ButtonLink>
               <ButtonLink
                 href="/get-hired"

@@ -23,19 +23,21 @@ const RETRY_DELAY  = 800;
 // real data existed. unstable_cache persists this across invocations, and the
 // retry + time-budget below stop one bad page from nuking the whole map.
 //
-// Stretched from 30 min to 6 hours: a job's v2 id essentially never changes
-// once assigned, so refreshing every 30 min bought almost nothing — but cost
-// a lot, since without a recurring external warm-cache pinger actually
-// configured, every ~30 min gap in traffic meant the NEXT visitor (however
-// long after that happened to be — could be the very first visitor of the
-// day) was the one stuck paying a live, multi-second-to-minutes Ceipal
-// rebuild just to look up one job's id. A single warm-up (already automatic
-// via `npm run deploy`) now keeps every visitor fast for hours afterward
-// instead of only the first ~30 minutes. Trade-off: a job posted in the last
-// few hours may not resolve until this next refreshes — acceptable, since
-// the job list itself (jobsCache.ts, still 60 min) still shows it promptly;
-// only its detail/description lookup lags briefly.
-const CACHE_TTL_SECONDS = 6 * 60 * 60;
+// Deliberately set to 30 min (not left at 6 hours): this map only rebuilds
+// on its own when something calls it after the window lapses, and there's no
+// external cron reliably configured in this project (see the /api/cron/warm-cache
+// route's own comment — it depends on an external scheduler that may not be
+// set up), so in practice a real admin was the one hitting a job posted since
+// the last rebuild and seeing "Job not found in V2 list" for however long was
+// left of the old 6-hour window. 30 min bounds that wait to a known, short
+// worst case instead. Trade-off, accepted deliberately: whichever
+// visitor/admin request happens to land right after this window lapses pays
+// a live, multi-second-to-minutes Ceipal rebuild — more often than the old 6
+// hours, since this now happens up to 12x/day instead of up to 4x/day. Still
+// mitigated by the same single warm-up at deploy time (`npm run deploy`) and,
+// per JobDetailModal's new "Refresh & Retry" button, an admin is no longer
+// stuck waiting out the full window anyway if they hit this live.
+const CACHE_TTL_SECONDS = 30 * 60;
 const CACHE_TAG = 'ceipal-v2-job-map';
 // Ceipal has been measured taking 8-12+ seconds for a normal, successful
 // page response — an 8s per-attempt cutoff was aborting real responses as

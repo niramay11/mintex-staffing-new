@@ -23,13 +23,13 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Mintex Staffing | IT, Healthcare & Engineering Staffing Agency",
+    default: "Staffing & Recruitment | Mintex Staffing",
     template: "%s | Mintex Staffing",
   },
   description:
     "Mintex Staffing connects exceptional talent with leading employers across IT, healthcare, engineering, manufacturing, finance, and more.",
   openGraph: {
-    title: "Mintex Staffing | IT, Healthcare & Engineering Staffing Agency",
+    title: "Staffing & Recruitment | Mintex Staffing",
     description:
       "Mintex Staffing connects exceptional talent with leading employers across IT, healthcare, engineering, manufacturing, finance, and more.",
     type: "website",
@@ -37,10 +37,27 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mintex Staffing | IT, Healthcare & Engineering Staffing Agency",
+    title: "Staffing & Recruitment | Mintex Staffing",
     description:
       "Mintex Staffing connects exceptional talent with leading employers across IT, healthcare, engineering, manufacturing, finance, and more.",
     images: ["/og-image.png"],
+  },
+  // Next's file-based icon convention (src/app/favicon.ico, icon.png,
+  // apple-icon.png) already emits modern rel="icon"/rel="apple-touch-icon"
+  // tags, which is all real browsers and Google need — but some SEO
+  // auditing tools only recognize the older rel="shortcut icon" attribute
+  // and report "no favicon" without it. Declaring `icons` here REPLACES the
+  // file-based auto-detection entirely rather than adding to it (confirmed
+  // live — icon.png and apple-touch-icon silently disappeared from <head>
+  // when only `shortcut` was set here), so every icon has to be listed
+  // explicitly to avoid losing the other two.
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },
+      { url: "/icon.png", sizes: "512x512", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
   },
 };
 

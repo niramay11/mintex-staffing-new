@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { IMAGE_LOCATIONS } from "@/lib/imageLocations";
 import type { InsightPost, InsightCategoryRow, CaseStudy, CaseStudyType } from "@/content/types";
 import { industries } from "@/content/industries";
@@ -394,8 +394,9 @@ function ModalSpinner({ label }: { label: string }) {
 }
 
 // ─── Snapshot tab ─────────────────────────────────────────────────────────────
-function SnapshotTab({ job, detail, loading, error }: {
+function SnapshotTab({ job, detail, loading, error, onRetry, retrying }: {
   job: CeipalJob; detail: JobDetail | null; loading: boolean; error: string;
+  onRetry?: () => void; retrying?: boolean;
 }) {
   const desc = String(detail?.requisition_description ?? job.job_description ?? '');
   const skills = String(detail?.skills ?? job.primary_skills ?? '');
@@ -464,15 +465,38 @@ function SnapshotTab({ job, detail, loading, error }: {
       )}
 
       {loading && <ModalSpinner label="Loading full details…" />}
-      {error   && <p className="text-red-600 text-sm">{error}</p>}
+      {error && (
+        <div>
+          <p className="text-red-600 text-sm">{error}</p>
+          {onRetry && (
+            <button onClick={onRetry} disabled={retrying}
+              className="mt-2 px-4 py-2 rounded-full bg-white hover:bg-mist text-navy/70 text-sm border border-navy/10 transition-colors disabled:opacity-50">
+              {retrying ? 'Refreshing…' : '↻ Refresh & Retry'}
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
 
 // ─── Details tab ──────────────────────────────────────────────────────────────
-function DetailsTab({ detail, loading, error }: { detail: JobDetail | null; loading: boolean; error: string }) {
+function DetailsTab({ detail, loading, error, onRetry, retrying }: {
+  detail: JobDetail | null; loading: boolean; error: string;
+  onRetry?: () => void; retrying?: boolean;
+}) {
   if (loading) return <ModalSpinner label="Loading job details…" />;
-  if (error)   return <p className="text-red-600">{error}</p>;
+  if (error) return (
+    <div>
+      <p className="text-red-600">{error}</p>
+      {onRetry && (
+        <button onClick={onRetry} disabled={retrying}
+          className="mt-3 px-4 py-2 rounded-full bg-white hover:bg-mist text-navy/70 text-sm border border-navy/10 transition-colors disabled:opacity-50">
+          {retrying ? 'Refreshing…' : '↻ Refresh & Retry'}
+        </button>
+      )}
+    </div>
+  );
   if (!detail) return <p className="text-navy/50 text-sm">No additional details available.</p>;
 
   return (
@@ -893,32 +917,56 @@ function JobDetailModal({ job, onClose }: { job: CeipalJob; onClose: () => void 
   const [subsLoading, setSL]        = useState(false);
   const [subsError, setSE]          = useState('');
   const [selectedSub, setSelectedSub] = useState<{ sub: Submission; applicant: ApplicantInfo | null } | null>(null);
+  // True only while a manual "Refresh & Retry" is in flight — separate from
+  // detailLoading/subsLoading so the retry button can show its own "Refreshing…"
+  // state instead of reusing the tabs' full-page spinners.
+  const [retrying, setRetrying] = useState(false);
+  // Bumping this re-runs the resolve-and-fetch effect on demand (retry button)
+  // without adding a function reference to the effect's own dependency array —
+  // an earlier version called a useCallback-wrapped fetch function from inside
+  // the effect and that alone (regardless of what the function did) triggered
+  // this codebase's react-hooks/set-state-in-effect lint rule; keeping the
+  // fetch logic defined AND called entirely inside the effect body, as the
+  // original code did, avoids it.
+  const [refreshNonce, setRefreshNonce] = useState(0);
+  const forceNextRefreshRef = useRef(false);
 
   const jobCode = String(job.job_code ?? '').trim();
 
   useEffect(() => {
     if (!jobCode) return;
 
+    const forceRefresh = forceNextRefreshRef.current;
+    forceNextRefreshRef.current = false;
+    if (forceRefresh) setRetrying(true);
+
     // Resolve the correct V2 ID from job_code via the server-side map cache,
-    // then fetch details + submissions in parallel.
+    // then fetch details + submissions in parallel. "Job not found in V2
+    // list" just means this job was posted since the map's last 6-hour
+    // rebuild (see ceipal-job-map.ts) — forceRefresh lets the retry button
+    // force an immediate rebuild instead of waiting out the rest of that
+    // window.
     const resolveAndFetch = async () => {
       let v2Id = '';
       try {
-        const mapRes = await fetch('/api/admin/v2-job-map');
+        const mapRes = await fetch(`/api/admin/v2-job-map${forceRefresh ? '?refresh=1' : ''}`);
         const map: Record<string, string> = await mapRes.json();
         v2Id = map[jobCode] ?? '';
       } catch {
         setDE('Could not load job ID map'); setDL(false);
         setSE('Could not load job ID map'); setSL(false);
+        setRetrying(false);
         return;
       }
 
       if (!v2Id) {
         setDE(`Job not found in V2 list (${jobCode})`); setDL(false);
         setSE(`Job not found in V2 list (${jobCode})`); setSL(false);
+        setRetrying(false);
         return;
       }
 
+      setDE(''); setSE('');
       setDL(true);
       fetch(`/api/admin/job-details?id=${encodeURIComponent(v2Id)}`)
         .then(r => r.json())
@@ -930,10 +978,17 @@ function JobDetailModal({ job, onClose }: { job: CeipalJob; onClose: () => void 
         .then(r => r.json())
         .then(d => { setSubs(Array.isArray(d) ? d : []); setSL(false); })
         .catch(() => { setSE('Failed to load submissions'); setSL(false); });
+
+      setRetrying(false);
     };
 
     resolveAndFetch();
-  }, [jobCode]);
+  }, [jobCode, refreshNonce]);
+
+  const retryResolve = () => {
+    forceNextRefreshRef.current = true;
+    setRefreshNonce(n => n + 1);
+  };
 
   const status = String(job.job_status ?? '');
   const tabs = [
@@ -993,8 +1048,8 @@ function JobDetailModal({ job, onClose }: { job: CeipalJob; onClose: () => void 
 
           {/* ── Tab content ── */}
           <div className="p-6 min-h-[300px]">
-            {activeTab === 'snapshot'    && <SnapshotTab job={job} detail={detail} loading={detailLoading} error={detailError} />}
-            {activeTab === 'details'     && <DetailsTab detail={detail} loading={detailLoading} error={detailError} />}
+            {activeTab === 'snapshot'    && <SnapshotTab job={job} detail={detail} loading={detailLoading} error={detailError} onRetry={retryResolve} retrying={retrying} />}
+            {activeTab === 'details'     && <DetailsTab detail={detail} loading={detailLoading} error={detailError} onRetry={retryResolve} retrying={retrying} />}
             {activeTab === 'submissions' && <SubmissionsTab submissions={submissions} loading={subsLoading} error={subsError} onSelectSub={(s, a) => setSelectedSub({ sub: s, applicant: a })} />}
           </div>
 

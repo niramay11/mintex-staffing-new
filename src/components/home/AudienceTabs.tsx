@@ -64,7 +64,7 @@ export default function AudienceTabs() {
               tab === "employers" ? "bg-navy text-white shadow-sm" : "text-navy/60 hover:text-navy"
             }`}
           >
-            For employers &middot; Hire a Talent
+            For employers &middot; Hire Talent
           </button>
           <button
             type="button"
