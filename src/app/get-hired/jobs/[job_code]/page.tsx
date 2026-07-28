@@ -72,10 +72,17 @@ async function loadDescription(job: CeipalJob): Promise<string> {
   try {
     const jobMap = await getJobMap();
     const id = jobMap[job.job_code];
-    if (!id) return fallback;
+    if (!id) {
+      console.warn(`[job-page] no v2 id found for job_code "${job.job_code}" — jobMap has ${Object.keys(jobMap).length} entries`);
+      return fallback;
+    }
     const desc = await getCachedDescription(job.job_code, id);
+    if (!desc.public_job_description && !desc.job_description) {
+      console.warn(`[job-page] getCachedDescription returned empty for job_code "${job.job_code}" (id ${id})`);
+    }
     return desc.public_job_description || desc.job_description || fallback;
-  } catch {
+  } catch (err) {
+    console.error(`[job-page] loadDescription threw for job_code "${job.job_code}":`, err);
     return fallback;
   }
 }

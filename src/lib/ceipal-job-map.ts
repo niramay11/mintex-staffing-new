@@ -1,51 +1,33 @@
 import { unstable_cache, revalidateTag } from 'next/cache';
-import { ceipalFetch } from './ceipal';
+import { ceipalFetch } from '@/lib/ceipal';
+import { supabaseAdmin } from '@/lib/supabase';
 
 type JobMap = Record<string, string>; // job_code → v2 id
 type JobMapEntry = { job_code: string; id: string };
-type JobData = Record<string, unknown>; // raw shape from Ceipal, used transiently while paginating
 
 const V2_JOBS_URL = 'https://api.ceipal.com/v2/getJobPostingsList/';
 
-// See src/lib/jobsCache.ts for the full reasoning — several budgets below
-// are only tight because of Vercel's 60s serverless hard-kill, which doesn't
-// exist locally, so they're relaxed there instead of applying everywhere.
+// See jobsCache.ts for the full reasoning — several budgets below are only
+// tight because of Vercel's 60s serverless hard-kill, which doesn't exist
+// locally.
 const RUNNING_ON_VERCEL = !!process.env.VERCEL;
 
-const PAGE_SIZE   = 100;
-const RETRY_DELAY  = 800;
-// Same reasoning as src/lib/jobsCache.ts: this used to be cached in a plain
-// module-level variable, which does NOT survive between Vercel serverless
-// invocations. Every cold request had to re-paginate the entire V2 job list
-// from scratch just to look up one job's v2 id — and a single failed page in
-// that walk silently truncated the map (no retry), so submissions/job-details
-// for any job past the truncation point would come back empty even though
-// real data existed. unstable_cache persists this across invocations, and the
-// retry + time-budget below stop one bad page from nuking the whole map.
-//
-// Deliberately set to 30 min (not left at 6 hours): this map only rebuilds
-// on its own when something calls it after the window lapses, and there's no
-// external cron reliably configured in this project (see the /api/cron/warm-cache
-// route's own comment — it depends on an external scheduler that may not be
-// set up), so in practice a real admin was the one hitting a job posted since
-// the last rebuild and seeing "Job not found in V2 list" for however long was
-// left of the old 6-hour window. 30 min bounds that wait to a known, short
-// worst case instead. Trade-off, accepted deliberately: whichever
-// visitor/admin request happens to land right after this window lapses pays
-// a live, multi-second-to-minutes Ceipal rebuild — more often than the old 6
-// hours, since this now happens up to 12x/day instead of up to 4x/day. Still
-// mitigated by the same single warm-up at deploy time (`npm run deploy`) and,
-// per JobDetailModal's new "Refresh & Retry" button, an admin is no longer
-// stuck waiting out the full window anyway if they hit this live.
-const CACHE_TTL_SECONDS = 30 * 60;
-const CACHE_TAG = 'ceipal-v2-job-map';
-// Ceipal has been measured taking 8-12+ seconds for a normal, successful
-// page response — an 8s per-attempt cutoff was aborting real responses as
-// "failed" before they finished. Only Vercel actually needs this tight (to
-// protect its 60s hard kill); locally, give attempts the same 20s ceiling
-// ceipalFetch itself already allows internally.
+const PAGE_SIZE = 100;
+// Same Ceipal concurrency degradation confirmed for the main jobs list
+// applies here too (same account, same API family) — see jobsCache.ts's own
+// comment for the measured numbers. Same per-environment trade-off: Vercel
+// needs raw throughput within its hard time ceiling even at the cost of a
+// few skipped pages; local dev has all the time in the world, so it favors
+// fewer concurrent requests and fewer noisy retries instead.
+const BATCH_SIZE = RUNNING_ON_VERCEL ? 8 : 3;
+const RETRY_DELAY = RUNNING_ON_VERCEL ? 800 : 2500;
 const PAGE_ATTEMPT_TIMEOUT_MS = RUNNING_ON_VERCEL ? 8_000 : 20_000;
 const TIME_BUDGET_MS = RUNNING_ON_VERCEL ? 40_000 : 5 * 60_000;
+// Matches jobsCache.ts's window — this map and the public jobs list are
+// used together (a job's page needs both), so keeping them on the same
+// freshness cadence avoids one being far staler than the other.
+const CACHE_TTL_SECONDS = 20 * 60;
+const CACHE_TAG = 'ceipal-v2-job-map';
 
 function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -55,89 +37,160 @@ function raceTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T
   return Promise.race([promise, new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))]);
 }
 
-// Only job_code and id ever get read back out of this cache (see getJobMap
-// below) — keeping the full raw Ceipal record (as this used to, via a
-// spread-everything `normalise` step) blew the cached payload past Next's
-// hard 2MB-per-item Data Cache limit EVERY time (measured ~25MB for the
-// ~2,300-job V2 list, mostly large HTML description fields), silently
-// failing to persist and forcing a full live Ceipal re-pull on every single
-// request — the same class of bug jobsCache.ts already hit and fixed for
-// the public jobs list, just far worse here since it never cached at all.
-function toMapEntry(j: JobData): JobMapEntry {
+function toMapEntry(j: Record<string, unknown>): JobMapEntry {
   return {
     job_code: String(j.job_code ?? '').trim(),
     id: String(j.id ?? '').trim(),
   };
 }
 
-// Returns null when the page genuinely could not be fetched (both attempts
-// timed out/errored) — kept distinguishable from a real empty-results page
-// (which means "past the last page, stop"), same distinction jobsCache.ts
-// makes for the public jobs pull.
-async function fetchPage(url: string): Promise<{ results: JobData[]; next: string | null } | null> {
+type PageResult = { results: JobMapEntry[]; numPages: number | null };
+
+// Confirmed live (2026-07-29): unlike the v1 API jobsCache.ts uses (oldest
+// first), Ceipal's v2 job list returns NEWEST jobs first on page 1 — and
+// supports jumping straight to any page number directly (`?page=N`), no
+// need to walk its `next` cursor sequentially. Both matter: it means a
+// plain forward walk here already prioritizes the newest postings (most
+// likely to be clicked, least likely to already be resolved from a
+// previous cycle), so this doesn't need jobsCache.ts's backward-pagination
+// trick — and batching by page number lets this cover far more ground per
+// cycle than the old one-page-at-a-time `next`-cursor walk did (confirmed
+// live: that old approach was stuck at ~100 of 1,534 jobs every cycle).
+async function fetchPage(page: number): Promise<PageResult | null> {
   try {
-    const res = await ceipalFetch(url);
+    const res = await ceipalFetch(`${V2_JOBS_URL}?paging_length=${PAGE_SIZE}&page=${page}`);
     if (!res.ok) return null;
     const data = await res.json();
-    const results: JobData[] = Array.isArray(data?.results) ? data.results : Array.isArray(data) ? data : [];
-    const next = typeof data?.next === 'string' && data.next ? data.next : null;
-    return { results, next };
+    const results = Array.isArray(data?.results)
+      ? (data.results as Record<string, unknown>[]).map(toMapEntry).filter((e) => e.job_code && e.id)
+      : [];
+    const numPages = typeof data?.num_pages === 'number' ? data.num_pages : null;
+    return { results, numPages };
   } catch { return null; }
 }
 
-async function fetchPageWithRetry(url: string): Promise<{ results: JobData[]; next: string | null } | null> {
-  const first = await raceTimeout(fetchPage(url), PAGE_ATTEMPT_TIMEOUT_MS, null);
+async function fetchPageWithRetry(page: number): Promise<PageResult | null> {
+  const first = await raceTimeout(fetchPage(page), PAGE_ATTEMPT_TIMEOUT_MS, null);
   if (first !== null) return first;
   await sleep(RETRY_DELAY);
-  return raceTimeout(fetchPage(url), PAGE_ATTEMPT_TIMEOUT_MS, null);
+  return raceTimeout(fetchPage(page), PAGE_ATTEMPT_TIMEOUT_MS, null);
 }
 
-async function fetchAllV2Jobs(): Promise<JobMapEntry[]> {
+// Pages through Ceipal's v2 job list within TIME_BUDGET_MS, returning
+// whatever it manages to fetch THIS cycle — on a slow Ceipal day that may be
+// a partial slice of the real ~1,500+ total, not the full map. That's fine:
+// fetchAllV2Jobs() below merges this into the durable ceipal_v2_job_map
+// table instead of treating it as the whole truth, so an incomplete cycle
+// just leaves untouched entries stale rather than making them (and every
+// job's description that depends on resolving its id) disappear.
+async function fetchLiveV2Slice(): Promise<JobMapEntry[]> {
   const startedAt = Date.now();
   const all: JobMapEntry[] = [];
-  let nextUrl: string | null = `${V2_JOBS_URL}?paging_length=${PAGE_SIZE}&page=1`;
 
-  while (nextUrl) {
+  for (let start = 1; start <= 300; start += BATCH_SIZE) {
     if (Date.now() - startedAt > TIME_BUDGET_MS) {
       console.warn(`[v2-job-map] time budget exceeded after ${all.length} jobs — returning partial results this cycle`);
       break;
     }
 
-    const page = await fetchPageWithRetry(nextUrl);
-    if (page === null) {
-      // A hard failure after retry — stop here rather than looping forever,
-      // but keep whatever was already collected instead of throwing it away.
-      console.warn('[v2-job-map] a page failed to fetch after retry — stopping pagination early with a partial map');
-      break;
+    const pages = Array.from({ length: BATCH_SIZE }, (_, i) => start + i);
+    const results = await Promise.all(pages.map(fetchPageWithRetry));
+
+    let reachedEnd = false;
+    for (const pageResult of results) {
+      if (pageResult === null) {
+        console.warn('[v2-job-map] a page failed to fetch after retry — skipping it, not treating as end of data');
+        continue;
+      }
+      all.push(...pageResult.results);
+      if (pageResult.results.length < PAGE_SIZE) { reachedEnd = true; break; }
     }
-
-    all.push(...page.results.map(toMapEntry).filter((e) => e.job_code && e.id));
-    if (page.results.length === 0) break;
-    nextUrl = page.next;
-  }
-
-  // A totally empty result almost always means the very first request failed
-  // outright — never a legitimate answer while Ceipal has active postings.
-  // Throwing (instead of returning `[]`) stops unstable_cache from persisting
-  // that failure as if it were valid data for the full revalidate window.
-  if (all.length === 0) {
-    throw new Error('[v2-job-map] fetchAllV2Jobs returned zero jobs — refusing to cache this as a valid result');
+    if (reachedEnd) break;
   }
 
   return all;
 }
 
-// Persisted via Next's Data Cache — see src/lib/jobsCache.ts for why a plain
-// module variable doesn't work here on Vercel.
+const SUPABASE_TABLE = 'ceipal_v2_job_map';
+const SUPABASE_UPSERT_CHUNK = 500;
+const SUPABASE_READ_CHUNK = 1000;
+
+// Persists this cycle's fetched entries into the durable, incrementally-
+// merged store — an UPDATE for job codes already seen, an INSERT for new
+// ones. Best-effort — a write failure logs but doesn't fail the whole
+// cycle, since readAllFromSupabase() below still has whatever was already
+// durably stored from earlier cycles.
+async function upsertToSupabase(entries: JobMapEntry[]): Promise<void> {
+  const syncedAt = new Date().toISOString();
+  for (let i = 0; i < entries.length; i += SUPABASE_UPSERT_CHUNK) {
+    const chunk = entries.slice(i, i + SUPABASE_UPSERT_CHUNK).map((e) => ({
+      job_code: e.job_code,
+      v2_id: e.id,
+      synced_at: syncedAt,
+    }));
+    const { error } = await supabaseAdmin.from(SUPABASE_TABLE).upsert(chunk, { onConflict: 'job_code' });
+    if (error) console.error('[v2-job-map] supabase upsert failed for a chunk:', error.message);
+  }
+}
+
+// Reads back the FULL accumulated map — the union of every cycle's
+// successful fetches, not just this cycle's slice. This is what makes an
+// incomplete live pull safe: whatever this cycle missed just keeps whatever
+// it had from the last cycle that DID reach it, instead of vanishing.
+async function readAllFromSupabase(): Promise<JobMapEntry[]> {
+  const all: JobMapEntry[] = [];
+  for (let from = 0; ; from += SUPABASE_READ_CHUNK) {
+    const { data, error } = await supabaseAdmin
+      .from(SUPABASE_TABLE)
+      .select('job_code, v2_id')
+      .range(from, from + SUPABASE_READ_CHUNK - 1);
+    if (error) {
+      console.error('[v2-job-map] supabase read failed:', error.message);
+      break;
+    }
+    if (!data || data.length === 0) break;
+    all.push(...data.map((row) => ({ job_code: row.job_code as string, id: row.v2_id as string })));
+    if (data.length < SUPABASE_READ_CHUNK) break;
+  }
+  return all;
+}
+
+async function fetchAllV2Jobs(): Promise<JobMapEntry[]> {
+  let fresh: JobMapEntry[] = [];
+  try {
+    fresh = await fetchLiveV2Slice();
+  } catch (err) {
+    console.error('[v2-job-map] live pull failed entirely this cycle:', err);
+  }
+
+  if (fresh.length > 0) {
+    await upsertToSupabase(fresh);
+  }
+
+  const merged = await readAllFromSupabase();
+
+  if (merged.length === 0) {
+    if (fresh.length > 0) return fresh;
+    // Truly nothing anywhere. Throwing (instead of returning []) stops
+    // unstable_cache from caching that failure as if it were valid data.
+    throw new Error('[v2-job-map] no jobs available from live pull or persisted map — refusing to cache this as a valid result');
+  }
+
+  return merged;
+}
+
+// unstable_cache persists via Next's shared Data Cache, which on Vercel is
+// backed by shared infrastructure — NOT plain in-process memory (same
+// reasoning as jobsCache.ts).
 const getCachedV2Jobs = unstable_cache(fetchAllV2Jobs, [CACHE_TAG], {
   revalidate: CACHE_TTL_SECONDS,
   tags: [CACHE_TAG],
 });
 
-// Single-flight guard — see src/lib/jobsCache.ts's identical guard for why
-// this matters: without it, every client-portal request that lands on a
-// cold/expired map launches its own independent full V2 pagination in
-// parallel, each competing with the others for the same Ceipal API.
+// Single-flight guard — same reasoning as jobsCache.ts's identical guard:
+// without it, every caller that finds a cold/expired cache launches its own
+// independent pull in parallel, each competing with the others for the same
+// rate-limited Ceipal API.
 let inflightV2Jobs: Promise<JobMapEntry[]> | null = null;
 function getCachedV2JobsSingleFlight(): Promise<JobMapEntry[]> {
   if (!inflightV2Jobs) {
@@ -146,29 +199,39 @@ function getCachedV2JobsSingleFlight(): Promise<JobMapEntry[]> {
   return inflightV2Jobs;
 }
 
-// This site has had 1,000+ job postings for as long as it's been tracked —
-// a cycle that comes back with far fewer isn't real data, it's this fetch
-// hitting the time budget early or a burst of page failures.
-//
-// This check (and the revalidateTag it triggers) has to live out here,
-// AFTER getCachedV2JobsSingleFlight() resolves — NOT inside fetchAllV2Jobs.
-// Next.js does not allow revalidateTag to be called from inside a function
-// that's itself wrapped by unstable_cache; calling it in there throws ("used
-// ... during render ... unsupported"), and that throw was being silently
-// swallowed by the try/catch below, discarding the partial-but-real result
-// and returning a completely EMPTY map instead — worse than doing nothing.
+// Now mostly a backup safeguard: since fetchAllV2Jobs merges into
+// ceipal_v2_job_map instead of replacing the map wholesale, a single
+// slow/partial live cycle can no longer shrink the served map the way it
+// used to — the count only drops this low if Supabase itself is
+// unreachable and fetchAllV2Jobs fell back to a bare fresh batch.
 const MIN_PLAUSIBLE_JOBS = 1200;
 
-// Returns full job_code → v2 id list (shared cache for admin + portal lookups)
-export async function getV2Jobs(opts?: { forceRefresh?: boolean }): Promise<JobMapEntry[]> {
+// revalidateTag throws when called during a page render (it's only allowed
+// from Route Handlers/Server Actions) — confirmed live: this function gets
+// called both ways (route handlers like /api/admin/v2-job-map, AND page
+// renders like /get-hired/jobs/[job_code] via getJobMap()). When called
+// during a render, the throw used to be caught by an outer try/catch that
+// discarded the real (if partial) jobs list entirely and returned []
+// instead — turning "not enough jobs cached" into "zero jobs, can't resolve
+// ANY job's id." Isolating it in its own try/catch means a failed "mark
+// this stale for next time" no longer destroys valid data for THIS request.
+function markStaleIfPossible() {
   try {
-    if (opts?.forceRefresh) revalidateTag(CACHE_TAG, 'max');
+    revalidateTag(CACHE_TAG, 'max');
+  } catch (err) {
+    console.error('[v2-job-map] revalidateTag failed (likely called during a page render, not a route handler) — continuing with the data already fetched:', err);
+  }
+}
+
+export async function getV2Jobs(opts?: { forceRefresh?: boolean }): Promise<JobMapEntry[]> {
+  if (opts?.forceRefresh) markStaleIfPossible();
+  try {
     const jobs = await getCachedV2JobsSingleFlight();
     if (jobs.length < MIN_PLAUSIBLE_JOBS) {
       console.warn(
-        `[v2-job-map] only ${jobs.length} jobs in cache (expected ${MIN_PLAUSIBLE_JOBS}+) — looks like a partial pull; marking the cache stale so the next request retries`
+        `[v2-job-map] only ${jobs.length} jobs in cache (expected ${MIN_PLAUSIBLE_JOBS}+) — looks like Supabase is unreachable or freshly empty; marking the cache stale so the next request retries`
       );
-      revalidateTag(CACHE_TAG, 'max');
+      markStaleIfPossible();
     }
     return jobs;
   } catch (err) {
@@ -187,10 +250,7 @@ export async function getJobMap(opts?: { forceRefresh?: boolean }): Promise<JobM
   return map;
 }
 
-// Called by src/lib/warmCaches.ts so the cron warmer keeps this hot too —
-// without it, this cache only gets rebuilt on whichever real request happens
-// to land after the 5-minute window lapses, same cold-first-visitor problem
-// jobsCache.ts documents for the public jobs list.
+// Called by src/lib/warmCaches.ts so the cron warmer keeps this hot too.
 export async function warmV2JobMapCache(): Promise<void> {
   await getV2Jobs();
 }
