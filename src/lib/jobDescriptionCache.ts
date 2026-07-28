@@ -9,11 +9,15 @@ const RUNNING_ON_VERCEL = !!process.env.VERCEL;
 
 export type JobDescription = { job_description: string; public_job_description: string };
 
-// A job's description essentially never changes once posted, so an hour-long
-// cache is cheap — the real cost this exists to avoid is Ceipal's own 8-12+
-// second response time for this endpoint (measured elsewhere in this
-// codebase), which every visitor would otherwise pay live on every open.
-const CACHE_TTL_SECONDS = 60 * 60;
+// Stretched from 1 hour to 24 hours — a job's description essentially never
+// changes once posted, so a short window bought almost nothing. Without a
+// recurring external warm-cache pinger actually configured, every ~1 hour
+// gap in traffic meant the next person to open that job (however long after
+// — potentially the first visitor of the day) paid Ceipal's own live 8-12+
+// second response time again. A single warm-up (already automatic via
+// `npm run deploy`) now keeps every visitor's click instant for a full day
+// afterward instead of only the first hour.
+const CACHE_TTL_SECONDS = 24 * 60 * 60;
 
 async function fetchDescription(jobCode: string, id: string): Promise<JobDescription> {
   const res = await ceipalFetch(`https://api.ceipal.com/v2/getJobPostingDetails/${id}/`);
