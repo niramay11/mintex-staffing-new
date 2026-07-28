@@ -37,6 +37,13 @@ export default function JobDetailModal({ job, onClose, onApply, prefetchedDescri
     prefetchedDescription ? prefetchedDescription.public_job_description || prefetchedDescription.job_description || "" : null
   );
   const [descLoading, setDescLoading] = useState(!prefetchedDescription);
+  // A job nobody's viewed since its cache last expired still needs one live,
+  // several-second Ceipal round-trip — that part can't be skipped. What CAN
+  // be fixed is staring at a bare "Loading description…" the whole time:
+  // after ~2.5s this swaps to a reassuring message instead, while the fetch
+  // keeps running in the background and still fills in the real text the
+  // moment it lands.
+  const [descSlow, setDescSlow] = useState(false);
 
   useEffect(() => {
     if (prefetchedDescription) {
@@ -47,7 +54,11 @@ export default function JobDetailModal({ job, onClose, onApply, prefetchedDescri
 
     let cancelled = false;
     setDescLoading(true);
+    setDescSlow(false);
     setFetchedDescription(null);
+    const slowTimer = setTimeout(() => {
+      if (!cancelled) setDescSlow(true);
+    }, 2500);
     fetch(`/api/jobs/description?job_code=${encodeURIComponent(job.job_code)}`)
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
@@ -60,6 +71,7 @@ export default function JobDetailModal({ job, onClose, onApply, prefetchedDescri
       });
     return () => {
       cancelled = true;
+      clearTimeout(slowTimer);
     };
   }, [job.job_code, prefetchedDescription]);
 
@@ -141,7 +153,11 @@ export default function JobDetailModal({ job, onClose, onApply, prefetchedDescri
             <div className="mt-5">
               <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-navy/50">Description</p>
               {descLoading ? (
-                <p className="text-sm text-navy/40">Loading description…</p>
+                <p className="text-sm text-navy/40">
+                  {descSlow
+                    ? "Still pulling the full details for this role — feel free to apply below while you wait."
+                    : "Loading description…"}
+                </p>
               ) : (
                 <div
                   className="prose-sm text-sm leading-relaxed text-navy/80 [&_*]:my-1"
