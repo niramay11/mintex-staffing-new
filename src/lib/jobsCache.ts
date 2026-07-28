@@ -1,5 +1,6 @@
 import { unstable_cache, revalidateTag } from 'next/cache';
 import { ceipalFetch, CEIPAL_JOBS_URL } from '@/lib/ceipal';
+import { supabaseAdmin } from '@/lib/supabase';
 
 // Vercel sets this automatically; it's absent in local `next dev`/`next
 // start`. Several budgets below are only tight because of Vercel's 60s
@@ -23,9 +24,12 @@ const PAGE_SIZE  = 50;
 // 50s-2min even in the best case — meaning some truncation on a bad cycle
 // is unavoidable either way, and the only lever we have is maximizing how
 // far it gets. Dropping concurrency there (confirmed live) made that WORSE:
-// the public jobs list started consistently stopping around job code 1334
-// instead of reaching newer postings, because slower-but-reliable per page
-// covers strictly less ground in the same fixed 40s window.
+// the public jobs list started consistently stopping around the same job
+// code every cycle instead of reaching newer postings, because
+// slower-but-reliable per page covers strictly less ground in the same
+// fixed 40s window. (The merge-into-Supabase strategy below is what
+// actually fixes the user-visible consequence of that truncation — this
+// constant just controls how much of each cycle's slice gets covered.)
 const BATCH_SIZE = RUNNING_ON_VERCEL ? 8 : 3;
 // Same reasoning: Vercel can't afford to spend its scarce 40s budget waiting
 // out a cooldown between retries, so it keeps the original short delay and
@@ -114,9 +118,10 @@ async function fetchPageWithRetry(page: number): Promise<unknown[] | null> {
 // mid-request — and a killed function never gets to populate the cache, so
 // every subsequent request just retries the same losing race forever.
 // Stopping early and returning whatever's been collected so far means the
-// function always finishes successfully; worst case on a slow Ceipal day is a
-// shorter-than-usual (but real, valid, cached) job list instead of a hard
-// failure on every single request.
+// function always finishes successfully; worst case on a slow Ceipal day is
+// this cycle's slice covering fewer jobs than usual — which, thanks to the
+// Supabase merge below, no longer means those OTHER jobs disappear from the
+// site, just that they don't get freshened this particular cycle.
 //
 // That 60s kill only exists on Vercel — `next dev`/`next start` on a local
 // machine has no such limit, so truncating early there was pure downside
@@ -125,9 +130,18 @@ async function fetchPageWithRetry(page: number): Promise<unknown[] | null> {
 // budget applied unconditionally everywhere).
 const TIME_BUDGET_MS = RUNNING_ON_VERCEL ? 40_000 : 5 * 60_000;
 
-async function fetchAllJobs(): Promise<unknown[]> {
+type JobRecord = Record<string, unknown>;
+
+// Pages through Ceipal's job list within TIME_BUDGET_MS, returning whatever
+// it manages to fetch THIS cycle. On a slow Ceipal day that may be a partial
+// slice of the real ~1,500-2,300+ total, not the full list — that's fine now:
+// fetchAllJobs() below merges this into the durable `ceipal_jobs_cache`
+// table instead of treating it as the whole truth, so an incomplete cycle
+// just leaves untouched jobs stale rather than making them (or their
+// description, on the job detail page) disappear from the site.
+async function fetchLiveJobsSlice(): Promise<JobRecord[]> {
   const startedAt = Date.now();
-  const all: unknown[] = [];
+  const all: JobRecord[] = [];
 
   for (let start = 1; start <= 300; start += BATCH_SIZE) {
     if (Date.now() - startedAt > TIME_BUDGET_MS) {
@@ -147,7 +161,7 @@ async function fetchAllJobs(): Promise<unknown[]> {
         console.warn('[jobs] a page failed to fetch after retry — skipping it, not treating as end of data');
         continue;
       }
-      all.push(...pageResults);
+      all.push(...(pageResults as JobRecord[]));
       if (pageResults.length < PAGE_SIZE) { reachedEnd = true; break; }
     }
     if (reachedEnd) break;
@@ -155,19 +169,14 @@ async function fetchAllJobs(): Promise<unknown[]> {
 
   const seen = new Set<string>();
   const jpc = all.filter(j => {
-    const code = String((j as Record<string, unknown>).job_code ?? '');
+    const code = String(j.job_code ?? '');
     if (!code.startsWith('JPC')) return false;
     if (seen.has(code)) return false;
     seen.add(code);
     return true;
   });
 
-  jpc.sort((a, b) =>
-    jobCodeNum((b as Record<string, unknown>).job_code) -
-    jobCodeNum((a as Record<string, unknown>).job_code)
-  );
-
-  console.log(`[jobs] fetched ${all.length} total, ${jpc.length} JPC jobs`);
+  console.log(`[jobs] live pull this cycle: ${all.length} raw, ${jpc.length} JPC jobs`);
 
   // Next's Data Cache flatly refuses to store any single cached value over 2MB
   // ("Failed to set Next.js data cache... items over 2MB can not be cached") —
@@ -176,11 +185,10 @@ async function fetchAllJobs(): Promise<unknown[]> {
   // actually being persisted between requests this whole time, silently
   // falling back to a fresh live Ceipal pull on every single cache miss.
   // Trimming to just the fields the UI (list view + admin/portal detail
-  // modals) actually reads directly off this object gets the full ~1,500-job
-  // list to ~1MB — comfortably cacheable, with room to grow. The two
-  // description fields are the big ones dropped here; they're fetched
-  // on-demand per job instead (see /api/jobs/description + the
-  // /get-hired/jobs/[job_code] page).
+  // modals) actually reads directly off this object keeps every row small —
+  // comfortably cacheable/storable, with room to grow. The two description
+  // fields are the big ones dropped here; they're fetched on-demand per job
+  // instead (see /api/jobs/description + the /get-hired/jobs/[job_code] page).
   const KEEP_FIELDS = [
     'job_code', 'job_title', 'client', 'city', 'states', 'zip_code', 'country', 'location',
     'pay_rate___salary', 'career_portal_published_date', 'job_type', 'job_status',
@@ -189,25 +197,90 @@ async function fetchAllJobs(): Promise<unknown[]> {
     'end_client', 'priority', 'client_manager', 'sales_manager', 'tax_terms', 'duration',
     'job_start_date', 'job_end_date', 'client_bill_rate___salary', 'secondary_skills',
   ];
-  const trimmed = jpc.map(j => {
-    const src = j as Record<string, unknown>;
-    const out: Record<string, unknown> = {};
+  return jpc.map(src => {
+    const out: JobRecord = {};
     for (const key of KEEP_FIELDS) if (src[key] !== undefined) out[key] = src[key];
     return out;
   });
+}
 
-  // A totally empty result means the fetch failed outright (e.g. every page
-  // request errored) — this is never a legitimate answer, this site always
-  // has active jobs. Throwing instead of returning `[]` stops unstable_cache
-  // from caching that failure as if it were a valid result: a bad "0 jobs"
-  // answer getting cached would otherwise sit there being served fast to
-  // every visitor for the full revalidate window, which is worse than the
-  // slow-but-real answer this exists to avoid.
-  if (jpc.length === 0) {
-    throw new Error('[jobs] fetchAllJobs returned zero jobs — refusing to cache this as a valid result');
+const SUPABASE_TABLE = 'ceipal_jobs_cache';
+const SUPABASE_UPSERT_CHUNK = 500;
+const SUPABASE_READ_CHUNK = 1000;
+
+// Persists this cycle's fetched jobs into the durable, incrementally-merged
+// store — an UPDATE for job codes already seen before, an INSERT for new
+// ones. Never deletes: Ceipal marks postings Closed/Filled in place rather
+// than removing them, so once a job's page IS re-fetched some future cycle,
+// its status field simply updates here too. Best-effort — a write failure
+// logs but doesn't fail the whole cycle, since readAllJobsFromSupabase()
+// below still has whatever was already durably stored from earlier cycles.
+async function upsertJobsToSupabase(jobs: JobRecord[]): Promise<void> {
+  const syncedAt = new Date().toISOString();
+  for (let i = 0; i < jobs.length; i += SUPABASE_UPSERT_CHUNK) {
+    const chunk = jobs.slice(i, i + SUPABASE_UPSERT_CHUNK).map(job => ({
+      job_code: String(job.job_code),
+      data: job,
+      synced_at: syncedAt,
+    }));
+    const { error } = await supabaseAdmin.from(SUPABASE_TABLE).upsert(chunk, { onConflict: 'job_code' });
+    if (error) console.error('[jobs] supabase upsert failed for a chunk:', error.message);
+  }
+}
+
+// Reads back the FULL accumulated job list — the union of every cycle's
+// successful fetches, not just this cycle's slice. This is what makes an
+// incomplete live pull safe to serve: whatever this cycle missed just keeps
+// whatever it had from the last cycle that DID reach it, instead of
+// vanishing from the site the way a wholesale-replace cache would.
+async function readAllJobsFromSupabase(): Promise<JobRecord[]> {
+  const all: JobRecord[] = [];
+  for (let from = 0; ; from += SUPABASE_READ_CHUNK) {
+    const { data, error } = await supabaseAdmin
+      .from(SUPABASE_TABLE)
+      .select('data')
+      .range(from, from + SUPABASE_READ_CHUNK - 1);
+    if (error) {
+      console.error('[jobs] supabase read failed:', error.message);
+      break;
+    }
+    if (!data || data.length === 0) break;
+    all.push(...data.map(row => row.data as JobRecord));
+    if (data.length < SUPABASE_READ_CHUNK) break;
+  }
+  return all;
+}
+
+async function fetchAllJobs(): Promise<JobRecord[]> {
+  let fresh: JobRecord[] = [];
+  try {
+    fresh = await fetchLiveJobsSlice();
+  } catch (err) {
+    // A totally failed live pull (e.g. Ceipal auth down) no longer fails the
+    // whole cycle — readAllJobsFromSupabase() below still serves whatever
+    // was durably persisted from previous successful cycles.
+    console.error('[jobs] live Ceipal pull failed entirely this cycle:', err);
   }
 
-  return trimmed;
+  if (fresh.length > 0) {
+    await upsertJobsToSupabase(fresh);
+  }
+
+  const merged = await readAllJobsFromSupabase();
+
+  if (merged.length === 0) {
+    // Supabase read came back empty — either genuinely nothing has ever
+    // been synced yet, or Supabase itself is unreachable. If this cycle DID
+    // get a fresh live batch, use it directly rather than losing it.
+    if (fresh.length > 0) return fresh;
+    // Truly nothing anywhere. Throwing (instead of returning `[]`) stops
+    // unstable_cache from caching that failure as if it were valid data —
+    // this is never a legitimate answer, this site always has active jobs.
+    throw new Error('[jobs] no jobs available from live Ceipal pull or persisted cache — refusing to cache this as a valid result');
+  }
+
+  merged.sort((a, b) => jobCodeNum(b.job_code) - jobCodeNum(a.job_code));
+  return merged;
 }
 
 // unstable_cache persists its result via Next's Data Cache, which on Vercel is
@@ -232,8 +305,8 @@ const getCachedAllJobs = unstable_cache(fetchAllJobs, [CACHE_TAG], {
 // cache regardless of which one actually got further. Coalescing concurrent
 // callers onto one shared in-flight promise (same pattern as the token
 // single-flight guards in ceipal.ts) removes that race.
-let inflightAllJobs: Promise<unknown[]> | null = null;
-function getCachedAllJobsSingleFlight(): Promise<unknown[]> {
+let inflightAllJobs: Promise<JobRecord[]> | null = null;
+function getCachedAllJobsSingleFlight(): Promise<JobRecord[]> {
   if (!inflightAllJobs) {
     inflightAllJobs = getCachedAllJobs().finally(() => { inflightAllJobs = null; });
   }
@@ -242,26 +315,12 @@ function getCachedAllJobsSingleFlight(): Promise<unknown[]> {
 
 // This site has had 1,000+ JPC job postings for as long as it's been
 // tracked — a cycle that comes back with far fewer isn't "the job market
-// shrank," it's this fetch hitting the time budget early or a burst of
-// page failures (confirmed live: a 521-job partial result, missing every
-// job code above 534, got cached and served site-wide — 0 "Active" jobs
-// shown on the public board and in the client portal — until manually
-// force-refreshed). Still return what was collected (never a hard
-// failure), but immediately mark the cache stale so the VERY NEXT request
-// retries instead of also being stuck with this same partial result for
-// the rest of the cache window. This threshold is a rough tripwire, not a
-// precise measurement — revisit it if the real job count ever naturally
-// drifts below it.
-//
-// Raised from 800 to 1300 after confirming live that 800 was too low
-// relative to the real ~1,500-1,600 total: an 834-job cycle (~55%
-// complete) slipped through as "plausible," and — now that the cache
-// window is an hour instead of 15 minutes — that meant Get Hired, the
-// Client Portal, and Admin all served a clearly-incomplete job list for
-// up to an hour before it would have self-corrected. A longer cache
-// window raises the cost of the floor being too low, so the floor needed
-// to move closer to "actually complete," not stay where it was tuned for
-// a much shorter window.
+// shrank," it's a sign something's wrong. Now that fetchAllJobs() merges
+// into ceipal_jobs_cache instead of replacing the list wholesale, a single
+// slow/partial live cycle can no longer shrink the served list the way it
+// used to — the accumulated total only drops this low if Supabase itself is
+// unreachable and fetchAllJobs() fell back to a bare fresh batch. Kept as a
+// tripwire for that specific case, not the primary defense it used to be.
 const MIN_PLAUSIBLE_JPC_JOBS = 1300;
 
 // Shared by /api/jobs (client-side refetches, force-refresh) and any Server
@@ -282,9 +341,9 @@ export async function getCachedJobs(opts?: { forceRefresh?: boolean }): Promise<
     // and that throw was being silently swallowed by this same try/catch,
     // discarding the partial-but-real job list and returning completely
     // empty instead — worse than doing nothing.
-    if ((jobs as unknown[]).length < MIN_PLAUSIBLE_JPC_JOBS) {
+    if (jobs.length < MIN_PLAUSIBLE_JPC_JOBS) {
       console.warn(
-        `[jobs] only ${(jobs as unknown[]).length} JPC jobs in cache (expected ${MIN_PLAUSIBLE_JPC_JOBS}+) — looks like a partial pull; marking the cache stale so the next request retries instead of trusting this for the full ${CACHE_TTL_SECONDS}s window`
+        `[jobs] only ${jobs.length} JPC jobs in cache (expected ${MIN_PLAUSIBLE_JPC_JOBS}+) — looks like Supabase is unreachable or freshly empty; marking the cache stale so the next request retries instead of trusting this for the full ${CACHE_TTL_SECONDS}s window`
       );
       revalidateTag(CACHE_TAG, 'max');
     }
