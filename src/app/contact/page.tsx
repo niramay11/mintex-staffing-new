@@ -49,6 +49,16 @@ function IconFax({ className }: { className?: string }) {
   );
 }
 
+function IconArrowRight({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M13 6l6 6-6 6" />
+    </svg>
+  );
+}
+
+const OFFICE_ADDRESS = "2163 Oak Tree Rd, Edison, NJ 08820";
+
 const contactCards = [
   {
     label: "Our Office",
@@ -91,15 +101,15 @@ export default function ContactPage() {
         <h1 className="text-4xl font-bold sm:text-5xl">Contact Us</h1>
         <div className="mt-3 h-1 w-16 rounded-full bg-tan" />
         <p className="mt-4 max-w-2xl text-white/80">
-          Have a question or want to discuss your hiring needs?
+          Have a question or want to discuss your hiring needs?{" "}
           <br className="hidden sm:block" />
           We&apos;re here to help and will get back to you as soon as possible.
         </p>
       </Section>
 
       <Section background="cream">
-        <div className="grid gap-10 rounded-3xl bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)] sm:p-10 lg:grid-cols-3 lg:divide-x lg:divide-navy/10">
-          <div>
+        <div className="grid items-start gap-6 lg:grid-cols-3">
+          <div className="rounded-3xl bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)] sm:p-8">
             <h2 className="text-2xl font-bold text-navy">Get in Touch</h2>
             <div className="mt-2 h-1 w-12 rounded-full bg-tan" />
             <p className="mt-3 text-sm text-navy/70">
@@ -122,9 +132,28 @@ export default function ContactPage() {
                 </div>
               ))}
             </div>
+
+            <div className="mt-4 overflow-hidden rounded-2xl border border-navy/10">
+              <iframe
+                title={`Mintex Staffing office location — ${OFFICE_ADDRESS}`}
+                src={`https://www.google.com/maps?q=${encodeURIComponent(OFFICE_ADDRESS)}&output=embed`}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="block h-[220px] w-full border-0"
+              />
+            </div>
+            <a
+              href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(OFFICE_ADDRESS)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-navy hover:text-steel"
+            >
+              Get Directions
+              <IconArrowRight className="h-3.5 w-3.5" />
+            </a>
           </div>
 
-          <div className="lg:col-span-2 lg:pl-10">
+          <div className="rounded-3xl bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)] sm:p-10 lg:col-span-2">
             <h2 className="text-2xl font-bold text-navy">Send Us a Message</h2>
             <div className="mt-2 h-1 w-12 rounded-full bg-tan" />
             <p className="mt-3 text-sm text-navy/70">
@@ -134,20 +163,6 @@ export default function ContactPage() {
               <ContactForm />
             </div>
           </div>
-        </div>
-      </Section>
-
-      <Section background="cream" className="!pt-0">
-        <div className="overflow-hidden rounded-3xl shadow-[0_1px_3px_rgba(0,48,96,0.05)]">
-          <iframe
-            title="Mintex Staffing office location — 2163 Oak Tree Rd, Edison, NJ 08820"
-            src="https://www.google.com/maps?q=2163+Oak+Tree+Rd,+Edison,+NJ+08820&output=embed"
-            width="100%"
-            height="360"
-            style={{ border: 0 }}
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          />
         </div>
       </Section>
     </>
