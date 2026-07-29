@@ -1,4 +1,8 @@
+import { unstable_cache } from 'next/cache';
 import { ceipalFetch } from './ceipal';
+import { getCachedJobs } from './jobsCache';
+import { getJobMap } from './ceipal-job-map';
+import { supabaseAdmin } from './supabase';
 
 function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -21,17 +25,11 @@ async function fetchOnce(v2Id: string): Promise<Record<string, unknown>[] | null
 
 const RETRY_DELAY_MS = 800;
 
-// Both /api/portal/submissions and /api/portal/job-submissions used to call
-// Ceipal directly with `catch { return [] }` and no retry — meaning one slow
-// or transiently-failed response for a job got silently recorded as "zero
-// submissions" instead of "this fetch failed," identical to the exact class
-// of bug already found and fixed in jobsCache.ts/ceipal-job-map.ts today
-// (Ceipal has been measured taking 8-12+ seconds even for a normal,
-// successful response). One retry before giving up — and a log line instead
-// of silence — turns a transient hiccup back into real data most of the
-// time, and makes a genuine outage visible in the server logs instead of
-// just looking like "this job has no candidates."
-export async function fetchJobSubmissions(v2Id: string): Promise<Record<string, unknown>[]> {
+// Throws (rather than falling back to []) when both attempts fail, so the
+// cache below never mistakes "Ceipal didn't answer in time" for "this job
+// genuinely has zero submissions" — and never persists that failure as if
+// it were real data.
+async function fetchJobSubmissionsLive(v2Id: string): Promise<Record<string, unknown>[]> {
   const first = await fetchOnce(v2Id);
   if (first !== null) return first;
 
@@ -39,6 +37,108 @@ export async function fetchJobSubmissions(v2Id: string): Promise<Record<string, 
   const retry = await fetchOnce(v2Id);
   if (retry !== null) return retry;
 
-  console.warn(`[ceipal-submissions] failed to fetch submissions for jobId=${v2Id} after retry — treating as zero this cycle`);
-  return [];
+  throw new Error(`failed to fetch submissions for jobId=${v2Id} after retry`);
+}
+
+// Confirmed live: a Client Portal page for an account with 200+ jobs was
+// re-asking Ceipal for every single one of those jobs' submissions on every
+// single page visit. Ceipal's own well-documented slowness under sustained,
+// back-to-back requests (see jobsCache.ts's own measurements) meant most of
+// those individual fetches started failing after their one retry, showing
+// "0 submissions" for jobs that likely have real ones — and because nothing
+// was cached, EVERY visit paid this same cost and hit the same failures
+// again, forever. Caching each job's submissions for 10 minutes means only
+// the FIRST view (by any client, for any job) pays that live-call risk;
+// every view after that, for that job, reuses the already-successful result
+// instead of re-rolling the dice with Ceipal hundreds of times per page load.
+const CACHE_TTL_SECONDS = 10 * 60;
+const getCachedJobSubmissionsRaw = unstable_cache(fetchJobSubmissionsLive, ['job-submissions'], {
+  revalidate: CACHE_TTL_SECONDS,
+});
+
+// Both /api/portal/submissions and /api/portal/job-submissions call this —
+// same name/signature as before, so no call site needs to change. The
+// graceful "treat as zero" fallback only kicks in on a genuine failure, and
+// critically that failure is never what gets cached — the next read for
+// this same job tries Ceipal fresh again instead of staying stuck at zero
+// for the rest of the cache window.
+export async function fetchJobSubmissions(v2Id: string): Promise<Record<string, unknown>[]> {
+  try {
+    return await getCachedJobSubmissionsRaw(v2Id);
+  } catch (err) {
+    console.warn(`[ceipal-submissions] ${err instanceof Error ? err.message : String(err)} — treating as zero this cycle`);
+    return [];
+  }
+}
+
+const RUNNING_ON_VERCEL = !!process.env.VERCEL;
+// Deliberately tight — this runs alongside five other cache warmers in the
+// same warmAllJobCaches() Promise.all (see warmCaches.ts), all sharing one
+// Vercel invocation capped at 60s total. A handful of clients can easily
+// have 1,000+ jobs between them, so this is a best-effort head start on the
+// most impactful accounts, not a guarantee of full coverage in one cycle —
+// the 10-minute cache above plus organic portal visits fill in the rest.
+const WARM_TIME_BUDGET_MS = RUNNING_ON_VERCEL ? 20_000 : 60_000;
+const WARM_BATCH_SIZE = 8;
+const WARM_MAX_JOBS = 300;
+const WARM_PER_JOB_TIMEOUT_MS = 8_000;
+
+function raceTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
+  return Promise.race([promise, new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))]);
+}
+
+// Proactively warms submissions for every active Client Portal account's
+// assigned jobs, right after every deploy — so a client opening the portal
+// shortly after a deploy sees mostly-instant, mostly-complete numbers
+// instead of needing to reload repeatedly while the cache slowly fills in
+// from scratch through their own page loads.
+export async function warmClientSubmissions(): Promise<void> {
+  const startedAt = Date.now();
+  try {
+    const [{ jobs }, jobMap, { data: clients, error: clientsError }] = await Promise.all([
+      getCachedJobs(),
+      getJobMap(),
+      supabaseAdmin.from('clients').select('allowed_job_codes, ceipal_client_name, company').eq('is_active', true),
+    ]);
+
+    if (clientsError) {
+      console.error('[ceipal-submissions] warmClientSubmissions could not load clients:', clientsError.message);
+      return;
+    }
+    if (!clients || clients.length === 0) return;
+
+    const allJobs = jobs as Record<string, unknown>[];
+    const codesToWarm = new Set<string>();
+
+    for (const client of clients as Record<string, unknown>[]) {
+      const allowedCodes = (client.allowed_job_codes as string[]) ?? [];
+      const ceipalName = String(client.ceipal_client_name ?? client.company ?? '').toLowerCase().trim();
+      const matched = allowedCodes.length > 0
+        ? allJobs.filter((j) => allowedCodes.includes(String(j.job_code ?? '')))
+        : ceipalName
+          ? allJobs.filter((j) => String(j.client ?? '').toLowerCase().trim() === ceipalName)
+          : [];
+      for (const j of matched) {
+        const code = String(j.job_code ?? '');
+        if (code) codesToWarm.add(code);
+      }
+      if (codesToWarm.size >= WARM_MAX_JOBS) break;
+    }
+
+    const ids = [...codesToWarm]
+      .slice(0, WARM_MAX_JOBS)
+      .map((code) => jobMap[code])
+      .filter((id): id is string => !!id);
+
+    for (let i = 0; i < ids.length; i += WARM_BATCH_SIZE) {
+      if (Date.now() - startedAt > WARM_TIME_BUDGET_MS) {
+        console.warn(`[ceipal-submissions] warmClientSubmissions time budget exceeded after warming ${i}/${ids.length} jobs`);
+        break;
+      }
+      const batch = ids.slice(i, i + WARM_BATCH_SIZE);
+      await Promise.all(batch.map((id) => raceTimeout(fetchJobSubmissions(id).catch(() => null), WARM_PER_JOB_TIMEOUT_MS, null)));
+    }
+  } catch (err) {
+    console.error('[ceipal-submissions] warmClientSubmissions failed:', err);
+  }
 }
