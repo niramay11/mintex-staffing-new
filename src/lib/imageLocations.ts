@@ -75,23 +75,19 @@ export const IMAGE_LOCATIONS: ImageLocation[] = [
   // Seek Talent — How We Work
   { locationKey: "seek-talent:how-we-work-visual", pageName: "Seek Talent", sectionName: "How We Work Visual", defaultSrc: "/collage-2.webp", category: "photo-portrait" },
 
-  // Seek Talent — templated service pages, one row per point image + one for the contact-form visual
-  ...hiringServices.flatMap((service) => [
-    ...service.points.map((point, index) => ({
+  // Seek Talent — Get Started (hiring inquiry form page)
+  { locationKey: "seek-talent:get-started-visual", pageName: "Seek Talent", sectionName: "Get Started Visual", defaultSrc: "/interview-confident.jpg", category: "photo-portrait" },
+
+  // Seek Talent — templated service pages, one row per point image
+  ...hiringServices.flatMap((service) =>
+    service.points.map((point, index) => ({
       locationKey: `seek-talent-service:${service.slug}:point-${index + 1}-visual`,
       pageName: "Seek Talent Services",
       sectionName: `${service.name} — Point ${index + 1}: ${point.title}`,
       defaultSrc: "/hero-office.webp",
       category: "photo-portrait" as ImageCategory,
-    })),
-    {
-      locationKey: `seek-talent-service:${service.slug}:recruiter-visual`,
-      pageName: "Seek Talent Services",
-      sectionName: `${service.name} — Recruiter Visual`,
-      defaultSrc: "/interview-confident.jpg",
-      category: "photo-portrait" as ImageCategory,
-    },
-  ]),
+    }))
+  ),
 
   // Resources
   { locationKey: "resources:hiring-cost-card",      pageName: "Resources", sectionName: "Hiring Cost Calculator Card",     defaultSrc: "/hero-office.webp",       category: "photo-portrait" },

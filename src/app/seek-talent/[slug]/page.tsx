@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import Section from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import { hiringServices, getHiringServiceBySlug } from "@/content/hiringServices";
-import HiringInquiryForm from "@/components/forms/HiringInquiryForm";
 import { getSiteImages } from "@/lib/siteImages";
 import { pageMetadata } from "@/lib/pageMetadata";
 
@@ -169,84 +168,21 @@ export default async function HiringServicePage({
                   <div>
                     <h3 className="font-semibold text-navy">{point.title}</h3>
                     <p className="mt-1 text-sm text-navy/70">{point.description}</p>
+                    {index === service.points.length - 1 && (
+                      <ButtonLink
+                        href="/seek-talent/get-started"
+                        variant="primary"
+                        className="mt-4 inline-flex items-center gap-2"
+                      >
+                        Get started
+                        <IconArrowRight className="h-4 w-4" />
+                      </ButtonLink>
+                    )}
                   </div>
                 </div>
               </div>
             );
           })}
-        </div>
-      </Section>
-
-      <Section background="cream" className="relative overflow-hidden !py-12 sm:!py-14 lg:!py-16">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -left-24 -top-24 h-[360px] w-[360px] rounded-full bg-tan/20 blur-[110px]"
-        />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -bottom-28 -right-16 h-[380px] w-[380px] rounded-full bg-steel/20 blur-[120px]"
-        />
-
-        <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[32px] border border-navy/[0.06] bg-white p-7 shadow-[0_30px_70px_-25px_rgba(0,48,96,0.25)] sm:p-10">
-          <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.14em] text-tan">Get in touch</p>
-              <h3 className="mt-2 text-2xl font-bold text-navy sm:text-3xl">Connect with our experts</h3>
-              <p className="mt-1.5 text-sm text-navy/70">
-                Tell us what you need and we&apos;ll scope a search built around your team.
-              </p>
-              <div className="mt-7">
-                <HiringInquiryForm />
-              </div>
-            </div>
-
-            <div className="relative mx-auto hidden lg:block" style={{ width: 380, height: 475 }}>
-              <div
-                aria-hidden="true"
-                style={{
-                  position: "absolute",
-                  right: -46,
-                  top: 0,
-                  width: 380,
-                  height: 475,
-                  borderRadius: "14% / 22%",
-                  backgroundColor: "rgba(0,48,96,0.2)",
-                  zIndex: 0,
-                }}
-              />
-              <div
-                aria-hidden="true"
-                style={{
-                  position: "absolute",
-                  left: -30,
-                  top: -30,
-                  width: 380,
-                  height: 475,
-                  borderRadius: "14% / 22%",
-                  border: "4px solid #4a738c",
-                  zIndex: 1,
-                }}
-              />
-              <div
-                className="relative overflow-hidden"
-                style={{
-                  width: 380,
-                  height: 475,
-                  borderRadius: "14% / 22%",
-                  boxShadow: "0 25px 55px -20px rgba(0,48,96,0.3)",
-                  zIndex: 2,
-                }}
-              >
-                <Image
-                  src={siteImages[`seek-talent-service:${slug}:recruiter-visual`]}
-                  alt="Mintex Staffing recruiter ready to discuss your hiring needs"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-
-            </div>
-          </div>
         </div>
       </Section>
     </>
