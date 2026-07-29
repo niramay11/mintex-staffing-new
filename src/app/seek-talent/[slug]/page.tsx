@@ -145,51 +145,17 @@ export default async function HiringServicePage({
             return (
               <div
                 key={point.title}
-                className={`flex flex-col items-center gap-6 lg:gap-10 ${imageFirst ? "lg:flex-row" : "lg:flex-row-reverse"}`}
+                className={`flex flex-col items-center gap-6 lg:items-start lg:gap-10 ${imageFirst ? "lg:flex-row" : "lg:flex-row-reverse"}`}
               >
-                <div
-                  className="relative hidden flex-shrink-0 lg:block"
-                  style={{ width: 240, height: 300 }}
-                >
+                <div className="relative hidden flex-shrink-0 lg:block" style={{ width: 320 }}>
                   <div
                     aria-hidden="true"
-                    style={{
-                      position: "absolute",
-                      left: -22,
-                      top: 0,
-                      width: 240,
-                      height: 300,
-                      borderRadius: "14% / 22%",
-                      backgroundColor: "rgba(0,48,96,0.2)",
-                      zIndex: 0,
-                    }}
+                    className="absolute -inset-3 rounded-[2rem] border border-navy/10"
                   />
-                  <div
-                    aria-hidden="true"
-                    style={{
-                      position: "absolute",
-                      right: -16,
-                      top: -16,
-                      width: 240,
-                      height: 300,
-                      borderRadius: "14% / 22%",
-                      border: "4px solid #4a738c",
-                      zIndex: 1,
-                    }}
-                  />
-                  <div
-                    className="relative overflow-hidden"
-                    style={{
-                      width: 240,
-                      height: 300,
-                      borderRadius: "14% / 22%",
-                      boxShadow: "0 20px 45px -18px rgba(0,48,96,0.35)",
-                      zIndex: 2,
-                    }}
-                  >
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-[1.5rem] shadow-[0_20px_45px_-20px_rgba(0,48,96,0.25)]">
                     <Image
                       src={siteImages[`seek-talent-service:${slug}:point-${index + 1}-visual`]}
-                      alt="Hiring team reviewing candidates together"
+                      alt={`Mintex Staffing recruiters reviewing candidates for ${service.name.toLowerCase()} placements`}
                       fill
                       className="object-cover"
                     />
@@ -273,7 +239,7 @@ export default async function HiringServicePage({
               >
                 <Image
                   src={siteImages[`seek-talent-service:${slug}:recruiter-visual`]}
-                  alt="Recruiter ready to discuss your hiring needs"
+                  alt="Mintex Staffing recruiter ready to discuss your hiring needs"
                   fill
                   className="object-cover"
                 />

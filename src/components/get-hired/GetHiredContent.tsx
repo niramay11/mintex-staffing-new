@@ -81,9 +81,9 @@ export default async function GetHiredContent() {
             </div>
             <h1 className="mt-5 text-4xl font-bold sm:text-5xl">Get Hired</h1>
             <p className="mt-4 max-w-xl text-white/80">
-              Discover opportunities, whether you’re ready to apply or want to connect with our
-recruitment team for future roles, we are happy to help you find the right fit. You can join
-our talent network to stay ahead of new roles as they go live.
+              Find jobs according to your career goals, whether you are beginning your career or
+planning to switch roles, we got you covered. Join our talent network to stay ahead of new
+roles as they go live.
             </p>
             <div className="mt-7 flex flex-wrap gap-3.5">
               <BrowseRolesButton />
@@ -110,7 +110,7 @@ our talent network to stay ahead of new roles as they go live.
             <div className="relative aspect-[4/5] w-full max-w-[280px] overflow-hidden rounded-[32px] border border-white/10 shadow-[0_40px_90px_-25px_rgba(0,48,96,0.6)]">
               <Image
                 src={siteImages["get-hired:hero-visual"]}
-                alt="Job seeker preparing for an interview"
+                alt="Job seeker preparing for an interview with Mintex Staffing's recruitment team"
                 fill
                 className="object-cover"
               />

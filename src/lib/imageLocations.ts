@@ -96,6 +96,10 @@ export const IMAGE_LOCATIONS: ImageLocation[] = [
   // Resources
   { locationKey: "resources:hiring-cost-card",      pageName: "Resources", sectionName: "Hiring Cost Calculator Card",     defaultSrc: "/hero-office.webp",       category: "photo-portrait" },
   { locationKey: "resources:ai-interview-card",     pageName: "Resources", sectionName: "AI Interview Generator Card",     defaultSrc: "/interview-confident.jpg", category: "photo-portrait" },
+  { locationKey: "resources:point-1-visual",        pageName: "Resources", sectionName: "Point 1: Free, practical tools",  defaultSrc: "/hero-office.webp",       category: "photo-portrait" },
+  { locationKey: "resources:point-2-visual",        pageName: "Resources", sectionName: "Point 2: Hiring Cost Calculator", defaultSrc: "/hero-office.webp",       category: "photo-portrait" },
+  { locationKey: "resources:point-3-visual",        pageName: "Resources", sectionName: "Point 3: AI Interview Generator", defaultSrc: "/interview-confident.jpg", category: "photo-portrait" },
+  { locationKey: "resources:point-4-visual",        pageName: "Resources", sectionName: "Point 4: Explore the resources",  defaultSrc: "/interview-handshake.jpg", category: "photo-portrait" },
 
   // AI Interview Generator
   { locationKey: "ai-interview-generator:handshake-visual", pageName: "AI Interview Generator", sectionName: "Handshake Visual", defaultSrc: "/interview-handshake.jpg", category: "photo-square" },

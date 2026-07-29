@@ -112,7 +112,7 @@ export default async function AboutPage() {
           <div className="relative mx-6 mb-2 aspect-[4/3] overflow-hidden rounded-2xl shadow-[0_20px_45px_-20px_rgba(0,48,96,0.25)] sm:mx-10 sm:aspect-[16/10] lg:mx-0 lg:mb-0 lg:aspect-auto lg:min-h-[480px] lg:overflow-visible lg:rounded-none lg:shadow-none xl:min-h-[560px]">
             <Image
               src={siteImages["about:hero-visual"]}
-              alt="Mintex Staffing office"
+              alt="Mintex Staffing office, home to our staffing and recruitment services team"
               fill
               preload
               quality={95}
@@ -177,7 +177,7 @@ export default async function AboutPage() {
             <div className="relative mx-auto aspect-[4/3] w-full max-w-[480px] overflow-hidden rounded-2xl shadow-[0_25px_55px_-20px_rgba(0,48,96,0.35)]">
               <Image
                 src={siteImages["about:story-visual"]}
-                alt="Mintex Staffing recruiter greeting a candidate"
+                alt="Mintex Staffing recruiter greeting a candidate during a staffing and recruitment consultation"
                 fill
                 className="object-cover"
               />

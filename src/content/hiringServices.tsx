@@ -55,29 +55,29 @@ export const hiringServices: HiringService[] = [
     badge: "Flexible staffing",
     tagline: "Flexible talent for projects, seasonal peaks, and interim needs.",
     intro:
-      "Scale your business with our contract talent solutions where we help you to connect with specialized professionals who are ready to step in, add immediate and can convert into full-time professionals. Based in Edison, New Jersey, we place contract talent with employers across the state.",
+      "Grow your team faster with Mintex Staffing's contract talent solutions. Pre-qualified professionals ready to step in. Get started today.",
     accent: "tan",
     icon: IconClock,
     points: [
       {
-        title: "On-demand experts",
+        title: "No lengthy onboarding",
         description:
-          "Hire talents when your business needs them, we help you match your project/business requirements and lunch pre-qualified talents who has relevant skills and experience that your firm needs today.",
+          "When business demands shift quickly, waiting months to fill a role isn’t a fruitful option. Mintex Staffing’s contract talent solutions connect employers with specialized professionals who are ready to step in, add immediate value, and hit the ground running — no lengthy onboarding required.",
       },
       {
-        title: "Flexibility to expand",
+        title: "Pre-qualified across every industry",
         description:
-          "Match your headcount for your project workloads and expand your delivery capabilities during peak demands and allocate your resources seamlessly",
+          "We place contract talent with businesses across the state, providing IT staffing, healthcare staffing, engineering staffing, manufacturing staffing, finance staffing, administrative staffing, sales staffing, customer service staffing, legal staffing and logistics staffing. Every candidate is pre-qualified and matched to your specific project scope, timeline, and skill requirements, so you won’t be sorting through unqualified resumes to find the right fit.",
       },
       {
-        title: "Fast momentum",
+        title: "Flexible contract-to-hire",
         description:
-          "Our contract professionals are picked for their industry readiness and adaptability; they will drop into your workflows and start contributing from day one.",
+          "Need short-term coverage for a project surge, or want to evaluate talent before committing to a full-time hire? Our contract-to-hire model gives you the flexibility to scale your workforce up or down as business needs change, with the option to convert top performers into permanent team members when the fit is right.",
       },
       {
-        title: "Clear path to permanent fit",
+        title: "Ready to get started",
         description:
-          "Use contract roles as an organic way to evaluate mutual alignment. By working together on real projects first, both your team and the candidate can ensure a perfect cultural and technical fit before making a long-term commitment.",
+          "Ready to bring on-demand experts onto your team? Discuss your hiring needs with our staffing specialists or explore our full range of services to see how we support employers across the states.",
       },
     ],
   },
@@ -87,24 +87,29 @@ export const hiringServices: HiringService[] = [
     badge: "Long-term hires",
     tagline: "Full-time hires vetted for skills, culture, and long-term fit.",
     intro:
-      "Our permanent staffing solutions focuses on high-calibre professionals and quicker hiring timeline, who align with your long-term vision and core company values. Finding exceptional talent shouldn't require compromising your timeline or budget, we take care of the recruitment, so your leadership stay completely focused on what matter the most. Headquartered in Edison, NJ, we serve employers throughout New Jersey.",
+      "Speed up your hiring process with high-calibre permanent talent from Mintex Staffing. Quality-vetted candidates for long-term hires across the states. Get started today.",
     accent: "tan",
     icon: IconStar,
     points: [
       {
-        title: "We are focused on quality",
+        title: "Speed without sacrificing quality",
         description:
-          "You should not be drowning in unverified/AI Generated applications, we take care of your staffing needs and deliver top tier matches of highly targeted shortlist of candidates",
+          "Finding permanent talent shouldn’t mean choosing between speed and quality. Mintex Staffing’s permanent staffing solutions focus on high-performing professionals who align with your long-term vision and core company values, without stretching out your hiring timeline or dragging your hiring budget.",
       },
       {
-        title: "Hiring is done in matter of days",
+        title: "Full-service recruitment, every industry",
         description:
-          "Finding top-tier candidates and deciding is quicker cause you will be selecting from a pool of pre-qualified candidates.",
+          "We serve employers throughout the USA and provide IT staffing solutions, healthcare staffing solutions, engineering staffing solutions, manufacturing staffing solutions, finance staffing solutions, administrative staffing solutions, sales staffing solutions, customer service staffing solutions, legal staffing solutions and logistics staffing solutions. We handle the recruitment by sourcing, screening, and vetting, so your leadership team stays focused on running the business.",
       },
       {
-        title: "End to end support",
+        title: "Matched for genuine fit",
         description:
-          "Our expert recruiters will work with you to make sure the offer made by you is competitive and up to the industry standard.",
+          "Every candidate we present will be a targeted, quality-vetted match for your role, not just a resume that checks boxes. That focus on genuine fit means faster time-to-hire and stronger long-term retention, because the professionals you bring on are chosen to grow with your company, not just fill a seat.",
+      },
+      {
+        title: "Ready to build your core team",
+        description:
+          "Ready to build your core team with confidence? Discuss your hiring needs with our recruiters or explore our full range of staffing services to see how we support employers across the States.",
       },
     ],
   },
@@ -114,29 +119,29 @@ export const hiringServices: HiringService[] = [
     badge: "Leadership hiring",
     tagline: "Confidential search for senior leaders and hard-to-fill roles.",
     intro:
-      "We connect you with the C-suite highly qualified professionals who will take your company ahead, and we make sure its sealed tight according to your policy and organization standards. Our Edison, New Jersey team runs confidential searches for organizations statewide and beyond.",
+      "Confidential executive search for C-suite and board roles. Mintex’s team places leadership talent statewide and beyond.",
     accent: "steel",
     icon: IconBriefcase,
     points: [
       {
+        title: "Confidential, high-stakes searches",
+        description:
+          "Filling a C-suite or board-level role is a decision that shapes your company’s direction for years to come. Mintex Staffing’s executive search practice connects organizations with highly qualified leaders who can take the business forward, without compromising the confidentiality your search demands.",
+      },
+      {
+        title: "Discreet, policy-aligned process",
+        description:
+          "Our Edison, New Jersey team runs discreet, policy-aligned executive searches for organizations statewide and beyond, spanning public, private, and non-profit sectors. Every search is handled with strict adherence to your internal standards, so sensitive leadership transitions stay sealed tight from sourcing through placement.",
+      },
+      {
         title: "Board recruitment and advisory",
         description:
-          "We help you build your strongest high performing asset by identifying forward-thinking, diverse experts for public, private and non-profit organizations.",
+          "Beyond individual placements, we support board recruitment and advisory services, helping you build your strongest, highest-performing asset by identifying forward-thinking, diverse leaders who bring fresh perspective to your board or executive team. We look beyond resumes to find candidates who align with your culture, vision, and long-term goals.",
       },
       {
-        title: "Top-tier talent placement",
+        title: "Ready to secure your next leader",
         description:
-          "Our consultants are experienced business experts who will fish out the top-tier talents from exclusive global networks to match your organization standards.",
-      },
-      {
-        title: "Cultural fit",
-        description:
-          "Our approach is to identify exceptional candidates from a curated list of skills professionals for their track record, competencies, and cultural alignment to seamlessly deploy them into your current system.",
-      },
-      {
-        title: "Making your search our priority",
-        description:
-          "Regardless of your firm's position, we will guide you with absolute focus. Our dedicated consultants will manage the relationship end-to-end and will provide transparency in communication, expert advice in negotiations, and onboarding support from initial consultation until your new leader jumps in.",
+          "Ready to secure leadership talent that takes your organization forward? Discuss your hiring needs with our executive search team or explore our full range of staffing services across the States.",
       },
     ],
   },

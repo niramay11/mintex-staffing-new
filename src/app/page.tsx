@@ -42,12 +42,12 @@ export default async function HomePage() {
                 />
                 <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              Trusted staffing partner across New Jersey
+              Trusted staffing partner across USA
             </div>
             <h1 className="mt-5 text-[44px] font-semibold leading-[1.08] text-white sm:text-[56px] lg:text-[64px]">
-              Possibilities are endless for those who dare to{" "}
+              Staffing and Recruitment solutions across{" "}
               <span className="bg-gradient-to-r from-tan via-tan-light to-tan bg-clip-text text-transparent">
-                dream beyond limits
+                IT, healthcare, legal and more
               </span>
             </h1>
             <p className="mt-3 max-w-xl text-lg text-steel-lighter sm:text-xl">

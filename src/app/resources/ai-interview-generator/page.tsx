@@ -11,6 +11,13 @@ export const metadata: Metadata = pageMetadata({
   path: "/resources/ai-interview-generator",
 });
 
+const interviewPrepPoints = [
+  "Interviews can be overstimulating and stressful, and getting nervous just before entering the room and panicking is the fastest way to lose an opportunity you’ve worked hard to earn. We understand the pressure, and that’s why we’ve designed an AI interview question generator that helps job seekers across all industries (IT, Healthcare, Legal, Engineering, Manufacturing, Finance, Administration, Sales, Logistics, Customer service, and more) prepare for success.",
+  "Select your industry and experience level, and our AI instantly generates role specific questions tailored to what hiring managers ask. Whether you’re a first-time candidate or an experienced professional targeting a leadership role, you’ll get relevant practice questions in seconds, not hours of guesswork.",
+  "Use the tool to rehearse your answers, identify gaps in your responses, and refine your talking points before interview day. Pair it with Mintex Staffing’s recruiting expertise to strengthen both your preparation and your job search strategy.",
+  "Best of all, it’s completely free and available anytime, no sign-up, no waiting. Start preparing smarter today and walk into your next interview ready to make a lasting impression on any hiring team, in any industry.",
+];
+
 export default async function AiInterviewGeneratorPage() {
   const siteImages = await getSiteImages();
   return (
@@ -18,12 +25,12 @@ export default async function AiInterviewGeneratorPage() {
       <Section background="navy" className="!py-12 sm:!py-14 lg:!py-16">
         <h1 className="text-4xl font-bold sm:text-5xl">AI Interview Question Generator</h1>
         <p className="mt-4 max-w-2xl text-white/80">
-          Pick an industry and role level to generate a tailored set of interview questions.
+          Generate tailored interview questions for IT, healthcare, engineering &amp; more. Free AI-powered tool from Mintex Staffing, no sign-up required.
         </p>
       </Section>
 
       <Section background="cream">
-        <div className="mx-auto grid w-full items-center gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-24">
+        <div className="mx-auto grid w-full items-start gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-24">
           <div>
             <div className="inline-flex items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[13px] font-medium text-navy/70">
               <span className="h-[7px] w-[7px] rounded-full bg-tan" />
@@ -32,10 +39,16 @@ export default async function AiInterviewGeneratorPage() {
             <h2 className="mt-5 font-heading text-[32px] font-semibold leading-tight text-navy sm:text-[40px]">
               Walk into your next interview ready for anything
             </h2>
-            <p className="mt-4 max-w-md text-lg text-steel">
-              Generate tailored interview questions in seconds, practice your answers, and
-              show up on interview day feeling prepared and confident.
-            </p>
+            <div className="mt-6 space-y-5">
+              {interviewPrepPoints.map((point, index) => (
+                <div key={index} className="flex gap-3">
+                  <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-navy text-xs font-semibold text-white">
+                    {index + 1}
+                  </span>
+                  <p className="text-base leading-relaxed text-steel">{point}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="relative mx-auto aspect-[6/5] w-full max-w-2xl">
@@ -51,7 +64,7 @@ export default async function AiInterviewGeneratorPage() {
             <div className="absolute left-0 top-0 h-[64%] w-[64%] overflow-hidden rounded-[2rem] shadow-[0_25px_60px_-20px_rgba(0,48,96,0.35)]">
               <Image
                 src={siteImages["ai-interview-generator:handshake-visual"]}
-                alt="Candidate shaking hands with a hiring manager after a job interview"
+                alt="Candidate shaking hands with a hiring manager after a job interview prepared with Mintex Staffing's AI interview question generator"
                 fill
                 className="object-cover"
               />
@@ -60,7 +73,7 @@ export default async function AiInterviewGeneratorPage() {
             <div className="absolute right-0 top-[6%] h-[38%] w-[44%] overflow-hidden rounded-[1.5rem] shadow-[0_20px_45px_-18px_rgba(0,48,96,0.35)]">
               <Image
                 src={siteImages["ai-interview-generator:confident-visual"]}
-                alt="Confident candidate smiling during a job interview"
+                alt="Confident candidate smiling during a job interview, prepared using Mintex Staffing's interview resources"
                 fill
                 className="object-cover"
               />
@@ -69,7 +82,7 @@ export default async function AiInterviewGeneratorPage() {
             <div className="absolute bottom-0 right-[8%] h-[40%] w-[42%] overflow-hidden rounded-[1.5rem] shadow-[0_20px_45px_-18px_rgba(0,48,96,0.35)]">
               <Image
                 src={siteImages["ai-interview-generator:meeting-visual"]}
-                alt="Interview taking place in an office setting"
+                alt="Job interview taking place in an office setting, supported by Mintex Staffing's staffing and recruitment services"
                 fill
                 className="object-cover"
               />

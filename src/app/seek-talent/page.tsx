@@ -23,6 +23,13 @@ function IconArrowRight({ className }: { className?: string }) {
   );
 }
 
+const seekTalentPoints = [
+  "Finding the right talent shouldn’t affect your business. At Mintex Staffing, we know that hiring isn’t one-size-fits-all — the best staffing strategy is one built around your specific hiring objectives, industry, and workforce needs.",
+  "We provide tailored solutions across IT staffing, healthcare staffing, engineering staffing, manufacturing staffing, finance staffing, administrative staffing, sales staffing, customer service staffing, legal staffing and logistics staffing. Whether you’re scaling a growing team, filling a hard-to-source technical role, or need reliable talent on a tight timeline, our recruiters bring talent that matches your hiring requirements and fits into your company culture.",
+  "From initial staffing consultation to finding the right talent match, we work as an extension of your team, understanding your company culture, role requirements, and growth plans before we ever share a candidate profile. We focus on overall company fit, not just speed — that’s what sets our approach apart.",
+  "Let’s build your stronger, more talented workforce. Discuss your hiring needs with our recruiters or explore how our proven process connects you with qualified talent across our specialized industries (IT staffing, healthcare staffing, engineering staffing, manufacturing staffing, finance staffing, administrative staffing, sales staffing, customer service staffing, legal staffing and logistics staffing) — we believe in working efficiently, reliably, and without the guesswork.",
+];
+
 export default async function SeekTalentPage() {
   const siteImages = await getSiteImages();
   return (
@@ -36,9 +43,8 @@ export default async function SeekTalentPage() {
             </div>
             <h1 className="mt-5 text-4xl font-bold sm:text-5xl">Seek Talent</h1>
             <p className="mt-4 max-w-xl text-white/80">
-              Hiring talents shouldn&apos;t be a challenge, and there is no particular hiring
-              strategy, the effective approach is one that aligns with your hiring objectives,
-              industry and workforce needs.
+              Hire top talent fast with Mintex Staffing&apos;s tailored staffing solutions across
+              IT, healthcare, engineering &amp; more. Discuss your hiring needs today.
             </p>
             <div className="mt-7 flex flex-wrap gap-3.5">
               <ButtonLink href="/contact" variant="primary">
@@ -58,7 +64,7 @@ export default async function SeekTalentPage() {
             <div className="relative aspect-[4/5] w-full max-w-[280px] overflow-hidden rounded-[32px] border border-white/10 shadow-[0_40px_90px_-25px_rgba(0,48,96,0.6)]">
               <Image
                 src={siteImages["seek-talent:hero-visual"]}
-                alt="Employer welcoming a new hire with a handshake"
+                alt="Employer welcoming a new hire placed through Mintex Staffing's staffing and recruitment services"
                 fill
                 className="object-cover"
               />
@@ -88,32 +94,52 @@ export default async function SeekTalentPage() {
       </Section>
 
       <Section background="cream" className="relative">
-        <div className="relative flex flex-col items-center gap-12 lg:mb-[-56px] lg:flex-row lg:items-center lg:justify-between lg:gap-10">
-          <div className="max-w-md text-center lg:text-left">
-          
-            <h2 className="mt-3 text-4xl font-bold leading-tight text-navy sm:text-5xl">
+        <div className="mx-auto grid w-full items-start gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
+          <div>
+            <h2 className="text-4xl font-bold leading-tight text-navy sm:text-5xl">
               How can we help you?
             </h2>
-            <p className="mt-4 text-navy/70">
-              We provide tailored staffing solutions to help your business grow with the right
-              talent.
-            </p>
-            <div className="mx-auto mt-5 h-[3px] w-12 bg-tan lg:mx-0" />
+            <div className="mt-5 h-[3px] w-12 bg-tan" />
+
+            <div className="mt-7 space-y-5">
+              {seekTalentPoints.map((point, index) => (
+                <div key={index} className="flex gap-3">
+                  <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-navy text-xs font-semibold text-white">
+                    {index + 1}
+                  </span>
+                  <p className="text-base leading-relaxed text-navy/70">{point}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="relative w-full max-w-[440px] sm:max-w-[500px] lg:max-w-[560px]">
-            <div className="relative h-[320px] overflow-hidden rounded-[190px_0px_32px_190px] shadow-[0_25px_50px_-12px_rgba(0,48,96,0.18)] sm:h-[380px] sm:rounded-[220px_0px_36px_220px] lg:h-[440px] lg:rounded-[270px_0px_44px_270px]">
+          <div className="relative mx-auto w-full max-w-xl py-8">
+            <div
+              aria-hidden="true"
+              className="absolute -left-10 -top-10 h-60 w-60 rounded-full bg-tan/25 blur-[90px]"
+            />
+            <div
+              aria-hidden="true"
+              className="absolute -bottom-10 -right-8 h-60 w-60 rounded-full bg-steel/25 blur-[90px]"
+            />
+            <div
+              aria-hidden="true"
+              className="absolute -right-4 -top-4 h-full w-full rounded-[2.5rem] border-2 border-tan/30"
+            />
+
+            <div className="relative aspect-[5/4] overflow-hidden rounded-[2.5rem] shadow-[0_35px_80px_-25px_rgba(0,48,96,0.45)]">
               <Image
                 src={siteImages["seek-talent:cta-visual"]}
-                alt="Team collaborating around a table"
+                alt="Employer team collaborating around a table with Mintex Staffing's hiring consultants"
                 fill
                 className="object-cover"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-navy/40 via-navy/0 to-navy/0" />
             </div>
           </div>
         </div>
 
-        <div className="relative z-20 mt-14 grid gap-6 lg:mt-0 lg:grid-cols-3">
+        <div className="relative z-20 mt-14 grid gap-6 lg:grid-cols-3">
           {hiringServices.map((service, index) => {
             const Icon = service.icon;
             return (
