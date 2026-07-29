@@ -70,13 +70,13 @@ export const IMAGE_LOCATIONS: ImageLocation[] = [
 
   // Seek Talent (index)
   { locationKey: "seek-talent:hero-visual",         pageName: "Seek Talent", sectionName: "Hero Visual",              defaultSrc: "/interview-handshake.jpg", category: "photo-portrait" },
-  { locationKey: "seek-talent:cta-visual",          pageName: "Seek Talent", sectionName: "“How can we help” Visual", defaultSrc: "/hero-office-3.png",       category: "photo-portrait" },
+  { locationKey: "seek-talent:cta-visual",          pageName: "Seek Talent", sectionName: "“How can we help” Visual", defaultSrc: "/hero-office-3.png",       category: "photo-square" },
 
   // Seek Talent — How We Work
   { locationKey: "seek-talent:how-we-work-visual", pageName: "Seek Talent", sectionName: "How We Work Visual", defaultSrc: "/collage-2.webp", category: "photo-portrait" },
 
   // Seek Talent — Get Started (hiring inquiry form page)
-  { locationKey: "seek-talent:get-started-visual", pageName: "Seek Talent", sectionName: "Get Started Visual", defaultSrc: "/interview-confident.jpg", category: "photo-portrait" },
+  { locationKey: "seek-talent:get-started-visual", pageName: "Seek Talent", sectionName: "Get Started Visual", defaultSrc: "/interview-confident.jpg", category: "photo-square" },
 
   // Seek Talent — templated service pages, one row per point image
   ...hiringServices.flatMap((service) =>
@@ -85,17 +85,17 @@ export const IMAGE_LOCATIONS: ImageLocation[] = [
       pageName: "Seek Talent Services",
       sectionName: `${service.name} — Point ${index + 1}: ${point.title}`,
       defaultSrc: "/hero-office.webp",
-      category: "photo-portrait" as ImageCategory,
+      category: "photo-square" as ImageCategory,
     }))
   ),
 
   // Resources
   { locationKey: "resources:hiring-cost-card",      pageName: "Resources", sectionName: "Hiring Cost Calculator Card",     defaultSrc: "/hero-office.webp",       category: "photo-portrait" },
   { locationKey: "resources:ai-interview-card",     pageName: "Resources", sectionName: "AI Interview Generator Card",     defaultSrc: "/interview-confident.jpg", category: "photo-portrait" },
-  { locationKey: "resources:point-1-visual",        pageName: "Resources", sectionName: "Point 1: Free, practical tools",  defaultSrc: "/hero-office.webp",       category: "photo-portrait" },
-  { locationKey: "resources:point-2-visual",        pageName: "Resources", sectionName: "Point 2: Hiring Cost Calculator", defaultSrc: "/hero-office.webp",       category: "photo-portrait" },
-  { locationKey: "resources:point-3-visual",        pageName: "Resources", sectionName: "Point 3: AI Interview Generator", defaultSrc: "/interview-confident.jpg", category: "photo-portrait" },
-  { locationKey: "resources:point-4-visual",        pageName: "Resources", sectionName: "Point 4: Explore the resources",  defaultSrc: "/interview-handshake.jpg", category: "photo-portrait" },
+  { locationKey: "resources:point-1-visual",        pageName: "Resources", sectionName: "Point 1: Free, practical tools",  defaultSrc: "/hero-office.webp",       category: "photo-square" },
+  { locationKey: "resources:point-2-visual",        pageName: "Resources", sectionName: "Point 2: Hiring Cost Calculator", defaultSrc: "/hero-office.webp",       category: "photo-square" },
+  { locationKey: "resources:point-3-visual",        pageName: "Resources", sectionName: "Point 3: AI Interview Generator", defaultSrc: "/interview-confident.jpg", category: "photo-square" },
+  { locationKey: "resources:point-4-visual",        pageName: "Resources", sectionName: "Point 4: Explore the resources",  defaultSrc: "/interview-handshake.jpg", category: "photo-square" },
 
   // AI Interview Generator
   { locationKey: "ai-interview-generator:handshake-visual", pageName: "AI Interview Generator", sectionName: "Handshake Visual", defaultSrc: "/interview-handshake.jpg", category: "photo-square" },
