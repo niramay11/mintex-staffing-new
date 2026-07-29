@@ -11,6 +11,22 @@ const CACHE_TTL = 3 * 60 * 1000;
 // Keyed by `clientId:sortedJobCodes` — covers both explicit and derived code requests
 const cacheMap = new Map<string, { data: Record<string, unknown>[]; at: number }>();
 
+// Confirmed live: a client with 200+ jobs made this route fetch submissions
+// (and then a candidate-name lookup PER submission) for every single one of
+// those jobs, sequentially in batches, with zero time budget — Vercel killed
+// the whole request after its hard 60s limit, and the frontend's error
+// handler then showed "0" for both Total Submissions and Total Hires. A
+// clean 0 looked identical to "there really are none," which is exactly
+// what made this invisible. TIME_BUDGET_MS below stops the loop before
+// Vercel's kill and returns whatever's been gathered so far — a real,
+// non-zero partial count beats a dead request that silently becomes 0.
+const TIME_BUDGET_MS = 45_000;
+const NAME_FETCH_TIMEOUT_MS = 6_000;
+
+function raceTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
+  return Promise.race([promise, new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))]);
+}
+
 async function fetchApplicantName(jobSeekerId: string): Promise<string> {
   try {
     const res = await ceipalFetch(`https://api.ceipal.com/v2/getApplicantDetails/${encodeURIComponent(jobSeekerId)}/`);
@@ -73,8 +89,14 @@ export async function GET(req: NextRequest) {
 
     const BATCH = 8;
     const allSubmissions: Record<string, unknown>[] = [];
+    const startedAt = Date.now();
 
     for (let i = 0; i < jobs.length; i += BATCH) {
+      if (Date.now() - startedAt > TIME_BUDGET_MS) {
+        console.warn(`[portal/submissions] time budget exceeded after ${i}/${jobs.length} jobs — returning partial results instead of letting Vercel kill the request`);
+        break;
+      }
+
       const batch = jobs.slice(i, i + BATCH);
       const results = await Promise.all(batch.map(async job => {
         const jobCode = String(job.job_code ?? '');
@@ -93,7 +115,12 @@ export async function GET(req: NextRequest) {
 
           if (showName) {
             if (sub.job_seeker_id) {
-              const fetchedName = await fetchApplicantName(String(sub.job_seeker_id));
+              // A single slow name lookup used to have no time ceiling at
+              // all — capped here so one slow candidate can't eat a
+              // disproportionate share of the whole request's budget. Falls
+              // back to whatever name was already on the submission record
+              // if this doesn't resolve in time.
+              const fetchedName = await raceTimeout(fetchApplicantName(String(sub.job_seeker_id)), NAME_FETCH_TIMEOUT_MS, '');
               sub.candidate_name = fetchedName || rawName;
             } else if (rawName) {
               sub.candidate_name = rawName;
