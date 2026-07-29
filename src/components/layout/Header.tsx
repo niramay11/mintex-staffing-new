@@ -14,8 +14,8 @@ export default function Header({ siteImages }: { siteImages: Record<string, stri
     <header className="sticky top-4 z-50 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto flex max-w-[1700px] items-center justify-between gap-4 rounded-full border border-navy/[0.06] bg-white/85 py-2 pl-5 pr-2.5 shadow-[0_8px_30px_rgba(0,48,96,0.08)] backdrop-blur-md">
         <Link href="/" className="flex flex-shrink-0 items-center">
-          <Image src={siteImages["global:header-logo-mark"]} alt="Mintex Staffing" width={72} height={36} preload className="h-9 w-auto lg:hidden" />
-          <Image src={siteImages["global:header-logo"]} alt="Mintex Staffing" width={183} height={25} preload className="hidden h-6 w-auto lg:block" />
+          <Image src={siteImages["global:header-logo-mark"]} alt="Mintex Staffing" width={72} height={36} preload className="h-9 w-auto object-contain lg:hidden" />
+          <Image src={siteImages["global:header-logo"]} alt="Mintex Staffing" width={183} height={25} preload className="hidden h-6 w-auto object-contain lg:block" />
         </Link>
 
         <nav className="hidden flex-1 items-center justify-center gap-1 lg:flex">

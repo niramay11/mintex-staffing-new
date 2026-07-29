@@ -43,7 +43,7 @@ export default function Footer({ siteImages }: { siteImages: Record<string, stri
         <div className="grid grid-cols-2 gap-10 border-b border-white/10 pb-11 sm:grid-cols-3 lg:grid-cols-[1.8fr_1fr_1fr]">
           <div className="col-span-2 max-w-[300px] sm:col-span-1">
             <Link href="/" className="mb-4 flex items-center">
-              <Image src={siteImages["global:footer-logo"]} alt="Mintex Staffing" width={183} height={25} className="h-6 w-auto" />
+              <Image src={siteImages["global:footer-logo"]} alt="Mintex Staffing" width={183} height={25} className="h-6 w-auto object-contain" />
             </Link>
             <p className="text-[14.5px] leading-relaxed text-steel-light">
               Connecting exceptional talent with leading employers.

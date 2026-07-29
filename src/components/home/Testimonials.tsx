@@ -60,7 +60,7 @@ export default function Testimonials({ stories }: { stories: CaseStudy[] }) {
   return (
     <section className="bg-white px-4 py-20 sm:px-6 sm:py-24 lg:px-8">
       <h2 className="text-center font-heading text-[42px] font-normal text-navy sm:text-[52px]">
-        Explore testimonials
+        Testimonials
       </h2>
 
       <div className="relative mx-auto mt-14 max-w-[1920px]">
@@ -109,3 +109,4 @@ export default function Testimonials({ stories }: { stories: CaseStudy[] }) {
     </section>
   );
 }
+

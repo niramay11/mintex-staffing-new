@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { IMAGE_LOCATIONS } from "@/lib/imageLocations";
+import { IMAGE_LOCATIONS, IMAGE_CATEGORY_INFO } from "@/lib/imageLocations";
 import type { InsightPost, InsightCategoryRow, CaseStudy, CaseStudyType } from "@/content/types";
 import { industries } from "@/content/industries";
 
@@ -1989,6 +1989,27 @@ function orderedPages(locations: { page_name: string }[]): string[] {
   return [...known, ...extra];
 }
 
+// Reads a picked file's real pixel dimensions in the browser before it ever
+// gets uploaded — lets the upload flow warn about a too-small image (which
+// will look blurry once stretched to fill its real spot on the page)
+// immediately, instead of the admin only finding out after checking the
+// live site.
+function getImageDimensions(file: File): Promise<{ width: number; height: number }> {
+  return new Promise((resolve, reject) => {
+    const probe = new window.Image();
+    const url = URL.createObjectURL(file);
+    probe.onload = () => {
+      URL.revokeObjectURL(url);
+      resolve({ width: probe.naturalWidth, height: probe.naturalHeight });
+    };
+    probe.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("Could not read image dimensions"));
+    };
+    probe.src = url;
+  });
+}
+
 function SiteImagesTab({ password }: { password: string }) {
   const [locations, setLocations] = useState<LocationRow[]>([]);
   const [orphans, setOrphans]     = useState<OrphanRow[]>([]);
@@ -2001,6 +2022,9 @@ function SiteImagesTab({ password }: { password: string }) {
   const [uploadError, setUploadError]   = useState("");
   const [assignTarget, setAssignTarget] = useState<Record<string, string>>({});
   const [loadError, setLoadError]       = useState("");
+  // Keyed by location_key — a friendly heads-up (not a hard block) when a
+  // just-uploaded image is smaller than what its spot needs to look sharp.
+  const [sizeWarnings, setSizeWarnings] = useState<Record<string, string>>({});
 
   const fetchData = (opts?: { silent?: boolean }) => {
     if (!opts?.silent) setSyncing(true);
@@ -2028,6 +2052,34 @@ function SiteImagesTab({ password }: { password: string }) {
 
   const uploadImage = async (key: string, file: File) => {
     setUploadError("");
+    setSizeWarnings((prev) => {
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
+
+    // Check the real pixel size before uploading — a warning here, not a
+    // block, since a smaller-than-recommended image might still be a
+    // deliberate choice (e.g. a simple icon). This can only catch images
+    // that are too SMALL; it can't fix one that's already blurry — that
+    // needs a sharper source photo, not a setting.
+    const category = IMAGE_LOCATIONS.find((l) => l.locationKey === key)?.category;
+    if (category) {
+      try {
+        const { width, height } = await getImageDimensions(file);
+        const info = IMAGE_CATEGORY_INFO[category];
+        if (width < info.minWidth || height < info.minHeight) {
+          setSizeWarnings((prev) => ({
+            ...prev,
+            [key]: `This image is ${width}×${height}px, smaller than the ${info.minWidth}×${info.minHeight}px recommended for this spot — it may look blurry once stretched to fit.`,
+          }));
+        }
+      } catch {
+        // Couldn't read dimensions client-side — not worth blocking the
+        // upload over, just skip the size check for this file.
+      }
+    }
+
     setUploadingKey(key);
     const formData = new FormData();
     formData.append("file", file);
@@ -2113,15 +2165,40 @@ function SiteImagesTab({ password }: { password: string }) {
           <div key={page}>
             <h3 className="text-xs font-semibold uppercase tracking-wide text-navy/50 mb-3">{page}</h3>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {locations.filter((l) => l.page_name === page).map((loc) => (
+              {locations.filter((l) => l.page_name === page).map((loc) => {
+                const category = IMAGE_LOCATIONS.find((l) => l.locationKey === loc.location_key)?.category;
+                const info = category ? IMAGE_CATEGORY_INFO[category] : null;
+                const warning = sizeWarnings[loc.location_key];
+                return (
                 <div key={loc.location_key} className="bg-white rounded-2xl border border-navy/10 p-4">
-                  <div className="flex items-center justify-center h-28 rounded-lg bg-cream mb-3 overflow-hidden">
+                  {/* Matches the real aspect-ratio and crop/letterbox behavior this
+                      spot uses live — so what's previewed here is what visitors
+                      actually see, not a generic guess. */}
+                  <div
+                    className="flex items-center justify-center rounded-lg bg-cream mb-3 overflow-hidden"
+                    style={{ aspectRatio: info?.aspect ?? "4 / 3" }}
+                  >
                     {/* eslint-disable-next-line @next/next/no-img-element -- admin-supplied preview, arbitrary URL */}
-                    <img src={loc.file_path} alt={loc.section_name} className="max-h-full max-w-full object-contain" />
+                    <img
+                      src={loc.file_path}
+                      alt={loc.section_name}
+                      className="h-full w-full"
+                      style={{ objectFit: info?.fit ?? "contain" }}
+                    />
                   </div>
                   <p className="text-[10px] font-semibold uppercase tracking-wide text-steel mb-1">
                     Used in: {loc.page_name} &rsaquo; {loc.section_name}
                   </p>
+                  {info && (
+                    <p className="text-[10px] text-navy/45 mb-1">
+                      Recommended: {info.label}, at least {info.minWidth}×{info.minHeight}px
+                    </p>
+                  )}
+                  {warning && (
+                    <p className="text-[10px] text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-2 py-1 mb-1">
+                      {warning}
+                    </p>
+                  )}
                   <div className="space-y-2 mt-2">
                     <input
                       value={loc.file_path}
@@ -2153,7 +2230,8 @@ function SiteImagesTab({ password }: { password: string }) {
                     </div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         ))}

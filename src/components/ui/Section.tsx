@@ -49,7 +49,7 @@ export default async function Section({
               aria-hidden="true"
               width={784}
               height={395}
-              className="pointer-events-none absolute -right-20 top-1/2 hidden h-[300px] w-auto -translate-y-1/2 select-none md:block lg:h-[380px]"
+              className="pointer-events-none absolute -right-20 top-1/2 hidden h-[300px] w-auto -translate-y-1/2 select-none object-contain md:block lg:h-[380px]"
               style={{
                 opacity: 0.5,
                 maskImage: "linear-gradient(115deg, transparent 0%, transparent 30%, rgba(0,0,0,0.5) 55%, black 85%)",
