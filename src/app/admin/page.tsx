@@ -2010,6 +2010,64 @@ function getImageDimensions(file: File): Promise<{ width: number; height: number
   });
 }
 
+// Vercel's serverless functions reject request bodies above a hard platform
+// limit before our own /api/site-images/upload route (and its own 8MB check)
+// ever runs — a big phone/DSLR photo fails there with a non-JSON 413 the
+// server route never gets a chance to produce a friendly error for. Shrinking
+// oversized photos client-side, before they're ever sent, avoids hitting that
+// limit at all instead of trying to work around it after the fact.
+const SHRINK_THRESHOLD_BYTES = 2 * 1024 * 1024; // 2MB
+const MAX_UPLOAD_DIMENSION = 2000; // px, longest side
+
+async function shrinkImageIfNeeded(file: File): Promise<File> {
+  if (file.size <= SHRINK_THRESHOLD_BYTES) return file;
+  // Resizing would rasterize a vector (SVG) or collapse an animated GIF to a
+  // single frame — neither format is the "huge camera photo" case this
+  // exists for, so leave them alone and let the server-side check handle it.
+  if (file.type === "image/svg+xml" || file.type === "image/gif") return file;
+
+  try {
+    const dataUrl = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(new Error("Could not read file"));
+      reader.readAsDataURL(file);
+    });
+
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const el = new window.Image();
+      el.onload = () => resolve(el);
+      el.onerror = () => reject(new Error("Could not decode image"));
+      el.src = dataUrl;
+    });
+
+    const scale = Math.min(1, MAX_UPLOAD_DIMENSION / Math.max(img.naturalWidth, img.naturalHeight));
+    const width = Math.round(img.naturalWidth * scale);
+    const height = Math.round(img.naturalHeight * scale);
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return file;
+    ctx.drawImage(img, 0, 0, width, height);
+
+    // PNG keeps transparency; everything else compresses far smaller as JPEG.
+    const outputType = file.type === "image/png" ? "image/png" : "image/jpeg";
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, outputType, 0.85));
+    if (!blob) return file;
+
+    const ext = outputType === "image/png" ? "png" : "jpg";
+    const newName = file.name.replace(/\.[^.]+$/, "") + "." + ext;
+    return new File([blob], newName, { type: outputType });
+  } catch {
+    // Anything goes wrong client-side (unsupported format, decode failure) —
+    // fall back to the original file rather than blocking the upload; the
+    // server's own 8MB check still guards against an oversized result.
+    return file;
+  }
+}
+
 function SiteImagesTab({ password }: { password: string }) {
   const [locations, setLocations] = useState<LocationRow[]>([]);
   const [orphans, setOrphans]     = useState<OrphanRow[]>([]);
@@ -2086,14 +2144,35 @@ function SiteImagesTab({ password }: { password: string }) {
     }
 
     setUploadingKey(key);
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("password", password);
-    const res = await fetch("/api/site-images/upload", { method: "POST", body: formData });
-    const json = await res.json();
-    if (json.url) updateLocation(key, json.url);
-    else setUploadError(json.error ?? "Upload failed");
-    setUploadingKey(null);
+    try {
+      const uploadFile = await shrinkImageIfNeeded(file);
+      const formData = new FormData();
+      formData.append("file", uploadFile);
+      formData.append("password", password);
+      const res = await fetch("/api/site-images/upload", { method: "POST", body: formData });
+
+      // A platform-level failure (e.g. Vercel's own request-size limit) comes
+      // back as plain text, not JSON — res.json() would throw on that and
+      // silently abort this function before the button ever resets. Read as
+      // text first and parse only if there's something JSON-shaped there.
+      const raw = await res.text();
+      let json: { url?: string; error?: string } = {};
+      try {
+        json = raw ? JSON.parse(raw) : {};
+      } catch {
+        // Non-JSON response — fall through to the generic status-based message below.
+      }
+
+      if (res.ok && json.url) {
+        updateLocation(key, json.url);
+      } else {
+        setUploadError(json.error || `Upload failed (server said: ${res.status} ${res.statusText || "error"}). Try a smaller image.`);
+      }
+    } catch {
+      setUploadError("Could not reach the server. Check your connection and try again.");
+    } finally {
+      setUploadingKey(null);
+    }
   };
 
   const assignOrphan = (orphan: OrphanRow) => {
