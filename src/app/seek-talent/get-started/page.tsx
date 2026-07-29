@@ -67,43 +67,12 @@ export default async function SeekTalentGetStartedPage() {
               </div>
             </div>
 
-            <div className="relative mx-auto hidden lg:block" style={{ width: 380, height: 475 }}>
+            <div className="relative mx-auto hidden w-full max-w-lg lg:block">
               <div
                 aria-hidden="true"
-                style={{
-                  position: "absolute",
-                  right: -46,
-                  top: 0,
-                  width: 380,
-                  height: 475,
-                  borderRadius: "14% / 22%",
-                  backgroundColor: "rgba(0,48,96,0.2)",
-                  zIndex: 0,
-                }}
+                className="absolute -left-5 -top-5 h-full w-full rounded-[1.75rem] border-[3px] border-steel"
               />
-              <div
-                aria-hidden="true"
-                style={{
-                  position: "absolute",
-                  left: -30,
-                  top: -30,
-                  width: 380,
-                  height: 475,
-                  borderRadius: "14% / 22%",
-                  border: "4px solid #4a738c",
-                  zIndex: 1,
-                }}
-              />
-              <div
-                className="relative overflow-hidden"
-                style={{
-                  width: 380,
-                  height: 475,
-                  borderRadius: "14% / 22%",
-                  boxShadow: "0 25px 55px -20px rgba(0,48,96,0.3)",
-                  zIndex: 2,
-                }}
-              >
+              <div className="relative aspect-[5/4] overflow-hidden rounded-[1.5rem] shadow-[0_25px_55px_-20px_rgba(0,48,96,0.35)]">
                 <Image
                   src={siteImages["seek-talent:get-started-visual"]}
                   alt="Mintex Staffing recruiter ready to discuss your hiring needs"
