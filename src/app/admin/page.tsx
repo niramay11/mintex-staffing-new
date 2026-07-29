@@ -2025,6 +2025,11 @@ function SiteImagesTab({ password }: { password: string }) {
   // Keyed by location_key — a friendly heads-up (not a hard block) when a
   // just-uploaded image is smaller than what its spot needs to look sharp.
   const [sizeWarnings, setSizeWarnings] = useState<Record<string, string>>({});
+  // Every page section starts collapsed — with 24+ image slots across 10
+  // pages (some, like Seek Talent Services, have many cards each), showing
+  // everything expanded at once made this tab a very long scroll just to
+  // reach one image near the bottom.
+  const [openPages, setOpenPages] = useState<Record<string, boolean>>({});
 
   const fetchData = (opts?: { silent?: boolean }) => {
     if (!opts?.silent) setSyncing(true);
@@ -2160,17 +2165,43 @@ function SiteImagesTab({ password }: { password: string }) {
         </div>
       )}
 
-      <form onSubmit={save} className="space-y-8">
-        {pages.map((page) => (
-          <div key={page}>
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-navy/50 mb-3">{page}</h3>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <form onSubmit={save} className="space-y-3">
+        {pages.map((page) => {
+          const count = locations.filter((l) => l.page_name === page).length;
+          const isOpen = !!openPages[page];
+          return (
+          <div
+            key={page}
+            className={`rounded-2xl border bg-white transition-colors ${isOpen ? "border-tan/40 shadow-[0_8px_24px_-12px_rgba(0,48,96,0.15)]" : "border-navy/10 hover:border-navy/20"}`}
+          >
+            <button
+              type="button"
+              onClick={() => setOpenPages((prev) => ({ ...prev, [page]: !prev[page] }))}
+              className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left"
+            >
+              <span className="flex items-center gap-3">
+                <span className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full ${isOpen ? "bg-tan/15 text-tan" : "bg-cream text-navy/40"}`}>
+                  <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4">
+                    <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.8" />
+                    <circle cx="8.5" cy="10" r="1.5" fill="currentColor" />
+                    <path d="M21 16l-5.5-5.5a1.5 1.5 0 0 0-2.12 0L4 19" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
+                <span className="text-sm font-semibold text-navy">{page}</span>
+                <span className="rounded-full bg-cream px-2 py-0.5 text-[11px] font-semibold text-navy/50">{count}</span>
+              </span>
+              <svg viewBox="0 0 24 24" fill="none" className={`h-4 w-4 flex-shrink-0 text-navy/40 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}>
+                <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            {isOpen && (
+            <div className="grid gap-4 border-t border-navy/10 px-5 pb-5 pt-4 sm:grid-cols-2 lg:grid-cols-3">
               {locations.filter((l) => l.page_name === page).map((loc) => {
                 const category = IMAGE_LOCATIONS.find((l) => l.locationKey === loc.location_key)?.category;
                 const info = category ? IMAGE_CATEGORY_INFO[category] : null;
                 const warning = sizeWarnings[loc.location_key];
                 return (
-                <div key={loc.location_key} className="bg-white rounded-2xl border border-navy/10 p-4">
+                <div key={loc.location_key} className="bg-cream/50 rounded-2xl border border-navy/10 p-4">
                   {/* Matches the real aspect-ratio and crop/letterbox behavior this
                       spot uses live — so what's previewed here is what visitors
                       actually see, not a generic guess. */}
@@ -2233,8 +2264,10 @@ function SiteImagesTab({ password }: { password: string }) {
                 );
               })}
             </div>
+            )}
           </div>
-        ))}
+          );
+        })}
 
         {uploadError && <p className="text-red-600 text-sm">{uploadError}</p>}
         {error && <p className="text-red-600 text-sm">{error}</p>}

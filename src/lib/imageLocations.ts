@@ -17,17 +17,23 @@ import { hiringServices } from "@/content/hiringServices";
 // outside the box's shape gets cropped). minWidth/minHeight are the
 // resolution below which an image will look visibly soft once stretched up
 // to fill its real display size on the page.
-export type ImageCategory = "logo-wide" | "logo-mark" | "photo-landscape" | "photo-portrait" | "photo-square";
+export type ImageCategory = "logo-wide" | "logo-mark" | "logo-decorative" | "photo-landscape" | "photo-portrait" | "photo-square";
 
 export const IMAGE_CATEGORY_INFO: Record<
   ImageCategory,
   { label: string; aspect: string; minWidth: number; minHeight: number; fit: "contain" | "cover" }
 > = {
-  "logo-wide":       { label: "Wide logo",        aspect: "6 / 1",  minWidth: 600,  minHeight: 100,  fit: "contain" },
-  "logo-mark":       { label: "Square logo mark", aspect: "1 / 1",  minWidth: 200,  minHeight: 200,  fit: "contain" },
-  "photo-landscape": { label: "Wide photo",       aspect: "16 / 9", minWidth: 1600, minHeight: 900,  fit: "cover" },
-  "photo-portrait":  { label: "Tall photo",       aspect: "4 / 5",  minWidth: 1000, minHeight: 1250, fit: "cover" },
-  "photo-square":    { label: "Square-ish photo", aspect: "4 / 3",  minWidth: 1000, minHeight: 750,  fit: "cover" },
+  "logo-wide":       { label: "Wide logo",             aspect: "6 / 1", minWidth: 600, minHeight: 100, fit: "contain" },
+  "logo-mark":       { label: "Square logo mark",      aspect: "1 / 1", minWidth: 200, minHeight: 200, fit: "contain" },
+  // The decorative "M" watermarks are rendered at 784x395 on the real
+  // pages (roughly 2:1) — distinct from the much thinner ~7:1 text logo.
+  // Reusing "logo-wide"'s box for these left a lot of empty space above and
+  // below the mark since its real shape is much closer to a rectangle than
+  // a thin strip.
+  "logo-decorative": { label: "Decorative mark",       aspect: "2 / 1", minWidth: 600, minHeight: 300, fit: "contain" },
+  "photo-landscape": { label: "Wide photo",            aspect: "16 / 9", minWidth: 1600, minHeight: 900,  fit: "cover" },
+  "photo-portrait":  { label: "Tall photo",            aspect: "4 / 5",  minWidth: 1000, minHeight: 1250, fit: "cover" },
+  "photo-square":    { label: "Square-ish photo",      aspect: "4 / 3",  minWidth: 1000, minHeight: 750,  fit: "cover" },
 };
 
 export type ImageLocation = {
@@ -43,13 +49,13 @@ export const IMAGE_LOCATIONS: ImageLocation[] = [
   { locationKey: "global:header-logo-mark",  pageName: "Global", sectionName: "Header Logo (mobile mark)", defaultSrc: "/logo-mark-navy.png", category: "logo-mark" },
   { locationKey: "global:header-logo",       pageName: "Global", sectionName: "Header Logo (desktop)",     defaultSrc: "/logo-navy.png",      category: "logo-wide" },
   { locationKey: "global:footer-logo",       pageName: "Global", sectionName: "Footer Logo",               defaultSrc: "/logo-white.png",     category: "logo-wide" },
-  { locationKey: "global:navy-section-mark", pageName: "Global", sectionName: "Decorative Navy Mark",      defaultSrc: "/mintex-m.svg",       category: "logo-wide" },
+  { locationKey: "global:navy-section-mark", pageName: "Global", sectionName: "Decorative Navy Mark",      defaultSrc: "/mintex-m.svg",       category: "logo-decorative" },
 
   { locationKey: "client-portal:header-logo", pageName: "Client Portal", sectionName: "Header Logo", defaultSrc: "/logo-navy.png", category: "logo-wide" },
 
   // Home
   { locationKey: "home:hero-banner",        pageName: "Home", sectionName: "Hero Banner",                defaultSrc: "/hero-office-3.png", category: "photo-landscape" },
-  { locationKey: "home:industries-mark",    pageName: "Home", sectionName: "Industries Decorative Mark", defaultSrc: "/mintex-m-navy.svg", category: "logo-wide" },
+  { locationKey: "home:industries-mark",    pageName: "Home", sectionName: "Industries Decorative Mark", defaultSrc: "/mintex-m-navy.svg", category: "logo-decorative" },
   { locationKey: "home:industries-collage", pageName: "Home", sectionName: "Industries Collage",         defaultSrc: "/collage-2.webp",    category: "photo-square" },
 
   // About
