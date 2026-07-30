@@ -1,16 +1,3 @@
-export type JobType = "Contract" | "Permanent" | "Executive" | "Temp-to-Hire";
-
-export interface Job {
-  id: string;
-  title: string;
-  industrySlug: string;
-  location: string;
-  type: JobType;
-  salaryRange: string;
-  postedAt: string;
-  summary: string;
-}
-
 export interface Industry {
   slug: string;
   name: string;
@@ -22,6 +9,14 @@ export interface Industry {
     body: string;
   };
   workStyle: string;
+  // Keywords matched against a live Ceipal job's title + skills text to decide
+  // whether it belongs on this industry's page. Deliberately NOT matched
+  // against Ceipal's `industry` field — that field records the hiring
+  // CLIENT's business sector, not the job's function (confirmed live: a
+  // "Senior Software Engineer" role came through tagged "Healthcare" because
+  // the client company is a healthcare business), so it would misclassify
+  // real jobs. Title/skills text reflects what the role actually is.
+  jobKeywords: string[];
 }
 
 // Row shape from the `insight_categories` Supabase table (admin-managed via /api/insight-categories).

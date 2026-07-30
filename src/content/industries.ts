@@ -8,13 +8,22 @@ export const industries: Industry[] = [
     seoSubheading:
       "Connect with vetted software engineers, cloud architects, and IT project leaders ready to move your technology roadmap forward.",
     intro:
-      "From full-stack developers to DevOps specialists, our IT staffing pool is screened for both technical depth and delivery track record. We're based in Edison, New Jersey, and place technology talent with employers throughout the state and beyond.",
+      "From full-stack developers to DevOps specialists and cloud infrastructure engineers, our IT staffing pool is screened for both technical depth and delivery track record. Based in Edison, New Jersey, Mintex Staffing places software engineers, cloud architects, IT project managers and more with employers throughout the state and beyond, for contract, permanent, and contract-to-hire roles.",
     sectorInsight: {
       title: "The IT hiring market is tightening around specialized skills",
       body: "Demand for cloud-native, AI/ML, and cybersecurity talent continues to outpace supply. Employers who move fast on vetted candidates and offer flexible engagement models (contract, contract-to-hire, permanent) are winning the best talent before competitors even finish their first interview loop.",
     },
     workStyle:
       "We embed with your engineering leadership to understand your stack, team culture, and delivery cadence before we ever send a resume.",
+    jobKeywords: [
+      "software engineer", "software developer", "full stack", "full-stack", "front end", "frontend",
+      "back end", "backend", "devops", "cloud", "aws", "azure", "network engineer",
+      "systems administrator", "sysadmin", "it project manager", "qa engineer", "data engineer",
+      "data scientist", "cybersecurity", "help desk", "it support", "solutions engineer", "servicenow",
+      "web developer", ".net", "java developer", "python developer", "sql developer",
+      "database administrator", "ai engineer", "machine learning", "react", "node.js", "nodejs",
+      "angular", "programmer", "it analyst", "technology analyst",
+    ],
   },
   {
     slug: "healthcare-staffing",
@@ -30,6 +39,11 @@ export const industries: Industry[] = [
     },
     workStyle:
       "Our clinical recruiting team understands shift patterns, credentialing timelines, and facility compliance requirements inside and out.",
+    jobKeywords: [
+      "nurse", " rn ", "rn -", "rn –", "registered nurse", "clinical", "medical", "healthcare", "hospital",
+      "patient", "pharmacy", "physician", "therapist", "clinician", "cna", "lpn", "dialysis",
+      "radiology", "lab technologist", "phlebotomist", "home health", "behavior analyst", "bcba",
+    ],
   },
   {
     slug: "engineering-staffing",
@@ -45,6 +59,10 @@ export const industries: Industry[] = [
     },
     workStyle:
       "We work alongside your project managers to map staffing needs against your project timeline, not just a generic job spec.",
+    jobKeywords: [
+      "mechanical engineer", "civil engineer", "electrical engineer", "structural engineer",
+      "industrial engineer", "surveyor", "cost estimator", "field service engineer",
+    ],
   },
   {
     slug: "manufacturing-staffing",
@@ -60,6 +78,12 @@ export const industries: Industry[] = [
     },
     workStyle:
       "We staff around your shift schedule and ramp curve, from a single skilled hire to a full line launch team.",
+    jobKeywords: [
+      "production supervisor", "production operator", "manufacturing engineer", "quality engineer",
+      "quality control", "machinist", "cnc", "plant manager", "plant engineer",
+      "maintenance technician", "maintenance supervisor", "maintenance superintendent", "assembly",
+      "packaging",
+    ],
   },
   {
     slug: "finance-staffing",
@@ -75,6 +99,11 @@ export const industries: Industry[] = [
     },
     workStyle:
       "We scope your reporting stack and stakeholder expectations up front, so every candidate we send can hit the ground running.",
+    jobKeywords: [
+      "accountant", "accounting", "financial accountant", "finance", "financial controller",
+      "controller", "cpa", "underwriter", "fp&a", "bookkeeper", "payroll", "reconciliation",
+      "settlements",
+    ],
   },
   {
     slug: "administrative-staffing",
@@ -90,6 +119,10 @@ export const industries: Industry[] = [
     },
     workStyle:
       "We ask about your tools, your leadership team's working style, and your pace before we shortlist a single candidate.",
+    jobKeywords: [
+      "administrative assistant", "executive assistant", "office manager", "receptionist",
+      "data entry", "administrative", "legal assistant", "paralegal",
+    ],
   },
   {
     slug: "sales-staffing",
@@ -105,6 +138,10 @@ export const industries: Industry[] = [
     },
     workStyle:
       "We benchmark candidates against your actual comp plan and quota structure, not a generic sales persona.",
+    jobKeywords: [
+      "sales executive", "account executive", "business development", "account manager",
+      "sales manager", "sales representative", "director of sales", "regional business development",
+    ],
   },
   {
     slug: "customer-service-staffing",
@@ -120,6 +157,10 @@ export const industries: Industry[] = [
     },
     workStyle:
       "We staff around your support channels, SLAs, and escalation process so new hires ramp faster.",
+    jobKeywords: [
+      "customer service", "customer support", "call center", "customer success", "client relations",
+      "customer relationship",
+    ],
   },
   {
     slug: "logistics-staffing",
@@ -135,6 +176,10 @@ export const industries: Industry[] = [
     },
     workStyle:
       "We plan around your peak seasons and shipping windows, so you're never short-staffed when volume spikes.",
+    jobKeywords: [
+      "logistics", "supply chain", "warehouse", "distribution", "dispatcher", "freight", "sourcing",
+      "purchasing manager",
+    ],
   },
 ];
 

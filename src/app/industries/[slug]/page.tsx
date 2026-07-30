@@ -5,11 +5,40 @@ import StatBlock from "@/components/ui/StatBlock";
 import JobTile from "@/components/ui/JobTile";
 import { ButtonLink } from "@/components/ui/Button";
 import { industries, getIndustryBySlug } from "@/content/industries";
-import { getJobsByIndustry } from "@/content/jobs";
 import { getIndustryStats } from "@/lib/industryStats";
 import { pageMetadata } from "@/lib/pageMetadata";
+import { getCachedJobs } from "@/lib/jobsCache";
+import { isActiveJob } from "@/components/jobs/utils";
+import { withTimeout } from "@/lib/withTimeout";
+import type { CeipalJob } from "@/components/jobs/types";
 
-export const revalidate = 60;
+// Job data changes with Ceipal sync cycles — never bake a stale snapshot into
+// the build (same reasoning as /get-hired, see that page's own comment).
+export const dynamic = "force-dynamic";
+
+const MAX_ROLES_SHOWN = 3;
+
+// Matched against the job's title + skills text, deliberately NOT Ceipal's
+// `industry` field — confirmed live that field records the hiring CLIENT's
+// business sector (e.g. a "Senior Software Engineer" role came through
+// tagged "Healthcare" because the client company is a healthcare business),
+// which would misclassify real jobs onto the wrong industry page. Keywords
+// longer than 4 chars or containing a space are substring-matched (safe,
+// since they're specific phrases); short keywords use a word-boundary check
+// so they don't false-match inside unrelated words.
+function textMatchesKeyword(text: string, keyword: string): boolean {
+  const k = keyword.toLowerCase();
+  if (k.includes(" ") || k.length > 4) return text.includes(k);
+  return new RegExp(`\\b${k}\\b`).test(text);
+}
+
+function matchesIndustry(job: CeipalJob, keywords: string[]): boolean {
+  const text = [job.job_title, job.primary_skills, job.secondary_skills]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+  return keywords.some((keyword) => textMatchesKeyword(text, keyword));
+}
 
 export function generateStaticParams() {
   return industries.map((industry) => ({ slug: industry.slug }));
@@ -40,7 +69,15 @@ export default async function IndustryPage({
   const industry = getIndustryBySlug(slug);
   if (!industry) notFound();
 
-  const openRoles = getJobsByIndustry(industry.slug);
+  const { jobs } = await withTimeout(getCachedJobs(), 3000, {
+    jobs: [] as unknown[],
+    cachedAt: Date.now(),
+    stale: true,
+  });
+  const openRoles = (jobs as CeipalJob[])
+    .filter((job) => isActiveJob(job) && matchesIndustry(job, industry.jobKeywords))
+    .slice(0, MAX_ROLES_SHOWN);
+
   const allStats = await getIndustryStats();
   const achievements = allStats.filter((s) => s.industry_slug === industry.slug);
 
@@ -64,7 +101,7 @@ export default async function IndustryPage({
         {openRoles.length > 0 ? (
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {openRoles.map((job) => (
-              <JobTile key={job.id} job={job} />
+              <JobTile key={job.job_code} job={job} />
             ))}
           </div>
         ) : (

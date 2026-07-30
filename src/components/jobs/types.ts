@@ -19,6 +19,7 @@ export interface CeipalJob {
   remote_job?: string;
   experience?: string;
   primary_skills?: string;
+  secondary_skills?: string;
   job_description?: string;
   public_job_description?: string;
   industry?: string;
