@@ -46,19 +46,22 @@ const steps = [
   {
     number: "1",
     title: "Scope",
-    description: "We learn your team, culture, and must-haves before writing a single job spec.",
+    description:
+      "We start by learning your team's culture, goals, and must-have skills, so every job specification reflects what truly matters.",
     icon: IconSearchTalent,
   },
   {
     number: "2",
     title: "Source & Screen",
-    description: "We tap our active talent network, then screen for skill and fit.",
+    description:
+      "We tap our active talent network across nine industries, sourcing qualified candidates and screening them for both skill and cultural fit.",
     icon: IconLayers,
   },
   {
     number: "3",
     title: "Support",
-    description: "We stay involved through offer, onboarding, and beyond.",
+    description:
+      "Our involvement doesn't end at the offer letter, we stay engaged through onboarding and beyond, ensuring long-term success for employers and new hires alike.",
     icon: IconTarget,
   },
 ];
@@ -117,11 +120,12 @@ export default async function HowWeWorkPage() {
         <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-tan-light">
           Our process
         </p>
-        <h1 className="mt-2.5 text-4xl font-bold sm:text-5xl">How We Work</h1>
+        <h1 className="mt-2.5 text-4xl font-bold sm:text-5xl">How Our Staffing Process Works</h1>
         <p className="mt-4 max-w-2xl text-white/80">
-          Every engagement starts with a scoping call to understand your team, your timeline,
-          and what &ldquo;a great fit&rdquo; actually looks like for you &mdash; then we build a
-          shortlist around that, not a generic template.
+          At Mintex Staffing, every partnership begins with a conversation. We take time to
+          understand your team, culture, and hiring timeline before recommending a single
+          candidate, because a great fit starts with real insight. Our proven hiring process
+          helps businesses across IT, healthcare, manufacturing, finance, and more industries.
         </p>
       </Section>
 
@@ -148,7 +152,7 @@ export default async function HowWeWorkPage() {
                 Step by step
               </p>
               <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl">
-                From kickoff to placement
+                From Kickoff to Placement
               </h2>
 
               <div className="relative mt-8">
@@ -172,8 +176,8 @@ export default async function HowWeWorkPage() {
               </div>
 
               <div className="mt-8">
-                <ButtonLink href="/contact" variant="primary">
-                  Discuss your hiring needs
+                <ButtonLink href="/seek-talent/get-started" variant="primary">
+                  Discuss Your Hiring Needs
                 </ButtonLink>
               </div>
             </div>

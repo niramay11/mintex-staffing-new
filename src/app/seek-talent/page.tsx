@@ -47,7 +47,7 @@ export default async function SeekTalentPage() {
               IT, healthcare, engineering &amp; more. Discuss your hiring needs today.
             </p>
             <div className="mt-7 flex flex-wrap gap-3.5">
-              <ButtonLink href="/contact" variant="primary">
+              <ButtonLink href="/seek-talent/get-started" variant="primary">
                 Discuss your hiring needs
               </ButtonLink>
               <ButtonLink href="/seek-talent/how-we-work" variant="outline">

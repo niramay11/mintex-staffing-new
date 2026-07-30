@@ -8,8 +8,8 @@ import { getSiteImages } from "@/lib/siteImages";
 import { pageMetadata } from "@/lib/pageMetadata";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Connect With Our Experts",
-  description: "Tell Mintex Staffing what you need and we'll scope a search built around your team.",
+  title: "Find Skilled Talent, Faster",
+  description: "From IT staffing to healthcare staffing to logistics staffing, we connect businesses with the right people, right on time.",
   path: "/seek-talent/get-started",
 });
 
@@ -38,9 +38,10 @@ export default async function SeekTalentGetStartedPage() {
           <IconBriefcase className="h-4 w-4 flex-shrink-0" />
           For Employers
         </div>
-        <h1 className="mt-5 text-4xl font-bold sm:text-5xl">Connect With Our Experts</h1>
+        <h1 className="mt-5 text-4xl font-bold sm:text-5xl">Find Skilled Talent, Faster</h1>
         <p className="mt-4 max-w-2xl text-white/80">
-          Tell us what you need and we&apos;ll scope a search built around your team.
+          From IT staffing to healthcare staffing to logistics staffing, we connect businesses
+          with the right people, right on time.
         </p>
       </Section>
 
@@ -60,7 +61,8 @@ export default async function SeekTalentGetStartedPage() {
               <p className="text-xs font-bold uppercase tracking-[0.14em] text-tan">Get in touch</p>
               <h2 className="mt-2 text-2xl font-bold text-navy sm:text-3xl">Connect with our experts</h2>
               <p className="mt-1.5 text-sm text-navy/70">
-                Tell us what you need and we&apos;ll scope a search built around your team.
+                Share your hiring goals and our recruiters will design a candidate search
+                customized to your business.
               </p>
               <div className="mt-7">
                 <HiringInquiryForm />

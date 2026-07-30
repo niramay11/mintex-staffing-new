@@ -227,7 +227,7 @@ on paper.
           aria-hidden="true"
           width={784}
           height={395}
-          className="pointer-events-none absolute bottom-0 -right-16 hidden h-[320px] w-auto select-none object-contain opacity-[0.05] md:block lg:h-[400px]"
+          className="pointer-events-none absolute bottom-0 left-1/2 hidden h-[320px] w-auto -translate-x-1/2 select-none object-contain opacity-[0.05] md:block lg:h-[400px]"
         />
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">

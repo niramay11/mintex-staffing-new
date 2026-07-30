@@ -51,7 +51,7 @@ export default async function IndustryPage({
         <h1 className="text-4xl font-bold sm:text-5xl">{industry.heroTitle}</h1>
         <p className="mt-4 max-w-2xl text-white/80">{industry.seoSubheading}</p>
         <div className="mt-8">
-          <ButtonLink href="/contact" variant="primary">
+          <ButtonLink href="/seek-talent/get-started" variant="primary">
             Hire {industry.name} Talent
           </ButtonLink>
         </div>

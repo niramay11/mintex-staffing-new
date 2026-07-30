@@ -120,7 +120,7 @@ export default async function HiringServicePage({
         <h1 className="mt-5 text-4xl font-bold sm:text-5xl">{service.name}</h1>
         <p className="mt-4 max-w-2xl text-white/80">{service.intro}</p>
         <div className="mt-8 flex flex-wrap gap-3.5">
-          <ButtonLink href="/contact" variant="primary" className="inline-flex items-center gap-2">
+          <ButtonLink href="/seek-talent/get-started" variant="primary" className="inline-flex items-center gap-2">
             Discuss your hiring needs
             <IconArrowRight className="h-4 w-4" />
           </ButtonLink>
@@ -174,7 +174,7 @@ export default async function HiringServicePage({
                         variant="primary"
                         className="mt-4 inline-flex items-center gap-2"
                       >
-                        Get started
+                        Let's talk
                         <IconArrowRight className="h-4 w-4" />
                       </ButtonLink>
                     )}

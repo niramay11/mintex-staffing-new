@@ -53,11 +53,43 @@ function IconTarget({ className }: { className?: string }) {
   );
 }
 
+function IconCheck({ className }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={className}>
+      <path d="M20 7 9 18l-5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 const highlights = [
   { value: "14K+", label: "Placements" },
   { value: "93%", label: "Client Retention" },
   { value: "9+", label: "Industries" },
   { value: "9 Days", label: "Avg. Time to Hire" },
+];
+
+const storyPoints = [
+  {
+    title: "IT Sector Roots",
+    description:
+      "We began our journey in the IT sector, successfully navigating diverse hiring models (C2C, W2, 1099, and full-time placements). Our resilience and dedication allowed us to continue making successful placements even through the challenges of the pandemic.",
+  },
+  {
+    title: "Evolving With the Market",
+    description:
+      "Today, we have expanded our expertise to include non-IT fields. While we continue to support tech-driven organizations, we now specialize in building teams for startups and placing key founding and leadership roles. Currently, our most prominent presence is within the Legal and Hospitality sectors.",
+  },
+];
+
+const approachPoints = [
+  {
+    title: "Integrity-Driven",
+    description: "We build lasting, meaningful connections rather than quick fixes.",
+  },
+  {
+    title: "Highly Adaptable",
+    description: "We pivot with the changing landscape of your industry to find exactly what you need.",
+  },
 ];
 
 const values = [
@@ -104,8 +136,10 @@ export default async function AboutPage() {
             </h1>
             <span aria-hidden="true" className="mt-4 block h-1.5 w-20 rounded-full bg-tan" />
             <p className="mt-5 max-w-md text-lg leading-relaxed text-steel">
-              We connect exceptional talent with leading employers and build lasting
-              partnerships across the United States.
+              Mintex Staffing is a professional recruitment firm dedicated to connecting the
+              right talent with the right opportunities. Since our founding, we have built our
+              reputation on trust, precision, and a genuine commitment to the success of both
+              our clients and candidates.
             </p>
           </div>
 
@@ -152,17 +186,19 @@ export default async function AboutPage() {
               <h2 className="mt-2.5 font-heading text-3xl font-bold leading-tight text-navy sm:text-4xl">
                 Built on People. Driven by Purpose.
               </h2>
-              <div className="mt-5 space-y-4 text-[15.5px] leading-relaxed text-steel">
-                <p>Mintex Staffing was founded with a simple belief: great people drive great companies.</p>
-                <p>
-                  Since our beginning, we&apos;ve focused on connecting exceptional talent with the
-                  right opportunities.
-                </p>
-                <p>
-                  Headquartered in Edison, New Jersey, we partner with organizations across the
-                  U.S. to deliver staffing solutions that help them grow, adapt, and succeed.
-                </p>
-              </div>
+              <ul className="mt-6 space-y-4">
+                {storyPoints.map((point) => (
+                  <li key={point.title} className="flex gap-3">
+                    <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-tan/15 text-tan">
+                      <IconCheck className="h-3.5 w-3.5" />
+                    </span>
+                    <p className="text-[15.5px] leading-relaxed text-steel">
+                      <span className="font-semibold text-navy">{point.title}:</span>{" "}
+                      {point.description}
+                    </p>
+                  </li>
+                ))}
+              </ul>
               <div className="mt-8">
                 <ButtonLink
                   href="/contact"
@@ -181,6 +217,49 @@ export default async function AboutPage() {
                 fill
                 className="object-cover"
               />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* The Mintex Approach */}
+      <section className="border-t border-navy/[0.06] bg-mist">
+        <div className="mx-auto max-w-6xl px-6 py-20 sm:px-10 lg:px-16 lg:py-24">
+          <div className="grid items-center gap-14 lg:grid-cols-[0.9fr_1fr] lg:gap-16">
+            <div className="relative mx-auto aspect-[4/3] w-full max-w-[480px] overflow-hidden rounded-2xl shadow-[0_25px_55px_-20px_rgba(0,48,96,0.35)] lg:order-1">
+              <Image
+                src={siteImages["about:approach-visual"]}
+                alt="Mintex Staffing team discussing a tailored hiring strategy with a client"
+                fill
+                className="object-cover"
+              />
+            </div>
+
+            <div className="lg:order-2">
+              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-tan">
+                Our Approach
+              </p>
+              <h2 className="mt-2.5 font-heading text-3xl font-bold leading-tight text-navy sm:text-4xl">
+                The Mintex Approach
+              </h2>
+              <p className="mt-5 text-[15.5px] leading-relaxed text-steel">
+                We believe in quality over quantity. Rather than trying to mass-produce
+                placements or take over your entire hiring process, we take a focused and
+                thoughtful approach.
+              </p>
+              <ul className="mt-6 space-y-4">
+                {approachPoints.map((point) => (
+                  <li key={point.title} className="flex gap-3">
+                    <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-tan/15 text-tan">
+                      <IconCheck className="h-3.5 w-3.5" />
+                    </span>
+                    <p className="text-[15.5px] leading-relaxed text-steel">
+                      <span className="font-semibold text-navy">{point.title}:</span>{" "}
+                      {point.description}
+                    </p>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>

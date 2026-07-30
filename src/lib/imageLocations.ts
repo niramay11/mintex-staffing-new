@@ -60,7 +60,8 @@ export const IMAGE_LOCATIONS: ImageLocation[] = [
 
   // About
   { locationKey: "about:hero-visual",  pageName: "About", sectionName: "Hero Visual",       defaultSrc: "/about.png",              category: "photo-landscape" },
-  { locationKey: "about:story-visual", pageName: "About", sectionName: "Our Story Visual",  defaultSrc: "/interview-handshake.jpg", category: "photo-square" },
+  { locationKey: "about:story-visual",    pageName: "About", sectionName: "Our Story Visual",       defaultSrc: "/interview-handshake.jpg", category: "photo-square" },
+  { locationKey: "about:approach-visual", pageName: "About", sectionName: "The Mintex Approach Visual", defaultSrc: "/interview-meeting.jpg", category: "photo-square" },
 
   // Get Hired
   { locationKey: "get-hired:hero-visual", pageName: "Get Hired", sectionName: "Hero Visual", defaultSrc: "/collage-1.webp", category: "photo-portrait" },
