@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
-import Script from "next/script";
 import Section from "@/components/ui/Section";
 import JobPageApply from "@/components/jobs/JobPageApply";
 import { IconBars, IconBriefcase, IconPeople, IconPin } from "@/components/jobs/icons";
 import { getCachedJobs } from "@/lib/jobsCache";
 import { getJobMap } from "@/lib/ceipal-job-map";
 import { getCachedDescription } from "@/lib/jobDescriptionCache";
-import { isActiveJob, jobLocation, fmtPay, fmtPosted, workType } from "@/components/jobs/utils";
+import { isActiveJob, jobLocation, jobUrlSlug, fmtPay, fmtPosted, workType } from "@/components/jobs/utils";
 import { buildJobPostingSchema } from "@/lib/jobPostingSchema";
+import { SITE_URL } from "@/lib/site";
 import type { CeipalJob } from "@/components/jobs/types";
 
 // Job data changes with Ceipal sync cycles — never bake a stale snapshot into
@@ -61,10 +61,19 @@ function IconShield({ className }: { className?: string }) {
   );
 }
 
-async function findJob(jobCode: string): Promise<CeipalJob | null> {
+async function findJobBySlug(slug: string): Promise<CeipalJob | null> {
   const { jobs } = await getCachedJobs();
-  const job = (jobs as CeipalJob[]).find((j) => j.job_code === jobCode);
-  return job && isActiveJob(job) ? job : null;
+  const job = (jobs as CeipalJob[]).find((j) => isActiveJob(j) && jobUrlSlug(j) === slug);
+  return job ?? null;
+}
+
+// The old URL format used the raw, unslugified job_code directly (e.g.
+// "JPC - 1539"). Kept so any already-indexed/shared old-format links
+// redirect to the new slug instead of 404ing.
+async function findJobByLegacyCode(code: string): Promise<CeipalJob | null> {
+  const { jobs } = await getCachedJobs();
+  const job = (jobs as CeipalJob[]).find((j) => isActiveJob(j) && j.job_code === code);
+  return job ?? null;
 }
 
 async function loadDescription(job: CeipalJob): Promise<string> {
@@ -90,16 +99,17 @@ async function loadDescription(job: CeipalJob): Promise<string> {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ job_code: string }>;
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const { job_code } = await params;
-  const job = await findJob(decodeURIComponent(job_code));
+  const { slug } = await params;
+  const decoded = decodeURIComponent(slug);
+  const job = (await findJobBySlug(decoded)) ?? (await findJobByLegacyCode(decoded));
   if (!job) return { title: "Job Not Found", robots: { index: false, follow: false } };
 
   const title = job.job_title;
   const fullTitle = `${title} | Mintex Staffing`;
   const description = `${job.job_title} in ${jobLocation(job)}${job.job_type ? ` — ${job.job_type}` : ""}. Apply now with Mintex Staffing.`;
-  const path = `/get-hired/jobs/${encodeURIComponent(job.job_code)}`;
+  const path = `/get-hired/jobs/${jobUrlSlug(job)}`;
 
   return {
     title,
@@ -110,13 +120,28 @@ export async function generateMetadata({
   };
 }
 
-export default async function JobPage({ params }: { params: Promise<{ job_code: string }> }) {
-  const { job_code } = await params;
-  const job = await findJob(decodeURIComponent(job_code));
-  if (!job) notFound();
+export default async function JobPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const decoded = decodeURIComponent(slug);
+  const job = await findJobBySlug(decoded);
+  if (!job) {
+    const legacyJob = await findJobByLegacyCode(decoded);
+    if (legacyJob) permanentRedirect(`/get-hired/jobs/${jobUrlSlug(legacyJob)}`);
+    notFound();
+  }
 
   const description = await loadDescription(job);
   const schema = buildJobPostingSchema(job, description);
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+      { "@type": "ListItem", position: 2, name: "Get Hired", item: `${SITE_URL}/get-hired` },
+      { "@type": "ListItem", position: 3, name: job.job_title, item: `${SITE_URL}/get-hired/jobs/${jobUrlSlug(job)}` },
+    ],
+  };
 
   const pay = fmtPay(job.pay_rate___salary);
   const posted = fmtPosted(job.career_portal_published_date);
@@ -145,10 +170,15 @@ export default async function JobPage({ params }: { params: Promise<{ job_code: 
 
   return (
     <>
-      <Script
+      <script
         id="job-posting-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
+      <script
+        id="job-breadcrumb-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
 
       {/* Hero */}

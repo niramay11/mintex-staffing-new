@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { supabase, supabaseAdmin } from "@/lib/supabase";
 import { verifyAdminPassword } from "@/lib/portal-auth";
 
@@ -42,5 +43,6 @@ export async function PUT(req: NextRequest) {
     if (insertError) return NextResponse.json({ error: insertError.message }, { status: 500 });
   }
 
+  revalidateTag("local-business-schema", "max");
   return NextResponse.json({ success: true, data: clean });
 }

@@ -4,6 +4,17 @@ import Link from "next/link";
 import { ButtonLink } from "@/components/ui/Button";
 import { getSiteImages } from "@/lib/siteImages";
 import { pageMetadata } from "@/lib/pageMetadata";
+import { BUSINESS } from "@/lib/site";
+import { getTeamMembers } from "@/lib/teamMembers";
+
+function initials(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+}
 
 export const metadata: Metadata = pageMetadata({
   title: "About Us",
@@ -117,6 +128,7 @@ const values = [
 
 export default async function AboutPage() {
   const siteImages = await getSiteImages();
+  const teamMembers = await getTeamMembers();
 
   return (
     <>
@@ -140,6 +152,11 @@ export default async function AboutPage() {
               right talent with the right opportunities. Since our founding, we have built our
               reputation on trust, precision, and a genuine commitment to the success of both
               our clients and candidates.
+            </p>
+            <p className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-steel">
+              <span>{BUSINESS.streetAddress}, {BUSINESS.addressLocality}, {BUSINESS.addressRegion} {BUSINESS.postalCode}</span>
+              <span aria-hidden="true">&middot;</span>
+              <a href={`tel:${BUSINESS.telephone}`} className="font-medium text-navy hover:text-tan">{BUSINESS.telephoneDisplay}</a>
             </p>
           </div>
 
@@ -287,6 +304,53 @@ export default async function AboutPage() {
           </div>
         </div>
       </section>
+
+      {/* Leadership */}
+      {teamMembers.length > 0 && (
+        <section className="border-t border-navy/[0.06] bg-mist">
+          <div className="mx-auto max-w-7xl px-6 py-20 sm:px-10 lg:px-16 lg:py-24">
+            <div className="flex items-center justify-center gap-4">
+              <span aria-hidden="true" className="h-px flex-1 bg-navy/10" />
+              <p className="flex-shrink-0 text-[13px] font-semibold uppercase tracking-[0.14em] text-tan">
+                Leadership
+              </p>
+              <span aria-hidden="true" className="h-px flex-1 bg-navy/10" />
+            </div>
+
+            <div className="mt-12 grid grid-cols-2 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {teamMembers.map((member) => (
+                <div
+                  key={member.id}
+                  className="rounded-2xl border border-navy/[0.08] bg-white p-7 text-center shadow-[0_1px_3px_rgba(0,48,96,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)]"
+                >
+                  <div className="relative mx-auto aspect-square w-28 overflow-hidden rounded-2xl bg-navy/10 shadow-[0_10px_25px_-12px_rgba(0,48,96,0.3)]">
+                    {member.photo_url ? (
+                      <Image src={member.photo_url} alt={member.name} fill className="object-cover object-top" />
+                    ) : (
+                      <span className="flex h-full w-full items-center justify-center font-heading text-2xl font-semibold text-navy/40">
+                        {initials(member.name)}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="mt-4 font-heading text-lg font-semibold text-navy">{member.name}</h3>
+                  <p className="text-sm font-medium text-tan">{member.title}</p>
+                  {member.bio && <p className="mt-3 text-sm leading-relaxed text-steel">{member.bio}</p>}
+                  {member.linkedin_url && (
+                    <a
+                      href={member.linkedin_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-3 inline-block text-xs font-semibold text-navy hover:text-tan"
+                    >
+                      LinkedIn
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
     </>
   );
 }

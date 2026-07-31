@@ -4,6 +4,19 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { navItems } from "./navConfig";
+import { BUSINESS } from "@/lib/site";
+
+function IconPhone({ className }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className}>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M3 5a2 2 0 012-2h2.28a1 1 0 01.97.76l1.06 4.24a1 1 0 01-.5 1.11L7.1 10.24a11 11 0 006.66 6.66l1.13-1.7a1 1 0 011.11-.5l4.24 1.06a1 1 0 01.76.97V19a2 2 0 01-2 2h-1C10.4 21 3 13.6 3 4.5V5z"
+      />
+    </svg>
+  );
+}
 
 export default function Header({ siteImages }: { siteImages: Record<string, string> }) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -91,31 +104,41 @@ export default function Header({ siteImages }: { siteImages: Record<string, stri
           Client Login
         </Link>
 
-        <button
-          type="button"
-          onClick={() => setMobileOpen((open) => !open)}
-          aria-expanded={mobileOpen}
-          aria-label="Toggle navigation menu"
-          className="flex-shrink-0 rounded-full p-2 text-navy hover:bg-navy/[0.06] lg:hidden"
-        >
-          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-6 w-6">
-            {mobileOpen ? (
-              <path
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                d="M6 6l12 12M18 6L6 18"
-              />
-            ) : (
-              <path
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                d="M4 7h16M4 12h16M4 17h16"
-              />
-            )}
-          </svg>
-        </button>
+        <div className="flex flex-shrink-0 items-center gap-1 lg:hidden">
+          <a
+            href={`tel:${BUSINESS.telephone}`}
+            aria-label="Call Mintex Staffing"
+            className="rounded-full p-3.5 text-navy hover:bg-navy/[0.06]"
+          >
+            <IconPhone className="h-5 w-5" />
+          </a>
+
+          <button
+            type="button"
+            onClick={() => setMobileOpen((open) => !open)}
+            aria-expanded={mobileOpen}
+            aria-label="Toggle navigation menu"
+            className="rounded-full p-3.5 text-navy hover:bg-navy/[0.06]"
+          >
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-6 w-6">
+              {mobileOpen ? (
+                <path
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  d="M6 6l12 12M18 6L6 18"
+                />
+              ) : (
+                <path
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  d="M4 7h16M4 12h16M4 17h16"
+                />
+              )}
+            </svg>
+          </button>
+        </div>
       </div>
 
       {mobileOpen && (

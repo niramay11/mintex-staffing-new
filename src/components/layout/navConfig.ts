@@ -1,3 +1,5 @@
+import { industries } from "@/content/industries";
+
 export interface NavLink {
   label: string;
   href: string;
@@ -27,6 +29,11 @@ export const navItems: NavItem[] = [
       { label: "Executive Search", href: "/seek-talent/executive-search" },
       { label: "How We Work", href: "/seek-talent/how-we-work" },
     ],
+  },
+  {
+    label: "Industries",
+    href: "/#industries",
+    children: industries.map((industry) => ({ label: industry.name, href: `/industries/${industry.slug}` })),
   },
   {
     label: "Resources",

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Script from "next/script";
 import Section from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import FaqAccordion from "@/components/ui/FaqAccordion";
@@ -111,7 +110,7 @@ export default async function HowWeWorkPage() {
   const siteImages = await getSiteImages();
   return (
     <>
-      <Script
+      <script
         id="how-we-work-faq-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}

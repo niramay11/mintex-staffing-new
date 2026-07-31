@@ -4,7 +4,7 @@ import { hiringServices } from "@/content/hiringServices";
 import { supabase } from "@/lib/supabase";
 import { SITE_URL } from "@/lib/site";
 import { getCachedJobs } from "@/lib/jobsCache";
-import { isActiveJob } from "@/components/jobs/utils";
+import { isActiveJob, jobUrlSlug } from "@/components/jobs/utils";
 import type { CeipalJob } from "@/components/jobs/types";
 
 // Without this, Next tries to statically prerender the sitemap at build
@@ -23,6 +23,7 @@ const staticRoutes = [
   "/get-hired/share-resume",
   "/seek-talent",
   "/seek-talent/how-we-work",
+  "/seek-talent/get-started",
   "/resources",
   "/resources/hiring-cost-calculator",
   "/resources/ai-interview-generator",
@@ -37,17 +38,14 @@ const staticRoutes = [
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticEntries = staticRoutes.map((route) => ({
     url: `${baseUrl}${route}`,
-    lastModified: new Date(),
   }));
 
   const industryEntries = industries.map((industry) => ({
     url: `${baseUrl}/industries/${industry.slug}`,
-    lastModified: new Date(),
   }));
 
   const hiringServiceEntries = hiringServices.map((service) => ({
     url: `${baseUrl}/seek-talent/${service.slug}`,
-    lastModified: new Date(),
   }));
 
   const { data: insightPosts } = await supabase.from("insights").select("slug, published_at");
@@ -59,13 +57,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { data: insightCategories } = await supabase.from("insight_categories").select("slug");
   const insightCategoryEntries = (insightCategories ?? []).map((category) => ({
     url: `${baseUrl}/insights/category/${category.slug}`,
-    lastModified: new Date(),
   }));
 
   const { jobs } = await getCachedJobs();
   const jobEntries = (jobs as CeipalJob[]).filter(isActiveJob).map((job) => ({
-    url: `${baseUrl}/get-hired/jobs/${encodeURIComponent(job.job_code)}`,
-    lastModified: new Date(),
+    url: `${baseUrl}/get-hired/jobs/${jobUrlSlug(job)}`,
+    ...(job.career_portal_published_date
+      ? { lastModified: new Date(job.career_portal_published_date) }
+      : {}),
   }));
 
   return [

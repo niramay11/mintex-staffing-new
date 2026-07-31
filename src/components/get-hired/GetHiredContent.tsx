@@ -4,18 +4,48 @@ import Section from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import JobBoard from "@/components/jobs/JobBoard";
 import BrowseRolesButton from "@/components/jobs/BrowseRolesButton";
+import FaqAccordion from "@/components/ui/FaqAccordion";
 import { IconBriefcase } from "@/components/jobs/icons";
 import { getSiteImages } from "@/lib/siteImages";
 import { getCachedJobs } from "@/lib/jobsCache";
 import { getJobMap } from "@/lib/ceipal-job-map";
 import { getCachedDescription, type JobDescription } from "@/lib/jobDescriptionCache";
 import { withTimeout } from "@/lib/withTimeout";
-import { isActiveJob } from "@/components/jobs/utils";
+import { isActiveJob, jobUrlSlug } from "@/components/jobs/utils";
+import { SITE_URL } from "@/lib/site";
 import type { CeipalJob } from "@/components/jobs/types";
 
 // Matches JobBoard's own PAGE_SIZE — no point prefetching more than the
 // first page can show before the user has even paged or filtered.
 const PREFETCH_DESCRIPTION_COUNT = 8;
+
+const jobSeekerFaqs = [
+  {
+    question: "Is Mintex Staffing free for job seekers?",
+    answer:
+      "Yes. There is never a cost to you to apply, interview, or get placed through Mintex Staffing — our fee is paid by the hiring employer, not the candidate.",
+  },
+  {
+    question: "Is Mintex Staffing a legitimate staffing agency?",
+    answer:
+      "Yes. We're a staffing and recruitment agency based in Edison, New Jersey, placing candidates across IT, healthcare, engineering, and other industries with real employers on contract, contract-to-hire, and permanent roles.",
+  },
+  {
+    question: "How does the application-to-placement process work?",
+    answer:
+      "You apply or share your resume, our recruiters match you against active roles that fit your skills, and if there's a fit we coordinate interviews directly with the hiring employer through to an offer.",
+  },
+  {
+    question: "What happens after I apply to a job?",
+    answer:
+      "A recruiter reviews your application against the role's requirements. If it's a match, we'll reach out to discuss next steps before presenting you to the employer.",
+  },
+  {
+    question: "Can I apply to multiple roles at once?",
+    answer:
+      "Yes. You're welcome to apply to any open roles you're qualified for and interested in — there's no limit on how many you can apply to.",
+  },
+];
 
 // Isolated in its own Suspense boundary so the hero above never has to wait on
 // Ceipal — the shell streams to the browser immediately and this section pops
@@ -56,7 +86,27 @@ async function JobBoardSection() {
   );
   const initialDescriptions = Object.fromEntries(prefetchedEntries.filter((e): e is [string, JobDescription] => e !== null));
 
-  return <JobBoard initialJobs={typedJobs} initialDescriptions={initialDescriptions} />;
+  const jobListSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: activeJobs.map((job, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      url: `${SITE_URL}/get-hired/jobs/${jobUrlSlug(job)}`,
+      name: job.job_title,
+    })),
+  };
+
+  return (
+    <>
+      <script
+        id="job-list-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jobListSchema) }}
+      />
+      <JobBoard initialJobs={typedJobs} initialDescriptions={initialDescriptions} />
+    </>
+  );
 }
 
 function JobBoardSkeleton() {
@@ -70,8 +120,24 @@ function JobBoardSkeleton() {
 
 export default async function GetHiredContent() {
   const siteImages = await getSiteImages();
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: jobSeekerFaqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: { "@type": "Answer", text: faq.answer },
+    })),
+  };
+
   return (
     <>
+      <script
+        id="get-hired-faq-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <Section background="navy" className="!py-12 sm:!py-14 lg:!py-16">
         <div className="relative mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-14">
           <div>
@@ -139,6 +205,11 @@ roles as they go live.
             <JobBoardSection />
           </Suspense>
         </div>
+      </Section>
+
+      <Section background="white">
+        <h2 className="text-3xl font-bold text-navy">Frequently Asked Questions</h2>
+        <FaqAccordion items={jobSeekerFaqs} />
       </Section>
 
       <Section id="interview-prep" background="cream" className="!py-12 text-center sm:!py-14">

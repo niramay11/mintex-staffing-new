@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { CeipalJob } from "@/components/jobs/types";
-import { fmtPay, fmtPosted, jobLocation } from "@/components/jobs/utils";
+import { fmtPay, fmtPosted, jobLocation, jobUrlSlug } from "@/components/jobs/utils";
 import { IconArrowRight, IconPin } from "@/components/jobs/icons";
 
 export default function JobTile({ job }: { job: CeipalJob }) {
@@ -28,7 +28,7 @@ export default function JobTile({ job }: { job: CeipalJob }) {
           {posted && <p className="text-navy/50">Posted {posted}</p>}
         </div>
         <Link
-          href={`/get-hired/jobs/${encodeURIComponent(job.job_code)}`}
+          href={`/get-hired/jobs/${jobUrlSlug(job)}`}
           className="inline-flex items-center gap-1.5 rounded-full bg-navy px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-navy-secondary"
         >
           View &amp; Apply

@@ -1,0 +1,29 @@
+# Mintex Staffing
+
+> Mintex Staffing is a staffing and recruitment agency based in Edison, New Jersey, connecting employers with vetted, ready-to-work talent across contract, contract-to-hire, and permanent placements.
+
+## Industries Served
+- [IT Staffing](https://www.mintexstaffing.com/industries/it-staffing)
+- [Healthcare Staffing](https://www.mintexstaffing.com/industries/healthcare-staffing)
+- [Engineering Staffing](https://www.mintexstaffing.com/industries/engineering-staffing)
+- [Manufacturing Staffing](https://www.mintexstaffing.com/industries/manufacturing-staffing)
+- [Finance Staffing](https://www.mintexstaffing.com/industries/finance-staffing)
+- [Administrative Staffing](https://www.mintexstaffing.com/industries/administrative-staffing)
+- [Sales Staffing](https://www.mintexstaffing.com/industries/sales-staffing)
+- [Customer Service Staffing](https://www.mintexstaffing.com/industries/customer-service-staffing)
+- [Logistics Staffing](https://www.mintexstaffing.com/industries/logistics-staffing)
+
+## For Employers
+- [Seek Talent](https://www.mintexstaffing.com/seek-talent)
+- [How We Work](https://www.mintexstaffing.com/seek-talent/how-we-work)
+- [Get Started](https://www.mintexstaffing.com/seek-talent/get-started)
+
+## For Job Seekers
+- [Get Hired](https://www.mintexstaffing.com/get-hired)
+- [Apply to Jobs](https://www.mintexstaffing.com/get-hired/apply-to-jobs)
+- [Share Your Resume](https://www.mintexstaffing.com/get-hired/share-resume)
+
+## Company
+- [About Us](https://www.mintexstaffing.com/about)
+- [Contact](https://www.mintexstaffing.com/contact)
+- [Insights (Blog)](https://www.mintexstaffing.com/insights)

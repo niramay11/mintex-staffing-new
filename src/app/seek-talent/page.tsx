@@ -7,6 +7,8 @@ import { IconBriefcase, IconPeople } from "@/components/jobs/icons";
 import { hiringServices } from "@/content/hiringServices";
 import { getSiteImages } from "@/lib/siteImages";
 import { pageMetadata } from "@/lib/pageMetadata";
+import Testimonials from "@/components/home/Testimonials";
+import { getHomepageTestimonials } from "@/lib/caseStudies";
 
 export const metadata: Metadata = pageMetadata({
   title: "Seek Talent",
@@ -32,6 +34,7 @@ const seekTalentPoints = [
 
 export default async function SeekTalentPage() {
   const siteImages = await getSiteImages();
+  const testimonials = await getHomepageTestimonials();
   return (
     <>
       <Section background="navy" className="!py-12 sm:!py-14 lg:!py-16">
@@ -173,6 +176,8 @@ export default async function SeekTalentPage() {
           })}
         </div>
       </Section>
+
+      <Testimonials stories={testimonials} />
 
       <Section background="white" className="!py-10 sm:!py-12">
         <Link

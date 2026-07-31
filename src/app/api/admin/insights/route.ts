@@ -43,6 +43,9 @@ export async function POST(req: NextRequest) {
   const author = String(body.author ?? "").trim();
   const published_at = String(body.published_at ?? "").trim();
   const image_url = body.image_url ? String(body.image_url).trim() : null;
+  const author_title = body.author_title ? String(body.author_title).trim() : null;
+  const author_bio = body.author_bio ? String(body.author_bio).trim() : null;
+  const author_photo_url = body.author_photo_url ? String(body.author_photo_url).trim() : null;
   const bodyParagraphs = Array.isArray(body.body)
     ? body.body.map((p: unknown) => String(p).trim()).filter(Boolean)
     : [];
@@ -54,7 +57,7 @@ export async function POST(req: NextRequest) {
 
   const { data, error } = await supabaseAdmin
     .from("insights")
-    .insert({ slug, category, title, excerpt, body: bodyParagraphs, published_at, author, image_url })
+    .insert({ slug, category, title, excerpt, body: bodyParagraphs, published_at, author, image_url, author_title, author_bio, author_photo_url })
     .select()
     .single();
 

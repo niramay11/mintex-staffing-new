@@ -13,6 +13,7 @@ import {
   isActiveJob,
   jobIndustries,
   jobLocation,
+  jobUrlSlug,
   type ExperienceBucketKey,
 } from "./utils";
 import { IconArrowRight, IconBars, IconBell, IconBriefcase, IconChevron, IconPeople, IconPin, IconSearch } from "./icons";
@@ -662,7 +663,7 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
                       <div className="mt-4 flex items-center justify-between border-t border-navy/10 pt-4 text-sm">
                         <span className="text-navy/50">{posted ? `Posted ${posted}` : ""}</span>
                         <Link
-                          href={`/get-hired/jobs/${encodeURIComponent(job.job_code)}`}
+                          href={`/get-hired/jobs/${jobUrlSlug(job)}`}
                           className="inline-flex items-center gap-1.5 rounded-full bg-navy px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-navy-secondary"
                         >
                           View &amp; Apply

@@ -99,6 +99,22 @@ export function workType(remote?: string): string | undefined {
   return remote;
 }
 
+function slugifyPart(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+// Human-readable, SEO-friendly URL slug for a job's detail page, e.g.
+// job_code "JPC - 1539" + job_title "Senior Software Engineer" ->
+// "jpc-1539-senior-software-engineer". Deterministic from job data alone,
+// so the [slug] route can look a job up by recomputing this for every
+// candidate rather than needing to store/reverse-parse anything.
+export function jobUrlSlug(job: CeipalJob): string {
+  return [slugifyPart(job.job_code), slugifyPart(job.job_title)].filter(Boolean).join("-");
+}
+
 export function fmtPosted(s?: string): string | null {
   if (!s) return null;
   const d = new Date(s);

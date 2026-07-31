@@ -17,7 +17,13 @@ function CardVisual({ story, opacityClassName }: { story: ClientStory; opacityCl
   if (story.thumbnail_url) {
     return (
       // eslint-disable-next-line @next/next/no-img-element -- arbitrary admin-supplied URL, can't be pre-configured for next/image
-      <img src={story.thumbnail_url} alt="" className={`absolute inset-0 h-full w-full object-cover ${opacityClassName}`} />
+      <img
+        src={story.thumbnail_url}
+        alt=""
+        width={640}
+        height={440}
+        className={`absolute inset-0 h-full w-full object-cover ${opacityClassName}`}
+      />
     );
   }
 

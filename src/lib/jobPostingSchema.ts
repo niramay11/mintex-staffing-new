@@ -88,9 +88,9 @@ export function buildJobPostingSchema(job: CeipalJob, description: string) {
             "@type": "Place",
             address: {
               "@type": "PostalAddress",
-              addressLocality: city,
-              addressRegion: region,
-              postalCode: job.zip_code,
+              ...(city ? { addressLocality: city } : {}),
+              ...(region ? { addressRegion: region } : {}),
+              ...(job.zip_code ? { postalCode: job.zip_code } : {}),
               addressCountry: toCountryCode(job.country),
             },
           }

@@ -32,7 +32,7 @@ export default async function HomePage() {
       >
         <div className="relative flex min-h-[420px] flex-col justify-center sm:min-h-[500px] lg:min-h-[540px]">
           <div className="flex max-w-3xl flex-col items-start">
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-tan-light/35 bg-tan/[0.14] px-4 py-2 text-[13px] font-medium text-tan-light shadow-[0_0_24px_-6px_rgba(191,174,153,0.4)]">
+            <div className="inline-flex items-center gap-2.5 rounded-full border border-tan-light/35 bg-tan/[0.14] px-4 py-2 text-[13px] font-medium text-tan-light shadow-[0_0_24px_-6px_rgba(191,174,153,0.4)] backdrop-blur-sm [text-shadow:0_1px_3px_rgba(0,0,0,0.45)] sm:backdrop-blur-none sm:[text-shadow:none]">
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4 flex-shrink-0">
                 <path
                   d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"
@@ -91,6 +91,54 @@ export default async function HomePage() {
         </div>
       </Section>
 
+      {/* Sec 1.5 — What We Do */}
+      <Section background="white" className="!py-16 sm:!py-20">
+        <div className="mx-auto grid max-w-6xl items-start gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
+          <div>
+            <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
+              What we do
+            </p>
+            <h2 className="mt-3.5 font-heading text-[32px] font-semibold leading-tight text-navy sm:text-[36px]">
+              Staffing that starts with a real understanding of your team
+            </h2>
+            <p className="mt-5 text-[15.5px] leading-[1.85] text-steel">
+              Mintex Staffing connects employers with vetted, ready-to-work talent across IT,
+              healthcare, engineering, manufacturing, finance, and six more specialized industries.
+              We source candidates who match your team&apos;s actual skill and culture needs, and
+              screen them for a real delivery track record rather than just a polished resume.
+            </p>
+            <p className="mt-4 text-[15.5px] leading-[1.85] text-steel">
+              We place candidates as contract, contract-to-hire, or permanent hires, whichever
+              model fits the work, backed by an active talent network that&apos;s already screened
+              long before your search begins. That approach has produced 14,000+ placements to
+              date, with a 93% client retention rate.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-navy/[0.08] bg-mist p-8">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-tan">
+              At a glance
+            </p>
+            <div className="mt-5 space-y-5">
+              <div className="flex items-start justify-between gap-4 border-b border-navy/10 pb-5">
+                <span className="text-[14.5px] text-navy/70">Industries covered</span>
+                <span className="font-heading text-lg font-semibold text-navy">9</span>
+              </div>
+              <div className="flex items-start justify-between gap-4 border-b border-navy/10 pb-5">
+                <span className="text-[14.5px] text-navy/70">Avg. time to hire</span>
+                <span className="font-heading text-lg font-semibold text-navy">9 Days</span>
+              </div>
+              <div className="flex items-start justify-between gap-4">
+                <span className="text-[14.5px] text-navy/70">Engagement models</span>
+                <span className="text-right font-heading text-sm font-semibold leading-snug text-navy">
+                  Contract · Contract-to-Hire · Permanent
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Section>
+
       {/* Sec 2 — You need to see it to believe it. ClientStories owns its own
           Section-equivalent wrapper and the show/hide decision entirely
           client-side (checked fresh on every load via /api/client-stories),
@@ -110,8 +158,8 @@ export default async function HomePage() {
             A decade of staffing expertise, backed by process
           </h2>
           <p className="mt-4 text-lg text-steel">
-            Candidates screened for skills and company fit, not based on a resume that looks good 
-on paper. 
+            Candidates screened for skills and company fit, not based on a resume that looks good
+on paper.
           </p>
         </div>
 
@@ -216,6 +264,52 @@ on paper.
               Calculators, checklists, and interview tools for hiring teams and candidates.
             </p>
           </div>
+        </div>
+      </Section>
+
+      {/* Sec 3.5 — How We're Different */}
+      <Section background="cream">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
+            How we&apos;re different
+          </p>
+          <h2 className="mt-3.5 font-heading text-[32px] font-semibold leading-tight text-navy sm:text-[36px]">
+            Not a resume-forwarding service
+          </h2>
+        </div>
+
+        <div className="mt-11 grid gap-5 sm:grid-cols-3">
+          {[
+            {
+              title: "Screened Before You Ask",
+              text: "Our talent network is pre-vetted for skill and delivery history year-round, not sourced cold once your req opens. That's how we hit a 9-day average time to hire.",
+              path: "M9 12l2 2 4-4M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z",
+            },
+            {
+              title: "Flexible By Design",
+              text: "Contract, contract-to-hire, or permanent, we match the engagement model to the actual shape of the work, not a one-size-fits-all default.",
+              path: "M4 4h16v4H4zM4 10h10v4H4zM4 16h13v4H4z",
+            },
+            {
+              title: "Nine Industries, One Standard",
+              text: "From IT to healthcare to logistics, every candidate goes through the same rigorous screening bar, tailored to what that specific industry actually demands.",
+              path: "M4 20V10M10 20V4M16 20v-7",
+            },
+          ].map((item) => (
+            <div
+              key={item.title}
+              className="rounded-2xl border border-navy/[0.08] bg-white p-8 shadow-[0_1px_3px_rgba(0,48,96,0.05)] transition-all duration-300 hover:-translate-y-1 hover:border-tan/40 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)]"
+            >
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-tan/[0.14] text-tan">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+                  <path d={item.path} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
+              <h3 className="mt-5 font-heading text-[17px] font-semibold tracking-tight text-navy">{item.title}</h3>
+              <span aria-hidden="true" className="mt-3 block h-px w-8 bg-tan/40" />
+              <p className="mt-3.5 text-[14.5px] leading-[1.85] text-steel">{item.text}</p>
+            </div>
+          ))}
         </div>
       </Section>
 

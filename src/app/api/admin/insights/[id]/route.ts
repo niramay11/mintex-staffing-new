@@ -33,6 +33,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   if (body.author !== undefined)       updates.author = String(body.author).trim();
   if (body.published_at !== undefined) updates.published_at = String(body.published_at).trim();
   if (body.image_url !== undefined)    updates.image_url = body.image_url ? String(body.image_url).trim() : null;
+  if (body.author_title !== undefined)     updates.author_title = body.author_title ? String(body.author_title).trim() : null;
+  if (body.author_bio !== undefined)       updates.author_bio = body.author_bio ? String(body.author_bio).trim() : null;
+  if (body.author_photo_url !== undefined) updates.author_photo_url = body.author_photo_url ? String(body.author_photo_url).trim() : null;
   if (Array.isArray(body.body))        updates.body = body.body.map((p: unknown) => String(p).trim()).filter(Boolean);
 
   const { data, error } = await supabaseAdmin

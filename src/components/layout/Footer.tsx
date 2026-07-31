@@ -4,10 +4,16 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { SocialIcon } from "./socialIcons";
+import { industries } from "@/content/industries";
+import { BUSINESS } from "@/lib/site";
 
 type SocialLink = { id: string; label: string; url: string; sort_order?: number };
 
 const footerColumns = [
+  {
+    title: "Industries",
+    links: industries.map((industry) => ({ label: industry.name, href: `/industries/${industry.slug}` })),
+  },
   {
     title: "Resources",
     links: [
@@ -40,7 +46,7 @@ export default function Footer({ siteImages }: { siteImages: Record<string, stri
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <footer className="mx-auto mt-6 max-w-[1920px] rounded-[32px] bg-navy px-8 pb-8 pt-14 text-white sm:px-12">
-        <div className="grid grid-cols-2 gap-10 border-b border-white/10 pb-11 sm:grid-cols-3 lg:grid-cols-[1.8fr_1fr_1fr]">
+        <div className="grid grid-cols-2 gap-10 border-b border-white/10 pb-11 sm:grid-cols-3 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div className="col-span-2 max-w-[300px] sm:col-span-1">
             <Link href="/" className="mb-4 flex items-center">
               <Image src={siteImages["global:footer-logo"]} alt="Mintex Staffing" width={183} height={25} className="h-6 w-auto object-contain" />
@@ -98,7 +104,7 @@ export default function Footer({ siteImages }: { siteImages: Record<string, stri
               Terms of Service
             </Link>
           </p>
-          <p>2163 Oak Tree Rd, Edison, NJ 08820 &middot; +1 (732) 983-5723</p>
+          <p>2163 Oak Tree Rd, Edison, NJ 08820 &middot; <a href={`tel:${BUSINESS.telephone}`} className="hover:text-white">{BUSINESS.telephoneDisplay}</a></p>
         </div>
       </footer>
     </div>

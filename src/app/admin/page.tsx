@@ -2,14 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { IMAGE_LOCATIONS, IMAGE_CATEGORY_INFO } from "@/lib/imageLocations";
-import type { InsightPost, InsightCategoryRow, CaseStudy, CaseStudyType } from "@/content/types";
+import type { InsightPost, InsightCategoryRow, CaseStudy, CaseStudyType, TeamMember } from "@/content/types";
 import { industries } from "@/content/industries";
 
 const STORAGE_KEY = "mintex_admin_pw";
-const TABS = ["jobs", "clients", "social", "stories", "images", "messages", "resumes", "inquiries", "insights", "caseStudies", "industryStats"] as const;
+const TABS = ["jobs", "clients", "social", "stories", "images", "messages", "resumes", "inquiries", "insights", "caseStudies", "industryStats", "team"] as const;
 type Tab = typeof TABS[number];
 const TAB_LABELS: Record<Tab, string> = {
-  jobs: "Jobs", clients: "Clients", social: "Social Links", stories: "Client Stories", images: "Site Images", messages: "Messages", resumes: "Resumes", inquiries: "Hiring Inquiries", insights: "Insights", caseStudies: "Case Studies", industryStats: "Industry Stats",
+  jobs: "Jobs", clients: "Clients", social: "Social Links", stories: "Client Stories", images: "Site Images", messages: "Messages", resumes: "Resumes", inquiries: "Hiring Inquiries", insights: "Insights", caseStudies: "Case Studies", industryStats: "Industry Stats", team: "Team",
 };
 
 export default function AdminInsightsPage() {
@@ -75,10 +75,10 @@ export default function AdminInsightsPage() {
             <h1 className="text-3xl font-bold">Admin Panel</h1>
             <button onClick={handleLogout} className="text-sm text-navy/60 hover:text-red-600 transition-colors">Logout</button>
           </div>
-          <div className="flex gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex flex-wrap gap-1">
             {TABS.map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)}
-                className={`shrink-0 whitespace-nowrap px-5 py-2.5 rounded-t-lg text-sm font-semibold transition-colors ${
+                className={`whitespace-nowrap px-5 py-2.5 rounded-t-lg text-sm font-semibold transition-colors ${
                   activeTab === tab
                     ? "bg-navy text-white border border-b-0 border-navy/10"
                     : "text-navy/50 hover:text-navy"
@@ -102,6 +102,7 @@ export default function AdminInsightsPage() {
         {activeTab === "insights" && <InsightsTab password={activePassword} />}
         {activeTab === "caseStudies" && <CaseStudiesTab password={activePassword} />}
         {activeTab === "industryStats" && <IndustryStatsTab password={activePassword} />}
+        {activeTab === "team" && <TeamMembersTab password={activePassword} />}
       </div>
     </div>
   );
@@ -2914,12 +2915,14 @@ function slugify(title: string): string {
 type InsightDraft = {
   id?: string; slug: string; category: string; title: string;
   excerpt: string; body: string; published_at: string; author: string; image_url: string | null;
+  author_title: string; author_bio: string; author_photo_url: string;
 };
 
 function blankDraft(defaultCategory: string): InsightDraft {
   return {
     slug: "", category: defaultCategory, title: "", excerpt: "", body: "",
     published_at: new Date().toISOString().slice(0, 10), author: "Mintex Staffing Editorial", image_url: null,
+    author_title: "", author_bio: "", author_photo_url: "",
   };
 }
 
@@ -2928,6 +2931,7 @@ function toDraft(post: InsightPost): InsightDraft {
     id: post.id, slug: post.slug, category: post.category, title: post.title,
     excerpt: post.excerpt, body: post.body.join("\n\n"), published_at: post.published_at,
     author: post.author, image_url: post.image_url,
+    author_title: post.author_title ?? "", author_bio: post.author_bio ?? "", author_photo_url: post.author_photo_url ?? "",
   };
 }
 
@@ -2943,6 +2947,7 @@ function InsightsTab({ password }: { password: string }) {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const [managingCategories, setManagingCategories] = useState(false);
+  const [uploadingAuthorPhoto, setUploadingAuthorPhoto] = useState(false);
 
   const fetchData = () =>
     Promise.all([
@@ -2982,6 +2987,17 @@ function InsightsTab({ password }: { password: string }) {
     setUploadingImage(false);
   };
 
+  const uploadAuthorPhoto = async (file: File) => {
+    setUploadingAuthorPhoto(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("password", password);
+    const res = await fetch("/api/insights/upload", { method: "POST", body: formData });
+    const json = await res.json();
+    if (json.url) updateDraft({ author_photo_url: json.url });
+    setUploadingAuthorPhoto(false);
+  };
+
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!draft) return;
@@ -2998,6 +3014,9 @@ function InsightsTab({ password }: { password: string }) {
       published_at: draft.published_at,
       author: draft.author.trim(),
       image_url: draft.image_url,
+      author_title: draft.author_title.trim() || null,
+      author_bio: draft.author_bio.trim() || null,
+      author_photo_url: draft.author_photo_url.trim() || null,
     };
 
     const isEdit = Boolean(draft.id);
@@ -3186,6 +3205,43 @@ function InsightsTab({ password }: { password: string }) {
                 </div>
               </div>
 
+              <div className="rounded-lg border border-navy/10 p-3 space-y-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-navy/50">Author bio (optional — shows an "About the author" card on the post)</p>
+                <div>
+                  <label className="block text-xs font-semibold text-navy/60 mb-1">Author Title</label>
+                  <input value={draft.author_title} onChange={(e) => updateDraft({ author_title: e.target.value })}
+                    placeholder="e.g. Senior Recruiter"
+                    className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-navy/60 mb-1">Author Bio</label>
+                  <textarea rows={2} value={draft.author_bio} onChange={(e) => updateDraft({ author_bio: e.target.value })}
+                    className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-navy/60 mb-1">Author Photo</label>
+                  <div className="flex items-center gap-2">
+                    <input value={draft.author_photo_url} onChange={(e) => updateDraft({ author_photo_url: e.target.value })}
+                      placeholder="Photo URL, or upload below"
+                      className="flex-1 px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                    <label className="relative inline-flex items-center justify-center px-3 py-2 rounded-full bg-white hover:bg-mist text-navy/70 text-xs font-medium border border-navy/10 cursor-pointer transition-colors whitespace-nowrap">
+                      {uploadingAuthorPhoto ? "Uploading…" : "Upload"}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        disabled={uploadingAuthorPhoto}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) uploadAuthorPhoto(file);
+                          e.target.value = "";
+                        }}
+                        className="absolute inset-0 h-full w-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </div>
+
               <div>
                 <label className="block text-xs font-semibold text-navy/60 mb-1">Excerpt</label>
                 <textarea required rows={2} value={draft.excerpt} onChange={(e) => updateDraft({ excerpt: e.target.value })}
@@ -3198,6 +3254,15 @@ function InsightsTab({ password }: { password: string }) {
                 <p className="text-[11px] text-navy/50 mb-1.5">Separate paragraphs with a blank line.</p>
                 <textarea required rows={10} value={draft.body} onChange={(e) => updateDraft({ body: e.target.value })}
                   className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none font-mono" />
+                {(() => {
+                  const wordCount = draft.body.trim() ? draft.body.trim().split(/\s+/).length : 0;
+                  const meetsTarget = wordCount >= 1500;
+                  return (
+                    <p className={`mt-1.5 text-[11px] font-medium ${meetsTarget ? "text-green-600" : "text-amber-600"}`}>
+                      {wordCount.toLocaleString()} words {meetsTarget ? "✓" : "(recommended: 1,500+ for strong SEO value)"}
+                    </p>
+                  );
+                })()}
               </div>
 
               {saveError && <p className="text-red-600 text-sm">{saveError}</p>}
@@ -3588,6 +3653,249 @@ function CaseStudiesTab({ password }: { password: string }) {
               <button type="submit" disabled={saving}
                 className="px-5 py-2 rounded-full bg-tan hover:bg-tan-light text-navy text-sm font-semibold transition-colors disabled:opacity-50">
                 {saving ? "Saving…" : draft.id ? "Save Changes" : "Create Case Study"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Team Members Tab ─────────────────────────────────────────────────────────
+type TeamMemberDraft = {
+  id?: string; name: string; title: string; bio: string; photo_url: string; linkedin_url: string;
+};
+
+const BLANK_TEAM_MEMBER: TeamMemberDraft = {
+  name: "", title: "", bio: "", photo_url: "", linkedin_url: "",
+};
+
+function toTeamMemberDraft(tm: TeamMember): TeamMemberDraft {
+  return {
+    id: tm.id, name: tm.name, title: tm.title, bio: tm.bio ?? "",
+    photo_url: tm.photo_url ?? "", linkedin_url: tm.linkedin_url ?? "",
+  };
+}
+
+function TeamMembersTab({ password }: { password: string }) {
+  const [items, setItems]       = useState<TeamMember[]>([]);
+  const [loaded, setLoaded]     = useState(false);
+  const [loadError, setLoadError] = useState("");
+  const [draft, setDraft]       = useState<TeamMemberDraft | null>(null);
+  const [saving, setSaving]     = useState(false);
+  const [saveError, setSaveError] = useState("");
+  const [deleteError, setDeleteError] = useState("");
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+
+  const fetchData = () =>
+    fetch("/api/admin/team-members", { headers: { "x-admin-password": password } })
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) { setItems(data); setLoadError(""); }
+        else setLoadError(data.error ?? "Failed to load team members");
+        setLoaded(true);
+      })
+      .catch(() => { setLoadError("Could not reach the server."); setLoaded(true); });
+
+  useEffect(() => { fetchData(); }, []);
+
+  const openNew = () => { setSaveError(""); setDraft({ ...BLANK_TEAM_MEMBER }); };
+  const openEdit = (tm: TeamMember) => { setSaveError(""); setDraft(toTeamMemberDraft(tm)); };
+  const closeEditor = () => setDraft(null);
+  const updateDraft = (patch: Partial<TeamMemberDraft>) => setDraft((d) => (d ? { ...d, ...patch } : d));
+
+  const uploadPhoto = async (file: File) => {
+    setUploadError("");
+    setUploadingPhoto(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("password", password);
+    const res = await fetch("/api/team-members/upload", { method: "POST", body: formData });
+    const json = await res.json();
+    if (json.url) updateDraft({ photo_url: json.url });
+    else setUploadError(json.error ?? "Upload failed");
+    setUploadingPhoto(false);
+  };
+
+  const save = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!draft) return;
+    setSaving(true);
+    setSaveError("");
+
+    const payload = {
+      name: draft.name.trim(),
+      title: draft.title.trim(),
+      bio: draft.bio.trim() || null,
+      photo_url: draft.photo_url.trim() || null,
+      linkedin_url: draft.linkedin_url.trim() || null,
+    };
+
+    const isEdit = Boolean(draft.id);
+    const res = await fetch(isEdit ? `/api/admin/team-members/${draft.id}` : "/api/admin/team-members", {
+      method: isEdit ? "PUT" : "POST",
+      headers: { "x-admin-password": password, "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const json = await res.json();
+    if (!res.ok) { setSaveError(json.error ?? "Failed to save"); setSaving(false); return; }
+
+    setDraft(null);
+    setSaving(false);
+    fetchData();
+  };
+
+  const deleteItem = async (tm: TeamMember) => {
+    if (!confirm(`Delete "${tm.name}"? This can't be undone.`)) return;
+    setDeleteError("");
+    const res = await fetch(`/api/admin/team-members/${tm.id}`, { method: "DELETE", headers: { "x-admin-password": password } });
+    if (!res.ok) {
+      const json = await res.json().catch(() => ({}));
+      setDeleteError(json.error ?? "Failed to delete — it's still on the live site.");
+      return;
+    }
+    fetchData();
+  };
+
+  if (!loaded) return (
+    <div className="flex items-center gap-3 py-10 text-navy/60">
+      <div className="w-5 h-5 border-2 border-navy/15 border-t-steel rounded-full animate-spin" />
+      Loading team members…
+    </div>
+  );
+
+  return (
+    <div>
+      <div className="mb-5 flex items-center justify-between gap-4 flex-wrap">
+        <div>
+          <h2 className="text-xl font-semibold text-navy">Team Members</h2>
+          <p className="text-sm text-navy/60 mt-1">{items.length} people shown on /about</p>
+        </div>
+        <button type="button" onClick={openNew}
+          className="px-4 py-2 rounded-full bg-tan hover:bg-tan-light text-navy text-sm font-semibold transition-colors">
+          + New Team Member
+        </button>
+      </div>
+
+      {loadError && (
+        <div className="mb-6 px-4 py-3 rounded-lg text-sm font-medium bg-red-50 text-red-700 border border-red-200">
+          Couldn&apos;t load team members: {loadError}
+          {loadError.includes("team_members") && (
+            <> — run <code className="px-1 bg-red-100 rounded">supabase/migrations/016_team_members.sql</code> in your Supabase SQL editor, then refresh.</>
+          )}
+        </div>
+      )}
+
+      {deleteError && (
+        <div className="mb-6 px-4 py-3 rounded-lg text-sm font-medium bg-red-50 text-red-700 border border-red-200">
+          {deleteError}
+        </div>
+      )}
+
+      {items.length === 0 ? (
+        <p className="text-sm text-navy/40">None yet.</p>
+      ) : (
+        <div className="rounded-2xl border border-navy/10 bg-white divide-y divide-navy/10 overflow-hidden">
+          {items.map((tm) => (
+            <div key={tm.id} className="flex items-center gap-4 px-5 py-4 hover:bg-cream transition-colors">
+              <div className="w-10 h-10 rounded-full bg-cream flex-shrink-0 overflow-hidden cursor-pointer flex items-center justify-center" onClick={() => openEdit(tm)}>
+                {tm.photo_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element -- small admin-panel thumbnail, not worth next/image here
+                  <img src={tm.photo_url} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <span className="text-navy/30 text-xs">—</span>
+                )}
+              </div>
+              <div className="min-w-0 flex-1 cursor-pointer" onClick={() => openEdit(tm)}>
+                <p className="text-sm font-semibold text-navy truncate">{tm.name}</p>
+                <p className="text-xs text-navy/50 mt-0.5 truncate">{tm.title}</p>
+              </div>
+              <button onClick={() => openEdit(tm)}
+                className="px-3 py-1.5 rounded-full bg-white hover:bg-mist text-navy/70 text-xs font-medium border border-navy/10 transition-colors flex-shrink-0">
+                Edit
+              </button>
+              <button onClick={() => deleteItem(tm)}
+                className="w-7 h-7 rounded-full bg-red-50 hover:bg-red-100 text-red-500 hover:text-red-600 flex items-center justify-center text-sm transition-colors flex-shrink-0">
+                &times;
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {draft && (
+        <div className="fixed inset-0 bg-navy/40 backdrop-blur-sm z-50 flex items-start justify-center overflow-y-auto py-6 px-4"
+          onClick={(e) => e.target === e.currentTarget && closeEditor()}>
+          <form onSubmit={save} className="bg-white rounded-2xl border border-navy/10 shadow-xl w-full max-w-2xl">
+            <div className="flex items-center justify-between p-5 border-b border-navy/10 sticky top-0 bg-white z-10 rounded-t-2xl">
+              <h3 className="font-bold text-navy text-lg">{draft.id ? "Edit Team Member" : "New Team Member"}</h3>
+              <button type="button" onClick={closeEditor} className="text-navy/50 hover:text-navy text-xl leading-none">&times;</button>
+            </div>
+
+            <div className="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-navy/60 mb-1">Name</label>
+                  <input required value={draft.name} onChange={(e) => updateDraft({ name: e.target.value })}
+                    className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-navy/60 mb-1">Title</label>
+                  <input required value={draft.title} onChange={(e) => updateDraft({ title: e.target.value })}
+                    placeholder="e.g. Founder & CEO"
+                    className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-navy/60 mb-1">Bio (optional)</label>
+                <textarea rows={3} value={draft.bio} onChange={(e) => updateDraft({ bio: e.target.value })}
+                  className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-navy/60 mb-1">Photo (optional)</label>
+                <div className="flex items-center gap-2">
+                  <input value={draft.photo_url} onChange={(e) => updateDraft({ photo_url: e.target.value })}
+                    placeholder="Photo URL, or upload below"
+                    className="flex-1 px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                  <label className="relative inline-flex items-center justify-center px-3 py-2 rounded-full bg-white hover:bg-mist text-navy/70 text-xs font-medium border border-navy/10 cursor-pointer transition-colors whitespace-nowrap">
+                    {uploadingPhoto ? "Uploading…" : "Upload"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      disabled={uploadingPhoto}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) uploadPhoto(file);
+                        e.target.value = "";
+                      }}
+                      className="absolute inset-0 h-full w-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                    />
+                  </label>
+                </div>
+                {uploadError && <p className="text-red-600 text-xs mt-1.5">{uploadError}</p>}
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-navy/60 mb-1">LinkedIn URL (optional)</label>
+                <input value={draft.linkedin_url} onChange={(e) => updateDraft({ linkedin_url: e.target.value })}
+                  className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+              </div>
+
+              {saveError && <p className="text-red-600 text-sm">{saveError}</p>}
+            </div>
+
+            <div className="px-5 pb-5 pt-2 flex items-center justify-end gap-3 border-t border-navy/10">
+              <button type="button" onClick={closeEditor}
+                className="px-4 py-2 rounded-full bg-white hover:bg-mist text-navy/70 text-sm font-medium border border-navy/10 transition-colors">
+                Cancel
+              </button>
+              <button type="submit" disabled={saving}
+                className="px-5 py-2 rounded-full bg-tan hover:bg-tan-light text-navy text-sm font-semibold transition-colors disabled:opacity-50">
+                {saving ? "Saving…" : draft.id ? "Save Changes" : "Create Team Member"}
               </button>
             </div>
           </form>

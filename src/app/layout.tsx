@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import ReactDOM from "react-dom";
 import { Inter, Poppins } from "next/font/google";
-import Script from "next/script";
 import DeferredAnalytics from "@/components/analytics/DeferredAnalytics";
 import SiteChrome from "@/components/layout/SiteChrome";
 import { getSiteImages } from "@/lib/siteImages";
@@ -76,7 +75,7 @@ export default async function RootLayout({
   return (
     <html lang="en-US" className={`${inter.variable} ${poppins.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col bg-cream">
-        <Script
+        <script
           id="local-business-schema"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}

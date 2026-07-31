@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Section from "@/components/ui/Section";
 import ContactForm from "@/components/forms/ContactForm";
 import { pageMetadata } from "@/lib/pageMetadata";
+import { BUSINESS } from "@/lib/site";
 
 export const metadata: Metadata = pageMetadata({
   title: "Contact Us",
@@ -75,7 +76,7 @@ const contactCards = [
     label: "Phone",
     detail: (
       <>
-        +1 (732) 983-5723
+        <a href={`tel:${BUSINESS.telephone}`} className="hover:text-navy">{BUSINESS.telephoneDisplay}</a>
         <br />
         Mon - Fri: 9AM - 6PM
       </>
@@ -84,7 +85,7 @@ const contactCards = [
   },
   {
     label: "Email",
-    detail: "info@mintexstaffing.com",
+    detail: <a href="mailto:info@mintexstaffing.com" className="hover:text-navy">info@mintexstaffing.com</a>,
     icon: IconEnvelope,
   },
   {
