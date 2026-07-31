@@ -85,7 +85,7 @@ export const industries: Industry[] = [
       },
       {
         question: "What's your average time to fill a healthcare role?",
-        answer: "Our average time to hire is 9 days, built on a pool of pre-credentialed contract and per-diem staff.",
+        answer: "Our average time to hire is 11 days, built on a pool of pre-credentialed contract and per-diem staff.",
       },
     ],
     typicalRoles:
@@ -93,7 +93,7 @@ export const industries: Industry[] = [
     vettingProcess:
       "License verification, credentialing, and compliance checks happen before a candidate profile ever reaches you, not after you've already extended an offer. We confirm active licensure in your state, check credentialing timelines against your start-date needs, and screen for facility-specific compliance requirements (background checks, immunization records, certifications) up front, so onboarding isn't held up by paperwork surprises.",
     marketContext:
-      "Staffing shortages remain the top operational risk healthcare facilities report, and the cost of an unfilled shift compounds fast: agency premiums, overtime strain on existing staff, and patient-care risk. Facilities that build a reliable pool of pre-credentialed contract and per-diem staff avoid that spiral. Our average time to hire is 9 days across the roles we staff, built on an active clinical network that's already screened before your shift gap opens.",
+      "Staffing shortages remain the top operational risk healthcare facilities report, and the cost of an unfilled shift compounds fast: agency premiums, overtime strain on existing staff, and patient-care risk. Facilities that build a reliable pool of pre-credentialed contract and per-diem staff avoid that spiral. Our average time to hire for this industry is 11 days, built on an active clinical network that's already screened before your shift gap opens.",
     engagementModels:
       "We staff healthcare roles as per-diem, contract, contract-to-hire, or direct permanent placements, matched to whether you're covering a single shift gap or building out a permanent unit. Many contract clinical placements convert to permanent once both the facility and the candidate confirm long-term fit.",
   },
@@ -130,7 +130,7 @@ export const industries: Industry[] = [
       },
       {
         question: "What's your average time to fill an engineering role?",
-        answer: "Our average time to hire is 9 days, drawn from a talent pool that spans New Jersey and nationally.",
+        answer: "Our average time to hire is 14 days, drawn from a talent pool that spans New Jersey and nationally.",
       },
     ],
     typicalRoles:
@@ -138,7 +138,7 @@ export const industries: Industry[] = [
     vettingProcess:
       "We source engineers who've shipped real projects in your discipline, verifying hands-on project experience and outcomes, not just degrees and certifications on paper. Candidates are screened against the specific tools, codes, and project types your team actually works in, so the first resume you see is already a realistic fit.",
     marketContext:
-      "Public and private infrastructure investment has outpaced the engineering graduate pipeline, creating a multi-year talent crunch, especially for senior engineers weighing multiple offers. Firms that can offer clear project ownership and modern tooling are winning that conversation faster. Our average time to hire is 9 days, drawn from a talent pool spanning New Jersey and nationally.",
+      "Public and private infrastructure investment has outpaced the engineering graduate pipeline, creating a multi-year talent crunch, especially for senior engineers weighing multiple offers. Firms that can offer clear project ownership and modern tooling are winning that conversation faster. Our average time to hire for this industry is 14 days, drawn from a talent pool spanning New Jersey and nationally.",
     engagementModels:
       "Engineering roles are staffed as contract, contract-to-hire, or permanent placements, mapped against your actual project timeline rather than a generic hiring calendar. A project with a hard delivery date needs a different staffing approach than a permanent plant-leadership hire, and we scope for that difference up front.",
   },
@@ -185,7 +185,7 @@ export const industries: Industry[] = [
     vettingProcess:
       "Every candidate is screened with a focus on safety record and process discipline, since one weak link on a production line affects everyone around them. We verify hands-on experience with your specific equipment and production environment, not just a generic manufacturing resume.",
     marketContext:
-      "As production moves closer to home, plants are competing hard for experienced operators and quality engineers, and a pre-vetted regional talent pool has become the difference between hitting a launch date and missing it. Our average time to hire is 9 days, and we staff plants across New Jersey from our Edison, NJ home base.",
+      "As production moves closer to home, plants are competing hard for experienced operators and quality engineers, and a pre-vetted regional talent pool has become the difference between hitting a launch date and missing it. Our average time to hire for this industry is 8 days, and we staff plants across New Jersey from our Edison, NJ home base.",
     engagementModels:
       "We staff around your shift schedule and ramp curve, whether that's a single skilled maintenance hire or a full line-launch team brought on together. Contract, contract-to-hire, and permanent placements are all available depending on how long-term the need is.",
   },
@@ -223,7 +223,7 @@ export const industries: Industry[] = [
       },
       {
         question: "What's your average time to fill a finance role?",
-        answer: "Our average time to hire is 9 days across the roles we staff.",
+        answer: "Our average time to hire is 10 days across the roles we staff.",
       },
     ],
     typicalRoles:
@@ -231,7 +231,7 @@ export const industries: Industry[] = [
     vettingProcess:
       "Every finance candidate is screened for technical accuracy first, then for the judgment to explain a number to a non-finance stakeholder, since that combination is what actually makes a finance hire valuable to a growing team, not just a compliant one.",
     marketContext:
-      "Automation is absorbing transactional accounting work, and companies increasingly want FP&A and controllership hires who can also partner with the business, not just close the books. Candidates with both technical and communication skills are commanding a premium, and our average time to hire of 9 days depends on already knowing which candidates in our network have both.",
+      "Automation is absorbing transactional accounting work, and companies increasingly want FP&A and controllership hires who can also partner with the business, not just close the books. Candidates with both technical and communication skills are commanding a premium, and our average time to hire of 10 days depends on already knowing which candidates in our network have both.",
     engagementModels:
       "Finance roles are staffed as contract, contract-to-hire, or permanent placements. A close-cycle crunch or an audit-prep sprint often calls for a different engagement model than a permanent controller hire, and we scope for that difference before sourcing begins.",
   },
@@ -276,7 +276,7 @@ export const industries: Industry[] = [
     vettingProcess:
       "We screen for organizational skill, discretion, and tooling fluency, not just years of generic office experience. For executive assistant roles specifically, we also confirm comfort managing distributed calendars and cross-office coordination, since that's now the baseline expectation, not a bonus skill.",
     marketContext:
-      "Hybrid work has raised the bar for administrative talent: modern professionals are expected to manage digital workflows and cross-office coordination fluently, not just traditional in-office admin tasks. Our average time to hire is 9 days, built on a network already screened for these modern-workplace skills.",
+      "Hybrid work has raised the bar for administrative talent: modern professionals are expected to manage digital workflows and cross-office coordination fluently, not just traditional in-office admin tasks. Our average time to hire for this industry is 6 days, built on a network already screened for these modern-workplace skills.",
     engagementModels:
       "Administrative roles are staffed as contract, contract-to-hire, or permanent placements, whether you need short-term coverage for a leave or a long-term executive assistant hire.",
   },
@@ -321,7 +321,7 @@ export const industries: Industry[] = [
     vettingProcess:
       "We validate track record against real quota attainment data before a candidate ever reaches your interview loop, and we benchmark every candidate against your actual comp plan and quota structure rather than a generic sales persona.",
     marketContext:
-      "Longer, more technical buying cycles mean sales teams need reps who can navigate multiple stakeholders and technical evaluations, not just relationship-driven closers. We screen for consultative selling skill specifically, and our average time to hire is 9 days across the roles we staff.",
+      "Longer, more technical buying cycles mean sales teams need reps who can navigate multiple stakeholders and technical evaluations, not just relationship-driven closers. We screen for consultative selling skill specifically, and our average time to hire for this industry is 12 days across the roles we staff.",
     engagementModels:
       "Sales roles are staffed as contract, contract-to-hire, or permanent placements, from a single account executive hire to a full outbound team build-out.",
   },
@@ -366,7 +366,7 @@ export const industries: Industry[] = [
     vettingProcess:
       "We screen for communication skill, product-learning speed, and composure under pressure, the traits that actually predict CX performance, and we staff around your specific support channels, SLAs, and escalation process rather than a generic support-desk template.",
     marketContext:
-      "As acquisition costs rise, companies are investing in support and success teams that can prevent churn, not just close tickets, shifting hiring criteria toward proactive communicators who spot risk signals early. Our average time to hire is 9 days, and we support CX teams statewide from our Edison, NJ base.",
+      "As acquisition costs rise, companies are investing in support and success teams that can prevent churn, not just close tickets, shifting hiring criteria toward proactive communicators who spot risk signals early. Our average time to hire for this industry is 7 days, and we support CX teams statewide from our Edison, NJ base.",
     engagementModels:
       "Customer service roles are staffed as contract, contract-to-hire, or permanent placements, matched to whether you're covering a seasonal support spike or building a permanent success team.",
   },
@@ -411,7 +411,7 @@ export const industries: Industry[] = [
     vettingProcess:
       "We screen for hands-on experience in your specific logistics environment, whether that's warehouse, distribution, freight, or supply-chain planning, rather than generic operations experience, and we plan around your peak seasons and shipping windows from the first conversation.",
     marketContext:
-      "Supply chain volatility has made staffing agility a competitive advantage: companies that can flex headcount up and down with demand swings are outperforming those locked into rigid staffing models. Our average time to hire is 9 days, and we're headquartered in Edison, NJ, with deep reach across New Jersey's logistics corridor.",
+      "Supply chain volatility has made staffing agility a competitive advantage: companies that can flex headcount up and down with demand swings are outperforming those locked into rigid staffing models. Our average time to hire for this industry is 5 days, and we're headquartered in Edison, NJ, with deep reach across New Jersey's logistics corridor.",
     engagementModels:
       "Logistics roles are staffed as contract, contract-to-hire, or permanent placements, from a single warehouse supervisor hire to a full multi-site staffing ramp for a new distribution center.",
   },
