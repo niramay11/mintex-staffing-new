@@ -333,9 +333,16 @@ export default async function AboutPage() {
                   key={member.id}
                   className="flex h-full flex-col overflow-hidden rounded-2xl border border-navy/[0.08] bg-white shadow-[0_1px_3px_rgba(0,48,96,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)]"
                 >
-                  <div className="relative aspect-[4/3] w-full bg-navy/10">
+                  <div className="relative aspect-[4/5] w-full bg-navy/10">
                     {member.photo_url ? (
-                      <Image src={member.photo_url} alt={member.name} fill className="object-cover object-top" />
+                      <Image
+                        src={member.photo_url}
+                        alt={member.name}
+                        fill
+                        quality={95}
+                        sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                        className="object-cover object-top"
+                      />
                     ) : (
                       <span className="flex h-full w-full items-center justify-center font-heading text-3xl font-semibold text-navy/40">
                         {initials(member.name)}

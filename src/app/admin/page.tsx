@@ -3713,8 +3713,28 @@ function TeamMembersTab({ password }: { password: string }) {
     formData.append("password", password);
     const res = await fetch("/api/team-members/upload", { method: "POST", body: formData });
     const json = await res.json();
-    if (json.url) updateDraft({ photo_url: json.url });
-    else setUploadError(json.error ?? "Upload failed");
+    if (!json.url) { setUploadError(json.error ?? "Upload failed"); setUploadingPhoto(false); return; }
+
+    updateDraft({ photo_url: json.url });
+
+    // Save the photo to this person's profile immediately — don't wait for a
+    // separate "Save Changes" click. Editing an existing person only (a brand
+    // new, not-yet-created person has no id to save to yet; their photo is
+    // included when they hit "Create Team Member" below).
+    if (draft?.id) {
+      const saveRes = await fetch(`/api/admin/team-members/${draft.id}`, {
+        method: "PUT",
+        headers: { "x-admin-password": password, "Content-Type": "application/json" },
+        body: JSON.stringify({ photo_url: json.url }),
+      });
+      if (!saveRes.ok) {
+        const saveJson = await saveRes.json().catch(() => ({}));
+        setUploadError(saveJson.error ?? "Photo uploaded but couldn't be saved to this profile — try clicking Save Changes.");
+      } else {
+        fetchData();
+      }
+    }
+
     setUploadingPhoto(false);
   };
 
