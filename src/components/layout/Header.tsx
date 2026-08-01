@@ -3,8 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { navItems } from "./navConfig";
+import { getNavItems } from "./navConfig";
 import { BUSINESS } from "@/lib/site";
+import type { Industry } from "@/content/types";
 
 function IconPhone({ className }: { className?: string }) {
   return (
@@ -18,10 +19,11 @@ function IconPhone({ className }: { className?: string }) {
   );
 }
 
-export default function Header({ siteImages }: { siteImages: Record<string, string> }) {
+export default function Header({ siteImages, industries }: { siteImages: Record<string, string>; industries: Industry[] }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const [desktopOpen, setDesktopOpen] = useState<string | null>(null);
+  const navItems = getNavItems(industries);
 
   return (
     <header className="sticky top-4 z-50 px-4 sm:px-6 lg:px-8">

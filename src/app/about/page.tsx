@@ -16,6 +16,16 @@ function initials(name: string): string {
     .join("");
 }
 
+function IconLinkedIn({ className }: { className?: string }) {
+  return (
+    <span className={`inline-flex items-center justify-center rounded bg-[#0A66C2] text-white ${className}`}>
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className="h-[65%] w-[65%]">
+        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+      </svg>
+    </span>
+  );
+}
+
 export const metadata: Metadata = pageMetadata({
   title: "About Us",
   description:
@@ -317,34 +327,59 @@ export default async function AboutPage() {
               <span aria-hidden="true" className="h-px flex-1 bg-navy/10" />
             </div>
 
-            <div className="mt-12 grid grid-cols-2 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-12 grid grid-cols-1 items-start gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {teamMembers.map((member) => (
                 <div
                   key={member.id}
-                  className="rounded-2xl border border-navy/[0.08] bg-white p-7 text-center shadow-[0_1px_3px_rgba(0,48,96,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)]"
+                  className="flex h-full flex-col overflow-hidden rounded-2xl border border-navy/[0.08] bg-white shadow-[0_1px_3px_rgba(0,48,96,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)]"
                 >
-                  <div className="relative mx-auto aspect-square w-28 overflow-hidden rounded-2xl bg-navy/10 shadow-[0_10px_25px_-12px_rgba(0,48,96,0.3)]">
+                  <div className="relative aspect-[4/3] w-full bg-navy/10">
                     {member.photo_url ? (
                       <Image src={member.photo_url} alt={member.name} fill className="object-cover object-top" />
                     ) : (
-                      <span className="flex h-full w-full items-center justify-center font-heading text-2xl font-semibold text-navy/40">
+                      <span className="flex h-full w-full items-center justify-center font-heading text-3xl font-semibold text-navy/40">
                         {initials(member.name)}
                       </span>
                     )}
                   </div>
-                  <h3 className="mt-4 font-heading text-lg font-semibold text-navy">{member.name}</h3>
-                  <p className="text-sm font-medium text-tan">{member.title}</p>
-                  {member.bio && <p className="mt-3 text-sm leading-relaxed text-steel">{member.bio}</p>}
-                  {member.linkedin_url && (
-                    <a
-                      href={member.linkedin_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-3 inline-block text-xs font-semibold text-navy hover:text-tan"
-                    >
-                      LinkedIn
-                    </a>
-                  )}
+
+                  <div className="flex flex-1 flex-col p-6">
+                    <h3 className="font-heading text-lg font-semibold text-navy">{member.name}</h3>
+                    <p className="text-sm font-medium text-tan">{member.title}</p>
+
+                    {member.bio && (
+                      <details className="group mt-3">
+                        <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                          <span className="line-clamp-4 text-[13.5px] leading-relaxed text-steel group-open:hidden">
+                            {member.bio}
+                          </span>
+                          <span className="hidden text-[13.5px] leading-relaxed text-steel group-open:inline">
+                            {member.bio}
+                          </span>
+                          <span className="mt-1.5 block text-xs font-semibold text-tan group-open:hidden">
+                            Read more
+                          </span>
+                          <span className="mt-1.5 hidden text-xs font-semibold text-tan group-open:block">
+                            Read less
+                          </span>
+                        </summary>
+                      </details>
+                    )}
+
+                    {member.linkedin_url && (
+                      <div className="mt-auto pt-4">
+                        <a
+                          href={member.linkedin_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-xs font-semibold text-navy hover:text-tan"
+                        >
+                          LinkedIn
+                          <IconLinkedIn className="h-4 w-4" />
+                        </a>
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>

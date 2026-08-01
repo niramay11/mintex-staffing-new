@@ -1,4 +1,6 @@
+// Row shape from the `industries` Supabase table (admin-managed via /api/admin/industries).
 export interface Industry {
+  id: string;
   slug: string;
   name: string;
   heroTitle: string;
@@ -25,6 +27,10 @@ export interface Industry {
   vettingProcess: string;
   marketContext: string;
   engagementModels: string;
+  sortOrder: number;
+  // Small stat cards (e.g. "1,200+ IT placements made") — the first one is
+  // shown on the homepage card, all of them on the industry's own page.
+  stats: { label: string; value: string }[];
 }
 
 // Row shape from the `insight_categories` Supabase table (admin-managed via /api/insight-categories).

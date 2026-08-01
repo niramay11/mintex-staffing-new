@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { industries } from "@/content/industries";
+import { getIndustries } from "@/lib/industries";
 import { hiringServices } from "@/content/hiringServices";
 import { supabase } from "@/lib/supabase";
 import { SITE_URL } from "@/lib/site";
@@ -40,6 +40,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${baseUrl}${route}`,
   }));
 
+  const industries = await getIndustries();
   const industryEntries = industries.map((industry) => ({
     url: `${baseUrl}/industries/${industry.slug}`,
   }));

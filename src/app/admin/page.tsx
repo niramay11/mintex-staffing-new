@@ -2,14 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { IMAGE_LOCATIONS, IMAGE_CATEGORY_INFO } from "@/lib/imageLocations";
-import type { InsightPost, InsightCategoryRow, CaseStudy, CaseStudyType, TeamMember } from "@/content/types";
-import { industries } from "@/content/industries";
+import type { InsightPost, InsightCategoryRow, CaseStudy, CaseStudyType, TeamMember, Industry } from "@/content/types";
 
 const STORAGE_KEY = "mintex_admin_pw";
-const TABS = ["jobs", "clients", "social", "stories", "images", "messages", "resumes", "inquiries", "insights", "caseStudies", "industryStats", "team"] as const;
+const TABS = ["jobs", "clients", "social", "stories", "images", "messages", "resumes", "inquiries", "insights", "caseStudies", "team", "industries"] as const;
 type Tab = typeof TABS[number];
 const TAB_LABELS: Record<Tab, string> = {
-  jobs: "Jobs", clients: "Clients", social: "Social Links", stories: "Client Stories", images: "Site Images", messages: "Messages", resumes: "Resumes", inquiries: "Hiring Inquiries", insights: "Insights", caseStudies: "Case Studies", industryStats: "Industry Stats", team: "Team",
+  jobs: "Jobs", clients: "Clients", social: "Social Links", stories: "Client Stories", images: "Site Images", messages: "Messages", resumes: "Resumes", inquiries: "Hiring Inquiries", insights: "Insights", caseStudies: "Case Studies", team: "Team", industries: "Industries",
 };
 
 export default function AdminInsightsPage() {
@@ -101,8 +100,8 @@ export default function AdminInsightsPage() {
         {activeTab === "inquiries" && <InquiriesTab password={activePassword} />}
         {activeTab === "insights" && <InsightsTab password={activePassword} />}
         {activeTab === "caseStudies" && <CaseStudiesTab password={activePassword} />}
-        {activeTab === "industryStats" && <IndustryStatsTab password={activePassword} />}
         {activeTab === "team" && <TeamMembersTab password={activePassword} />}
+        {activeTab === "industries" && <IndustriesTab password={activePassword} />}
       </div>
     </div>
   );
@@ -3905,132 +3904,364 @@ function TeamMembersTab({ password }: { password: string }) {
   );
 }
 
-// ─── Industry Stats Tab ────────────────────────────────────────────────────────
-// Editable numbers behind the homepage "Industries we serve" cards and each
-// /industries/[slug] "Why Us" stat block. Industries themselves stay code-defined
-// (src/content/industries.ts) — only these label/value stats are admin-managed.
-type IndustryStatDraft = { id: string; industry_slug: string; label: string; value: string };
+// ─── Industries Tab ───────────────────────────────────────────────────────────
+// Full CRUD for "Industries We Serve" — each row drives its own /industries/[slug]
+// page plus the homepage section, main nav, footer, and the AI interview tool.
+type IndustryDraft = {
+  id?: string;
+  slug: string;
+  name: string;
+  heroTitle: string;
+  seoSubheading: string;
+  intro: string;
+  sectorInsightTitle: string;
+  sectorInsightBody: string;
+  workStyle: string;
+  jobKeywordsText: string;
+  faqs: { question: string; answer: string }[];
+  stats: { label: string; value: string }[];
+  typicalRoles: string;
+  vettingProcess: string;
+  marketContext: string;
+  engagementModels: string;
+};
 
-function IndustryStatsTab({ password }: { password: string }) {
-  const [stats, setStats]   = useState<IndustryStatDraft[]>([]);
-  const [loaded, setLoaded] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved]   = useState(false);
-  const [error, setError]   = useState("");
+const BLANK_INDUSTRY: IndustryDraft = {
+  slug: "", name: "", heroTitle: "", seoSubheading: "", intro: "",
+  sectorInsightTitle: "", sectorInsightBody: "", workStyle: "",
+  jobKeywordsText: "", faqs: [], stats: [], typicalRoles: "", vettingProcess: "",
+  marketContext: "", engagementModels: "",
+};
+
+function toIndustryDraft(ind: Industry): IndustryDraft {
+  return {
+    id: ind.id, slug: ind.slug, name: ind.name, heroTitle: ind.heroTitle,
+    seoSubheading: ind.seoSubheading, intro: ind.intro,
+    sectorInsightTitle: ind.sectorInsight.title, sectorInsightBody: ind.sectorInsight.body,
+    workStyle: ind.workStyle, jobKeywordsText: ind.jobKeywords.join(", "),
+    faqs: ind.faqs.length > 0 ? ind.faqs : [],
+    stats: ind.stats.length > 0 ? ind.stats : [],
+    typicalRoles: ind.typicalRoles, vettingProcess: ind.vettingProcess,
+    marketContext: ind.marketContext, engagementModels: ind.engagementModels,
+  };
+}
+
+function slugPreview(name: string): string {
+  return name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+function IndustriesTab({ password }: { password: string }) {
+  const [items, setItems]         = useState<Industry[]>([]);
+  const [loaded, setLoaded]       = useState(false);
+  const [loadError, setLoadError] = useState("");
+  const [draft, setDraft]         = useState<IndustryDraft | null>(null);
+  const [saving, setSaving]       = useState(false);
+  const [saveError, setSaveError] = useState("");
+  const [deleteError, setDeleteError] = useState("");
 
   const fetchData = () =>
-    fetch("/api/industry-stats")
+    fetch("/api/admin/industries", { headers: { "x-admin-password": password } })
       .then((r) => r.json())
-      .then((data: { industry_slug: string; label: string; value: string }[]) => {
-        setStats(Array.isArray(data) ? data.map((s, i) => ({ id: `stat_${i}_${Date.now()}`, industry_slug: s.industry_slug, label: s.label, value: s.value })) : []);
+      .then((data) => {
+        if (Array.isArray(data)) { setItems(data); setLoadError(""); }
+        else setLoadError(data.error ?? "Failed to load industries");
         setLoaded(true);
       })
-      .catch(() => setLoaded(true));
+      .catch(() => { setLoadError("Could not reach the server."); setLoaded(true); });
 
   useEffect(() => { fetchData(); }, []);
 
-  const addStat = (industry_slug: string) => {
-    setStats((prev) => [...prev, { id: `stat_${Date.now()}`, industry_slug, label: "", value: "" }]);
-  };
+  const openNew = () => { setSaveError(""); setDraft({ ...BLANK_INDUSTRY }); };
+  const openEdit = (ind: Industry) => { setSaveError(""); setDraft(toIndustryDraft(ind)); };
+  const closeEditor = () => setDraft(null);
+  const updateDraft = (patch: Partial<IndustryDraft>) => setDraft((d) => (d ? { ...d, ...patch } : d));
 
-  const removeStat = (id: string) => {
-    setStats((prev) => prev.filter((s) => s.id !== id));
-  };
+  const addFaq = () => updateDraft({ faqs: [...(draft?.faqs ?? []), { question: "", answer: "" }] });
+  const removeFaq = (index: number) => updateDraft({ faqs: (draft?.faqs ?? []).filter((_, i) => i !== index) });
+  const updateFaq = (index: number, patch: Partial<{ question: string; answer: string }>) =>
+    updateDraft({ faqs: (draft?.faqs ?? []).map((f, i) => (i === index ? { ...f, ...patch } : f)) });
 
-  const updateStat = (id: string, patch: Partial<IndustryStatDraft>) => {
-    setStats((prev) => prev.map((s) => (s.id === id ? { ...s, ...patch } : s)));
-  };
+  const addStat = () => updateDraft({ stats: [...(draft?.stats ?? []), { label: "", value: "" }] });
+  const removeStat = (index: number) => updateDraft({ stats: (draft?.stats ?? []).filter((_, i) => i !== index) });
+  const updateStat = (index: number, patch: Partial<{ label: string; value: string }>) =>
+    updateDraft({ stats: (draft?.stats ?? []).map((s, i) => (i === index ? { ...s, ...patch } : s)) });
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!draft) return;
     setSaving(true);
-    setError("");
-    const res = await fetch("/api/industry-stats", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password, stats }),
+    setSaveError("");
+
+    const payload = {
+      slug: draft.slug.trim(),
+      name: draft.name.trim(),
+      heroTitle: draft.heroTitle.trim(),
+      seoSubheading: draft.seoSubheading.trim(),
+      intro: draft.intro.trim(),
+      sectorInsightTitle: draft.sectorInsightTitle.trim(),
+      sectorInsightBody: draft.sectorInsightBody.trim(),
+      workStyle: draft.workStyle.trim(),
+      jobKeywords: draft.jobKeywordsText.split(",").map((k) => k.trim()).filter(Boolean),
+      faqs: draft.faqs.filter((f) => f.question.trim() && f.answer.trim()),
+      stats: draft.stats.filter((s) => s.label.trim() && s.value.trim()),
+      typicalRoles: draft.typicalRoles.trim(),
+      vettingProcess: draft.vettingProcess.trim(),
+      marketContext: draft.marketContext.trim(),
+      engagementModels: draft.engagementModels.trim(),
+    };
+
+    const isEdit = Boolean(draft.id);
+    const res = await fetch(isEdit ? `/api/admin/industries/${draft.id}` : "/api/admin/industries", {
+      method: isEdit ? "PUT" : "POST",
+      headers: { "x-admin-password": password, "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
     });
     const json = await res.json();
-    if (json.success) {
-      fetchData();
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
-    } else {
-      setError(json.error ?? "Failed to save");
-    }
+    if (!res.ok) { setSaveError(json.error ?? "Failed to save"); setSaving(false); return; }
+
+    setDraft(null);
     setSaving(false);
+    fetchData();
+  };
+
+  const deleteItem = async (ind: Industry) => {
+    if (!confirm(`Delete "${ind.name}"? This removes its page and can't be undone.`)) return;
+    setDeleteError("");
+    const res = await fetch(`/api/admin/industries/${ind.id}`, { method: "DELETE", headers: { "x-admin-password": password } });
+    if (!res.ok) {
+      const json = await res.json().catch(() => ({}));
+      setDeleteError(json.error ?? "Failed to delete — it's still on the live site.");
+      return;
+    }
+    fetchData();
   };
 
   if (!loaded) return (
     <div className="flex items-center gap-3 py-10 text-navy/60">
       <div className="w-5 h-5 border-2 border-navy/15 border-t-steel rounded-full animate-spin" />
-      Loading industry stats…
+      Loading industries…
     </div>
   );
 
   return (
     <div>
-      <div className="mb-5">
-        <h2 className="text-xl font-semibold text-navy">Industry Stats</h2>
-        <p className="text-sm text-navy/60 mt-1">
-          The numbers shown on each &ldquo;Industries we serve&rdquo; card on the homepage and on each industry page. The first stat listed for an industry is the one shown on its homepage card.
-        </p>
+      <div className="mb-5 flex items-center justify-between gap-4 flex-wrap">
+        <div>
+          <h2 className="text-xl font-semibold text-navy">Industries We Serve</h2>
+          <p className="text-sm text-navy/60 mt-1">{items.length} industries — each gets its own page, nav entry, and footer link.</p>
+        </div>
+        <button type="button" onClick={openNew}
+          className="px-4 py-2 rounded-full bg-tan hover:bg-tan-light text-navy text-sm font-semibold transition-colors">
+          + New Industry
+        </button>
       </div>
 
-      <form onSubmit={save} className="space-y-6">
-        {industries.map((industry) => {
-          const group = stats.filter((s) => s.industry_slug === industry.slug);
-          return (
-            <div key={industry.slug} className="bg-white rounded-2xl border border-navy/10 p-6">
-              <h3 className="text-sm font-semibold text-navy mb-3">{industry.name}</h3>
-              <div className="space-y-3 mb-3">
-                {group.map((stat) => (
-                  <div key={stat.id} className="grid grid-cols-12 gap-3 items-center">
-                    <div className="col-span-6">
-                      <input
-                        value={stat.label}
-                        onChange={(e) => updateStat(stat.id, { label: e.target.value })}
-                        placeholder="Label (e.g. IT placements made)"
-                        className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none"
-                      />
-                    </div>
-                    <div className="col-span-5">
-                      <input
-                        value={stat.value}
-                        onChange={(e) => updateStat(stat.id, { value: e.target.value })}
-                        placeholder="Value (e.g. 1,200+)"
-                        className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none"
-                      />
-                    </div>
-                    <div className="col-span-1 flex justify-center">
-                      <button type="button" onClick={() => removeStat(stat.id)}
-                        className="w-7 h-7 rounded-full bg-red-50 hover:bg-red-100 text-red-500 hover:text-red-600 flex items-center justify-center text-sm transition-colors">
-                        &times;
-                      </button>
-                    </div>
-                  </div>
-                ))}
-                {group.length === 0 && <p className="text-sm text-navy/50">No stats yet — add one below.</p>}
+      {loadError && (
+        <div className="mb-6 px-4 py-3 rounded-lg text-sm font-medium bg-red-50 text-red-700 border border-red-200">
+          Couldn&apos;t load industries: {loadError}
+          {loadError.includes("industries") && (
+            <> — run <code className="px-1 bg-red-100 rounded">supabase/migrations/018_industries.sql</code> in your Supabase SQL editor, then refresh.</>
+          )}
+        </div>
+      )}
+
+      {deleteError && (
+        <div className="mb-6 px-4 py-3 rounded-lg text-sm font-medium bg-red-50 text-red-700 border border-red-200">
+          {deleteError}
+        </div>
+      )}
+
+      {items.length === 0 ? (
+        <p className="text-sm text-navy/40">None yet.</p>
+      ) : (
+        <div className="rounded-2xl border border-navy/10 bg-white divide-y divide-navy/10 overflow-hidden">
+          {items.map((ind) => (
+            <div key={ind.id} className="flex items-center gap-4 px-5 py-4 hover:bg-cream transition-colors">
+              <div className="min-w-0 flex-1 cursor-pointer" onClick={() => openEdit(ind)}>
+                <p className="text-sm font-semibold text-navy truncate">{ind.name}</p>
+                <p className="text-xs text-navy/50 mt-0.5 truncate">/industries/{ind.slug}</p>
               </div>
-              <button type="button" onClick={() => addStat(industry.slug)}
-                className="text-sm text-steel hover:text-navy font-medium transition-colors">
-                + Add Stat
+              <button onClick={() => openEdit(ind)}
+                className="px-3 py-1.5 rounded-full bg-white hover:bg-mist text-navy/70 text-xs font-medium border border-navy/10 transition-colors flex-shrink-0">
+                Edit
+              </button>
+              <button onClick={() => deleteItem(ind)}
+                className="w-7 h-7 rounded-full bg-red-50 hover:bg-red-100 text-red-500 hover:text-red-600 flex items-center justify-center text-sm transition-colors flex-shrink-0">
+                &times;
               </button>
             </div>
-          );
-        })}
-
-        {error && <p className="text-red-600 text-sm">{error}</p>}
-
-        <div className="sticky bottom-4">
-          <button type="submit" disabled={saving}
-            className={`px-5 py-2.5 rounded-full text-sm font-semibold shadow-lg transition-colors disabled:opacity-50 ${
-              saved ? "bg-green-100 text-green-800" : "bg-tan hover:bg-tan-light text-navy"
-            }`}>
-            {saving ? "Saving…" : saved ? "Saved ✓" : "Save Changes"}
-          </button>
+          ))}
         </div>
-      </form>
+      )}
+
+      {draft && (
+        <div className="fixed inset-0 bg-navy/40 backdrop-blur-sm z-50 flex items-start justify-center overflow-y-auto py-6 px-4"
+          onClick={(e) => e.target === e.currentTarget && closeEditor()}>
+          <form onSubmit={save} className="bg-white rounded-2xl border border-navy/10 shadow-xl w-full max-w-3xl">
+            <div className="flex items-center justify-between p-5 border-b border-navy/10 sticky top-0 bg-white z-10 rounded-t-2xl">
+              <h3 className="font-bold text-navy text-lg">{draft.id ? "Edit Industry" : "New Industry"}</h3>
+              <button type="button" onClick={closeEditor} className="text-navy/50 hover:text-navy text-xl leading-none">&times;</button>
+            </div>
+
+            <div className="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
+              <div>
+                <label className="block text-xs font-semibold text-navy/60 mb-1">Industry Name</label>
+                <input required value={draft.name} onChange={(e) => updateDraft({ name: e.target.value })}
+                  placeholder="e.g. Legal Staffing"
+                  className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                <p className="text-xs text-navy/40 mt-1">
+                  Page URL: /industries/{draft.id ? draft.slug : (slugPreview(draft.name) || "…")}
+                  {draft.id && " (can't change once created)"}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-navy/60 mb-1">Hero Title</label>
+                  <input required value={draft.heroTitle} onChange={(e) => updateDraft({ heroTitle: e.target.value })}
+                    placeholder="e.g. Hire Top Legal Talent"
+                    className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-navy/60 mb-1">SEO Subheading</label>
+                  <input required value={draft.seoSubheading} onChange={(e) => updateDraft({ seoSubheading: e.target.value })}
+                    className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-navy/60 mb-1">Intro paragraph</label>
+                <textarea required rows={3} value={draft.intro} onChange={(e) => updateDraft({ intro: e.target.value })}
+                  className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-navy/60 mb-1">Sector Insight — Title</label>
+                  <input required value={draft.sectorInsightTitle} onChange={(e) => updateDraft({ sectorInsightTitle: e.target.value })}
+                    className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-navy/60 mb-1">Work Style</label>
+                  <input required value={draft.workStyle} onChange={(e) => updateDraft({ workStyle: e.target.value })}
+                    className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-navy/60 mb-1">Sector Insight — Body</label>
+                <textarea required rows={2} value={draft.sectorInsightBody} onChange={(e) => updateDraft({ sectorInsightBody: e.target.value })}
+                  className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-navy/60 mb-1">Job-matching keywords (comma separated)</label>
+                <textarea rows={2} value={draft.jobKeywordsText} onChange={(e) => updateDraft({ jobKeywordsText: e.target.value })}
+                  placeholder="e.g. paralegal, legal assistant, attorney"
+                  className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                <p className="text-xs text-navy/40 mt-1">Matched against each job&apos;s title/skills to decide which open roles show on this industry&apos;s page.</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-navy/60 mb-1">Typical Roles We Place</label>
+                  <textarea required rows={3} value={draft.typicalRoles} onChange={(e) => updateDraft({ typicalRoles: e.target.value })}
+                    className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-navy/60 mb-1">How We Vet Candidates</label>
+                  <textarea required rows={3} value={draft.vettingProcess} onChange={(e) => updateDraft({ vettingProcess: e.target.value })}
+                    className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-navy/60 mb-1">The Market Right Now</label>
+                  <textarea required rows={3} value={draft.marketContext} onChange={(e) => updateDraft({ marketContext: e.target.value })}
+                    className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-navy/60 mb-1">Flexible Engagement Models</label>
+                  <textarea required rows={3} value={draft.engagementModels} onChange={(e) => updateDraft({ engagementModels: e.target.value })}
+                    className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                </div>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-semibold text-navy/60">Stats (shown as cards)</label>
+                  <button type="button" onClick={addStat} className="text-xs text-steel hover:text-navy font-medium transition-colors">
+                    + Add Stat
+                  </button>
+                </div>
+                <p className="text-xs text-navy/40 mb-2">The first stat here is the one shown on the homepage card; all of them show on this industry&apos;s own page.</p>
+                <div className="space-y-2">
+                  {draft.stats.map((stat, i) => (
+                    <div key={i} className="grid grid-cols-12 gap-2 items-center">
+                      <div className="col-span-6">
+                        <input value={stat.label} onChange={(e) => updateStat(i, { label: e.target.value })}
+                          placeholder="Label (e.g. IT placements made)"
+                          className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                      </div>
+                      <div className="col-span-5">
+                        <input value={stat.value} onChange={(e) => updateStat(i, { value: e.target.value })}
+                          placeholder="Value (e.g. 1,200+)"
+                          className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                      </div>
+                      <div className="col-span-1 flex justify-center">
+                        <button type="button" onClick={() => removeStat(i)}
+                          className="w-7 h-7 rounded-full bg-red-50 hover:bg-red-100 text-red-500 hover:text-red-600 flex items-center justify-center text-sm transition-colors">
+                          &times;
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {draft.stats.length === 0 && <p className="text-sm text-navy/50">No stats yet — add one above.</p>}
+                </div>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-semibold text-navy/60">FAQs</label>
+                  <button type="button" onClick={addFaq} className="text-xs text-steel hover:text-navy font-medium transition-colors">
+                    + Add FAQ
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {draft.faqs.map((faq, i) => (
+                    <div key={i} className="bg-cream rounded-xl p-3 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <input value={faq.question} onChange={(e) => updateFaq(i, { question: e.target.value })}
+                          placeholder="Question"
+                          className="flex-1 px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                        <button type="button" onClick={() => removeFaq(i)}
+                          className="w-7 h-7 rounded-full bg-red-50 hover:bg-red-100 text-red-500 hover:text-red-600 flex items-center justify-center text-sm transition-colors flex-shrink-0">
+                          &times;
+                        </button>
+                      </div>
+                      <textarea rows={2} value={faq.answer} onChange={(e) => updateFaq(i, { answer: e.target.value })}
+                        placeholder="Answer"
+                        className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                    </div>
+                  ))}
+                  {draft.faqs.length === 0 && <p className="text-sm text-navy/50">No FAQs yet — add one above.</p>}
+                </div>
+              </div>
+
+              {saveError && <p className="text-red-600 text-sm">{saveError}</p>}
+            </div>
+
+            <div className="px-5 pb-5 pt-2 flex items-center justify-end gap-3 border-t border-navy/10">
+              <button type="button" onClick={closeEditor}
+                className="px-4 py-2 rounded-full bg-white hover:bg-mist text-navy/70 text-sm font-medium border border-navy/10 transition-colors">
+                Cancel
+              </button>
+              <button type="submit" disabled={saving}
+                className="px-5 py-2 rounded-full bg-tan hover:bg-tan-light text-navy text-sm font-semibold transition-colors disabled:opacity-50">
+                {saving ? "Saving…" : draft.id ? "Save Changes" : "Create Industry"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }

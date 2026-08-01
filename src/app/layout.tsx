@@ -5,6 +5,7 @@ import DeferredAnalytics from "@/components/analytics/DeferredAnalytics";
 import SiteChrome from "@/components/layout/SiteChrome";
 import { getSiteImages } from "@/lib/siteImages";
 import { getLocalBusinessSchema } from "@/lib/localBusinessSchema";
+import { getIndustries } from "@/lib/industries";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -65,9 +66,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [siteImages, localBusinessSchema] = await Promise.all([
+  const [siteImages, localBusinessSchema, industries] = await Promise.all([
     getSiteImages(),
     getLocalBusinessSchema(),
+    getIndustries(),
   ]);
 
   ReactDOM.preconnect("https://img.youtube.com");
@@ -81,7 +83,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
         />
         <DeferredAnalytics />
-        <SiteChrome siteImages={siteImages}>{children}</SiteChrome>
+        <SiteChrome siteImages={siteImages} industries={industries}>{children}</SiteChrome>
       </body>
     </html>
   );

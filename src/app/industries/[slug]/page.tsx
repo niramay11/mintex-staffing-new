@@ -6,8 +6,7 @@ import StatBlock from "@/components/ui/StatBlock";
 import JobTile from "@/components/ui/JobTile";
 import FaqAccordion from "@/components/ui/FaqAccordion";
 import { ButtonLink } from "@/components/ui/Button";
-import { industries, getIndustryBySlug } from "@/content/industries";
-import { getIndustryStats } from "@/lib/industryStats";
+import { getIndustries, getIndustryBySlug } from "@/lib/industries";
 import { pageMetadata } from "@/lib/pageMetadata";
 import { getCachedJobs } from "@/lib/jobsCache";
 import { isActiveJob } from "@/components/jobs/utils";
@@ -80,7 +79,8 @@ function matchesIndustry(job: CeipalJob, keywords: string[]): boolean {
   return keywords.some((keyword) => textMatchesKeyword(text, keyword));
 }
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const industries = await getIndustries();
   return industries.map((industry) => ({ slug: industry.slug }));
 }
 
@@ -90,7 +90,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const industry = getIndustryBySlug(slug);
+  const industry = await getIndustryBySlug(slug);
   if (!industry) return {};
 
   return pageMetadata({
@@ -106,7 +106,7 @@ export default async function IndustryPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const industry = getIndustryBySlug(slug);
+  const industry = await getIndustryBySlug(slug);
   if (!industry) notFound();
 
   const { jobs } = await withTimeout(getCachedJobs(), 3000, {
@@ -118,8 +118,7 @@ export default async function IndustryPage({
     .filter((job) => isActiveJob(job) && matchesIndustry(job, industry.jobKeywords))
     .slice(0, MAX_ROLES_SHOWN);
 
-  const allStats = await getIndustryStats();
-  const achievements = allStats.filter((s) => s.industry_slug === industry.slug);
+  const achievements = industry.stats;
   const testimonials = await getHomepageTestimonials();
 
   const serviceSchema = {

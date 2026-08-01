@@ -4,8 +4,7 @@ import Section from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import ClientStories from "@/components/home/ClientStories";
 import Testimonials from "@/components/home/Testimonials";
-import { industries } from "@/content/industries";
-import { getIndustryStats } from "@/lib/industryStats";
+import { getIndustries } from "@/lib/industries";
 import { getSiteImages } from "@/lib/siteImages";
 import { getHomepageTestimonials } from "@/lib/caseStudies";
 
@@ -14,9 +13,9 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const industryStats = await getIndustryStats();
   const siteImages = await getSiteImages();
   const homepageTestimonials = await getHomepageTestimonials();
+  const industries = await getIndustries();
   return (
     <>
       {/* Sec 1 — Hero */}
@@ -122,7 +121,7 @@ export default async function HomePage() {
             <div className="mt-5 space-y-5">
               <div className="flex items-start justify-between gap-4 border-b border-navy/10 pb-5">
                 <span className="text-[14.5px] text-navy/70">Industries covered</span>
-                <span className="font-heading text-lg font-semibold text-navy">9</span>
+                <span className="font-heading text-lg font-semibold text-navy">9+</span>
               </div>
               <div className="flex items-start justify-between gap-4 border-b border-navy/10 pb-5">
                 <span className="text-[14.5px] text-navy/70">Avg. time to hire</span>
@@ -339,7 +338,7 @@ on paper.
         <div className="mt-11 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {industries.map((industry) => {
             const label = industry.name;
-            const achievement = industryStats.find((s) => s.industry_slug === industry.slug);
+            const achievement = industry.stats[0];
             return (
               <a
                 key={industry.slug}

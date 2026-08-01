@@ -4,16 +4,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { SocialIcon } from "./socialIcons";
-import { industries } from "@/content/industries";
 import { BUSINESS } from "@/lib/site";
+import type { Industry } from "@/content/types";
 
 type SocialLink = { id: string; label: string; url: string; sort_order?: number };
 
-const footerColumns = [
-  {
-    title: "Industries",
-    links: industries.map((industry) => ({ label: industry.name, href: `/industries/${industry.slug}` })),
-  },
+const OTHER_FOOTER_COLUMNS = [
   {
     title: "Resources",
     links: [
@@ -33,8 +29,15 @@ const footerColumns = [
   },
 ];
 
-export default function Footer({ siteImages }: { siteImages: Record<string, string> }) {
+export default function Footer({ siteImages, industries }: { siteImages: Record<string, string>; industries: Industry[] }) {
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
+  const footerColumns = [
+    {
+      title: "Industries",
+      links: industries.map((industry) => ({ label: industry.name, href: `/industries/${industry.slug}` })),
+    },
+    ...OTHER_FOOTER_COLUMNS,
+  ];
 
   useEffect(() => {
     fetch("/api/social-links")

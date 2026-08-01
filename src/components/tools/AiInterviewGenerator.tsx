@@ -3,21 +3,19 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import Select from "@/components/ui/Select";
-import { industries } from "@/content/industries";
 import { getInterviewQuestionSet } from "@/content/interviewQuestions";
-import type { InterviewQuestionSet } from "@/content/types";
+import type { InterviewQuestionSet, Industry } from "@/content/types";
 
 const roleLevels: InterviewQuestionSet["roleLevel"][] = ["Entry", "Mid", "Senior"];
 
-const industryOptions = industries.map((industry) => ({
-  value: industry.slug,
-  label: industry.name.replace(/\s+Staffing$/i, ""),
-}));
-
 const roleLevelOptions = roleLevels.map((level) => ({ value: level, label: level }));
 
-export default function AiInterviewGenerator() {
-  const [industrySlug, setIndustrySlug] = useState(industries[0].slug);
+export default function AiInterviewGenerator({ industries }: { industries: Industry[] }) {
+  const industryOptions = industries.map((industry) => ({
+    value: industry.slug,
+    label: industry.name.replace(/\s+Staffing$/i, ""),
+  }));
+  const [industrySlug, setIndustrySlug] = useState(industries[0]?.slug ?? "");
   const [roleLevel, setRoleLevel] = useState<InterviewQuestionSet["roleLevel"]>("Mid");
   const [questions, setQuestions] = useState<string[] | null>(null);
 

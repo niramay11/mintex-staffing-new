@@ -3,6 +3,7 @@ import Image from "next/image";
 import Section from "@/components/ui/Section";
 import AiInterviewGenerator from "@/components/tools/AiInterviewGenerator";
 import { getSiteImages } from "@/lib/siteImages";
+import { getIndustries } from "@/lib/industries";
 import { pageMetadata } from "@/lib/pageMetadata";
 
 export const metadata: Metadata = pageMetadata({
@@ -20,6 +21,7 @@ const interviewPrepPoints = [
 
 export default async function AiInterviewGeneratorPage() {
   const siteImages = await getSiteImages();
+  const industries = await getIndustries();
   return (
     <>
       <Section background="navy" className="!py-12 sm:!py-14 lg:!py-16">
@@ -108,7 +110,7 @@ export default async function AiInterviewGeneratorPage() {
       </Section>
 
       <Section background="cream">
-        <AiInterviewGenerator />
+        <AiInterviewGenerator industries={industries} />
       </Section>
     </>
   );
