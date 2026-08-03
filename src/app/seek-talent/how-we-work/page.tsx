@@ -44,23 +44,30 @@ function IconTarget({ className }: { className?: string }) {
 const steps = [
   {
     number: "1",
-    title: "Scope",
+    title: "",
     description:
-      "We start by learning your team's culture, goals, and must-have skills, so every job specification reflects what truly matters.",
+      "Finding the right job shouldn't feel like sending resumes into a void. At Mintex Staffing, we take time to understand where you've been and where you want to go and then match you with roles across IT, healthcare, engineering, manufacturing, finance, administrative, sales, customer service, legal and logistics that actually fit.",
     icon: IconSearchTalent,
   },
   {
     number: "2",
-    title: "Source & Screen",
+    title: "",
     description:
-      "We tap our active talent network across nine industries, sourcing qualified candidates and screening them for both skill and cultural fit.",
+      "It starts with a conversation, not a form. We understand your skills, your goals, and the kind of workplace culture where you'll thrive and grow. From there, we tap our active employer network to connect you with roles that match your experience, and we screen every opportunity before it reaches you, so your time is never wasted on a bad fit.",
     icon: IconLayers,
   },
   {
     number: "3",
-    title: "Support",
+    title: "",
     description:
-      "Our involvement doesn't end at the offer letter, we stay engaged through onboarding and beyond, ensuring long-term success for employers and new hires alike.",
+      "Once you're placed, we don't disappear. We stay involved through your offer, your first days on the job, and beyond, because your success is our success.",
+    icon: IconTarget,
+  },
+  {
+    number: "4",
+    title: "",
+    description:
+      "Whether you're exploring a career change or ready for your next step, Mintex Staffing is here to help you find your desired position that fits your standards. Ready to get started?",
     icon: IconTarget,
   },
 ];
@@ -148,10 +155,10 @@ export default async function HowWeWorkPage() {
 
             <div>
               <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-tan">
-                Step by step
+                For job seekers
               </p>
               <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl">
-                From Kickoff to Placement
+                How We Help Job Seekers
               </h2>
 
               <div className="relative mt-8">
@@ -166,7 +173,9 @@ export default async function HowWeWorkPage() {
                         {step.number}
                       </span>
                       <div>
-                        <h3 className="text-base font-bold text-navy">{step.title}</h3>
+                        {step.title ? (
+                          <h3 className="text-base font-bold text-navy">{step.title}</h3>
+                        ) : null}
                         <p className="mt-1 text-sm leading-relaxed text-navy/65">{step.description}</p>
                       </div>
                     </div>
@@ -175,8 +184,8 @@ export default async function HowWeWorkPage() {
               </div>
 
               <div className="mt-8">
-                <ButtonLink href="/seek-talent/get-started" variant="primary">
-                  Discuss Your Hiring Needs
+                <ButtonLink href="/get-hired" variant="primary">
+                  Browse Open Roles
                 </ButtonLink>
               </div>
             </div>
