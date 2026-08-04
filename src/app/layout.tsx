@@ -51,13 +51,24 @@ export const metadata: Metadata = {
   // live — icon.png and apple-touch-icon silently disappeared from <head>
   // when only `shortcut` was set here), so every icon has to be listed
   // explicitly to avoid losing the other two.
+  // "?v=6" cache-busts Chrome's favicon cache, which is keyed to the URL and
+  // otherwise keeps serving whatever it first fetched regardless of the file
+  // actually changing on disk — bump this any time the icon files change.
+  // One static icon, deliberately NOT a light/dark auto-switching design —
+  // five independent techniques were tried (a static `media` attribute, two
+  // JS-driven live-swap methods, an SVG with an embedded prefers-color-scheme
+  // query, and a server-side rewrite keyed off the Sec-CH-Prefers-Color-
+  // Scheme client hint) and each was verified correct at its own level
+  // (DOM state, isolated render, or raw HTTP response), yet Chrome's actual
+  // tab-icon display never reflected any of them. A single icon is the only
+  // approach that's actually reliable.
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },
-      { url: "/icon.png", sizes: "512x512", type: "image/png" },
+      { url: "/favicon.ico?v=6", sizes: "48x48", type: "image/x-icon" },
+      { url: "/icon.png?v=6", sizes: "512x512", type: "image/png" },
     ],
-    shortcut: "/favicon.ico",
-    apple: { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+    shortcut: "/favicon.ico?v=6",
+    apple: { url: "/apple-icon.png?v=6", sizes: "180x180", type: "image/png" },
   },
 };
 
