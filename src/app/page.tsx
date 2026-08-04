@@ -114,26 +114,13 @@ export default async function HomePage() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-navy/[0.08] bg-mist p-8">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-tan">
-              At a glance
-            </p>
-            <div className="mt-5 space-y-5">
-              <div className="flex items-start justify-between gap-4 border-b border-navy/10 pb-5">
-                <span className="text-[14.5px] text-navy/70">Industries covered</span>
-                <span className="font-heading text-lg font-semibold text-navy">9+</span>
-              </div>
-              <div className="flex items-start justify-between gap-4 border-b border-navy/10 pb-5">
-                <span className="text-[14.5px] text-navy/70">Avg. time to hire</span>
-                <span className="font-heading text-lg font-semibold text-navy">9 Days</span>
-              </div>
-              <div className="flex items-start justify-between gap-4">
-                <span className="text-[14.5px] text-navy/70">Engagement models</span>
-                <span className="text-right font-heading text-sm font-semibold leading-snug text-navy">
-                  Contract · Contract-to-Hire · Permanent
-                </span>
-              </div>
-            </div>
+          <div className="relative mx-auto aspect-[4/3] w-full max-w-[480px] overflow-hidden rounded-2xl shadow-[0_25px_55px_-20px_rgba(0,48,96,0.35)]">
+            <Image
+              src={siteImages["home:what-we-do-visual"]}
+              alt="Mintex Staffing recruiter discussing a candidate's fit with a client"
+              fill
+              className="object-cover"
+            />
           </div>
         </div>
       </Section>

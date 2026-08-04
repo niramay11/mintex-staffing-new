@@ -18,8 +18,6 @@ const baseUrl = SITE_URL;
 const staticRoutes = [
   "",
   "/get-hired",
-  "/get-hired/apply-to-jobs",
-  "/get-hired/interview-prep",
   "/get-hired/share-resume",
   "/seek-talent",
   "/seek-talent/how-we-work",

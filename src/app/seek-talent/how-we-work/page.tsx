@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import Section from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import FaqAccordion from "@/components/ui/FaqAccordion";
@@ -72,6 +73,33 @@ const steps = [
   },
 ];
 
+const clientSteps = [
+  {
+    number: "1",
+    title: "",
+    description:
+      "At Mintex Staffing, our hiring process starts with listening, what you want, how soon you want and your future goals for the business. We partner with employers to help them with IT staffing, healthcare staffing, engineering staffing, manufacturing staffing, finance staffing, administrative staffing, sales staffing, customer service staffing, legal staffing and logistics staffing, which means no two searches look the same, and no two shortlists should either.",
+  },
+  {
+    number: "2",
+    title: "",
+    description:
+      "Every engagement begins with a scoping call, where we learn your team's culture, timeline, and what “great fit” really means for your business, before we start the hunt. From there, we source and screen candidates from our active talent network, vetting for skill, experience, and cultural fit so you only meet people worth your time.",
+  },
+  {
+    number: "3",
+    title: "",
+    description:
+      "Placement isn't the finish line. We stay involved through offer negotiations, onboarding, and beyond, making sure the fit holds up in the real world.",
+  },
+  {
+    number: "4",
+    title: "",
+    description:
+      "This is what lets Mintex Staffing deliver consistent, high-quality hires across industries, not just fast ones. Ready to build a shortlist around your team?",
+  },
+];
+
 const faqs = [
   {
     question: "How quickly can Mintex Staffing fill an open role?",
@@ -137,7 +165,52 @@ export default async function HowWeWorkPage() {
 
       <Section background="cream">
         <div className="mx-auto max-w-6xl">
-          <div className="grid items-center gap-14 lg:grid-cols-[0.8fr_1fr] lg:gap-20">
+          <div className="grid items-center gap-14 lg:grid-cols-[1fr_0.8fr] lg:gap-20">
+            <div>
+              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-tan">
+                For clients
+              </p>
+              <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl">
+                How We Help Our Clients
+              </h2>
+
+              <p className="mt-6 text-[15px] leading-relaxed text-navy/70">
+                {clientSteps[0].description}
+              </p>
+              <Link
+                href="/seek-talent/how-we-work/for-clients"
+                className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-navy transition-colors hover:text-tan"
+              >
+                Know more
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4">
+                  <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </Link>
+
+              <div className="mt-8">
+                <ButtonLink href="/seek-talent/get-started" variant="primary">
+                  Let&apos;s Talk Hiring
+                </ButtonLink>
+              </div>
+            </div>
+
+            <div className="relative mx-auto w-full max-w-[440px]">
+              <div
+                aria-hidden="true"
+                className="absolute -inset-4 -z-10 rounded-[36px] border-2 border-tan/25"
+              />
+              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[28px] shadow-[0_25px_55px_-20px_rgba(0,48,96,0.35)]">
+                <Image
+                  src={siteImages["seek-talent:how-we-work-clients-visual"]}
+                  alt="Mintex Staffing recruiter discussing hiring needs with a client team"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-20 grid items-center gap-14 lg:grid-cols-[0.8fr_1fr] lg:gap-20">
             <div className="relative mx-auto w-full max-w-[440px]">
               <div
                 aria-hidden="true"
@@ -161,27 +234,18 @@ export default async function HowWeWorkPage() {
                 How We Help Job Seekers
               </h2>
 
-              <div className="relative mt-8">
-                <div
-                  aria-hidden="true"
-                  className="absolute left-[18px] top-9 bottom-9 border-l-2 border-dashed border-navy/20"
-                />
-                <div className="space-y-6">
-                  {steps.map((step) => (
-                    <div key={step.number} className="relative flex gap-4">
-                      <span className="relative z-10 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-navy text-sm font-bold text-white">
-                        {step.number}
-                      </span>
-                      <div>
-                        {step.title ? (
-                          <h3 className="text-base font-bold text-navy">{step.title}</h3>
-                        ) : null}
-                        <p className="mt-1 text-sm leading-relaxed text-navy/65">{step.description}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <p className="mt-6 text-[15px] leading-relaxed text-navy/70">
+                {steps[0].description}
+              </p>
+              <Link
+                href="/get-hired/how-we-work/for-job-seekers"
+                className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-navy transition-colors hover:text-tan"
+              >
+                Know more
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4">
+                  <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </Link>
 
               <div className="mt-8">
                 <ButtonLink href="/get-hired" variant="primary">

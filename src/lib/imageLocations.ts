@@ -57,6 +57,7 @@ export const IMAGE_LOCATIONS: ImageLocation[] = [
   { locationKey: "home:hero-banner",        pageName: "Home", sectionName: "Hero Banner",                defaultSrc: "/hero-office-3.png", category: "photo-landscape" },
   { locationKey: "home:industries-mark",    pageName: "Home", sectionName: "Industries Decorative Mark", defaultSrc: "/mintex-m-navy.svg", category: "logo-decorative" },
   { locationKey: "home:industries-collage", pageName: "Home", sectionName: "Industries Collage",         defaultSrc: "/collage-2.webp",    category: "photo-square" },
+  { locationKey: "home:what-we-do-visual",  pageName: "Home", sectionName: "What We Do Visual",          defaultSrc: "/interview-confident.jpg", category: "photo-square" },
 
   // About
   { locationKey: "about:hero-visual",  pageName: "About", sectionName: "Hero Visual",       defaultSrc: "/about.png",              category: "photo-landscape" },
@@ -75,6 +76,7 @@ export const IMAGE_LOCATIONS: ImageLocation[] = [
 
   // Seek Talent — How We Work
   { locationKey: "seek-talent:how-we-work-visual", pageName: "Seek Talent", sectionName: "How We Work Visual", defaultSrc: "/collage-2.webp", category: "photo-portrait" },
+  { locationKey: "seek-talent:how-we-work-clients-visual", pageName: "Seek Talent", sectionName: "How We Help Our Clients Visual", defaultSrc: "/interview-meeting.jpg", category: "photo-portrait" },
 
   // Seek Talent — Get Started (hiring inquiry form page)
   { locationKey: "seek-talent:get-started-visual", pageName: "Seek Talent", sectionName: "Get Started Visual", defaultSrc: "/interview-confident.jpg", category: "photo-square" },
