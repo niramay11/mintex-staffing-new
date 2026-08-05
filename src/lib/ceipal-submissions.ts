@@ -92,11 +92,21 @@ async function fetchApplicantNameLive(jobSeekerId: string): Promise<string> {
   if (!res.ok) throw new Error(`getApplicantDetails ${res.status} for ${jobSeekerId}`);
   const raw = await res.json();
   const d = (Array.isArray(raw) ? raw[0] : raw) as Record<string, unknown>;
-  if (!d) return '';
-  return String(
-    d.consultant_name ?? d.full_name ?? d.applicant_name ??
-    `${d.firstname ?? d.first_name ?? ''} ${d.lastname ?? d.last_name ?? ''}`.trim()
-  ).trim();
+  const name = d
+    ? String(
+        d.consultant_name ?? d.full_name ?? d.applicant_name ??
+        `${d.firstname ?? d.first_name ?? ''} ${d.lastname ?? d.last_name ?? ''}`.trim()
+      ).trim()
+    : '';
+  // Confirmed live: an empty result used to be cached for 24h same as a real
+  // name, same class of bug jobsCache.ts/ceipal-job-map.ts already guard
+  // against elsewhere in this file — one unlucky/incomplete response
+  // permanently "locked in" as blank for the rest of the cache window, even
+  // on later requests where Ceipal would have answered fine. Throwing here
+  // instead means unstable_cache never persists it, so the next request
+  // tries fresh instead of reusing a stale non-answer.
+  if (!name) throw new Error(`getApplicantDetails returned no usable name for ${jobSeekerId}`);
+  return name;
 }
 
 const NAME_CACHE_TTL_SECONDS = 24 * 60 * 60;
