@@ -71,6 +71,42 @@ export async function fetchJobSubmissions(v2Id: string): Promise<Record<string, 
   }
 }
 
+// Confirmed live: Ceipal's getApplicantDetails endpoint routinely takes
+// 10-20+ seconds to respond (measured directly against production), but both
+// portal routes that called this were capping the wait at 6s (or not caching
+// the result at all), so almost every candidate name came back blank — not
+// because the data didn't exist, but because the code gave up before Ceipal
+// answered. Caching each candidate's name once resolved (names don't change)
+// means only the first-ever lookup for a given candidate pays that latency.
+async function fetchApplicantNameLive(jobSeekerId: string): Promise<string> {
+  const res = await ceipalFetch(`https://api.ceipal.com/v2/getApplicantDetails/${encodeURIComponent(jobSeekerId)}/`);
+  if (!res.ok) throw new Error(`getApplicantDetails ${res.status} for ${jobSeekerId}`);
+  const raw = await res.json();
+  const d = (Array.isArray(raw) ? raw[0] : raw) as Record<string, unknown>;
+  if (!d) return '';
+  return String(
+    d.consultant_name ?? d.full_name ?? d.applicant_name ??
+    `${d.firstname ?? d.first_name ?? ''} ${d.lastname ?? d.last_name ?? ''}`.trim()
+  ).trim();
+}
+
+const NAME_CACHE_TTL_SECONDS = 24 * 60 * 60;
+const getCachedApplicantNameRaw = unstable_cache(fetchApplicantNameLive, ['applicant-name'], {
+  revalidate: NAME_CACHE_TTL_SECONDS,
+});
+
+// Callers still race this against their own per-request time budget — this
+// only guarantees a real attempt gets a realistic amount of time to
+// complete and that a successful result is reused instead of re-fetched.
+export async function fetchApplicantName(jobSeekerId: string): Promise<string> {
+  try {
+    return await getCachedApplicantNameRaw(jobSeekerId);
+  } catch (err) {
+    console.warn(`[ceipal-submissions] fetchApplicantName failed for ${jobSeekerId}:`, err instanceof Error ? err.message : String(err));
+    return '';
+  }
+}
+
 const RUNNING_ON_VERCEL = !!process.env.VERCEL;
 // Deliberately tight — this runs alongside five other cache warmers in the
 // same warmAllJobCaches() Promise.all (see warmCaches.ts), all sharing one

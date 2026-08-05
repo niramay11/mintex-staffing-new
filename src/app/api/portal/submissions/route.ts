@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifySession } from '@/lib/portal-auth';
-import { ceipalFetch } from '@/lib/ceipal';
 import { getJobMap } from '@/lib/ceipal-job-map';
 import { getAllJobs } from '@/lib/data-cache';
-import { fetchJobSubmissions } from '@/lib/ceipal-submissions';
+import { fetchJobSubmissions, fetchApplicantName } from '@/lib/ceipal-submissions';
 
 export const maxDuration = 60;
 
@@ -21,24 +20,15 @@ const cacheMap = new Map<string, { data: Record<string, unknown>[]; at: number }
 // Vercel's kill and returns whatever's been gathered so far — a real,
 // non-zero partial count beats a dead request that silently becomes 0.
 const TIME_BUDGET_MS = 45_000;
-const NAME_FETCH_TIMEOUT_MS = 6_000;
+// Was 6s, which is well under Ceipal's real ~10-20s response time for this
+// endpoint (confirmed live) — every lookup was hitting this ceiling and
+// silently returning blank rather than actually failing. fetchApplicantName
+// itself now caches successful results for 24h, so raising this only costs
+// real time on a genuinely first-ever, uncached lookup.
+const NAME_FETCH_TIMEOUT_MS = 18_000;
 
 function raceTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
   return Promise.race([promise, new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))]);
-}
-
-async function fetchApplicantName(jobSeekerId: string): Promise<string> {
-  try {
-    const res = await ceipalFetch(`https://api.ceipal.com/v2/getApplicantDetails/${encodeURIComponent(jobSeekerId)}/`);
-    if (!res.ok) return '';
-    const raw = await res.json();
-    const d = (Array.isArray(raw) ? raw[0] : raw) as Record<string, unknown>;
-    if (!d) return '';
-    return String(
-      d.consultant_name ?? d.full_name ?? d.applicant_name ??
-      `${d.firstname ?? d.first_name ?? ''} ${d.lastname ?? d.last_name ?? ''}`.trim()
-    ).trim();
-  } catch { return ''; }
 }
 
 export async function GET(req: NextRequest) {

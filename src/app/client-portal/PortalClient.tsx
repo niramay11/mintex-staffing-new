@@ -759,6 +759,7 @@ export default function PortalClient({
     const [showHired, setShowHired]             = useState(false);
     const [submissionCount, setSubmissionCount] = useState<number | null>(null);
     const [hiredCount, setHiredCount]           = useState<number | null>(null);
+    const [submissionsSlow, setSubmissionsSlow] = useState(false);
     const [cachedSubmissions, setCachedSubmissions] = useState<Record<string, unknown>[] | null>(null);
 
     // Guards the one-time skip of the mount-time jobs fetch when the server
@@ -810,6 +811,10 @@ export default function PortalClient({
     // Fetch submissions once AFTER jobs are loaded — results shared with modals to avoid re-fetches
     useEffect(() => {
         if (!client || jobs.length === 0) return;
+        // Ceipal (the source this pulls from) can take 10-20+ seconds on an
+        // uncached candidate lookup — this just tells the client that's
+        // expected instead of leaving a bare "…" with no explanation.
+        const slowTimer = setTimeout(() => setSubmissionsSlow(true), 5000);
         const codes = jobs.map(j => j.job_code).filter(Boolean).join(',');
         const url = `/api/portal/submissions?job_codes=${encodeURIComponent(codes)}`;
         fetch(url)
@@ -825,7 +830,8 @@ export default function PortalClient({
                 });
                 setHiredCount(hired.length);
             })
-            .catch(() => { setSubmissionCount(0); setHiredCount(0); });
+            .catch(() => { setSubmissionCount(0); setHiredCount(0); })
+            .finally(() => { clearTimeout(slowTimer); setSubmissionsSlow(false); });
     }, [jobs]);
 
     const handleLogout = async () => {
@@ -955,6 +961,14 @@ export default function PortalClient({
                             <p className="text-[10px] font-semibold uppercase tracking-wide text-navy/50">Total Hires</p>
                         </motion.button>
                     </motion.div>
+                )}
+
+                {/* Lets the client know a slow "…" is Ceipal being slow, not a stuck page */}
+                {!loading && (submissionCount === null || hiredCount === null) && submissionsSlow && (
+                    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                        className="-mt-3 mb-6 text-xs text-navy/50">
+                        Still fetching submissions &amp; hires — our data source (CEIPAL) can be slow, please wait a few seconds…
+                    </motion.p>
                 )}
 
                 {/* Filter bar */}

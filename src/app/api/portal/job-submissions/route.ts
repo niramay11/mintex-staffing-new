@@ -1,26 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifySession } from '@/lib/portal-auth';
-import { ceipalFetch } from '@/lib/ceipal';
 import { getJobMap } from '@/lib/ceipal-job-map';
-import { fetchJobSubmissions } from '@/lib/ceipal-submissions';
+import { fetchJobSubmissions, fetchApplicantName } from '@/lib/ceipal-submissions';
 
-async function fetchApplicantName(jobSeekerId: string): Promise<string> {
-  try {
-    const res = await ceipalFetch(
-      `https://api.ceipal.com/v2/getApplicantDetails/${encodeURIComponent(jobSeekerId)}/`
-    );
-    if (!res.ok) return '';
-    const raw = await res.json();
-    const d   = (Array.isArray(raw) ? raw[0] : raw) as Record<string, unknown>;
-    if (!d) return '';
-    return String(
-      d.consultant_name ?? d.full_name ?? d.applicant_name ??
-      `${d.firstname ?? d.first_name ?? ''} ${d.lastname ?? d.last_name ?? ''}`.trim()
-    ).trim();
-  } catch {
-    return '';
-  }
-}
+// fetchApplicantName can legitimately take ~10-20s on a first-ever, uncached
+// lookup (confirmed live against Ceipal) — this route had no override before,
+// so it inherited Vercel's shorter default and risked being killed mid-request.
+export const maxDuration = 60;
 
 export async function GET(req: NextRequest) {
   const token = req.cookies.get('portal_token')?.value;
