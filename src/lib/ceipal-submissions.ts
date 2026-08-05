@@ -78,8 +78,17 @@ export async function fetchJobSubmissions(v2Id: string): Promise<Record<string, 
 // because the data didn't exist, but because the code gave up before Ceipal
 // answered. Caching each candidate's name once resolved (names don't change)
 // means only the first-ever lookup for a given candidate pays that latency.
+// 20s (ceipalFetch's shared default) wasn't enough on its own — confirmed
+// live that a single isolated lookup can take ~15-16s, so anything under
+// real concurrent load has little margin left before hitting that default
+// and getting aborted regardless of how long the caller is willing to wait.
+const APPLICANT_DETAILS_TIMEOUT_MS = 30_000;
+
 async function fetchApplicantNameLive(jobSeekerId: string): Promise<string> {
-  const res = await ceipalFetch(`https://api.ceipal.com/v2/getApplicantDetails/${encodeURIComponent(jobSeekerId)}/`);
+  const res = await ceipalFetch(
+    `https://api.ceipal.com/v2/getApplicantDetails/${encodeURIComponent(jobSeekerId)}/`,
+    APPLICANT_DETAILS_TIMEOUT_MS
+  );
   if (!res.ok) throw new Error(`getApplicantDetails ${res.status} for ${jobSeekerId}`);
   const raw = await res.json();
   const d = (Array.isArray(raw) ? raw[0] : raw) as Record<string, unknown>;

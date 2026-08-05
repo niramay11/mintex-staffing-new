@@ -90,11 +90,11 @@ export async function getCeipalTokenV2(): Promise<string> {
 }
 
 // ─── Authenticated fetch helpers ──────────────────────────────────────────────
-async function doFetch(url: string, getToken: () => Promise<string>): Promise<Response> {
+async function doFetch(url: string, getToken: () => Promise<string>, timeoutMs?: number): Promise<Response> {
   let token = await getToken();
   let res = await fetchWithTimeout(url, {
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-  });
+  }, timeoutMs);
 
   if (res.status === 401 || res.status === 403) {
     cacheV1 = null;
@@ -102,10 +102,15 @@ async function doFetch(url: string, getToken: () => Promise<string>): Promise<Re
     token = await getToken();
     res = await fetchWithTimeout(url, {
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    });
+    }, timeoutMs);
   }
   return res;
 }
 
-export function ceipalFetch(url: string)   { return doFetch(url, getCeipalToken);   }
-export function ceipalFetchV2(url: string) { return doFetch(url, getCeipalTokenV2); }
+// timeoutMs is optional — omit it to keep the default 20s used everywhere
+// else. getApplicantDetails specifically needs longer (confirmed live: a
+// single lookup can take ~15-16s even with no contention, and multiple
+// concurrent lookups slow Ceipal down further), so its caller passes a
+// larger value rather than raising the shared default for every endpoint.
+export function ceipalFetch(url: string, timeoutMs?: number)   { return doFetch(url, getCeipalToken, timeoutMs);   }
+export function ceipalFetchV2(url: string, timeoutMs?: number) { return doFetch(url, getCeipalTokenV2, timeoutMs); }

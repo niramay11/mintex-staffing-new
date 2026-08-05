@@ -20,12 +20,17 @@ const cacheMap = new Map<string, { data: Record<string, unknown>[]; at: number }
 // Vercel's kill and returns whatever's been gathered so far — a real,
 // non-zero partial count beats a dead request that silently becomes 0.
 const TIME_BUDGET_MS = 45_000;
-// Was 6s, which is well under Ceipal's real ~10-20s response time for this
-// endpoint (confirmed live) — every lookup was hitting this ceiling and
-// silently returning blank rather than actually failing. fetchApplicantName
-// itself now caches successful results for 24h, so raising this only costs
-// real time on a genuinely first-ever, uncached lookup.
-const NAME_FETCH_TIMEOUT_MS = 18_000;
+// Was 6s, then 18s — still not enough: confirmed live that a single
+// candidate lookup can take ~15-16s in isolation, and multiple lookups
+// running at once (one per submission, across several jobs in parallel)
+// slow Ceipal down further. This just needs to stay above
+// APPLICANT_DETAILS_TIMEOUT_MS (ceipal-submissions.ts) so a real in-flight
+// Ceipal call isn't cut off here before it gets its own full allowance.
+// fetchApplicantName caches successful results for 24h, so raising this
+// only costs real time on a genuinely first-ever, uncached lookup — and
+// every miss here self-heals on the next page load once enough lookups
+// have succeeded and cached.
+const NAME_FETCH_TIMEOUT_MS = 32_000;
 
 function raceTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
   return Promise.race([promise, new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))]);
