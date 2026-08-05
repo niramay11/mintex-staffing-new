@@ -277,7 +277,7 @@ on paper.
               path: "M4 4h16v4H4zM4 10h10v4H4zM4 16h13v4H4z",
             },
             {
-              title: "Nine Industries, One Standard",
+              title: "9+ Industries, One Standard",
               text: "From IT to healthcare to logistics, every candidate goes through the same rigorous screening bar, tailored to what that specific industry actually demands.",
               path: "M4 20V10M10 20V4M16 20v-7",
             },
