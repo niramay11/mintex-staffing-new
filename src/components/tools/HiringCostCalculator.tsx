@@ -1,10 +1,37 @@
 "use client";
 
-import { Button } from "@/components/ui/Button";
+import type { Industry } from "@/content/types";
+import { Button, ButtonLink } from "@/components/ui/Button";
+import Select from "@/components/ui/Select";
 import { useHiringCost, type HiringCostInputs } from "./HiringCostCalculatorContext";
 
-export default function HiringCostCalculator() {
+const CLIENT_TYPE_OPTIONS = [
+  { value: "direct", label: "Direct client" },
+  { value: "msp-tier1", label: "MSP — Tier 1" },
+  { value: "msp-tier2", label: "MSP — Tier 2 / Franchise" },
+];
+
+const DELIVERY_OPTIONS = [
+  { value: "onshore", label: "Onshore" },
+  { value: "offshore", label: "Offshore" },
+];
+
+export default function HiringCostCalculator({ industries = [] }: { industries?: Industry[] }) {
   const { inputs, setField, result, calculate } = useHiringCost();
+
+  const industryOptions = [
+    { value: "", label: "General / not sure" },
+    ...industries.map((industry) => ({ value: industry.slug, label: industry.name })),
+  ];
+  const selectedIndustryName = industries.find((industry) => industry.slug === inputs.industry)?.name;
+
+  const clientTypeLabel =
+    inputs.clientType === "direct"
+      ? "direct-client"
+      : inputs.clientType === "msp-tier1"
+        ? "MSP Tier 1"
+        : "MSP Tier 2 / franchise";
+  const engagementNote = `Estimate only, based on a ${clientTypeLabel} ${inputs.delivery} engagement. Onboarding and ramp-up costs are counted on both sides since they apply to the new hire regardless of who sources them — the savings come from avoided ad spend and recruiter time, a faster average fill, and Mintex's fee vs. an unfilled seat.`;
 
   function handleChange(field: keyof HiringCostInputs) {
     return (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -20,36 +47,87 @@ export default function HiringCostCalculator() {
   return (
     <div className="grid items-start gap-8 lg:grid-cols-2">
       <form onSubmit={handleSubmit} className="grid content-start gap-4 rounded-lg border border-navy/10 bg-white p-6">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Select
+            label="Client type"
+            value={inputs.clientType}
+            onChange={(value) => setField("clientType", value)}
+            options={CLIENT_TYPE_OPTIONS}
+          />
+          <Select
+            label="Delivery"
+            value={inputs.delivery}
+            onChange={(value) => setField("delivery", value)}
+            options={DELIVERY_OPTIONS}
+          />
+        </div>
+
+        <Select
+          label="Industry"
+          value={inputs.industry}
+          onChange={(value) => setField("industry", value)}
+          options={industryOptions}
+        />
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Annual salary for the role ($)" value={inputs.annualSalary} onChange={handleChange("annualSalary")} />
+          <Field
+            label="Time to fill if hired in-house (days)"
+            value={inputs.timeToFillDays}
+            onChange={handleChange("timeToFillDays")}
+          />
+        </div>
+
         <Field label="Job ad spend ($)" value={inputs.adSpend} onChange={handleChange("adSpend")} />
-        <Field label="Agency / staffing fees ($)" value={inputs.agencyFees} onChange={handleChange("agencyFees")} />
-        <Field
-          label="Internal recruiter hourly rate ($)"
-          value={inputs.recruiterHourlyRate}
-          onChange={handleChange("recruiterHourlyRate")}
-        />
-        <Field
-          label="Internal recruiter hours spent"
-          value={inputs.recruiterHours}
-          onChange={handleChange("recruiterHours")}
-        />
-        <Field label="Onboarding cost ($)" value={inputs.onboardingCost} onChange={handleChange("onboardingCost")} />
-        <Field label="Roles filled" value={inputs.rolesFilled} onChange={handleChange("rolesFilled")} />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field
+            label="Internal recruiter hourly rate ($)"
+            value={inputs.recruiterHourlyRate}
+            onChange={handleChange("recruiterHourlyRate")}
+          />
+          <Field
+            label="Internal recruiter hours spent (days)"
+            value={inputs.recruiterHours}
+            onChange={handleChange("recruiterHours")}
+          />
+        </div>
+        <Field label="Onboarding & training cost ($)" value={inputs.onboardingCost} onChange={handleChange("onboardingCost")} />
+
         <Button type="submit">Calculate</Button>
       </form>
 
       <div className="rounded-lg bg-navy p-6 text-white">
         <h3 className="text-sm font-semibold uppercase tracking-wide text-tan-light">Result</h3>
-        <p className="mt-4 text-4xl font-bold">
-          ${result.costPerHire.toLocaleString("en-US", { maximumFractionDigits: 0 })}
-        </p>
-        <p className="mt-1 text-sm text-white/70">cost per hire</p>
-        <p className="mt-6 text-sm text-white/80">
-          Total hiring spend: ${result.totalCost.toLocaleString("en-US", { maximumFractionDigits: 0 })}
-        </p>
-        <p className="mt-6 text-xs text-white/50">
-          Formula: (ad spend + agency fees + recruiter time cost + onboarding cost) &divide; roles
-          filled.
-        </p>
+
+        <div className="mt-4 grid grid-cols-2 gap-4">
+          <div>
+            <p className="text-xs text-white/60">If hired in-house</p>
+            <p className="mt-1 text-2xl font-bold">
+              ${result.inHouseTotal.toLocaleString("en-US", { maximumFractionDigits: 0 })}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-tan-light">With Mintex</p>
+            <p className="mt-1 text-2xl font-bold text-tan-light">
+              ${result.mintexTotal.toLocaleString("en-US", { maximumFractionDigits: 0 })}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-6 rounded-md bg-white/10 p-4">
+          <p className="text-3xl font-bold text-tan-light">
+            ${Math.max(result.savings, 0).toLocaleString("en-US", { maximumFractionDigits: 0 })}
+          </p>
+          <p className="mt-1 text-sm text-white/80">
+            estimated savings ({Math.max(Math.round(result.savingsPct), 0)}%) using Mintex for this hire
+          </p>
+        </div>
+
+        <ButtonLink href="/contact" variant="primary" className="mt-6 w-full justify-center">
+          Get a tailored {selectedIndustryName ? `${selectedIndustryName} ` : ""}quote
+        </ButtonLink>
+
+        <p className="mt-4 text-xs text-white/50">{engagementNote}</p>
       </div>
     </div>
   );

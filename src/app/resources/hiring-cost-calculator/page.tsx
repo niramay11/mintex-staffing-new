@@ -3,21 +3,26 @@ import Section from "@/components/ui/Section";
 import HiringCostCalculator from "@/components/tools/HiringCostCalculator";
 import CostBreakdownPreview from "@/components/tools/CostBreakdownPreview";
 import { HiringCostProvider } from "@/components/tools/HiringCostCalculatorContext";
+import { getIndustries } from "@/lib/industries";
 import { pageMetadata } from "@/lib/pageMetadata";
 
 export const metadata: Metadata = pageMetadata({
   title: "Hiring Cost Calculator",
-  description: "Estimate your true cost-per-hire across ad spend, agency fees, and internal time.",
+  description:
+    "Compare the true cost of hiring in-house against using Mintex, across direct, MSP Tier 1, and MSP Tier 2 engagements — onshore or offshore.",
   path: "/resources/hiring-cost-calculator",
 });
 
-export default function HiringCostCalculatorPage() {
+export default async function HiringCostCalculatorPage() {
+  const industries = await getIndustries();
+
   return (
     <HiringCostProvider>
       <Section background="navy" className="!py-12 sm:!py-14 lg:!py-16">
         <h1 className="text-4xl font-bold sm:text-5xl">Hiring Cost Calculator</h1>
         <p className="mt-4 max-w-2xl text-white/80">
-          Add up everything that goes into filling a role to see your true cost per hire.
+          Add up everything that goes into filling a role in-house, then see it side by side with a
+          Mintex engagement — direct, MSP Tier 1, or MSP Tier 2/franchise, onshore or offshore.
         </p>
       </Section>
 
@@ -32,8 +37,9 @@ export default function HiringCostCalculatorPage() {
               Know your true cost of hire before you spend a cent
             </h2>
             <p className="mt-4 max-w-md text-lg text-steel">
-              Add up ad spend, agency fees, recruiter time, and onboarding costs to see the full
-              picture — then use it to build a hiring budget that actually holds up.
+              Add up ad spend, recruiter time, vacancy cost, and ramp-up losses to see the full
+              in-house picture — then compare it against a Mintex engagement tailored to your client
+              type and delivery model.
             </p>
           </div>
 
@@ -42,7 +48,7 @@ export default function HiringCostCalculatorPage() {
       </Section>
 
       <Section background="cream">
-        <HiringCostCalculator />
+        <HiringCostCalculator industries={industries} />
       </Section>
     </HiringCostProvider>
   );

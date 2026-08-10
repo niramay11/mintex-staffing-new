@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { getNavItems } from "./navConfig";
 import { BUSINESS } from "@/lib/site";
@@ -24,11 +25,21 @@ export default function Header({ siteImages, industries }: { siteImages: Record<
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const [desktopOpen, setDesktopOpen] = useState<string | null>(null);
   const navItems = getNavItems(industries);
+  const pathname = usePathname();
 
   return (
     <header className="sticky top-4 z-50 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto flex max-w-[1700px] items-center justify-between gap-4 rounded-full border border-navy/[0.06] bg-white/85 py-2 pl-5 pr-2.5 shadow-[0_8px_30px_rgba(0,48,96,0.08)] backdrop-blur-md">
-        <Link href="/" className="flex flex-shrink-0 items-center">
+        <Link
+          href="/"
+          className="flex flex-shrink-0 items-center"
+          onClick={(e) => {
+            if (pathname === "/") {
+              e.preventDefault();
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+          }}
+        >
           <Image src={siteImages["global:header-logo-mark"]} alt="Mintex Staffing" width={72} height={36} preload className="h-9 w-auto object-contain lg:hidden" />
           <Image src={siteImages["global:header-logo"]} alt="Mintex Staffing" width={183} height={25} preload className="hidden h-6 w-auto object-contain lg:block" />
         </Link>

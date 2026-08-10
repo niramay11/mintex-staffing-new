@@ -633,7 +633,14 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
                         <span className="mb-1 inline-block rounded bg-mist px-2 py-0.5 font-mono text-[11px] text-navy/60">
                           {job.job_code}
                         </span>
-                        <h3 className="text-base font-semibold text-navy">{job.job_title}</h3>
+                        <h3 className="text-base font-semibold text-navy">
+                          <Link
+                            href={`/get-hired/jobs/${jobUrlSlug(job)}`}
+                            className="hover:text-steel hover:underline"
+                          >
+                            {job.job_title}
+                          </Link>
+                        </h3>
                         <p className="mt-1 flex items-center gap-1 text-sm text-navy/60">
                           <IconPin className="h-3.5 w-3.5 flex-shrink-0 text-navy/35" />
                           <span className="truncate">{jobLocation(job)}</span>

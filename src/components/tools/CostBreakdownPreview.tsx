@@ -10,7 +10,7 @@ const ACCENTS = [
 ];
 
 export default function CostBreakdownPreview() {
-  const { result, rows } = useHiringCost();
+  const { result, inHouseRows } = useHiringCost();
 
   return (
     <div className="relative mx-auto w-full max-w-md">
@@ -34,12 +34,12 @@ export default function CostBreakdownPreview() {
         </div>
 
         <p className="mt-4 font-heading text-5xl font-bold text-navy">
-          ${Math.round(result.costPerHire).toLocaleString("en-US")}
+          ${Math.round(result.inHouseTotal).toLocaleString("en-US")}
         </p>
-        <p className="text-sm text-navy/50">estimated cost for this hire</p>
+        <p className="text-sm text-navy/50">estimated cost if you hire this role in-house</p>
 
         <div className="mt-7 space-y-4">
-          {rows.map((row, i) => (
+          {inHouseRows.map((row, i) => (
             <div key={row.label}>
               <div className="flex items-center justify-between text-sm">
                 <span className="flex items-center gap-2 text-navy/70">
@@ -49,7 +49,9 @@ export default function CostBreakdownPreview() {
                   />
                   {row.label}
                 </span>
-                <span className="flex-shrink-0 font-semibold text-navy">${row.amount.toLocaleString("en-US")}</span>
+                <span className="flex-shrink-0 font-semibold text-navy">
+                  ${row.amount.toLocaleString("en-US", { maximumFractionDigits: 0 })}
+                </span>
               </div>
               <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-mist">
                 <div
@@ -70,8 +72,8 @@ export default function CostBreakdownPreview() {
           </svg>
         </span>
         <div>
-          <p className="text-sm font-semibold leading-none">6 quick inputs</p>
-          <p className="mt-1 text-xs text-white/60">one clear number</p>
+          <p className="text-sm font-semibold leading-none">In-house vs. Mintex</p>
+          <p className="mt-1 text-xs text-white/60">one clear comparison</p>
         </div>
       </div>
     </div>
