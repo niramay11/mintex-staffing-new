@@ -2,88 +2,67 @@
 
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import {
-  calculateHiringCost,
-  type ClientType,
-  type DeliveryModel,
+  computeHiringCost,
+  type HiringCostCalcInputs,
   type HiringCostResult,
+  type IndustryKey,
+  type MethodKey,
+  type SeniorityKey,
 } from "@/lib/calculators";
 
-const initialInputs = {
-  annualSalary: "85000",
-  timeToFillDays: "45",
-  adSpend: "1500",
-  recruiterHourlyRate: "45",
-  recruiterHours: "40",
-  onboardingCost: "800",
-  clientType: "direct",
-  delivery: "onshore",
-  industry: "",
+export type HiringCostInputs = HiringCostCalcInputs & { industryKey: IndustryKey };
+
+const initialInputs: HiringCostInputs = {
+  salary: 80000,
+  seniorityKey: "mid",
+  industryKey: "it",
+  methodKey: "mintex_staffing",
+  ttf: 35,
+  cands: 15,
+  rate: 75,
+  bg: 150,
 };
 
-export type HiringCostInputs = typeof initialInputs;
+export type BreakdownRow = { key: string; label: string; amount: number; pct: number };
 
-export type BreakdownRow = { label: string; amount: number; pct: number };
-
-function withPct(rows: { label: string; amount: number }[], total: number): BreakdownRow[] {
-  const safeTotal = total || 1;
-  return rows
-    .filter((row) => row.amount > 0)
-    .map((row) => ({ ...row, pct: Math.round((row.amount / safeTotal) * 100) }));
-}
-
-function computeBreakdown(inputs: HiringCostInputs) {
-  const result = calculateHiringCost({
-    annualSalary: Number(inputs.annualSalary) || 0,
-    timeToFillDays: Number(inputs.timeToFillDays) || 0,
-    adSpend: Number(inputs.adSpend) || 0,
-    recruiterHourlyRate: Number(inputs.recruiterHourlyRate) || 0,
-    recruiterHours: Number(inputs.recruiterHours) || 0,
-    onboardingCost: Number(inputs.onboardingCost) || 0,
-    clientType: inputs.clientType as ClientType,
-    delivery: inputs.delivery as DeliveryModel,
-  });
-
-  return {
-    result,
-    inHouseRows: withPct(result.inHouseRows, result.inHouseTotal),
-    mintexRows: withPct(result.mintexRows, result.mintexTotal),
-  };
+function withPct(result: HiringCostResult): BreakdownRow[] {
+  const safeTotal = result.total || 1;
+  return result.items.map((item) => ({ ...item, pct: (item.amount / safeTotal) * 100 }));
 }
 
 type Ctx = {
   inputs: HiringCostInputs;
-  setField: (field: keyof HiringCostInputs, value: string) => void;
+  setField: <K extends keyof HiringCostInputs>(field: K, value: HiringCostInputs[K]) => void;
   result: HiringCostResult;
-  inHouseRows: BreakdownRow[];
-  mintexRows: BreakdownRow[];
-  calculate: () => void;
+  breakdownRows: BreakdownRow[];
+  internalHrResult: HiringCostResult;
+  internalHrRows: BreakdownRow[];
+  mintexResult: HiringCostResult;
 };
 
 const HiringCostContext = createContext<Ctx | null>(null);
 
 export function HiringCostProvider({ children }: { children: ReactNode }) {
   const [inputs, setInputs] = useState<HiringCostInputs>(initialInputs);
-  const [computed, setComputed] = useState(() => computeBreakdown(initialInputs));
 
-  function setField(field: keyof HiringCostInputs, value: string) {
+  function setField<K extends keyof HiringCostInputs>(field: K, value: HiringCostInputs[K]) {
     setInputs((prev) => ({ ...prev, [field]: value }));
   }
 
-  function calculate() {
-    setComputed(computeBreakdown(inputs));
-  }
-
-  const value = useMemo<Ctx>(
-    () => ({
+  const value = useMemo<Ctx>(() => {
+    const result = computeHiringCost(inputs);
+    const internalHrResult = computeHiringCost({ ...inputs, methodKey: "internal_hr" });
+    const mintexResult = computeHiringCost({ ...inputs, methodKey: "mintex_staffing" });
+    return {
       inputs,
       setField,
-      result: computed.result,
-      inHouseRows: computed.inHouseRows,
-      mintexRows: computed.mintexRows,
-      calculate,
-    }),
-    [inputs, computed]
-  );
+      result,
+      breakdownRows: withPct(result),
+      internalHrResult,
+      internalHrRows: withPct(internalHrResult),
+      mintexResult,
+    };
+  }, [inputs]);
 
   return <HiringCostContext.Provider value={value}>{children}</HiringCostContext.Provider>;
 }
@@ -93,3 +72,5 @@ export function useHiringCost() {
   if (!ctx) throw new Error("useHiringCost must be used within a HiringCostProvider");
   return ctx;
 }
+
+export type { IndustryKey, MethodKey, SeniorityKey };
