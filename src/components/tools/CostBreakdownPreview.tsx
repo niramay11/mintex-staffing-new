@@ -3,7 +3,7 @@
 import { useHiringCost } from "./HiringCostCalculatorContext";
 
 const ACCENTS = [
-  "var(--color-tan)",
+  "var(--color-navy)",
   "var(--color-steel)",
   "var(--color-steel-light)",
   "var(--color-navy-secondary)",

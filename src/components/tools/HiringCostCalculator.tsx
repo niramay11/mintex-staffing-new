@@ -10,7 +10,7 @@ const PALETTE = [
   "var(--color-navy)",
   "var(--color-navy-secondary)",
   "var(--color-steel)",
-  "var(--color-tan)",
+  "var(--color-steel-light)",
   "var(--color-steel-lighter)",
   "var(--color-steel-light)",
   "var(--color-steel-lighter)",
