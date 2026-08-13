@@ -164,7 +164,7 @@ roles as they go live.
             />
 
             <div className="absolute -left-8 -top-8 z-20 flex items-center gap-3 rounded-2xl border border-white/10 bg-white px-4 py-3 shadow-[0_25px_60px_-15px_rgba(0,48,96,0.55)]">
-              <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-tan/15 text-tan">
+              <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel">
                 <IconBriefcase className="h-5 w-5" />
               </span>
               <div>
@@ -218,7 +218,7 @@ roles as they go live.
           variant="secondary"
           className="group inline-flex items-center gap-3 !px-8 !py-4 text-base !transition-all shadow-[0_10px_30px_-14px_rgba(0,48,96,0.22)] hover:-translate-y-0.5 hover:border-tan/40 hover:shadow-[0_16px_40px_-14px_rgba(0,48,96,0.3)]"
         >
-          <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-tan/15 text-tan">
+          <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel">
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4">
               <path d="M12 2 13.8 8.2 20 10 13.8 11.8 12 18 10.2 11.8 4 10 10.2 8.2 12 2Z" fill="currentColor" />
             </svg>

@@ -117,7 +117,7 @@ export default async function HowWeHelpJobSeekersPage() {
           </div>
 
           <div className="mt-20">
-            <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-tan">
+            <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
               Helpful for your search
             </p>
             <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl">
@@ -140,7 +140,7 @@ export default async function HowWeHelpJobSeekersPage() {
 
           {insights.length > 0 && (
             <div className="mt-16">
-              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-tan">
+              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
                 Career insights
               </p>
               <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl">

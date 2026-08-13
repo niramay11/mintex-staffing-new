@@ -18,15 +18,15 @@ export default function IconLinkCard({
       href={href}
       className="group rounded-2xl border border-navy/[0.08] bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)] transition-all duration-300 hover:-translate-y-1 hover:border-tan/40 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)]"
     >
-      <span className="flex h-11 w-11 items-center justify-center rounded-full bg-tan/[0.14] text-tan">
+      <span className="flex h-11 w-11 items-center justify-center rounded-full bg-steel/[0.14] text-steel">
         <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
           <path d={iconPath} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </span>
-      <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.12em] text-tan">{tag}</p>
+      <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.12em] text-steel">{tag}</p>
       <h3 className="mt-1.5 font-heading text-[17px] font-semibold tracking-tight text-navy">{title}</h3>
       <p className="mt-2 text-[14.5px] leading-[1.7] text-steel">{description}</p>
-      <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-navy transition-colors group-hover:text-tan">
+      <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-navy transition-colors group-hover:text-navy-secondary">
         Read more
         <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4">
           <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />

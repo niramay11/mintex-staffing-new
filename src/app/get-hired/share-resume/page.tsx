@@ -105,7 +105,7 @@ export default async function ShareResumePage() {
                   key={title}
                   className="group flex gap-4 rounded-2xl border border-navy/[0.08] bg-white p-5 transition-all duration-300 hover:-translate-y-1 hover:border-tan/40 hover:shadow-[0_20px_45px_-20px_rgba(0,48,96,0.3)]"
                 >
-                  <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-tan/15 text-tan transition-colors duration-300 group-hover:bg-tan group-hover:text-white">
+                  <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel transition-colors duration-300 group-hover:bg-steel group-hover:text-white">
                     <Icon className="h-4 w-4" />
                   </span>
                   <div>
@@ -119,7 +119,7 @@ export default async function ShareResumePage() {
 
           <div className="rounded-3xl bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)] sm:p-10">
             <h2 className="text-2xl font-bold text-navy">Submit your resume</h2>
-            <div className="mt-2 h-1 w-12 rounded-full bg-tan" />
+            <div className="mt-2 h-1 w-12 rounded-full bg-steel" />
             <p className="mt-3 text-sm text-navy/70">
               Takes less than two minutes &mdash; we&apos;ll take it from there.
             </p>

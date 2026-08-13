@@ -74,7 +74,7 @@ export default async function SeekTalentPage() {
             </div>
 
             <div className="absolute -left-8 -top-8 z-20 flex items-center gap-3 rounded-2xl border border-white/10 bg-white px-4 py-3 shadow-[0_25px_60px_-15px_rgba(0,48,96,0.55)]">
-              <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-tan/15 text-tan">
+              <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel">
                 <IconPeople className="h-5 w-5" />
               </span>
               <div>
@@ -102,7 +102,7 @@ export default async function SeekTalentPage() {
             <h2 className="text-4xl font-bold leading-tight text-navy sm:text-5xl">
               How can we help you?
             </h2>
-            <div className="mt-5 h-[3px] w-12 bg-tan" />
+            <div className="mt-5 h-[3px] w-12 bg-steel" />
 
             <div className="mt-7 space-y-5">
               {seekTalentPoints.map((point, index) => (
@@ -153,20 +153,20 @@ export default async function SeekTalentPage() {
               >
                 <div>
                   <div className="flex items-center justify-between">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-tan/15 text-tan">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-steel/15 text-steel">
                       <Icon className="h-6 w-6" />
                     </div>
                     <span className="font-heading text-4xl font-extrabold text-navy/10">
                       0{index + 1}
                     </span>
                   </div>
-                  <div className="mt-9 h-[3px] w-6 bg-tan" />
+                  <div className="mt-9 h-[3px] w-6 bg-steel" />
                   <h3 className="mt-4 text-2xl font-bold tracking-tight text-navy">{service.name}</h3>
                   <p className="mt-3 text-navy/60">{service.tagline}</p>
                 </div>
                 <Link
                   href={`/seek-talent/${service.slug}`}
-                  className="mt-9 inline-flex w-fit items-center gap-3 rounded-[10px] bg-tan/10 px-7 py-3.5 text-sm font-bold text-navy transition-colors duration-200 group-hover:bg-tan group-hover:text-white"
+                  className="mt-9 inline-flex w-fit items-center gap-3 rounded-[10px] bg-steel/10 px-7 py-3.5 text-sm font-bold text-navy transition-colors duration-200 group-hover:bg-steel group-hover:text-white"
                 >
                   Explore Service
                   <IconArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />

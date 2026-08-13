@@ -70,12 +70,12 @@ export default function LegalPageLayout({
                     className="scroll-mt-28 rounded-2xl border border-navy/10 bg-white p-6 shadow-[0_1px_3px_rgba(0,48,96,0.05)] sm:p-8"
                   >
                     <div className="flex items-center gap-3.5">
-                      <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-tan/15 text-sm font-bold text-tan">
+                      <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-sm font-bold text-steel">
                         {index + 1}
                       </span>
                       <h2 className="text-xl font-bold text-navy">{section.title}</h2>
                     </div>
-                    <div className="mt-4 space-y-3 pl-[46px] text-[15px] leading-relaxed text-navy/70 [&_a]:font-medium [&_a]:text-tan [&_a:hover]:underline [&_li]:pl-1 [&_ul]:list-disc [&_ul]:space-y-1.5 [&_ul]:pl-5">
+                    <div className="mt-4 space-y-3 pl-[46px] text-[15px] leading-relaxed text-navy/70 [&_a]:font-medium [&_a]:text-steel [&_a:hover]:underline [&_li]:pl-1 [&_ul]:list-disc [&_ul]:space-y-1.5 [&_ul]:pl-5">
                       {section.content}
                     </div>
                   </div>

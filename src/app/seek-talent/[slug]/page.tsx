@@ -99,8 +99,8 @@ export default async function HiringServicePage({
 
   const siteImages = await getSiteImages();
   const Icon = service.icon;
-  const accentText = service.accent === "tan" ? "text-tan" : "text-steel";
-  const accentBg = service.accent === "tan" ? "bg-tan/15" : "bg-steel/15";
+  const accentText = "text-steel";
+  const accentBg = "bg-steel/15";
 
   return (
     <>
@@ -133,7 +133,7 @@ export default async function HiringServicePage({
 
       <Section background="cream" className="!py-12 sm:!py-14 lg:!py-16">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-tan">Why choose us</p>
+          <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">Why choose us</p>
           <h2 className="mt-2.5 text-3xl font-bold text-navy sm:text-4xl">What&apos;s included</h2>
         </div>
 

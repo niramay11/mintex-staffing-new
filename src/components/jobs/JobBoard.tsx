@@ -456,7 +456,7 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
           placeholder="Zip code"
           className="w-full rounded-md border border-navy/20 bg-white px-3 py-2.5 text-sm text-navy focus:border-steel focus:outline-none sm:max-w-[160px]"
         />
-        <button type="submit" className="rounded-full bg-tan px-6 py-2.5 text-sm font-semibold text-navy hover:bg-tan-light sm:flex-shrink-0">
+        <button type="submit" className="rounded-full bg-white border border-navy px-6 py-2.5 text-sm font-semibold text-navy hover:bg-mist sm:flex-shrink-0">
           Search
         </button>
       </form>
@@ -740,7 +740,7 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
               <button
                 type="button"
                 onClick={openApplyForSelected}
-                className="rounded-full bg-tan px-5 py-2 text-sm font-semibold text-navy hover:bg-tan-light"
+                className="rounded-full bg-white border border-navy px-5 py-2 text-sm font-semibold text-navy hover:bg-mist"
               >
                 Apply now
               </button>

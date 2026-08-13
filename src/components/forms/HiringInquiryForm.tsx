@@ -75,7 +75,7 @@ export default function HiringInquiryForm() {
 
       <div className="sm:col-span-2 mt-1 flex items-center gap-3">
         <span className="h-px flex-1 bg-navy/10" />
-        <p className="text-xs font-bold uppercase tracking-[0.12em] text-tan">Contact information</p>
+        <p className="text-xs font-bold uppercase tracking-[0.12em] text-steel">Contact information</p>
         <span className="h-px flex-1 bg-navy/10" />
       </div>
 

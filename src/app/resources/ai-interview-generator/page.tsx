@@ -35,7 +35,7 @@ export default async function AiInterviewGeneratorPage() {
         <div className="mx-auto grid w-full items-start gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-24">
           <div>
             <div className="inline-flex items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[13px] font-medium text-navy/70">
-              <span className="h-[7px] w-[7px] rounded-full bg-tan" />
+              <span className="h-[7px] w-[7px] rounded-full bg-steel" />
               AI-Powered Prep
             </div>
             <h2 className="mt-5 font-heading text-[32px] font-semibold leading-tight text-navy sm:text-[40px]">
@@ -94,7 +94,7 @@ export default async function AiInterviewGeneratorPage() {
               className="absolute left-0 flex items-center gap-3 rounded-2xl border border-navy/10 bg-white px-5 py-4 text-navy shadow-[0_20px_45px_-18px_rgba(0,48,96,0.3)]"
               style={{ top: "70%" }}
             >
-              <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-tan/15 text-tan">
+              <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel">
                 <svg viewBox="0 0 24 24" fill="none" strokeWidth={1.8} stroke="currentColor" className="h-5 w-5">
                   <path d="M11.5 3 13 8l5 1.5-5 1.5-1.5 5L10 11 5 9.5 10 8z" strokeLinejoin="round" />
                   <path d="M18.5 15.5 19.5 18l2.5 1-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1z" strokeLinejoin="round" />

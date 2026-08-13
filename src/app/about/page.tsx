@@ -147,7 +147,7 @@ export default async function AboutPage() {
         <div className="grid lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:items-stretch">
           <div className="flex flex-col justify-center px-6 py-16 sm:px-10 sm:py-20 lg:px-16 lg:py-24 xl:px-24">
             <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-navy/60">
-              <Link href="/" className="font-medium text-navy transition-colors hover:text-tan">
+              <Link href="/" className="font-medium text-navy transition-colors hover:text-navy-secondary">
                 Home
               </Link>
               <span aria-hidden="true">/</span>
@@ -156,7 +156,7 @@ export default async function AboutPage() {
             <h1 className="mt-5 font-heading text-[44px] font-bold leading-[1.05] text-navy sm:text-[56px] lg:text-[64px]">
               About Us
             </h1>
-            <span aria-hidden="true" className="mt-4 block h-1.5 w-20 rounded-full bg-tan" />
+            <span aria-hidden="true" className="mt-4 block h-1.5 w-20 rounded-full bg-steel" />
             <p className="mt-5 max-w-md text-lg leading-relaxed text-steel">
               Mintex Staffing is a professional recruitment firm dedicated to connecting the
               right talent with the right opportunities. Since our founding, we have built our
@@ -166,7 +166,7 @@ export default async function AboutPage() {
             <p className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-steel">
               <span>{BUSINESS.streetAddress}, {BUSINESS.addressLocality}, {BUSINESS.addressRegion} {BUSINESS.postalCode}</span>
               <span aria-hidden="true">&middot;</span>
-              <a href={`tel:${BUSINESS.telephone}`} className="font-medium text-navy hover:text-tan">{BUSINESS.telephoneDisplay}</a>
+              <a href={`tel:${BUSINESS.telephone}`} className="font-medium text-navy hover:text-navy-secondary">{BUSINESS.telephoneDisplay}</a>
             </p>
           </div>
 
@@ -207,7 +207,7 @@ export default async function AboutPage() {
         <div className="mx-auto max-w-6xl px-6 py-20 sm:px-10 lg:px-16 lg:py-24">
           <div className="grid items-center gap-14 lg:grid-cols-[1fr_0.9fr] lg:gap-16">
             <div>
-              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-tan">
+              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
                 Our Story
               </p>
               <h2 className="mt-2.5 font-heading text-3xl font-bold leading-tight text-navy sm:text-4xl">
@@ -216,7 +216,7 @@ export default async function AboutPage() {
               <ul className="mt-6 space-y-4">
                 {storyPoints.map((point) => (
                   <li key={point.title} className="flex gap-3">
-                    <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-tan/15 text-tan">
+                    <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel">
                       <IconCheck className="h-3.5 w-3.5" />
                     </span>
                     <p className="text-[15.5px] leading-relaxed text-steel">
@@ -263,7 +263,7 @@ export default async function AboutPage() {
             </div>
 
             <div className="lg:order-2">
-              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-tan">
+              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
                 Our Approach
               </p>
               <h2 className="mt-2.5 font-heading text-3xl font-bold leading-tight text-navy sm:text-4xl">
@@ -277,7 +277,7 @@ export default async function AboutPage() {
               <ul className="mt-6 space-y-4">
                 {approachPoints.map((point) => (
                   <li key={point.title} className="flex gap-3">
-                    <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-tan/15 text-tan">
+                    <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel">
                       <IconCheck className="h-3.5 w-3.5" />
                     </span>
                     <p className="text-[15.5px] leading-relaxed text-steel">
@@ -297,7 +297,7 @@ export default async function AboutPage() {
         <div className="mx-auto max-w-6xl px-6 py-20 sm:px-10 lg:px-16 lg:py-24">
           <div className="flex items-center justify-center gap-4">
             <span aria-hidden="true" className="h-px flex-1 bg-navy/10" />
-            <p className="flex-shrink-0 text-[13px] font-semibold uppercase tracking-[0.14em] text-tan">
+            <p className="flex-shrink-0 text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
               Our Values
             </p>
             <span aria-hidden="true" className="h-px flex-1 bg-navy/10" />
@@ -321,7 +321,7 @@ export default async function AboutPage() {
           <div className="mx-auto max-w-7xl px-6 py-20 sm:px-10 lg:px-16 lg:py-24">
             <div className="flex items-center justify-center gap-4">
               <span aria-hidden="true" className="h-px flex-1 bg-navy/10" />
-              <p className="flex-shrink-0 text-[13px] font-semibold uppercase tracking-[0.14em] text-tan">
+              <p className="flex-shrink-0 text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
                 Leadership
               </p>
               <span aria-hidden="true" className="h-px flex-1 bg-navy/10" />
@@ -331,7 +331,7 @@ export default async function AboutPage() {
               {teamMembers.map((member) => (
                 <div
                   key={member.id}
-                  className="flex h-full flex-col overflow-hidden rounded-2xl border border-navy/[0.08] bg-white shadow-[0_1px_3px_rgba(0,48,96,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)]"
+                  className="flex flex-col overflow-hidden rounded-2xl border border-navy/[0.08] bg-white shadow-[0_1px_3px_rgba(0,48,96,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)]"
                 >
                   <div className="relative aspect-[4/5] w-full bg-navy/10">
                     {member.photo_url ? (
@@ -352,7 +352,7 @@ export default async function AboutPage() {
 
                   <div className="flex flex-1 flex-col p-6">
                     <h3 className="font-heading text-lg font-semibold text-navy">{member.name}</h3>
-                    <p className="text-sm font-medium text-tan">{member.title}</p>
+                    <p className="text-sm font-medium text-steel">{member.title}</p>
 
                     {member.bio && (
                       <details className="group mt-3">
@@ -363,10 +363,10 @@ export default async function AboutPage() {
                           <span className="hidden text-[13.5px] leading-relaxed text-steel group-open:inline">
                             {member.bio}
                           </span>
-                          <span className="mt-1.5 block text-xs font-semibold text-tan group-open:hidden">
+                          <span className="mt-1.5 block text-xs font-semibold text-navy-secondary group-open:hidden">
                             Read more
                           </span>
-                          <span className="mt-1.5 hidden text-xs font-semibold text-tan group-open:block">
+                          <span className="mt-1.5 hidden text-xs font-semibold text-navy-secondary group-open:block">
                             Read less
                           </span>
                         </summary>
@@ -379,7 +379,7 @@ export default async function AboutPage() {
                           href={member.linkedin_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-xs font-semibold text-navy hover:text-tan"
+                          className="inline-flex items-center gap-1.5 text-xs font-semibold text-navy hover:text-navy-secondary"
                         >
                           LinkedIn
                           <IconLinkedIn className="h-4 w-4" />

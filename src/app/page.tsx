@@ -151,7 +151,7 @@ on paper.
 
         <div className="mt-11 grid grid-cols-2 gap-5 sm:grid-cols-3">
           <div className="group rounded-2xl border border-navy/[0.08] p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:border-tan/40 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)]">
-            <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-tan/[0.14] text-tan transition-colors duration-300 group-hover:bg-tan group-hover:text-white">
+            <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-steel/[0.14] text-steel transition-colors duration-300 group-hover:bg-steel group-hover:text-white">
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
                 <path
                   d="M8 21h8M12 17v4M6 4h12v3a6 6 0 0 1-12 0V4Z"
@@ -172,7 +172,7 @@ on paper.
             <p className="mt-1 text-sm text-steel">Placements made</p>
           </div>
           <div className="group rounded-2xl border border-navy/[0.08] p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:border-tan/40 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)]">
-            <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-tan/[0.14] text-tan transition-colors duration-300 group-hover:bg-tan group-hover:text-white">
+            <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-steel/[0.14] text-steel transition-colors duration-300 group-hover:bg-steel group-hover:text-white">
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
                 <path
                   d="M20.8 8.6c0 5-8.8 10.4-8.8 10.4S3.2 13.6 3.2 8.6a4.6 4.6 0 0 1 8.8-1.9A4.6 4.6 0 0 1 20.8 8.6Z"
@@ -200,7 +200,7 @@ on paper.
 
         <div className="mt-6 grid gap-5 sm:grid-cols-3">
           <div className="group rounded-2xl border border-navy/[0.08] p-7 transition-all duration-300 hover:-translate-y-1 hover:border-tan/40 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)]">
-            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-tan/[0.14] text-tan transition-colors duration-300 group-hover:bg-tan group-hover:text-white">
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-steel/[0.14] text-steel transition-colors duration-300 group-hover:bg-steel group-hover:text-white">
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
                 <path
                   d="m4 13 4 4L20 5"
@@ -217,7 +217,7 @@ on paper.
             </p>
           </div>
           <div className="group rounded-2xl border border-navy/[0.08] p-7 transition-all duration-300 hover:-translate-y-1 hover:border-tan/40 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)]">
-            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-tan/[0.14] text-tan transition-colors duration-300 group-hover:bg-tan group-hover:text-white">
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-steel/[0.14] text-steel transition-colors duration-300 group-hover:bg-steel group-hover:text-white">
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
                 <path
                   d="M4 20V10M10 20V4M16 20v-7"
@@ -234,7 +234,7 @@ on paper.
             </p>
           </div>
           <div className="group rounded-2xl border border-navy/[0.08] p-7 transition-all duration-300 hover:-translate-y-1 hover:border-tan/40 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)]">
-            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-tan/[0.14] text-tan transition-colors duration-300 group-hover:bg-tan group-hover:text-white">
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-steel/[0.14] text-steel transition-colors duration-300 group-hover:bg-steel group-hover:text-white">
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
                 <path
                   d="M6 4h9l3 3v13H6V4Z"
@@ -286,13 +286,13 @@ on paper.
               key={item.title}
               className="rounded-2xl border border-navy/[0.08] bg-white p-8 shadow-[0_1px_3px_rgba(0,48,96,0.05)] transition-all duration-300 hover:-translate-y-1 hover:border-tan/40 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)]"
             >
-              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-tan/[0.14] text-tan">
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-steel/[0.14] text-steel">
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
                   <path d={item.path} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </span>
               <h3 className="mt-5 font-heading text-[17px] font-semibold tracking-tight text-navy">{item.title}</h3>
-              <span aria-hidden="true" className="mt-3 block h-px w-8 bg-tan/40" />
+              <span aria-hidden="true" className="mt-3 block h-px w-8 bg-steel/40" />
               <p className="mt-3.5 text-[14.5px] leading-[1.85] text-steel">{item.text}</p>
             </div>
           ))}
@@ -333,7 +333,7 @@ on paper.
                 className="group relative rounded-2xl border border-navy/[0.08] bg-white p-6 transition-all duration-300 hover:-translate-y-1.5 hover:border-tan/40 hover:bg-tan/5 hover:shadow-[0_20px_45px_-20px_rgba(1,35,64,0.3)]"
               >
                 <div className="mb-5 flex items-center justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-[11px] bg-tan/[0.16] font-heading text-[15px] font-semibold text-tan transition-colors duration-300 group-hover:bg-tan group-hover:text-white">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-[11px] bg-steel/[0.16] font-heading text-[15px] font-semibold text-steel transition-colors duration-300 group-hover:bg-steel group-hover:text-white">
                     {label.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="font-heading text-[22px] font-semibold text-navy">

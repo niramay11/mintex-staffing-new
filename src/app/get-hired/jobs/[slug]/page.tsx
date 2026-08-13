@@ -286,7 +286,7 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
               <div className="mt-6 border-t border-navy/10 pt-5">
                 <JobPageApply
                   job={selectedJob}
-                  className="flex w-full items-center justify-center gap-2 rounded-full bg-tan px-6 py-3 text-sm font-semibold text-navy transition-colors hover:bg-tan-light"
+                  className="flex w-full items-center justify-center gap-2 rounded-full bg-white border border-navy px-6 py-3 text-sm font-semibold text-navy transition-colors hover:bg-mist"
                 />
               </div>
             </div>

@@ -94,7 +94,7 @@ export default async function ResourcesPage() {
 
       <Section background="cream" className="!py-12 sm:!py-14 lg:!py-16">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-tan">Why it helps</p>
+          <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">Why it helps</p>
           <h2 className="mt-2.5 text-3xl font-bold text-navy sm:text-4xl">Built for hiring teams and candidates</h2>
         </div>
 
@@ -123,7 +123,7 @@ export default async function ResourcesPage() {
                 </div>
 
                 <div className="group flex w-full flex-1 gap-4 rounded-2xl border border-navy/[0.08] bg-white p-5 transition-all duration-300 hover:-translate-y-1 hover:border-tan/40 hover:shadow-[0_20px_45px_-20px_rgba(0,48,96,0.3)]">
-                  <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-tan/15 text-tan">
+                  <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel">
                     <PointIcon className="h-4 w-4" />
                   </span>
                   <div>
@@ -163,7 +163,7 @@ export default async function ResourcesPage() {
                 <h2 className="font-heading text-lg font-semibold leading-snug">{tool.title}</h2>
                 <p className="text-sm leading-relaxed text-white/75">{tool.description}</p>
 
-                <span className="mt-1 flex w-full items-center justify-center gap-2 rounded-full bg-white py-3 text-sm font-semibold text-navy transition-colors duration-300 group-hover:bg-tan-light">
+                <span className="mt-1 flex w-full items-center justify-center gap-2 rounded-full bg-white py-3 text-sm font-semibold text-navy transition-colors duration-300 group-hover:bg-mist">
                   Open tool
                   <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-0.5">
                     &rarr;

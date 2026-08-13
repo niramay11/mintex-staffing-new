@@ -34,7 +34,7 @@ export default function ResourceRows() {
           key={row.href}
           href={row.href}
           className={`flex items-center gap-4 rounded-2xl p-5 transition-colors ${
-            row.highlight ? "bg-tan hover:bg-tan-light" : "bg-mist hover:bg-mist-dark"
+            row.highlight ? "bg-white border border-navy hover:bg-mist" : "bg-mist hover:bg-mist-dark"
           }`}
         >
           <span className="flex h-11 w-11 flex-none items-center justify-center rounded-xl bg-white">

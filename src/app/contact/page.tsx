@@ -112,7 +112,7 @@ export default function ContactPage() {
         <div className="grid items-start gap-6 lg:grid-cols-3">
           <div className="rounded-3xl bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)] sm:p-8">
             <h2 className="text-2xl font-bold text-navy">Get in Touch</h2>
-            <div className="mt-2 h-1 w-12 rounded-full bg-tan" />
+            <div className="mt-2 h-1 w-12 rounded-full bg-steel" />
             <p className="mt-3 text-sm text-navy/70">
               Reach out to us through any of the following ways.
             </p>
@@ -156,7 +156,7 @@ export default function ContactPage() {
 
           <div className="rounded-3xl bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)] sm:p-10 lg:col-span-2">
             <h2 className="text-2xl font-bold text-navy">Send Us a Message</h2>
-            <div className="mt-2 h-1 w-12 rounded-full bg-tan" />
+            <div className="mt-2 h-1 w-12 rounded-full bg-steel" />
             <p className="mt-3 text-sm text-navy/70">
               Fill out the form below and our team will get back to you.
             </p>

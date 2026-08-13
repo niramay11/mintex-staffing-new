@@ -232,11 +232,11 @@ export default async function IndustryPage({
               key={title}
               className="rounded-2xl border border-navy/[0.08] bg-white p-8 shadow-[0_1px_3px_rgba(0,48,96,0.05)] transition-all duration-300 hover:-translate-y-1 hover:border-tan/40 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)]"
             >
-              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-tan/[0.14] text-tan">
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-steel/[0.14] text-steel">
                 <Icon className="h-5 w-5" />
               </span>
               <h3 className="mt-5 font-heading text-[17px] font-semibold tracking-tight text-navy">{title}</h3>
-              <span aria-hidden="true" className="mt-3 block h-px w-8 bg-tan/40" />
+              <span aria-hidden="true" className="mt-3 block h-px w-8 bg-steel/40" />
               <p className="mt-3.5 text-[14.5px] leading-[1.85] text-steel">{text}</p>
             </div>
           ))}

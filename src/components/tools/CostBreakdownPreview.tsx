@@ -80,14 +80,14 @@ export default function CostBreakdownPreview() {
 
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2.5">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-tan/20 text-tan">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-steel/20 text-steel">
                 <svg viewBox="0 0 24 24" fill="none" strokeWidth={1.8} stroke="currentColor" className="h-4 w-4">
                   <path d="M12 3l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.1-5.4 3.1 1.3-6-4.6-4.1 6.1-.6L12 3z" strokeLinejoin="round" />
                 </svg>
               </span>
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-navy">With Mintex</p>
             </div>
-            <span className="rounded-full bg-tan px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wide text-navy">
+            <span className="rounded-full bg-white border border-navy px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wide text-navy">
               Recommended
             </span>
           </div>
@@ -128,7 +128,7 @@ export default function CostBreakdownPreview() {
 
 function CheckIcon() {
   return (
-    <svg viewBox="0 0 20 20" fill="none" className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-tan">
+    <svg viewBox="0 0 20 20" fill="none" className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-steel">
       <circle cx="10" cy="10" r="9" fill="currentColor" opacity="0.18" />
       <path d="M6 10.2l2.5 2.5L14 7.5" stroke="var(--color-navy)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>

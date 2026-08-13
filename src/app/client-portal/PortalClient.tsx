@@ -99,7 +99,7 @@ function LoginForm({ onLogin, siteImages }: { onLogin: (client: ClientInfo) => v
                     className="w-full max-w-sm">
                     <div className="mb-8 text-center">
                         <div className="inline-flex items-center gap-2 mb-4 rounded-full border border-navy/10 bg-white px-3 py-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-tan" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-steel" />
                             <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-navy/60">Client Portal</span>
                         </div>
                         <h1 className="font-black text-3xl text-navy">Sign In</h1>
@@ -130,7 +130,7 @@ function LoginForm({ onLogin, siteImages }: { onLogin: (client: ClientInfo) => v
                             )}
 
                             <button type="submit" disabled={loading}
-                                className="w-full rounded-full bg-tan px-7 py-3.5 text-sm font-semibold text-navy transition-colors hover:bg-tan-light disabled:opacity-50">
+                                className="w-full rounded-full bg-white border border-navy px-7 py-3.5 text-sm font-semibold text-navy transition-colors hover:bg-mist disabled:opacity-50">
                                 {loading ? "Signing in…" : "Sign In"}
                             </button>
                         </form>
@@ -903,7 +903,7 @@ export default function PortalClient({
                     className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-7 pb-6 border-b border-navy/10">
                     <div>
                         <div className="inline-flex items-center gap-2 mb-3 rounded-full border border-navy/10 bg-white px-3 py-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-tan" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-steel" />
                             <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-navy/60">Client Portal</span>
                         </div>
                         <h1 className="font-black leading-tight text-navy" style={{ fontSize: 'clamp(1.6rem, 3vw, 2.2rem)' }}>
@@ -1049,7 +1049,7 @@ export default function PortalClient({
                         <button
                             onClick={() => fetchJobs(true)}
                             disabled={syncing}
-                            className="inline-flex items-center gap-2 rounded-full bg-tan px-5 py-2.5 text-sm font-semibold text-navy transition-colors hover:bg-tan-light disabled:opacity-50">
+                            className="inline-flex items-center gap-2 rounded-full bg-white border border-navy px-5 py-2.5 text-sm font-semibold text-navy transition-colors hover:bg-mist disabled:opacity-50">
                             <svg className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                             </svg>
@@ -1084,7 +1084,7 @@ export default function PortalClient({
                                             ))}
                                             <td className="px-3 py-3">
                                                 <button onClick={e => { e.stopPropagation(); setSelectedJob(job); }}
-                                                    className="rounded-full bg-tan px-3 py-1.5 text-[10px] font-semibold text-navy transition-colors hover:bg-tan-light">
+                                                    className="rounded-full bg-white border border-navy px-3 py-1.5 text-[10px] font-semibold text-navy transition-colors hover:bg-mist">
                                                     View
                                                 </button>
                                             </td>

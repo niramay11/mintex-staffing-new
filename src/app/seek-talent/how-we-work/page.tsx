@@ -167,7 +167,7 @@ export default async function HowWeWorkPage() {
         <div className="mx-auto max-w-6xl">
           <div className="grid items-center gap-14 lg:grid-cols-[1fr_0.8fr] lg:gap-20">
             <div>
-              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-tan">
+              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
                 For clients
               </p>
               <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl">
@@ -179,7 +179,7 @@ export default async function HowWeWorkPage() {
               </p>
               <Link
                 href="/seek-talent/how-we-work/for-clients"
-                className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-navy transition-colors hover:text-tan"
+                className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-navy transition-colors hover:text-navy-secondary"
               >
                 Know more
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4">
@@ -227,7 +227,7 @@ export default async function HowWeWorkPage() {
             </div>
 
             <div>
-              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-tan">
+              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
                 For job seekers
               </p>
               <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl">
@@ -239,7 +239,7 @@ export default async function HowWeWorkPage() {
               </p>
               <Link
                 href="/get-hired/how-we-work/for-job-seekers"
-                className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-navy transition-colors hover:text-tan"
+                className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-navy transition-colors hover:text-navy-secondary"
               >
                 Know more
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4">
@@ -269,7 +269,7 @@ export default async function HowWeWorkPage() {
           </div>
 
           <div className="mt-16">
-            <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-tan">
+            <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
               Common questions
             </p>
             <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl">

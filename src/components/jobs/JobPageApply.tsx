@@ -5,7 +5,7 @@ import ApplyModal from "./ApplyModal";
 import type { SelectedJob } from "./types";
 
 const defaultClassName =
-  "inline-flex items-center justify-center gap-2 rounded-full bg-tan px-7 py-3.5 text-sm font-semibold text-navy transition-colors hover:bg-tan-light";
+  "inline-flex items-center justify-center gap-2 rounded-full bg-white border border-navy px-7 py-3.5 text-sm font-semibold text-navy transition-colors hover:bg-mist";
 
 export default function JobPageApply({
   job,

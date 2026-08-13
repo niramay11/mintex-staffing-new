@@ -58,7 +58,7 @@ export default function AdminInsightsPage() {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-3 rounded-lg bg-white text-navy border border-navy/10 focus:border-steel focus:outline-none mb-4" />
           {authError && <p className="text-red-600 text-sm mb-4">{authError}</p>}
-          <button type="submit" className="w-full py-3 rounded-full bg-tan hover:bg-tan-light text-navy font-semibold transition-colors">
+          <button type="submit" className="w-full py-3 rounded-full bg-white border border-navy hover:bg-mist text-navy font-semibold transition-colors">
             Login
           </button>
         </form>
@@ -320,7 +320,7 @@ function JobsTab({ password: _ }: { password: string }) {
                   ? <span key={`ellipsis-${i}`} className="px-2 text-navy/50 text-xs">…</span>
                   : <button key={n} onClick={() => setPage(n as number)}
                       className={`min-w-[32px] px-2 py-1.5 rounded-lg text-xs transition-colors ${
-                        safePage === n ? "bg-tan text-navy font-semibold" : "bg-white hover:bg-mist text-navy/70"
+                        safePage === n ? "bg-white border border-navy text-navy font-semibold" : "bg-white hover:bg-mist text-navy/70"
                       }`}>{n}</button>
               )
             }
@@ -1292,7 +1292,7 @@ function ClientsTab({ password }: { password: string }) {
                       </div>
                     ) : (
                       <button onClick={() => setFormClient(c)}
-                        className="px-3 py-1.5 rounded-full bg-tan hover:bg-tan-light text-navy text-xs font-semibold transition-colors">
+                        className="px-3 py-1.5 rounded-full bg-white border border-navy hover:bg-mist text-navy text-xs font-semibold transition-colors">
                         + Create Access
                       </button>
                     )}
@@ -1604,7 +1604,7 @@ function ClientForm({ password, ceipalClient, editClient, onSaved, onCancel }: {
 
           <div className="flex gap-3 pt-2">
             <button type="submit" disabled={saving}
-              className="flex-1 py-3 rounded-full bg-tan hover:bg-tan-light text-navy font-semibold transition-colors disabled:opacity-50 text-sm">
+              className="flex-1 py-3 rounded-full bg-white border border-navy hover:bg-mist text-navy font-semibold transition-colors disabled:opacity-50 text-sm">
               {saving ? (isEdit ? "Saving…" : "Creating…") : isEdit ? (resendEmail ? "Save & Resend Email" : "Save Changes") : `Create Access${email ? " & Send Email" : ""}`}
             </button>
             <button type="button" onClick={onCancel}
@@ -1721,7 +1721,7 @@ function SocialTab({ password }: { password: string }) {
         <div>
           <button type="submit" disabled={saving}
             className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-colors disabled:opacity-50 ${
-              saved ? "bg-green-100 text-green-800" : "bg-tan hover:bg-tan-light text-navy"
+              saved ? "bg-green-100 text-green-800" : "bg-white border border-navy hover:bg-mist text-navy"
             }`}>
             {saving ? "Saving…" : saved ? "Saved ✓" : "Save Changes"}
           </button>
@@ -1956,7 +1956,7 @@ function ClientStoriesTab({ password }: { password: string }) {
         <div>
           <button type="submit" disabled={saving}
             className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-colors disabled:opacity-50 ${
-              saved ? "bg-green-100 text-green-800" : "bg-tan hover:bg-tan-light text-navy"
+              saved ? "bg-green-100 text-green-800" : "bg-white border border-navy hover:bg-mist text-navy"
             }`}>
             {saving ? "Saving…" : saved ? "Saved ✓" : "Save Changes"}
           </button>
@@ -2259,7 +2259,7 @@ function SiteImagesTab({ password }: { password: string }) {
               className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left"
             >
               <span className="flex items-center gap-3">
-                <span className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full ${isOpen ? "bg-tan/15 text-tan" : "bg-cream text-navy/40"}`}>
+                <span className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full ${isOpen ? "bg-steel/15 text-steel" : "bg-cream text-navy/40"}`}>
                   <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4">
                     <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.8" />
                     <circle cx="8.5" cy="10" r="1.5" fill="currentColor" />
@@ -2354,7 +2354,7 @@ function SiteImagesTab({ password }: { password: string }) {
         <div>
           <button type="submit" disabled={saving}
             className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-colors disabled:opacity-50 ${
-              saved ? "bg-green-100 text-green-800" : "bg-tan hover:bg-tan-light text-navy"
+              saved ? "bg-green-100 text-green-800" : "bg-white border border-navy hover:bg-mist text-navy"
             }`}>
             {saving ? "Saving…" : saved ? "Saved ✓" : "Save Changes"}
           </button>
@@ -2399,7 +2399,7 @@ function SiteImagesTab({ password }: { password: string }) {
                     ))}
                   </select>
                   <button type="button" onClick={() => assignOrphan(orphan)} disabled={!assignTarget[orphan.id]}
-                    className="w-full px-3 py-2 rounded-full bg-tan hover:bg-tan-light text-navy text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                    className="w-full px-3 py-2 rounded-full bg-white border border-navy hover:bg-mist text-navy text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
                     Assign
                   </button>
                 </div>
@@ -2536,7 +2536,7 @@ function MessagesTab({ password }: { password: string }) {
               </div>
               <div className="flex items-center gap-3">
                 <a href={`mailto:${selected.email}`}
-                  className="px-4 py-2 rounded-full bg-tan hover:bg-tan-light text-navy text-sm font-semibold transition-colors">
+                  className="px-4 py-2 rounded-full bg-white border border-navy hover:bg-mist text-navy text-sm font-semibold transition-colors">
                   Reply by Email
                 </a>
                 <button onClick={() => deleteMessage(selected.id)}
@@ -2699,7 +2699,7 @@ function ResumesTab({ password }: { password: string }) {
               </div>
               <div className="flex items-center gap-3">
                 <button onClick={() => downloadResume(selected)} disabled={downloadingId === selected.id}
-                  className="px-4 py-2 rounded-full bg-tan hover:bg-tan-light text-navy text-sm font-semibold transition-colors disabled:opacity-50">
+                  className="px-4 py-2 rounded-full bg-white border border-navy hover:bg-mist text-navy text-sm font-semibold transition-colors disabled:opacity-50">
                   {downloadingId === selected.id ? "Preparing…" : "Download Resume"}
                 </button>
                 <a href={`mailto:${selected.email}`}
@@ -2880,7 +2880,7 @@ function InquiriesTab({ password }: { password: string }) {
                   </button>
                 )}
                 <a href={`mailto:${selected.email}`}
-                  className="px-4 py-2 rounded-full bg-tan hover:bg-tan-light text-navy text-sm font-semibold transition-colors">
+                  className="px-4 py-2 rounded-full bg-white border border-navy hover:bg-mist text-navy text-sm font-semibold transition-colors">
                   Reply by Email
                 </a>
                 <a href={`tel:${selected.phone}`}
@@ -3058,7 +3058,7 @@ function InsightsTab({ password }: { password: string }) {
             Manage Categories
           </button>
           <button type="button" onClick={openNew}
-            className="px-4 py-2 rounded-full bg-tan hover:bg-tan-light text-navy text-sm font-semibold transition-colors">
+            className="px-4 py-2 rounded-full bg-white border border-navy hover:bg-mist text-navy text-sm font-semibold transition-colors">
             + New Insight
           </button>
         </div>
@@ -3273,7 +3273,7 @@ function InsightsTab({ password }: { password: string }) {
                 Cancel
               </button>
               <button type="submit" disabled={saving}
-                className="px-5 py-2 rounded-full bg-tan hover:bg-tan-light text-navy text-sm font-semibold transition-colors disabled:opacity-50">
+                className="px-5 py-2 rounded-full bg-white border border-navy hover:bg-mist text-navy text-sm font-semibold transition-colors disabled:opacity-50">
                 {saving ? "Saving…" : draft.id ? "Save Changes" : "Create Insight"}
               </button>
             </div>
@@ -3364,7 +3364,7 @@ function InsightCategoriesModal({ password, categories, onClose, onChange }: {
             <input value={newLabel} onChange={(e) => setNewLabel(e.target.value)} placeholder="New category name"
               className="flex-1 px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
             <button type="submit" disabled={adding || !newLabel.trim()}
-              className="px-4 py-2 rounded-full bg-tan hover:bg-tan-light text-navy text-sm font-semibold transition-colors disabled:opacity-50">
+              className="px-4 py-2 rounded-full bg-white border border-navy hover:bg-mist text-navy text-sm font-semibold transition-colors disabled:opacity-50">
               Add
             </button>
           </form>
@@ -3505,7 +3505,7 @@ function CaseStudiesTab({ password }: { password: string }) {
           <p className="text-sm text-navy/60 mt-1">{items.length} testimonials shown on /case-studies</p>
         </div>
         <button type="button" onClick={openNew}
-          className="px-4 py-2 rounded-full bg-tan hover:bg-tan-light text-navy text-sm font-semibold transition-colors">
+          className="px-4 py-2 rounded-full bg-white border border-navy hover:bg-mist text-navy text-sm font-semibold transition-colors">
           + New Case Study
         </button>
       </div>
@@ -3650,7 +3650,7 @@ function CaseStudiesTab({ password }: { password: string }) {
                 Cancel
               </button>
               <button type="submit" disabled={saving}
-                className="px-5 py-2 rounded-full bg-tan hover:bg-tan-light text-navy text-sm font-semibold transition-colors disabled:opacity-50">
+                className="px-5 py-2 rounded-full bg-white border border-navy hover:bg-mist text-navy text-sm font-semibold transition-colors disabled:opacity-50">
                 {saving ? "Saving…" : draft.id ? "Save Changes" : "Create Case Study"}
               </button>
             </div>
@@ -3793,7 +3793,7 @@ function TeamMembersTab({ password }: { password: string }) {
           <p className="text-sm text-navy/60 mt-1">{items.length} people shown on /about</p>
         </div>
         <button type="button" onClick={openNew}
-          className="px-4 py-2 rounded-full bg-tan hover:bg-tan-light text-navy text-sm font-semibold transition-colors">
+          className="px-4 py-2 rounded-full bg-white border border-navy hover:bg-mist text-navy text-sm font-semibold transition-colors">
           + New Team Member
         </button>
       </div>
@@ -3913,7 +3913,7 @@ function TeamMembersTab({ password }: { password: string }) {
                 Cancel
               </button>
               <button type="submit" disabled={saving}
-                className="px-5 py-2 rounded-full bg-tan hover:bg-tan-light text-navy text-sm font-semibold transition-colors disabled:opacity-50">
+                className="px-5 py-2 rounded-full bg-white border border-navy hover:bg-mist text-navy text-sm font-semibold transition-colors disabled:opacity-50">
                 {saving ? "Saving…" : draft.id ? "Save Changes" : "Create Team Member"}
               </button>
             </div>
@@ -4071,7 +4071,7 @@ function IndustriesTab({ password }: { password: string }) {
           <p className="text-sm text-navy/60 mt-1">{items.length} industries — each gets its own page, nav entry, and footer link.</p>
         </div>
         <button type="button" onClick={openNew}
-          className="px-4 py-2 rounded-full bg-tan hover:bg-tan-light text-navy text-sm font-semibold transition-colors">
+          className="px-4 py-2 rounded-full bg-white border border-navy hover:bg-mist text-navy text-sm font-semibold transition-colors">
           + New Industry
         </button>
       </div>
@@ -4275,7 +4275,7 @@ function IndustriesTab({ password }: { password: string }) {
                 Cancel
               </button>
               <button type="submit" disabled={saving}
-                className="px-5 py-2 rounded-full bg-tan hover:bg-tan-light text-navy text-sm font-semibold transition-colors disabled:opacity-50">
+                className="px-5 py-2 rounded-full bg-white border border-navy hover:bg-mist text-navy text-sm font-semibold transition-colors disabled:opacity-50">
                 {saving ? "Saving…" : draft.id ? "Save Changes" : "Create Industry"}
               </button>
             </div>

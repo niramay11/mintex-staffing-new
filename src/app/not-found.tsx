@@ -29,10 +29,10 @@ export default function NotFound() {
         />
       }
     >
-      <p className="font-heading text-[88px] font-bold leading-none text-tan sm:text-[120px]">
+      <p className="font-heading text-[88px] font-bold leading-none text-steel sm:text-[120px]">
         404
       </p>
-      <div className="mx-auto mt-2 h-1 w-16 rounded-full bg-tan" />
+      <div className="mx-auto mt-2 h-1 w-16 rounded-full bg-steel" />
       <h1 className="mt-6 text-3xl font-bold text-navy sm:text-4xl">Page not found</h1>
       <p className="mx-auto mt-4 max-w-md text-steel">
         The page you&apos;re looking for doesn&apos;t exist or may have moved.

@@ -58,7 +58,7 @@ export default async function SeekTalentGetStartedPage() {
         <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[32px] border border-navy/[0.06] bg-white p-7 shadow-[0_30px_70px_-25px_rgba(0,48,96,0.25)] sm:p-10">
           <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.14em] text-tan">Get in touch</p>
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-steel">Get in touch</p>
               <h2 className="mt-2 text-2xl font-bold text-navy sm:text-3xl">Connect with our experts</h2>
               <p className="mt-1.5 text-sm text-navy/70">
                 Share your hiring goals and our recruiters will design a candidate search

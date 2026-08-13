@@ -29,7 +29,7 @@ export default function FaqAccordion({
               <span className="text-base font-bold text-navy">{faq.question}</span>
               <span
                 className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-mist text-navy transition-transform duration-300 ${
-                  isOpen ? "rotate-180 bg-tan/15 text-tan" : ""
+                  isOpen ? "rotate-180 bg-steel/15 text-steel" : ""
                 }`}
               >
                 <svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">

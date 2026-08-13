@@ -198,7 +198,7 @@ export default function HiringCostCalculator() {
 
         {/* Partner banner */}
         <div className="mt-5 flex flex-wrap items-center gap-4 rounded-3xl border border-tan/50 bg-tan/[0.1] p-6">
-          <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-tan bg-white text-tan">
+          <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-steel bg-white text-steel">
             <svg viewBox="0 0 24 24" fill="none" strokeWidth={1.8} stroke="currentColor" className="h-5 w-5">
               <path d="M12 3l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.1-5.4 3.1 1.3-6-4.6-4.1 6.1-.6L12 3z" strokeLinejoin="round" />
             </svg>
@@ -206,7 +206,7 @@ export default function HiringCostCalculator() {
           <div className="min-w-[240px] flex-1">
             <p className="flex flex-wrap items-center gap-2 font-heading text-[15px] font-semibold text-navy">
               Skip the hassle — hire through Mintex Staffing
-              <span className="rounded-full bg-tan px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-navy">
+              <span className="rounded-full bg-white border border-navy px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-navy">
                 Preferred Partner
               </span>
             </p>
@@ -515,7 +515,7 @@ function Badge({ children, tan }: { children: React.ReactNode; tan?: boolean }) 
   return (
     <span
       className={`ml-1 inline-block rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
-        tan ? "bg-tan text-navy" : "bg-mist text-navy"
+        tan ? "bg-white border border-navy text-navy" : "bg-mist text-navy"
       }`}
     >
       {children}
