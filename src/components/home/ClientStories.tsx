@@ -105,13 +105,13 @@ export default function ClientStories() {
 
   return (
     <>
-    <div className="px-4 sm:px-6 lg:px-8">
-      <section className="relative mx-auto mt-6 max-w-[1920px] overflow-hidden rounded-[32px] bg-white px-6 py-16 shadow-[0_1px_3px_rgba(0,48,96,0.05)] sm:px-10 sm:py-20 lg:px-16 lg:py-24">
-      <div className="relative mx-auto max-w-2xl text-center">
+    <section className="border-t border-navy/[0.06] bg-mist">
+      <div className="mx-auto max-w-[1920px] px-6 py-16 sm:px-10 sm:py-20 lg:px-16 lg:py-24">
+      <div className="mx-auto max-w-2xl text-center">
         <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
           Client stories
         </p>
-        <h2 className="mt-3.5 font-heading text-[36px] font-semibold leading-tight text-navy sm:text-[40px]">
+        <h2 className="mt-3.5 font-heading text-[36px] font-bold leading-tight text-navy sm:text-[40px]">
           You need to see it to believe it
         </h2>
         <p className="mt-4 text-lg text-steel">
@@ -120,7 +120,7 @@ hiring challenges with intentional staffing solutions created for solving the hi
         </p>
       </div>
 
-      <div className="relative mt-11 grid gap-5 lg:grid-cols-[1.6fr_1fr]">
+      <div className="mt-11 grid gap-5 lg:grid-cols-[1.6fr_1fr]">
         {featured ? (
           <button
             type="button"
@@ -138,7 +138,7 @@ hiring challenges with intentional staffing solutions created for solving the hi
                   <p className="font-heading text-lg font-semibold">&ldquo;{featured.quote}&rdquo;</p>
                 )}
                 {featured.author && (
-                  <p className="mt-1.5 text-[13.5px] text-tan-light">
+                  <p className="mt-1.5 text-[13.5px] text-steel-lighter">
                     {featured.author}
                     {featured.role ? ` · ${featured.role}` : ""}
                   </p>
@@ -175,7 +175,7 @@ hiring challenges with intentional staffing solutions created for solving the hi
           )}
           <div className="flex flex-1 flex-col justify-center rounded-3xl bg-navy p-6 text-white">
             <div className="font-heading text-3xl font-bold">
-              4.9<span className="text-lg font-normal text-tan-light">/5</span>
+              4.9<span className="text-lg font-normal text-steel-lighter">/5</span>
             </div>
             <p className="mt-1 text-[13px] text-steel-lighter">
               Average client satisfaction across every industry we serve
@@ -183,8 +183,8 @@ hiring challenges with intentional staffing solutions created for solving the hi
           </div>
         </div>
       </div>
-      </section>
       </div>
+    </section>
 
       {active && (
         <div

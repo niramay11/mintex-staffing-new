@@ -150,12 +150,12 @@ export default async function HowWeWorkPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-      <Section background="navy" className="!py-12 sm:!py-14 lg:!py-16">
-        <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-tan-light">
+      <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
+        <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
           Our process
         </p>
-        <h1 className="mt-2.5 text-4xl font-bold sm:text-5xl">How Our Staffing Process Works</h1>
-        <p className="mt-4 max-w-2xl text-white/80">
+        <h1 className="mt-2.5 font-heading text-4xl font-bold text-navy sm:text-5xl">How Our Staffing Process Works</h1>
+        <p className="mt-4 max-w-2xl text-steel">
           At Mintex Staffing, every partnership begins with a conversation. We take time to
           understand your team, culture, and hiring timeline before recommending a single
           candidate, because a great fit starts with real insight. Our proven hiring process
@@ -163,7 +163,7 @@ export default async function HowWeWorkPage() {
         </p>
       </Section>
 
-      <Section background="cream">
+      <Section background="white">
         <div className="mx-auto max-w-6xl">
           <div className="grid items-center gap-14 lg:grid-cols-[1fr_0.8fr] lg:gap-20">
             <div>
@@ -197,7 +197,7 @@ export default async function HowWeWorkPage() {
             <div className="relative mx-auto w-full max-w-[440px]">
               <div
                 aria-hidden="true"
-                className="absolute -inset-4 -z-10 rounded-[36px] border-2 border-tan/25"
+                className="absolute -inset-4 -z-10 rounded-[36px] border-2 border-steel/25"
               />
               <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[28px] shadow-[0_25px_55px_-20px_rgba(0,48,96,0.35)]">
                 <Image
@@ -214,7 +214,7 @@ export default async function HowWeWorkPage() {
             <div className="relative mx-auto w-full max-w-[440px]">
               <div
                 aria-hidden="true"
-                className="absolute -inset-4 -z-10 rounded-[36px] border-2 border-tan/25"
+                className="absolute -inset-4 -z-10 rounded-[36px] border-2 border-steel/25"
               />
               <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[28px] shadow-[0_25px_55px_-20px_rgba(0,48,96,0.35)]">
                 <Image

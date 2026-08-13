@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 
 const inputClasses =
-  "mt-1.5 w-full rounded-xl border border-navy/15 bg-cream/40 px-4 py-2.5 text-sm text-navy placeholder:text-navy/30 transition-colors focus:border-tan focus:bg-white focus:outline-none focus:ring-4 focus:ring-tan/15";
+  "mt-1.5 w-full rounded-xl border border-navy/15 bg-mist/40 px-4 py-2.5 text-sm text-navy placeholder:text-navy/30 transition-colors focus:border-steel focus:bg-white focus:outline-none focus:ring-4 focus:ring-steel/15";
 const labelClasses = "block text-sm font-semibold text-navy";
 
 export default function ResumeForm() {
@@ -75,7 +75,7 @@ export default function ResumeForm() {
         </label>
         <label
           htmlFor="resume-file"
-          className="mt-1.5 flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-dashed border-navy/25 bg-cream/40 px-4 py-3.5 text-sm transition-colors hover:border-tan hover:bg-white"
+          className="mt-1.5 flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-dashed border-navy/25 bg-mist/40 px-4 py-3.5 text-sm transition-colors hover:border-steel hover:bg-white"
         >
           <span className="flex items-center gap-2.5 text-navy/70">
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4.5 w-4.5 flex-shrink-0">

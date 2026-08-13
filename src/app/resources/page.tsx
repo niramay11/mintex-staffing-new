@@ -84,15 +84,15 @@ export default async function ResourcesPage() {
   const siteImages = await getSiteImages();
   return (
     <>
-      <Section background="navy" className="!py-12 sm:!py-14 lg:!py-16">
-        <h1 className="text-4xl font-bold sm:text-5xl">Resources</h1>
-        <p className="mt-4 max-w-2xl text-white/80">
+      <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
+        <h1 className="font-heading text-4xl font-bold text-navy sm:text-5xl">Resources</h1>
+        <p className="mt-4 max-w-2xl text-steel">
           Free tools for hiring teams and job seekers, hiring cost calculator, and AI interview
           question generator from Mintex Staffing.
         </p>
       </Section>
 
-      <Section background="cream" className="!py-12 sm:!py-14 lg:!py-16">
+      <Section background="white" className="!py-12 sm:!py-14 lg:!py-16">
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">Why it helps</p>
           <h2 className="mt-2.5 text-3xl font-bold text-navy sm:text-4xl">Built for hiring teams and candidates</h2>
@@ -122,7 +122,7 @@ export default async function ResourcesPage() {
                   </div>
                 </div>
 
-                <div className="group flex w-full flex-1 gap-4 rounded-2xl border border-navy/[0.08] bg-white p-5 transition-all duration-300 hover:-translate-y-1 hover:border-tan/40 hover:shadow-[0_20px_45px_-20px_rgba(0,48,96,0.3)]">
+                <div className="group flex w-full flex-1 gap-4 rounded-2xl border border-navy/[0.08] bg-white p-5 transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-20px_rgba(0,48,96,0.3)]">
                   <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel">
                     <PointIcon className="h-4 w-4" />
                   </span>

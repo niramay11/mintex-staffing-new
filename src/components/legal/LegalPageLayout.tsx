@@ -21,22 +21,22 @@ export default function LegalPageLayout({
 }) {
   return (
     <>
-      <Section background="navy" className="!py-12 sm:!py-14 lg:!py-16">
-        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-white/60">
-          <Link href="/" className="font-medium text-white transition-colors hover:text-tan-light">
+      <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-navy/60">
+          <Link href="/" className="font-medium text-navy transition-colors hover:text-navy-secondary">
             Home
           </Link>
           <span aria-hidden="true">/</span>
           <span>{title}</span>
         </nav>
-        <h1 className="mt-4 text-4xl font-bold sm:text-5xl">{title}</h1>
-        <div className="mt-3 h-1 w-16 rounded-full bg-tan" />
-        <span className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-[13px] font-medium text-white/80">
+        <h1 className="mt-4 font-heading text-4xl font-bold text-navy sm:text-5xl">{title}</h1>
+        <div className="mt-3 h-1 w-16 rounded-full bg-steel" />
+        <span className="mt-5 inline-flex items-center gap-2 rounded-full border border-navy/10 bg-white px-4 py-1.5 text-[13px] font-medium text-navy/70">
           Last updated {lastUpdated}
         </span>
       </Section>
 
-      <Section background="cream">
+      <Section background="white">
         <div className="mx-auto max-w-6xl">
           <div className="grid gap-10 lg:grid-cols-[240px_1fr] lg:gap-14">
             <nav className="hidden lg:block">

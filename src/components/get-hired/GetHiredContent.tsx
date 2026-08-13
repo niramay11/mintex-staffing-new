@@ -138,15 +138,15 @@ export default async function GetHiredContent() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-      <Section background="navy" className="!py-12 sm:!py-14 lg:!py-16">
+      <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
         <div className="relative mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-14">
           <div>
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-tan-light/35 bg-tan/[0.14] px-4 py-2 text-[13px] font-medium text-tan-light">
-              <span className="h-[7px] w-[7px] rounded-full bg-tan shadow-[0_0_0_4px_rgba(191,174,153,0.25)]" />
+            <div className="inline-flex items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[13px] font-medium text-navy/70">
+              <span className="h-[7px] w-[7px] rounded-full bg-steel shadow-[0_0_0_4px_rgba(74,115,140,0.25)]" />
               For Job Seekers
             </div>
-            <h1 className="mt-5 text-4xl font-bold sm:text-5xl">Get Hired</h1>
-            <p className="mt-4 max-w-xl text-white/80">
+            <h1 className="mt-5 font-heading text-4xl font-bold text-navy sm:text-5xl">Get Hired</h1>
+            <p className="mt-4 max-w-xl text-steel">
               Find jobs according to your career goals, whether you are beginning your career or
 planning to switch roles, we got you covered. Join our talent network to stay ahead of new
 roles as they go live.
@@ -160,10 +160,10 @@ roles as they go live.
           <div className="relative hidden lg:flex lg:items-center lg:justify-center lg:pl-6">
             <div
               aria-hidden="true"
-              className="absolute left-1/2 top-1/2 h-[320px] w-[320px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-tan/15 blur-[100px]"
+              className="absolute left-1/2 top-1/2 h-[320px] w-[320px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-steel/15 blur-[100px]"
             />
 
-            <div className="absolute -left-8 -top-8 z-20 flex items-center gap-3 rounded-2xl border border-white/10 bg-white px-4 py-3 shadow-[0_25px_60px_-15px_rgba(0,48,96,0.55)]">
+            <div className="absolute -left-8 -top-8 z-20 flex items-center gap-3 rounded-2xl border border-navy/10 bg-white px-4 py-3 shadow-[0_25px_60px_-15px_rgba(0,48,96,0.2)]">
               <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel">
                 <IconBriefcase className="h-5 w-5" />
               </span>
@@ -173,7 +173,7 @@ roles as they go live.
               </div>
             </div>
 
-            <div className="relative aspect-[4/5] w-full max-w-[280px] overflow-hidden rounded-[32px] border border-white/10 shadow-[0_40px_90px_-25px_rgba(0,48,96,0.6)]">
+            <div className="relative aspect-[4/5] w-full max-w-[280px] overflow-hidden rounded-[32px] border border-navy/10 shadow-[0_40px_90px_-25px_rgba(0,48,96,0.3)]">
               <Image
                 src={siteImages["get-hired:hero-visual"]}
                 alt="Job seeker preparing for an interview with Mintex Staffing's recruitment team"
@@ -182,7 +182,7 @@ roles as they go live.
               />
             </div>
 
-            <div className="absolute -bottom-8 -right-8 z-20 flex items-center gap-3 rounded-2xl border border-white/10 bg-white px-4 py-3 shadow-[0_25px_60px_-15px_rgba(0,48,96,0.55)]">
+            <div className="absolute -bottom-8 -right-8 z-20 flex items-center gap-3 rounded-2xl border border-navy/10 bg-white px-4 py-3 shadow-[0_25px_60px_-15px_rgba(0,48,96,0.2)]">
               <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel">
                 <IconBriefcase className="h-5 w-5" />
               </span>
@@ -195,8 +195,8 @@ roles as they go live.
         </div>
       </Section>
 
-      <Section id="apply-to-jobs" background="cream">
-        <h2 className="text-3xl font-bold text-navy">Apply to Jobs</h2>
+      <Section id="apply-to-jobs" background="white">
+        <h2 className="font-heading text-3xl font-bold text-navy">Apply to Jobs</h2>
         <p className="mt-2 max-w-2xl text-navy/70">
           Explore current openings across every industry we staff.
         </p>
@@ -207,16 +207,16 @@ roles as they go live.
         </div>
       </Section>
 
-      <Section background="white">
-        <h2 className="text-3xl font-bold text-navy">Frequently Asked Questions</h2>
+      <Section background="mist">
+        <h2 className="font-heading text-3xl font-bold text-navy">Frequently Asked Questions</h2>
         <FaqAccordion items={jobSeekerFaqs} />
       </Section>
 
-      <Section id="interview-prep" background="cream" className="!py-12 text-center sm:!py-14">
+      <Section id="interview-prep" background="white" className="!py-12 text-center sm:!py-14">
         <ButtonLink
           href="/resources/ai-interview-generator"
           variant="secondary"
-          className="group inline-flex items-center gap-3 !px-8 !py-4 text-base !transition-all shadow-[0_10px_30px_-14px_rgba(0,48,96,0.22)] hover:-translate-y-0.5 hover:border-tan/40 hover:shadow-[0_16px_40px_-14px_rgba(0,48,96,0.3)]"
+          className="group inline-flex items-center gap-3 !px-8 !py-4 text-base !transition-all shadow-[0_10px_30px_-14px_rgba(0,48,96,0.22)] hover:-translate-y-0.5 hover:border-steel/40 hover:shadow-[0_16px_40px_-14px_rgba(0,48,96,0.3)]"
         >
           <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel">
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4">

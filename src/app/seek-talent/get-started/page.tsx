@@ -25,30 +25,30 @@ export default async function SeekTalentGetStartedPage() {
   const siteImages = await getSiteImages();
   return (
     <>
-      <Section background="navy" className="relative !py-12 sm:!py-14 lg:!py-16">
+      <Section background="mist" className="relative !py-12 sm:!py-14 lg:!py-16">
         <Link
           href="/seek-talent"
-          className="flex w-fit items-center gap-1.5 text-sm font-medium text-white/60 transition-colors hover:text-white"
+          className="flex w-fit items-center gap-1.5 text-sm font-medium text-navy/60 transition-colors hover:text-navy"
         >
           <IconArrowLeft className="h-4 w-4" />
           Seek Talent
         </Link>
 
-        <div className="mt-6 flex w-fit items-center gap-2.5 rounded-full border border-tan-light/35 bg-tan/[0.14] px-4 py-2 text-[13px] font-medium text-tan-light">
+        <div className="mt-6 flex w-fit items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[13px] font-medium text-navy/70">
           <IconBriefcase className="h-4 w-4 flex-shrink-0" />
           For Employers
         </div>
-        <h1 className="mt-5 text-4xl font-bold sm:text-5xl">Find Skilled Talent, Faster</h1>
-        <p className="mt-4 max-w-2xl text-white/80">
+        <h1 className="mt-5 font-heading text-4xl font-bold text-navy sm:text-5xl">Find Skilled Talent, Faster</h1>
+        <p className="mt-4 max-w-2xl text-steel">
           From IT staffing to healthcare staffing to logistics staffing, we connect businesses
           with the right people, right on time.
         </p>
       </Section>
 
-      <Section background="cream" className="relative overflow-hidden !py-12 sm:!py-14 lg:!py-16">
+      <Section background="white" className="relative overflow-hidden !py-12 sm:!py-14 lg:!py-16">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -left-24 -top-24 h-[360px] w-[360px] rounded-full bg-tan/20 blur-[110px]"
+          className="pointer-events-none absolute -left-24 -top-24 h-[360px] w-[360px] rounded-full bg-steel-lighter/40 blur-[110px]"
         />
         <div
           aria-hidden="true"

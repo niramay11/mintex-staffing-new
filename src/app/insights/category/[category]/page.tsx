@@ -35,9 +35,9 @@ export default async function InsightCategoryPage({
 
   return (
     <>
-      <Section background="navy" className="!py-12 sm:!py-14 lg:!py-16">
-        <h1 className="text-4xl font-bold sm:text-5xl">{match.label}</h1>
-        <p className="mt-4 max-w-2xl text-white/80">
+      <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
+        <h1 className="font-heading text-4xl font-bold text-navy sm:text-5xl">{match.label}</h1>
+        <p className="mt-4 max-w-2xl text-steel">
           Career advice, job market data, and ongoing hiring trends from our research team.
         </p>
       </Section>

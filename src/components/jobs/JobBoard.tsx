@@ -64,6 +64,15 @@ function remoteBadge(remote?: string) {
   return { label: remote, cls: "bg-navy/10 text-navy" };
 }
 
+const NEW_JOB_WINDOW_DAYS = 7;
+
+function isNewJob(published?: string): boolean {
+  if (!published) return false;
+  const d = new Date(published);
+  if (isNaN(d.getTime())) return false;
+  return Math.floor((Date.now() - d.getTime()) / 86400000) <= NEW_JOB_WINDOW_DAYS;
+}
+
 // ─── Collapsible sidebar section ───────────────────────────────────────────────
 function FilterSection({
   title,
@@ -143,7 +152,7 @@ function OptionCard({
       type="button"
       onClick={onClick}
       className={`flex w-full items-center gap-3 rounded-lg border px-3 py-2.5 text-left transition-colors ${
-        active ? "border-navy bg-cream" : "border-navy/10 hover:border-navy/30"
+        active ? "border-navy bg-mist" : "border-navy/10 hover:border-navy/30"
       }`}
     >
       <span
@@ -201,7 +210,7 @@ function LocationSelect({ value, onChange }: { value: string; onChange: (v: stri
             type="button"
             onClick={() => select("")}
             className={`block w-full rounded-md px-3 py-1.5 text-left text-sm ${
-              !value ? "bg-cream font-medium text-navy" : "text-navy/70 hover:bg-cream"
+              !value ? "bg-mist font-medium text-navy" : "text-navy/70 hover:bg-mist"
             }`}
           >
             All locations
@@ -212,7 +221,7 @@ function LocationSelect({ value, onChange }: { value: string; onChange: (v: stri
               type="button"
               onClick={() => select(opt)}
               className={`block w-full rounded-md px-3 py-1.5 text-left text-sm ${
-                value === opt ? "bg-cream font-medium text-navy" : "text-navy/70 hover:bg-cream"
+                value === opt ? "bg-mist font-medium text-navy" : "text-navy/70 hover:bg-mist"
               }`}
             >
               {opt}
@@ -418,6 +427,11 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
     setApplyOpen(true);
   }
 
+  function openApplyForJob(job: CeipalJob) {
+    setApplyJobs([toSelectedJob(job)]);
+    setApplyOpen(true);
+  }
+
   function closeApply() {
     setApplyOpen(false);
   }
@@ -603,79 +617,99 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
           {/* Job grid */}
           {!loading && !error && filteredJobs.length > 0 && (
             <>
-              <div className="mt-6 grid gap-4 sm:grid-cols-2">
+              <div className="mt-6 grid gap-4">
                 {pageJobs.map((job) => {
                   const isSelected = selected.has(job.job_code);
                   const pay = fmtPay(job.pay_rate___salary);
                   const posted = fmtPosted(job.career_portal_published_date);
                   const remote = remoteBadge(job.remote_job);
+                  const isNew = isNewJob(job.career_portal_published_date);
 
                   return (
                     <div
                       key={job.job_code}
-                      className={`relative flex flex-col rounded-lg border bg-white p-6 transition-colors ${
-                        isSelected ? "border-steel bg-cream/40" : "border-navy/10"
+                      className={`relative flex flex-col gap-4 rounded-2xl border border-l-[3px] bg-white p-6 shadow-[0_1px_3px_rgba(0,48,96,0.05)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_36px_-16px_rgba(0,48,96,0.2)] sm:flex-row sm:items-center sm:justify-between ${
+                        isSelected ? "border-navy/10 border-l-steel bg-mist/40 ring-1 ring-steel/30" : "border-navy/10 border-l-steel"
                       }`}
                     >
-                      <label
-                        className="absolute right-4 top-4 flex h-5 w-5 cursor-pointer items-center justify-center"
-                        aria-label={`Select ${job.job_title}`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => toggleInSet(setSelected, job.job_code)}
-                          className="h-4 w-4 rounded border-navy/30 accent-steel"
-                        />
-                      </label>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2.5">
+                          <h3 className="text-lg font-bold text-navy">
+                            <Link
+                              href={`/get-hired/jobs/${jobUrlSlug(job)}`}
+                              className="hover:text-steel hover:underline"
+                            >
+                              {job.job_title}
+                            </Link>
+                          </h3>
+                          {isNew && (
+                            <span className="inline-flex items-center rounded-full bg-steel px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white">
+                              New
+                            </span>
+                          )}
+                        </div>
 
-                      <div className="pr-7">
-                        <span className="mb-1 inline-block rounded bg-mist px-2 py-0.5 font-mono text-[11px] text-navy/60">
-                          {job.job_code}
-                        </span>
-                        <h3 className="text-base font-semibold text-navy">
-                          <Link
-                            href={`/get-hired/jobs/${jobUrlSlug(job)}`}
-                            className="hover:text-steel hover:underline"
-                          >
-                            {job.job_title}
-                          </Link>
-                        </h3>
-                        <p className="mt-1 flex items-center gap-1 text-sm text-navy/60">
-                          <IconPin className="h-3.5 w-3.5 flex-shrink-0 text-navy/35" />
-                          <span className="truncate">{jobLocation(job)}</span>
+                        <div className="mt-2.5 flex flex-wrap items-center gap-2">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-mist px-3 py-1 text-xs font-medium text-navy/70">
+                            <IconPin className="h-3 w-3 flex-shrink-0" />
+                            <span className="truncate">{jobLocation(job)}</span>
+                          </span>
+                          {job.number_of_positions && (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-mist px-3 py-1 text-xs font-medium text-navy/70">
+                              <IconPeople className="h-3 w-3" />
+                              {job.number_of_positions}
+                            </span>
+                          )}
+                          {remote && (
+                            <span className={`rounded-full px-3 py-1 text-xs font-medium ${remote.cls}`}>{remote.label}</span>
+                          )}
+                          {job.job_type && (
+                            <span className="rounded-full bg-mist px-3 py-1 text-xs font-medium text-navy">{job.job_type}</span>
+                          )}
+                        </div>
+
+                        <p className="mt-2.5 flex flex-wrap items-center gap-1.5 text-sm text-navy/60">
+                          {pay && (
+                            <span className="inline-flex items-center gap-1 font-semibold text-navy">
+                              <IconBriefcase className="h-3.5 w-3.5 flex-shrink-0 text-navy/40" />
+                              {pay}
+                            </span>
+                          )}
+                          {pay && <span aria-hidden="true">&middot;</span>}
+                          <span>Job Order #{job.job_code}</span>
+                          {posted && (
+                            <>
+                              <span aria-hidden="true">&middot;</span>
+                              <span>Posted {posted}</span>
+                            </>
+                          )}
                         </p>
                       </div>
 
-                      <div className="mt-3 flex flex-wrap items-center gap-2">
-                        {pay && (
-                          <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-800">
-                            {pay}
-                          </span>
-                        )}
-                        {job.number_of_positions && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-mist px-3 py-1 text-xs font-medium text-navy/70">
-                            <IconPeople className="h-3 w-3" />
-                            {job.number_of_positions}
-                          </span>
-                        )}
-                        {remote && (
-                          <span className={`rounded-full px-3 py-1 text-xs font-medium ${remote.cls}`}>{remote.label}</span>
-                        )}
-                        {job.job_type && (
-                          <span className="rounded-full bg-cream px-3 py-1 text-xs font-medium text-navy">{job.job_type}</span>
-                        )}
-                      </div>
-
-                      <div className="mt-4 flex items-center justify-between border-t border-navy/10 pt-4 text-sm">
-                        <span className="text-navy/50">{posted ? `Posted ${posted}` : ""}</span>
+                      <div className="flex flex-shrink-0 items-center gap-2.5 sm:flex-col sm:items-stretch">
+                        <label className="flex cursor-pointer items-center justify-end gap-1.5 text-xs font-medium text-navy/50 hover:text-navy/70">
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => toggleInSet(setSelected, job.job_code)}
+                            className="h-3.5 w-3.5 rounded border-navy/30 accent-steel"
+                          />
+                          Select to bulk apply
+                        </label>
                         <Link
                           href={`/get-hired/jobs/${jobUrlSlug(job)}`}
-                          className="inline-flex items-center gap-1.5 rounded-full bg-navy px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-navy-secondary"
+                          className="inline-flex items-center justify-center gap-1.5 rounded-full border border-navy/20 bg-white px-5 py-2.5 text-sm font-semibold text-navy transition-colors hover:border-navy/40 hover:bg-mist"
                         >
-                          View &amp; Apply
-                          <IconArrowRight className="h-3.5 w-3.5" />
+                          View details
                         </Link>
+                        <button
+                          type="button"
+                          onClick={() => openApplyForJob(job)}
+                          className="inline-flex items-center justify-center gap-1.5 rounded-full bg-navy px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-navy-secondary"
+                        >
+                          Apply now
+                          <IconArrowRight className="h-3.5 w-3.5" />
+                        </button>
                       </div>
                     </div>
                   );
@@ -706,7 +740,7 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
                         onClick={() => goToPage(p)}
                         aria-current={p === safePage ? "page" : undefined}
                         className={`h-9 min-w-[2.25rem] rounded-full px-2 text-sm font-semibold transition-colors ${
-                          p === safePage ? "bg-navy text-white" : "text-navy/70 hover:bg-cream"
+                          p === safePage ? "bg-navy text-white" : "text-navy/70 hover:bg-mist"
                         }`}
                       >
                         {p}

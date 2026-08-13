@@ -25,7 +25,7 @@ export default async function InsightsListing({ activeCategory }: { activeCatego
   const labelFor = (slug: string) => categories.find((c) => c.slug === slug)?.label ?? slug;
 
   return (
-    <Section background="cream">
+    <Section background="white">
       <div className="flex flex-wrap gap-2">
         <Link
           href="/insights"

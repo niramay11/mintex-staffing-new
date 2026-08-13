@@ -11,7 +11,7 @@ const PALETTE = [
   "var(--color-navy-secondary)",
   "var(--color-steel)",
   "var(--color-tan)",
-  "var(--color-tan-light)",
+  "var(--color-steel-lighter)",
   "var(--color-steel-light)",
   "var(--color-steel-lighter)",
   "var(--color-navy-deep)",
@@ -197,7 +197,7 @@ export default function HiringCostCalculator() {
         </div>
 
         {/* Partner banner */}
-        <div className="mt-5 flex flex-wrap items-center gap-4 rounded-3xl border border-tan/50 bg-tan/[0.1] p-6">
+        <div className="mt-5 flex flex-wrap items-center gap-4 rounded-3xl border border-steel/50 bg-steel/[0.1] p-6">
           <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-steel bg-white text-steel">
             <svg viewBox="0 0 24 24" fill="none" strokeWidth={1.8} stroke="currentColor" className="h-5 w-5">
               <path d="M12 3l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.1-5.4 3.1 1.3-6-4.6-4.1 6.1-.6L12 3z" strokeLinejoin="round" />
@@ -234,7 +234,7 @@ export default function HiringCostCalculator() {
               type="button"
               onClick={() => setTab(t.key)}
               className={`-mb-px border-b-2 px-4 py-3 text-sm font-semibold transition-colors ${
-                tab === t.key ? "border-tan text-navy" : "border-transparent text-steel hover:text-navy"
+                tab === t.key ? "border-steel text-navy" : "border-transparent text-steel hover:text-navy"
               }`}
             >
               {t.label}
@@ -283,7 +283,7 @@ export default function HiringCostCalculator() {
                 </tfoot>
               </table>
             </div>
-            <p className="mt-5 rounded-2xl border border-tan/30 bg-tan/[0.08] p-4 text-[12.5px] leading-relaxed text-navy">
+            <p className="mt-5 rounded-2xl border border-steel/30 bg-steel/[0.08] p-4 text-[12.5px] leading-relaxed text-navy">
               Your largest cost driver is &quot;{topItem.label}&quot;
               {inputs.methodKey === "mintex_staffing"
                 ? " (Typically 12.5% of annual salary, depending on role difficulty. Contact our team for an exact quote.)"
@@ -321,7 +321,7 @@ export default function HiringCostCalculator() {
                     <tr
                       key={r.key}
                       className={`border-b border-navy/10 ${
-                        r.cfg.isPartner ? "bg-tan/[0.08]" : r.total === cheapest ? "bg-emerald-50/60" : ""
+                        r.cfg.isPartner ? "bg-steel/[0.08]" : r.total === cheapest ? "bg-emerald-50/60" : ""
                       }`}
                     >
                       <td className={`py-3 ${r.cfg.isPartner ? "font-semibold text-navy" : "text-navy"}`}>
@@ -346,7 +346,7 @@ export default function HiringCostCalculator() {
                 </tbody>
               </table>
             </div>
-            <p className="mt-5 rounded-2xl border border-tan/30 bg-tan/[0.08] p-4 text-[12.5px] leading-relaxed text-navy">
+            <p className="mt-5 rounded-2xl border border-steel/30 bg-steel/[0.08] p-4 text-[12.5px] leading-relaxed text-navy">
               {cheapestOverall
                 ? "At these inputs, Mintex Staffing is also the lowest total cost on the table — plus the fastest, most hands-off option. Mintex charges one flat fee (12.5% of annual salary) and nothing else."
                 : cheaperThanPaidAgencies
@@ -382,7 +382,7 @@ export default function HiringCostCalculator() {
                 }
               />
             </div>
-            <p className="mt-5 rounded-2xl border border-tan/30 bg-tan/[0.08] p-4 text-[12.5px] leading-relaxed text-navy">
+            <p className="mt-5 rounded-2xl border border-steel/30 bg-steel/[0.08] p-4 text-[12.5px] leading-relaxed text-navy">
               Reference figures (mis-hire cost, industry benchmarks) are illustrative planning estimates drawn from
               commonly cited HR industry ranges, not a live data feed. Use your own historical data where available.
             </p>
@@ -485,7 +485,7 @@ function NumberField({
   return (
     <div className={last ? "mt-5" : "mt-5 first:mt-0"}>
       <span className="text-sm font-semibold text-navy">{label}</span>
-      <div className="mt-2 flex items-center gap-2 rounded-xl border border-navy/15 bg-white px-4 py-3 transition-colors focus-within:border-tan hover:border-navy/25">
+      <div className="mt-2 flex items-center gap-2 rounded-xl border border-navy/15 bg-white px-4 py-3 transition-colors focus-within:border-steel hover:border-navy/25">
         {prefix && <span className="flex-shrink-0 text-sm font-semibold text-navy/50">{prefix}</span>}
         <input
           type="text"

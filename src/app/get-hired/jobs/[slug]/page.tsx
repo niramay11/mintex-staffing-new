@@ -182,39 +182,39 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
       />
 
       {/* Hero */}
-      <Section background="navy" className="!py-12 sm:!py-14 lg:!py-16">
+      <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
         <Link
           href="/get-hired/apply-to-jobs"
-          className="flex w-fit items-center gap-1.5 text-sm font-medium text-white/60 transition-colors hover:text-white"
+          className="flex w-fit items-center gap-1.5 text-sm font-medium text-navy/60 transition-colors hover:text-navy"
         >
           <IconArrowLeft className="h-4 w-4" />
           All open roles
         </Link>
 
         <div className="mt-6 flex flex-wrap items-center gap-3">
-          <span className="rounded-full border border-tan-light/35 bg-tan/[0.14] px-3 py-1 font-mono text-[11px] font-medium text-tan-light">
+          <span className="rounded-full border border-navy/10 bg-white px-3 py-1 font-mono text-[11px] font-medium text-navy/70">
             {job.job_code}
           </span>
-          {posted && <span className="text-xs text-white/50">Posted {posted}</span>}
+          {posted && <span className="text-xs text-navy/50">Posted {posted}</span>}
         </div>
 
-        <h1 className="mt-4 text-3xl font-bold sm:text-5xl">{job.job_title}</h1>
+        <h1 className="mt-4 font-heading text-3xl font-bold text-navy sm:text-5xl">{job.job_title}</h1>
 
-        <p className="mt-4 flex items-center gap-1.5 text-white/75">
+        <p className="mt-4 flex items-center gap-1.5 text-steel">
           <IconPin className="h-4 w-4 flex-shrink-0" />
           {jobLocation(job)}
         </p>
 
         <div className="mt-6 flex flex-wrap items-center gap-2.5">
-          {pay && <span className="rounded-full bg-white/10 px-4 py-2 text-base font-semibold text-white">{pay}</span>}
+          {pay && <span className="rounded-full bg-navy px-4 py-2 text-base font-semibold text-white">{pay}</span>}
           {job.job_type && (
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 px-3.5 py-1.5 text-xs font-medium text-white/80">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-navy/15 bg-white px-3.5 py-1.5 text-xs font-medium text-navy/70">
               <IconBriefcase className="h-3.5 w-3.5" />
               {job.job_type}
             </span>
           )}
           {remoteLabel && (
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 px-3.5 py-1.5 text-xs font-medium text-white/80">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-navy/15 bg-white px-3.5 py-1.5 text-xs font-medium text-navy/70">
               <IconGlobe className="h-3.5 w-3.5" />
               {remoteLabel}
             </span>
@@ -227,7 +227,7 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
       </Section>
 
       {/* Content */}
-      <Section background="cream">
+      <Section background="white">
         <div className="lg:grid lg:grid-cols-[1fr_320px] lg:items-start lg:gap-10">
           {/* Main column */}
           <div className="rounded-2xl border border-navy/[0.08] bg-white p-6 sm:p-8">
@@ -236,7 +236,7 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
                 <p className="mb-2.5 text-xs font-semibold uppercase tracking-wide text-navy/50">Skills</p>
                 <div className="flex flex-wrap gap-1.5">
                   {skills.map((skill) => (
-                    <span key={skill} className="rounded-full bg-cream px-3 py-1 text-xs font-medium text-navy">
+                    <span key={skill} className="rounded-full bg-mist px-3 py-1 text-xs font-medium text-navy">
                       {skill}
                     </span>
                   ))}
@@ -272,7 +272,7 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
                   .filter((s) => s.value)
                   .map(({ label, value, Icon }) => (
                     <div key={label} className="flex items-start gap-3">
-                      <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-cream text-steel">
+                      <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-mist text-steel">
                         <Icon className="h-4 w-4" />
                       </span>
                       <div className="min-w-0">

@@ -50,6 +50,7 @@ export const IMAGE_LOCATIONS: ImageLocation[] = [
   { locationKey: "global:header-logo",       pageName: "Global", sectionName: "Header Logo (desktop)",     defaultSrc: "/logo-navy.png",      category: "logo-wide" },
   { locationKey: "global:footer-logo",       pageName: "Global", sectionName: "Footer Logo",               defaultSrc: "/logo-white.png",     category: "logo-wide" },
   { locationKey: "global:navy-section-mark", pageName: "Global", sectionName: "Decorative Navy Mark",      defaultSrc: "/mintex-m.svg",       category: "logo-decorative" },
+  { locationKey: "global:light-section-mark", pageName: "Global", sectionName: "Decorative Mark (Light Backgrounds)", defaultSrc: "/mintex-m-navy.svg", category: "logo-decorative" },
 
   { locationKey: "client-portal:header-logo", pageName: "Client Portal", sectionName: "Header Logo", defaultSrc: "/logo-navy.png", category: "logo-wide" },
 

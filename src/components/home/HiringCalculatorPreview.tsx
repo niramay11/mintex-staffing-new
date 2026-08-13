@@ -16,7 +16,7 @@ export default function HiringCalculatorPreview() {
 
   return (
     <div className="rounded-3xl bg-gradient-to-br from-navy to-navy-secondary p-8 text-white">
-      <span className="inline-flex items-center rounded-full bg-tan/[0.16] px-3.5 py-1.5 text-[12.5px] font-semibold tracking-wide text-tan-light">
+      <span className="inline-flex items-center rounded-full bg-steel/[0.16] px-3.5 py-1.5 text-[12.5px] font-semibold tracking-wide text-steel-lighter">
         HIRING COST CALCULATOR
       </span>
       <h3 className="mt-5 font-heading text-2xl font-semibold text-white">
@@ -29,7 +29,7 @@ export default function HiringCalculatorPreview() {
             <label htmlFor="preview-roles" className="text-sm text-steel-lighter">
               Roles to fill
             </label>
-            <span className="font-heading text-lg font-semibold text-tan-light">{roles}</span>
+            <span className="font-heading text-lg font-semibold text-steel-lighter">{roles}</span>
           </div>
           <input
             id="preview-roles"
@@ -38,7 +38,7 @@ export default function HiringCalculatorPreview() {
             max={25}
             value={roles}
             onChange={(event) => setRoles(Number(event.target.value))}
-            className="h-1 w-full cursor-pointer accent-tan"
+            className="h-1 w-full cursor-pointer accent-steel"
           />
         </div>
         <div>
@@ -46,7 +46,7 @@ export default function HiringCalculatorPreview() {
             <label htmlFor="preview-salary" className="text-sm text-steel-lighter">
               Avg. annual salary
             </label>
-            <span className="font-heading text-lg font-semibold text-tan-light">
+            <span className="font-heading text-lg font-semibold text-steel-lighter">
               ${Math.round(salary / 1000)}k
             </span>
           </div>
@@ -58,7 +58,7 @@ export default function HiringCalculatorPreview() {
             step={5000}
             value={salary}
             onChange={(event) => setSalary(Number(event.target.value))}
-            className="h-1 w-full cursor-pointer accent-tan"
+            className="h-1 w-full cursor-pointer accent-steel"
           />
         </div>
       </div>
@@ -71,8 +71,8 @@ export default function HiringCalculatorPreview() {
           </p>
         </div>
         <div className="flex-1">
-          <p className="text-[12.5px] text-tan-light">You save with us</p>
-          <p className="mt-1 font-heading text-2xl font-bold text-tan-light">
+          <p className="text-[12.5px] text-steel-lighter">You save with us</p>
+          <p className="mt-1 font-heading text-2xl font-bold text-steel-lighter">
             {formatCurrency(savings)}
           </p>
         </div>

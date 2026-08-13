@@ -24,14 +24,14 @@ export default async function AiInterviewGeneratorPage() {
   const industries = await getIndustries();
   return (
     <>
-      <Section background="navy" className="!py-12 sm:!py-14 lg:!py-16">
-        <h1 className="text-4xl font-bold sm:text-5xl">AI Interview Question Generator</h1>
-        <p className="mt-4 max-w-2xl text-white/80">
+      <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
+        <h1 className="font-heading text-4xl font-bold text-navy sm:text-5xl">AI Interview Question Generator</h1>
+        <p className="mt-4 max-w-2xl text-steel">
           Generate tailored interview questions for IT, healthcare, engineering &amp; more. Free AI-powered tool from Mintex Staffing, no sign-up required.
         </p>
       </Section>
 
-      <Section background="cream">
+      <Section background="white">
         <div className="mx-auto grid w-full items-start gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-24">
           <div>
             <div className="inline-flex items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[13px] font-medium text-navy/70">
@@ -60,7 +60,7 @@ export default async function AiInterviewGeneratorPage() {
             />
             <div
               aria-hidden="true"
-              className="absolute left-0 top-[12%] h-[68%] w-[68%] rounded-[55%_45%_40%_60%/45%_55%_45%_55%] bg-tan/[0.12]"
+              className="absolute left-0 top-[12%] h-[68%] w-[68%] rounded-[55%_45%_40%_60%/45%_55%_45%_55%] bg-steel-lighter/40"
             />
 
             <div className="absolute left-0 top-0 h-[64%] w-[64%] overflow-hidden rounded-[2rem] shadow-[0_25px_60px_-20px_rgba(0,48,96,0.35)]">

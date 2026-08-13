@@ -75,9 +75,9 @@ export default function Footer({ siteImages, industries }: { siteImages: Record<
   }, []);
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8">
-      <footer className="mx-auto mt-6 max-w-[1920px] rounded-[32px] bg-navy px-8 pb-8 pt-14 text-white sm:px-12">
-        <div className="grid grid-cols-2 gap-10 border-b border-white/10 pb-11 sm:grid-cols-3 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+    <>
+      <footer className="border-t border-navy/[0.06] bg-navy px-6 pb-8 pt-14 text-white sm:px-10 lg:px-16">
+        <div className="mx-auto grid max-w-[1920px] grid-cols-2 gap-10 border-b border-white/10 pb-11 sm:grid-cols-3 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div className="col-span-2 max-w-[300px] sm:col-span-1">
             <Link
               href="/"
@@ -104,7 +104,7 @@ export default function Footer({ siteImages, industries }: { siteImages: Record<
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={link.label}
-                    className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-steel-lighter transition-colors hover:border-tan/50 hover:text-tan-light"
+                    className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-steel-lighter transition-colors hover:border-steel/50 hover:text-steel-lighter"
                   >
                     <SocialIcon label={link.label} className="h-4 w-4" />
                   </a>
@@ -115,7 +115,7 @@ export default function Footer({ siteImages, industries }: { siteImages: Record<
 
           {footerColumns.map((column) => (
             <div key={column.title}>
-              <h3 className="mb-4 text-[13px] font-semibold uppercase tracking-[0.08em] text-tan-light">
+              <h3 className="mb-4 text-[13px] font-semibold uppercase tracking-[0.08em] text-steel-lighter">
                 {column.title}
               </h3>
               <div className="flex flex-col gap-[11px]">
@@ -133,7 +133,7 @@ export default function Footer({ siteImages, industries }: { siteImages: Record<
           ))}
         </div>
 
-        <div className="flex flex-col items-start justify-between gap-3 pt-6 text-[13.5px] text-steel-light sm:flex-row sm:items-center">
+        <div className="mx-auto flex max-w-[1920px] flex-col items-start justify-between gap-3 pt-6 text-[13.5px] text-steel-light sm:flex-row sm:items-center">
           <p className="flex flex-wrap items-center gap-x-2">
             <span>&copy; {new Date().getFullYear()} Mintex Staffing. All rights reserved.</span>
             <Link href="/privacy" className="underline-offset-2 hover:text-white hover:underline">
@@ -148,6 +148,6 @@ export default function Footer({ siteImages, industries }: { siteImages: Record<
         </div>
       </footer>
       <BackToTopButton />
-    </div>
+    </>
   );
 }

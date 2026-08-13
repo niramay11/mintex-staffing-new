@@ -98,17 +98,17 @@ const contactCards = [
 export default function ContactPage() {
   return (
     <>
-      <Section background="navy" className="!py-12 sm:!py-14 lg:!py-16">
-        <h1 className="text-4xl font-bold sm:text-5xl">Contact Us</h1>
-        <div className="mt-3 h-1 w-16 rounded-full bg-tan" />
-        <p className="mt-4 max-w-2xl text-white/80">
+      <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
+        <h1 className="font-heading text-4xl font-bold text-navy sm:text-5xl">Contact Us</h1>
+        <div className="mt-3 h-1 w-16 rounded-full bg-steel" />
+        <p className="mt-4 max-w-2xl text-steel">
           Have a question or want to discuss your hiring needs?{" "}
           <br className="hidden sm:block" />
           We&apos;re here to help and will get back to you as soon as possible.
         </p>
       </Section>
 
-      <Section background="cream">
+      <Section background="white">
         <div className="grid items-start gap-6 lg:grid-cols-3">
           <div className="rounded-3xl bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)] sm:p-8">
             <h2 className="text-2xl font-bold text-navy">Get in Touch</h2>

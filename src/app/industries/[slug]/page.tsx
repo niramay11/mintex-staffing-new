@@ -168,9 +168,9 @@ export default async function IndustryPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
       {/* Sec 1 — Hero */}
-      <Section background="navy" className="!py-12 sm:!py-14 lg:!py-16">
-        <h1 className="text-4xl font-bold sm:text-5xl">{industry.heroTitle}</h1>
-        <p className="mt-4 max-w-2xl text-white/80">{industry.seoSubheading}</p>
+      <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
+        <h1 className="font-heading text-4xl font-bold text-navy sm:text-5xl">{industry.heroTitle}</h1>
+        <p className="mt-4 max-w-2xl text-steel">{industry.seoSubheading}</p>
         <div className="mt-8">
           <ButtonLink href="/seek-talent/get-started" variant="primary">
             Hire {industry.name} Talent
@@ -179,8 +179,8 @@ export default async function IndustryPage({
       </Section>
 
       {/* Sec 2 — Open roles */}
-      <Section background="cream">
-        <h2 className="text-3xl font-bold text-navy">Open {industry.name} Roles</h2>
+      <Section background="white">
+        <h2 className="font-heading text-3xl font-bold text-navy">Open {industry.name} Roles</h2>
         <p className="mt-2 max-w-2xl text-navy/70">{industry.intro}</p>
         {openRoles.length > 0 ? (
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -197,8 +197,8 @@ export default async function IndustryPage({
       </Section>
 
       {/* Sec 3 — Sector insights */}
-      <Section background="white">
-        <h2 className="text-3xl font-bold text-navy">What&apos;s Happening in the {industry.name} Job Market?</h2>
+      <Section background="mist">
+        <h2 className="font-heading text-3xl font-bold text-navy">What&apos;s Happening in the {industry.name} Job Market?</h2>
         <h3 className="mt-4 text-xl font-semibold text-navy">{industry.sectorInsight.title}</h3>
         <p className="mt-3 max-w-2xl text-navy/70">{industry.sectorInsight.body}</p>
 
@@ -219,8 +219,8 @@ export default async function IndustryPage({
       </Section>
 
       {/* Sec 3.5 — In-depth: roles, vetting, market, engagement models */}
-      <Section background="cream">
-        <h2 className="text-3xl font-bold text-navy">Hiring {industry.name}, In Depth</h2>
+      <Section background="white">
+        <h2 className="font-heading text-3xl font-bold text-navy">Hiring {industry.name}, In Depth</h2>
         <div className="mt-8 grid gap-5 sm:grid-cols-2">
           {[
             { title: "Typical Roles We Place", text: industry.typicalRoles, Icon: IconRoles },
@@ -230,7 +230,7 @@ export default async function IndustryPage({
           ].map(({ title, text, Icon }) => (
             <div
               key={title}
-              className="rounded-2xl border border-navy/[0.08] bg-white p-8 shadow-[0_1px_3px_rgba(0,48,96,0.05)] transition-all duration-300 hover:-translate-y-1 hover:border-tan/40 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)]"
+              className="rounded-2xl border border-navy/[0.08] bg-white p-8 shadow-[0_1px_3px_rgba(0,48,96,0.05)] transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)]"
             >
               <span className="flex h-11 w-11 items-center justify-center rounded-full bg-steel/[0.14] text-steel">
                 <Icon className="h-5 w-5" />

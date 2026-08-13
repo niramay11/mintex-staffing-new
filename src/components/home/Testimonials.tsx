@@ -58,8 +58,8 @@ export default function Testimonials({ stories }: { stories: CaseStudy[] }) {
   };
 
   return (
-    <section className="bg-white px-4 py-20 sm:px-6 sm:py-24 lg:px-8">
-      <h2 className="text-center font-heading text-[42px] font-normal text-navy sm:text-[52px]">
+    <section className="border-t border-navy/[0.06] bg-mist px-4 py-20 sm:px-6 sm:py-24 lg:px-8">
+      <h2 className="text-center font-heading text-[42px] font-bold text-navy sm:text-[52px]">
         Testimonials
       </h2>
 
@@ -76,11 +76,11 @@ export default function Testimonials({ stories }: { stories: CaseStudy[] }) {
         {/* Edge fades hint that more cards are scrollable off-screen */}
         <div
           aria-hidden="true"
-          className={`pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-white to-transparent transition-opacity duration-300 ${canScrollLeft ? "opacity-100" : "opacity-0"}`}
+          className={`pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-mist to-transparent transition-opacity duration-300 ${canScrollLeft ? "opacity-100" : "opacity-0"}`}
         />
         <div
           aria-hidden="true"
-          className={`pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-white to-transparent transition-opacity duration-300 ${canScrollRight ? "opacity-100" : "opacity-0"}`}
+          className={`pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-mist to-transparent transition-opacity duration-300 ${canScrollRight ? "opacity-100" : "opacity-0"}`}
         />
 
         {stories.length > 1 && (

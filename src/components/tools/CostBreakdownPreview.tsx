@@ -22,7 +22,7 @@ export default function CostBreakdownPreview() {
 
   return (
     <div className="relative mx-auto w-full max-w-3xl">
-      <div aria-hidden="true" className="absolute -right-14 -top-14 h-64 w-64 rounded-full bg-tan/40 blur-2xl" />
+      <div aria-hidden="true" className="absolute -right-14 -top-14 h-64 w-64 rounded-full bg-steel-lighter/40 blur-2xl" />
       <div aria-hidden="true" className="absolute -bottom-16 -left-10 h-56 w-56 rounded-full bg-steel/25 blur-2xl" />
 
       <div className="relative grid gap-5 sm:grid-cols-2">
@@ -75,8 +75,8 @@ export default function CostBreakdownPreview() {
         </div>
 
         {/* Mintex card */}
-        <div className="relative overflow-hidden rounded-[24px] border border-tan bg-gradient-to-b from-tan/[0.12] to-white p-6 shadow-[0_30px_70px_-28px_rgba(0,48,96,0.3)]">
-          <div aria-hidden="true" className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-tan via-tan-light to-steel-light" />
+        <div className="relative overflow-hidden rounded-[24px] border border-steel bg-gradient-to-b from-steel/[0.12] to-white p-6 shadow-[0_30px_70px_-28px_rgba(0,48,96,0.3)]">
+          <div aria-hidden="true" className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-steel via-steel-lighter to-steel-light" />
 
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2.5">

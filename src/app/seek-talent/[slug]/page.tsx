@@ -104,34 +104,38 @@ export default async function HiringServicePage({
 
   return (
     <>
-      <Section background="navy" className="relative !py-12 sm:!py-14 lg:!py-16">
+      <Section background="mist" className="relative !py-12 sm:!py-14 lg:!py-16">
         <Link
           href="/seek-talent"
-          className="flex w-fit items-center gap-1.5 text-sm font-medium text-white/60 transition-colors hover:text-white"
+          className="flex w-fit items-center gap-1.5 text-sm font-medium text-navy/60 transition-colors hover:text-navy"
         >
           <IconArrowLeft className="h-4 w-4" />
           Seek Talent
         </Link>
 
-        <div className="mt-6 flex w-fit items-center gap-2.5 rounded-full border border-tan-light/35 bg-tan/[0.14] px-4 py-2 text-[13px] font-medium text-tan-light">
+        <div className="mt-6 flex w-fit items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[13px] font-medium text-navy/70">
           <Icon className="h-4 w-4 flex-shrink-0" />
           {service.badge}
         </div>
-        <h1 className="mt-5 text-4xl font-bold sm:text-5xl">{service.name}</h1>
-        <p className="mt-4 max-w-2xl text-white/80">{service.intro}</p>
+        <h1 className="mt-5 font-heading text-4xl font-bold text-navy sm:text-5xl">{service.name}</h1>
+        <p className="mt-4 max-w-2xl text-steel">{service.intro}</p>
         <div className="mt-8 flex flex-wrap gap-3.5">
           <ButtonLink href="/seek-talent/get-started" variant="primary" className="inline-flex items-center gap-2">
             Discuss your hiring needs
             <IconArrowRight className="h-4 w-4" />
           </ButtonLink>
-          <ButtonLink href="/seek-talent" variant="outline" className="inline-flex items-center gap-2">
+          <ButtonLink
+            href="/seek-talent"
+            variant="outline"
+            className="!border-navy !text-navy inline-flex items-center gap-2 hover:!bg-navy hover:!text-white"
+          >
             See all services
             <IconArrowRight className="h-4 w-4" />
           </ButtonLink>
         </div>
       </Section>
 
-      <Section background="cream" className="!py-12 sm:!py-14 lg:!py-16">
+      <Section background="white" className="!py-12 sm:!py-14 lg:!py-16">
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">Why choose us</p>
           <h2 className="mt-2.5 text-3xl font-bold text-navy sm:text-4xl">What&apos;s included</h2>
@@ -161,7 +165,7 @@ export default async function HiringServicePage({
                   </div>
                 </div>
 
-                <div className="group flex w-full flex-1 gap-4 rounded-2xl border border-navy/[0.08] bg-white p-5 transition-all duration-300 hover:-translate-y-1 hover:border-tan/40 hover:shadow-[0_20px_45px_-20px_rgba(0,48,96,0.3)]">
+                <div className="group flex w-full flex-1 gap-4 rounded-2xl border border-navy/[0.08] bg-white p-5 transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-20px_rgba(0,48,96,0.3)]">
                   <span className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full ${accentBg} ${accentText}`}>
                     <PointIcon className="h-4 w-4" />
                   </span>

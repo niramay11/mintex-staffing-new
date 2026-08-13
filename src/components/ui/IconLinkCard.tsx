@@ -16,7 +16,7 @@ export default function IconLinkCard({
   return (
     <Link
       href={href}
-      className="group rounded-2xl border border-navy/[0.08] bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)] transition-all duration-300 hover:-translate-y-1 hover:border-tan/40 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)]"
+      className="group rounded-2xl border border-navy/[0.08] bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)] transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)]"
     >
       <span className="flex h-11 w-11 items-center justify-center rounded-full bg-steel/[0.14] text-steel">
         <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">

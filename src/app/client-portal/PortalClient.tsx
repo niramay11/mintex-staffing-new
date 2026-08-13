@@ -251,7 +251,7 @@ function JobDetailModal({ job, permissions, onClose }: { job: Job; permissions: 
                 <div className="flex border-b border-navy/10 px-6 overflow-x-auto gap-1">
                     {tabKeys.map(key => (
                         <button key={key} onClick={() => setActiveTab(key as typeof activeTab)}
-                            className={`px-4 py-3 text-sm transition-colors whitespace-nowrap relative -mb-px border-b-2 ${activeTab === key ? 'text-navy border-tan font-semibold' : 'text-navy/50 hover:text-navy border-transparent font-medium'}`}>
+                            className={`px-4 py-3 text-sm transition-colors whitespace-nowrap relative -mb-px border-b-2 ${activeTab === key ? 'text-navy border-steel font-semibold' : 'text-navy/50 hover:text-navy border-transparent font-medium'}`}>
                             {tabLabels[key]}
                         </button>
                     ))}

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 
 const inputClasses =
-  "mt-1.5 w-full rounded-xl border border-navy/15 bg-cream/40 px-4 py-2.5 text-sm text-navy placeholder:text-navy/30 transition-colors focus:border-tan focus:bg-white focus:outline-none focus:ring-4 focus:ring-tan/15";
+  "mt-1.5 w-full rounded-xl border border-navy/15 bg-mist/40 px-4 py-2.5 text-sm text-navy placeholder:text-navy/30 transition-colors focus:border-steel focus:bg-white focus:outline-none focus:ring-4 focus:ring-steel/15";
 const labelClasses = "block text-sm font-semibold text-navy";
 
 const contactOptions = [

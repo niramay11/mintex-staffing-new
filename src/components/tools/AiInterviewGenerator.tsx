@@ -30,7 +30,7 @@ const STAGE_LABELS: Record<string, string> = {
 };
 
 const WEIGHT_STYLES: Record<string, string> = {
-  critical: "bg-tan/20 text-navy",
+  critical: "bg-steel/20 text-navy",
   important: "bg-mist text-navy/80",
   "nice-to-have": "bg-mist text-navy/50",
 };
@@ -90,7 +90,7 @@ export default function AiInterviewGenerator({ industries }: { industries: Indus
               value={jobTitle}
               onChange={(event) => setJobTitle(event.target.value)}
               placeholder="e.g. Warehouse Associate, Registered Nurse, CNC Machinist"
-              className="mt-2 w-full rounded-xl border border-navy/15 bg-white px-4 py-3 text-sm font-normal text-navy placeholder:text-navy/35 focus:border-tan focus:outline-none"
+              className="mt-2 w-full rounded-xl border border-navy/15 bg-white px-4 py-3 text-sm font-normal text-navy placeholder:text-navy/35 focus:border-steel focus:outline-none"
             />
           </label>
 
@@ -122,11 +122,11 @@ export default function AiInterviewGenerator({ industries }: { industries: Indus
         </form>
 
         <div className="rounded-3xl bg-navy p-7 text-white shadow-[0_20px_50px_-24px_rgba(0,48,96,0.5)]">
-          <h3 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-tan-light">Your Interview Kit</h3>
+          <h3 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel-lighter">Your Interview Kit</h3>
           {kit ? (
             <div className="mt-4 space-y-1 text-sm text-white/85">
               <p className="text-lg font-semibold text-white">{kit.role.title}</p>
-              <p className="text-xs text-tan-light">{kit.region.state}</p>
+              <p className="text-xs text-steel-lighter">{kit.region.state}</p>
               <p>{kit.role.summary}</p>
             </div>
           ) : (
@@ -223,7 +223,7 @@ export default function AiInterviewGenerator({ industries }: { industries: Indus
             </div>
           </section>
 
-          <section className="rounded-2xl border border-tan/40 bg-tan/[0.08] p-6">
+          <section className="rounded-2xl border border-steel/40 bg-steel/[0.08] p-6">
             <h3 className="font-heading text-xl font-semibold text-navy">Know your rights in {kit.region.state}</h3>
             <p className="mt-1 text-xs text-navy/50">
               Not legal advice — verify anything specific with {kit.region.state}'s labor office before relying on

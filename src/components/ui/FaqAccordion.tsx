@@ -17,7 +17,7 @@ export default function FaqAccordion({
           <div
             key={faq.question}
             className={`overflow-hidden rounded-2xl border bg-white shadow-[0_1px_3px_rgba(0,48,96,0.05)] transition-colors ${
-              isOpen ? "border-tan/40" : "border-navy/10"
+              isOpen ? "border-steel/40" : "border-navy/10"
             }`}
           >
             <button

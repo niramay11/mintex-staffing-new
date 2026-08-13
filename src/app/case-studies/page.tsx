@@ -66,17 +66,17 @@ export default async function CaseStudiesPage() {
 
   return (
     <>
-      <Section background="navy" className="!py-12 sm:!py-14 lg:!py-16">
-        <h1 className="text-4xl font-bold sm:text-5xl">Case Studies</h1>
-        <div className="mt-3 h-1 w-16 rounded-full bg-tan" />
-        <p className="mt-4 max-w-2xl text-white/80">
+      <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
+        <h1 className="font-heading text-4xl font-bold text-navy sm:text-5xl">Case Studies</h1>
+        <div className="mt-3 h-1 w-16 rounded-full bg-steel" />
+        <p className="mt-4 max-w-2xl text-steel">
           Real outcomes from the clients and candidates we&apos;ve partnered with.
         </p>
       </Section>
 
       <CaseStudyGroup
         id="client"
-        background="cream"
+        background="white"
         eyebrow="Client stories"
         title="Client Testimonials"
         intro="Hear directly from the hiring teams and leaders we've partnered with."
@@ -86,7 +86,7 @@ export default async function CaseStudiesPage() {
 
       <CaseStudyGroup
         id="candidate"
-        background="white"
+        background="mist"
         eyebrow="Candidate stories"
         title="Candidate Testimonials"
         intro="Real career moves made possible by the right introduction at the right time."
@@ -96,7 +96,7 @@ export default async function CaseStudiesPage() {
 
       <CaseStudyGroup
         id="other"
-        background="mist"
+        background="white"
         eyebrow="More outcomes"
         title="Other Case Studies"
         intro="Additional wins from across the industries we serve."

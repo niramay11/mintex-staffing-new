@@ -79,12 +79,12 @@ export default async function InsightPostPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
-      <Section background="navy" className="!py-12 sm:!py-14 lg:!py-16">
-        <Link href="/insights" className="text-sm text-white/70 hover:text-white">
+      <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
+        <Link href="/insights" className="text-sm text-navy/60 hover:text-navy">
           &larr; Back to Insights
         </Link>
-        <h1 className="mt-4 text-4xl font-bold sm:text-5xl">{post.title}</h1>
-        <p className="mt-4 text-sm text-white/60">
+        <h1 className="mt-4 font-heading text-4xl font-bold text-navy sm:text-5xl">{post.title}</h1>
+        <p className="mt-4 text-sm text-steel">
           By {post.author} &middot;{" "}
           {new Date(post.published_at).toLocaleDateString("en-US", {
             month: "long",
@@ -94,7 +94,7 @@ export default async function InsightPostPage({
         </p>
       </Section>
 
-      <Section background="cream">
+      <Section background="white">
         {post.image_url && (
           <div className="relative mb-10 aspect-[16/9] w-full max-w-2xl overflow-hidden rounded-2xl">
             <Image src={post.image_url} alt={post.title} fill className="object-cover" />

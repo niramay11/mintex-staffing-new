@@ -86,7 +86,7 @@ export default function AudienceTabs() {
             className="rounded-2xl border border-navy/[0.08] p-7 transition-all hover:-translate-y-1 hover:shadow-[0_20px_40px_-20px_rgba(0,48,96,0.25)]"
           >
             <div className="mb-5 flex h-[46px] w-[46px] items-center justify-center rounded-xl bg-navy">
-              <span className="h-2.5 w-2.5 rounded-full bg-tan" />
+              <span className="h-2.5 w-2.5 rounded-full bg-steel-lighter" />
             </div>
             <h3 className="font-heading text-[18px] font-semibold text-navy">{service.title}</h3>
             <p className="mt-2.5 text-[14.5px] leading-relaxed text-steel">{service.description}</p>

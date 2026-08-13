@@ -37,7 +37,7 @@ export default function Select({
         onClick={() => setOpen((prev) => !prev)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="mt-2 flex w-full items-center justify-between rounded-xl border border-navy/15 bg-white px-4 py-3 text-left text-sm text-navy transition-colors hover:border-navy/25 focus:border-tan focus:outline-none focus-visible:outline-2 focus-visible:outline-steel"
+        className="mt-2 flex w-full items-center justify-between rounded-xl border border-navy/15 bg-white px-4 py-3 text-left text-sm text-navy transition-colors hover:border-navy/25 focus:border-steel focus:outline-none focus-visible:outline-2 focus-visible:outline-steel"
       >
         {selected?.label}
         <svg
@@ -74,7 +74,7 @@ export default function Select({
                     setOpen(false);
                   }}
                   className={`flex w-full items-center rounded-lg px-3 py-2 text-left text-sm transition-colors ${
-                    isSelected ? "bg-tan/15 font-semibold text-navy" : "text-navy/75 hover:bg-mist"
+                    isSelected ? "bg-steel/15 font-semibold text-navy" : "text-navy/75 hover:bg-mist"
                   }`}
                 >
                   {option.label}
