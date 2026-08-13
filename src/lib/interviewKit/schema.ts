@@ -73,10 +73,28 @@ export const CompetencySchema = z.object({
 // question, they can only redirect their own answer toward the legitimate
 // requirement. Per plan_1.md §5.2: calm and practical, never tells the
 // candidate to confront the interviewer.
+//
+// `lawful_alternative` is the employer-facing counterpart — "don't ask
+// this" is half an answer for a hiring manager, the lawful rephrasing that
+// gets the same legitimate information is the other half. Both fields are
+// always populated by the verified dataset (legalRights.ts), never by the
+// model; the candidate view shows how_to_respond, the employer view shows
+// lawful_alternative.
 export const CannotBeAskedSchema = z.object({
   question: z.string(),
   why: z.string(),
   how_to_respond: z.string(),
+  lawful_alternative: z.string(),
+});
+
+// Per dimension, not a single blended scale. A candidate given one 1-5 score
+// across everything can't tell which dimension they're weak on, and an
+// interviewer can't score with it either — each dimension needs its own
+// anchors at 1, 3 and 5. See kit-schema.ts's RubricDimension for the origin
+// of this shape.
+export const RubricDimensionSchema = z.object({
+  dimension: z.string(),
+  anchors: z.object({ "1": z.string(), "3": z.string(), "5": z.string() }),
 });
 
 export const InterviewKitSchema = z.object({
@@ -91,11 +109,7 @@ export const InterviewKitSchema = z.object({
   }),
   competency_map: z.array(CompetencySchema).min(3).max(10),
   sections: z.array(InterviewSectionSchema).min(1),
-  how_youll_be_scored: z.object({
-    scale: z.literal(5),
-    anchors: z.object({ "1": z.string(), "3": z.string(), "5": z.string() }),
-    dimensions: z.array(z.string()).min(2).max(6),
-  }),
+  how_youll_be_scored: z.array(RubricDimensionSchema).min(2).max(6),
   your_rights: z.object({
     cannot_be_asked: z.array(CannotBeAskedSchema).max(5),
     state_specific: z.array(z.string()).max(6),
@@ -105,10 +119,16 @@ export const InterviewKitSchema = z.object({
     questions_to_ask_them: z.array(z.string()).min(2).max(6),
     likely_skills_tests: z.array(z.string()).max(4),
   }),
+  // JD path only: maps each mustHaveSkill from the extracted job description
+  // to the question ids that probe it, so the candidate can see nothing in
+  // the JD went unaddressed. Absent on the public (title-only) path.
+  coverage: z.record(z.string(), z.array(z.string())).optional(),
 });
 
 export type InterviewKit = z.infer<typeof InterviewKitSchema>;
 export type InterviewQuestion = z.infer<typeof InterviewQuestionSchema>;
+export type RubricDimension = z.infer<typeof RubricDimensionSchema>;
+export type CannotBeAsked = z.infer<typeof CannotBeAskedSchema>;
 
 export interface GenerateKitInput {
   jobTitle: string;
@@ -116,4 +136,9 @@ export interface GenerateKitInput {
   seniority: (typeof SENIORITIES)[number];
   state: (typeof US_STATES)[number];
   focus?: string;
+  // JD path only (see jdGenerate.ts): facts extracted from a real job
+  // posting. Absent on the public, title-only path — the model is never
+  // grounded in specifics it can't actually know there.
+  namedTools?: string[];
+  mustHaveSkills?: string[];
 }

@@ -13,8 +13,10 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.106.0",
     "framer-motion": "^12.42.2",
+    "mammoth": "^1.12.1",
     "next": "16.2.10",
     "nodemailer": "^8.0.7",
+    "pdfjs-dist": "^6.2.108",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "zod": "^4.4.3"

@@ -1,25 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
-import { KitGenerationError } from "@/lib/interviewKit/generate";
-import { getCachedInterviewKit } from "@/lib/interviewKit/cache";
+import { generateJdInterviewKit, KitGenerationError, JD_MAX_CHARS } from "@/lib/interviewKit/jdGenerate";
 import { SENIORITIES, US_STATES } from "@/lib/interviewKit/schema";
 
 export const maxDuration = 60;
 
-// POST /api/generate-interview-kit — public, no auth. Generates a structured
-// interview kit (not a flat question list) for the given role. See
-// src/lib/interviewKit for the schema/prompt/provider pieces.
+// POST /api/generate-jd-kit — public, no auth. Private path: the result is
+// returned directly in the response and rendered client-side, never given
+// its own indexed URL or server-side cache entry (every pasted JD is
+// unique, and a resume-adjacent page sitting on a guessable route is
+// exactly the privacy failure mode this path has to avoid).
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   if (!body) return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
 
-  const jobTitle = String(body.jobTitle ?? "").trim().slice(0, 120);
-  const industryName = String(body.industryName ?? "").trim().slice(0, 120);
+  const jobDescription = String(body.jobDescription ?? "").slice(0, JD_MAX_CHARS + 1000);
   const seniority = String(body.seniority ?? "").trim();
   const state = String(body.state ?? "").trim();
   const focus = body.focus ? String(body.focus).trim().slice(0, 60) : undefined;
 
-  if (!jobTitle || !industryName) {
-    return NextResponse.json({ error: "jobTitle and industryName are required" }, { status: 400 });
+  if (!jobDescription.trim()) {
+    return NextResponse.json({ error: "Paste the job description text." }, { status: 400 });
   }
   if (!SENIORITIES.includes(seniority as (typeof SENIORITIES)[number])) {
     return NextResponse.json({ error: "seniority must be entry, mid, or senior" }, { status: 400 });
@@ -29,19 +29,20 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const kit = await getCachedInterviewKit({
-      jobTitle,
-      industryName,
+    const { kit, extraction } = await generateJdInterviewKit(jobDescription, {
       seniority: seniority as (typeof SENIORITIES)[number],
       state: state as (typeof US_STATES)[number],
       focus,
     });
-    return NextResponse.json({ kit });
+    return NextResponse.json(
+      { kit, jdContext: { mustHaveSkills: extraction.mustHaveSkills, namedTools: extraction.namedTools } },
+      { headers: { "X-Robots-Tag": "noindex" } }
+    );
   } catch (err) {
     if (err instanceof KitGenerationError) {
       return NextResponse.json({ error: err.message }, { status: err.status });
     }
-    console.error("Interview kit generation failed:", err);
+    console.error("JD interview kit generation failed:", err);
     return NextResponse.json({ error: "Something went wrong generating the kit." }, { status: 500 });
   }
 }
