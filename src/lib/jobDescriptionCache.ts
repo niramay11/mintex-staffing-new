@@ -2,6 +2,8 @@ import { unstable_cache, revalidateTag } from 'next/cache';
 import { ceipalFetch } from './ceipal';
 import { getJobMap } from './ceipal-job-map';
 import { getCachedJobs } from './jobsCache';
+import { isActiveJob } from '@/components/jobs/utils';
+import type { CeipalJob } from '@/components/jobs/types';
 
 // See jobsCache.ts for the full reasoning — budgets below are only tight
 // because of Vercel's 60s serverless hard-kill, which doesn't exist locally.
@@ -73,14 +75,16 @@ export async function getCachedDescription(jobCode: string, id: string, opts?: {
 }
 
 const PER_JOB_TIMEOUT_MS = RUNNING_ON_VERCEL ? 8_000 : 20_000;
-const TIME_BUDGET_MS = RUNNING_ON_VERCEL ? 30_000 : 5 * 60_000;
+const TIME_BUDGET_MS = RUNNING_ON_VERCEL ? 45_000 : 5 * 60_000;
 const BATCH_SIZE = 8;
 // Warming all 1,500+ postings every cron cycle isn't realistic within one
 // serverless invocation's time budget — but visitors overwhelmingly click
-// into the newest listings on the default (newest-first) job board view, so
-// keeping just that subset perpetually warm covers the common case without
-// needing to cover the long tail at all.
-const WARM_COUNT = 40;
+// into the currently-active listings on the job board, so keeping that
+// whole set perpetually warm covers the real, live traffic without needing
+// to cover the long tail of expired/inactive postings at all. Padded above
+// today's ~70 active jobs so normal headcount growth doesn't silently drop
+// back into the slow-first-click path.
+const WARM_COUNT = 120;
 
 function raceTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
   return Promise.race([promise, new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))]);
@@ -93,7 +97,8 @@ export async function warmJobDescriptions(): Promise<void> {
   const startedAt = Date.now();
   const [{ jobs }, jobMap] = await Promise.all([getCachedJobs(), getJobMap()]);
 
-  const targets = (jobs as { job_code?: string }[])
+  const targets = (jobs as CeipalJob[])
+    .filter(isActiveJob)
     .slice(0, WARM_COUNT)
     .map((j) => ({ code: String(j.job_code ?? ''), id: jobMap[String(j.job_code ?? '')] }))
     .filter((t) => t.code && t.id);
