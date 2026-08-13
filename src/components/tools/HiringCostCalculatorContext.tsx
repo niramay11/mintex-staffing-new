@@ -16,7 +16,7 @@ const initialInputs: HiringCostInputs = {
   salary: 80000,
   seniorityKey: "mid",
   industryKey: "it",
-  methodKey: "mintex_staffing",
+  methodKey: "staffing_agency",
   ttf: 35,
   cands: 15,
   rate: 75,
@@ -35,9 +35,6 @@ type Ctx = {
   setField: <K extends keyof HiringCostInputs>(field: K, value: HiringCostInputs[K]) => void;
   result: HiringCostResult;
   breakdownRows: BreakdownRow[];
-  internalHrResult: HiringCostResult;
-  internalHrRows: BreakdownRow[];
-  mintexResult: HiringCostResult;
 };
 
 const HiringCostContext = createContext<Ctx | null>(null);
@@ -51,16 +48,11 @@ export function HiringCostProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<Ctx>(() => {
     const result = computeHiringCost(inputs);
-    const internalHrResult = computeHiringCost({ ...inputs, methodKey: "internal_hr" });
-    const mintexResult = computeHiringCost({ ...inputs, methodKey: "mintex_staffing" });
     return {
       inputs,
       setField,
       result,
       breakdownRows: withPct(result),
-      internalHrResult,
-      internalHrRows: withPct(internalHrResult),
-      mintexResult,
     };
   }, [inputs]);
 

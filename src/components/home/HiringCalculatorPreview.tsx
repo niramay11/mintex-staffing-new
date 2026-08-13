@@ -1,17 +1,28 @@
 "use client";
 
 import { useState } from "react";
+import { computeHiringCost } from "@/lib/calculators";
 
 function formatCurrency(value: number) {
   return `$${Math.round(value).toLocaleString("en-US")}`;
 }
 
+const BASE_INPUTS = {
+  seniorityKey: "mid" as const,
+  ttf: 35,
+  cands: 15,
+  rate: 75,
+  bg: 150,
+};
+
 export default function HiringCalculatorPreview() {
   const [roles, setRoles] = useState(11);
   const [salary, setSalary] = useState(125000);
 
-  const traditionalCost = roles * salary * 0.2;
-  const ourCost = roles * salary * 0.12;
+  const inHouseCost = computeHiringCost({ ...BASE_INPUTS, salary, methodKey: "internal_hr" }).total;
+  const staffingCost = computeHiringCost({ ...BASE_INPUTS, salary, methodKey: "staffing_agency" }).total;
+  const traditionalCost = roles * inHouseCost;
+  const ourCost = roles * staffingCost;
   const savings = traditionalCost - ourCost;
 
   return (
@@ -65,7 +76,7 @@ export default function HiringCalculatorPreview() {
 
       <div className="mt-8 flex gap-6 border-t border-white/10 pt-6">
         <div className="flex-1">
-          <p className="text-[12.5px] text-steel-lighter">Typical agency (20%)</p>
+          <p className="text-[12.5px] text-steel-lighter">Hiring in-house</p>
           <p className="mt-1 font-heading text-xl font-semibold text-white/60 line-through decoration-white/30">
             {formatCurrency(traditionalCost)}
           </p>
@@ -79,8 +90,9 @@ export default function HiringCalculatorPreview() {
       </div>
 
       <p className="mt-6 text-[12px] leading-relaxed text-steel-lighter/80">
-        Estimate based on a 20% traditional agency fee vs. Mintex&apos;s 12% placement fee. For an
-        itemized breakdown, use the{" "}
+        Estimate based on standard cost-per-hire methodology (job posting, interview time, onboarding,
+        vacancy cost) for hiring in-house vs. working with a staffing partner. For an itemized
+        breakdown, use the{" "}
         <a href="/resources/hiring-cost-calculator" className="underline hover:text-white">
           full hiring cost calculator
         </a>

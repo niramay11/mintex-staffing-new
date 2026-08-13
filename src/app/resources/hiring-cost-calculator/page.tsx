@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import Section from "@/components/ui/Section";
 import HiringCostCalculator from "@/components/tools/HiringCostCalculator";
-import CostBreakdownPreview from "@/components/tools/CostBreakdownPreview";
+import SelectedMethodBreakdown from "@/components/tools/SelectedMethodBreakdown";
 import { HiringCostProvider } from "@/components/tools/HiringCostCalculatorContext";
 import { pageMetadata } from "@/lib/pageMetadata";
 
 export const metadata: Metadata = pageMetadata({
   title: "Hiring Cost Calculator",
   description:
-    "Break down the true cost of filling a role — job posting, interviews, onboarding, vacancy and ramp-up cost — then compare hiring methods including Mintex Staffing side by side.",
+    "Break down the true cost of filling a role — job posting, interviews, onboarding, vacancy and ramp-up cost — then compare hiring methods side by side.",
   path: "/resources/hiring-cost-calculator",
 });
 
@@ -19,8 +19,8 @@ export default function HiringCostCalculatorPage() {
         <h1 className="font-heading text-4xl font-bold text-navy sm:text-5xl">Hiring Cost Calculator</h1>
         <p className="mt-4 max-w-2xl text-steel">
           Add up everything that goes into filling a role in-house  job posting, interview time,
-          onboarding, vacancy and ramp-up cost  then compare it against a Mintex Staffing engagement
-          and other hiring methods, by industry and seniority.
+          onboarding, vacancy and ramp-up cost  then compare it against other hiring methods, by
+          industry and seniority.
         </p>
       </Section>
 
@@ -35,13 +35,14 @@ export default function HiringCostCalculatorPage() {
               Know your true cost of hire before you spend a cent
             </h2>
             <p className="mt-4 max-w-md text-lg text-steel">
-              Add up job posting spend, interview time, onboarding, vacancy cost, and ramp-up losses to
-              see the full in-house picture  then compare it against Mintex and other hiring methods.
+              Add up job posting spend, interview time, onboarding, vacancy cost, and ramp-up losses for
+              whichever hiring method you pick  the card updates live as you change your selections
+              below.
             </p>
           </div>
 
           <div className="lg:mt-14">
-            <CostBreakdownPreview />
+            <SelectedMethodBreakdown />
           </div>
         </div>
       </Section>

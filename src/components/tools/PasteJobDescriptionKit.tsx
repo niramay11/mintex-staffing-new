@@ -1,19 +1,20 @@
 "use client";
 
 import { useState, type SubmitEvent } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import Select from "@/components/ui/Select";
-import InterviewKitView from "@/components/tools/InterviewKitView";
-import ResumeGapAnalysis from "@/components/tools/ResumeGapAnalysis";
 import { US_STATES, type InterviewKit } from "@/lib/interviewKit/schema";
 import { JD_MAX_CHARS } from "@/lib/interviewKit/jdSchema";
+import { JD_KIT_STORAGE_KEY } from "@/components/tools/KitPreviewClient";
 
 type JdContext = { mustHaveSkills?: string[]; namedTools?: string[] };
 
-// Private path: this kit is generated live from whatever text is pasted in
-// and rendered inline, right here — it never gets its own URL, is never
-// cached, and is never indexed. Refreshing the page loses it; that's the
-// point, not a bug (see implementation notes on the private path).
+// Private path: generates the kit, stashes it in sessionStorage, then
+// navigates to /kit/preview — same "redirect to its own results page"
+// pattern as the by-title flow, just backed by the browser tab instead of
+// a cache entry, since a pasted JD has no reusable slug and shouldn't sit
+// on a shareable URL anyway. See KitPreviewClient.tsx for the read side.
 
 const seniorityOptions = [
   { value: "entry", label: "Entry" },
@@ -32,14 +33,13 @@ const focusOptions = [
 ];
 
 export default function PasteJobDescriptionKit() {
+  const router = useRouter();
   const [jobDescription, setJobDescription] = useState("");
   const [seniority, setSeniority] = useState<"entry" | "mid" | "senior">("mid");
   const [state, setState] = useState<(typeof US_STATES)[number]>("New Jersey");
   const [focus, setFocus] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [kit, setKit] = useState<InterviewKit | null>(null);
-  const [jdContext, setJdContext] = useState<JdContext | undefined>(undefined);
 
   const overLimit = jobDescription.length > JD_MAX_CHARS;
 
@@ -55,7 +55,6 @@ export default function PasteJobDescriptionKit() {
     }
     setLoading(true);
     setError(null);
-    setKit(null);
     try {
       const res = await fetch("/api/generate-jd-kit", {
         method: "POST",
@@ -64,11 +63,12 @@ export default function PasteJobDescriptionKit() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Something went wrong.");
-      setKit(data.kit as InterviewKit);
-      setJdContext(data.jdContext as JdContext | undefined);
+
+      const stored: { kit: InterviewKit; jdContext?: JdContext } = { kit: data.kit, jdContext: data.jdContext };
+      sessionStorage.setItem(JD_KIT_STORAGE_KEY, JSON.stringify(stored));
+      router.push("/kit/preview");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
-    } finally {
       setLoading(false);
     }
   }
@@ -114,23 +114,10 @@ export default function PasteJobDescriptionKit() {
         </Button>
         {error && <p className="text-sm text-red-600">{error}</p>}
         <p className="text-xs text-navy/40">
-          This kit is generated fresh from the text you paste and is never saved or indexed — it disappears if you
-          leave or refresh this page. Not legal advice; verify anything specific with your state&apos;s labor office.
+          This kit is generated fresh from the text you paste and is never saved on our servers or indexed. Not
+          legal advice; verify anything specific with your state&apos;s labor office.
         </p>
       </form>
-
-      {kit && (
-        <div className="mt-10">
-          <p className="mb-4 rounded-xl bg-steel/10 px-4 py-3 text-sm text-navy/70">
-            Generated from your pasted posting — grounded in the tools and requirements it actually named, not
-            guessed. This isn&apos;t saved anywhere; copy anything you want to keep before leaving this page.
-          </p>
-          <InterviewKitView kit={kit} />
-          <div className="mt-8">
-            <ResumeGapAnalysis kit={kit} jdContext={jdContext} />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

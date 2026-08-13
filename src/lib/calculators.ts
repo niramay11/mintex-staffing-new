@@ -18,8 +18,7 @@ export type MethodKey =
   | "staffing_agency"
   | "executive_search"
   | "job_boards"
-  | "employee_referral"
-  | "mintex_staffing";
+  | "employee_referral";
 
 interface SeniorityConfig {
   label: string;
@@ -44,9 +43,6 @@ interface MethodConfig {
   referralBonus: number;
   interviewMult: number;
   ttfMult: number;
-  isPartner?: boolean;
-  flatFeeOnly?: boolean;
-  ttfOverrideDays?: number;
 }
 
 export interface HiringCostBreakdownItem {
@@ -105,21 +101,6 @@ export const CONFIG: {
     hospitality: { label: "Hospitality", avgCost: 2600, avgDays: 20 },
   },
   method: {
-    // Mintex charges one flat fee and nothing else — 12.5% of the candidate's annual salary.
-    // No job posting, interview time, background check, onboarding or equipment cost is
-    // billed to the client, so its total cost is just salary × 12.5%, full stop.
-    mintex_staffing: {
-      label: "Mintex Staffing",
-      isPartner: true,
-      flatFeeOnly: true,
-      jobPostCost: 0,
-      referralBonus: 0,
-      interviewMult: 0,
-      ttfMult: 0,
-      agencyFeePct: 0.125,
-      ttfOverrideDays: 3,
-      best: "We source, screen & deliver ready-to-interview candidates in 12–48 hrs you pay only our one time flat fee",
-    },
     internal_hr: {
       label: "In-House HR Department",
       jobPostCost: 350,
@@ -130,9 +111,9 @@ export const CONFIG: {
       best: "Most roles, cost-sensitive teams",
     },
     staffing_agency: {
-      label: "Other Staffing Firm",
+      label: "Staffing Firms", 
       jobPostCost: 0,
-      agencyFeePct: 0.2,
+      agencyFeePct: 0.2,   
       referralBonus: 0,
       interviewMult: 0.4,
       ttfMult: 0.7,
@@ -181,23 +162,12 @@ export function computeHiringCost({
   const sen = CONFIG.seniority[seniorityKey];
   const method = CONFIG.method[methodKey];
 
-  if (method.flatFeeOnly) {
-    const fee = salary * method.agencyFeePct;
-    const effectiveTtf = method.ttfOverrideDays ?? ttf;
-    return {
-      items: [{ key: "agencyFee", label: "Mintex Placement Fee", amount: fee }],
-      total: fee,
-      effectiveTtf,
-      hiddenCosts: 0,
-    };
-  }
-
   const jobPosting = method.jobPostCost;
   const interviewing = cands * sen.hoursPerCandidate * method.interviewMult * rate;
   const assessment = bg;
   const onboarding = salary * sen.onboardingPct;
   const equipment = sen.equipCost;
-  const effectiveTtf = method.ttfOverrideDays ?? ttf * method.ttfMult;
+  const effectiveTtf = ttf * method.ttfMult;
   const vacancy = effectiveTtf * (salary / 365) * CONFIG.vacancyBurdenFactor;
   const rampLoss = sen.rampMonths * (salary / 12) * (1 - sen.rampCapacity);
   const agencyFee = salary * method.agencyFeePct;

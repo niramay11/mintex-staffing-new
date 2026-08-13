@@ -28,7 +28,7 @@ const SENIORITY_OPTIONS = Object.entries(CONFIG.seniority).map(([value, cfg]) =>
 const INDUSTRY_OPTIONS = Object.entries(CONFIG.industry).map(([value, cfg]) => ({ value, label: cfg.label }));
 const METHOD_OPTIONS = Object.entries(CONFIG.method).map(([value, cfg]) => ({
   value,
-  label: cfg.isPartner ? `${cfg.label} (Preferred Partner)` : cfg.label,
+  label: cfg.label,
 }));
 
 const fmt = (n: number) => "$" + Math.round(n).toLocaleString("en-US");
@@ -42,22 +42,13 @@ export default function HiringCostCalculator() {
   const topItem = [...result.items].sort((a, b) => b.amount - a.amount)[0];
   const diffVsAvg = result.total - industry.avgCost;
 
-  const mintexResult = computeHiringCost({ ...inputs, methodKey: "mintex_staffing" });
-  const savingsVsMintex = result.total - mintexResult.total;
-
   const methodRows = (Object.keys(CONFIG.method) as MethodKey[]).map((key) => {
     const cfg = CONFIG.method[key];
     const r = computeHiringCost({ ...inputs, methodKey: key });
     return { key, cfg, total: r.total, ttf: Math.round(r.effectiveTtf) };
   });
-  const nonPartnerRows = methodRows.filter((r) => !r.cfg.isPartner);
-  const partnerRow = methodRows.find((r) => r.cfg.isPartner)!;
-  const cheapest = Math.min(...nonPartnerRows.map((r) => r.total));
-  const fastest = Math.min(...nonPartnerRows.map((r) => r.ttf));
-  const orderedMethodRows = [partnerRow, ...nonPartnerRows];
-  const cheapestOverall = partnerRow.total <= cheapest;
-  const paidAgencyRows = nonPartnerRows.filter((r) => r.key === "staffing_agency" || r.key === "executive_search");
-  const cheaperThanPaidAgencies = paidAgencyRows.length > 0 && paidAgencyRows.every((r) => partnerRow.total < r.total);
+  const cheapest = Math.min(...methodRows.map((r) => r.total));
+  const fastest = Math.min(...methodRows.map((r) => r.ttf));
 
   const dailyBurden = (inputs.salary / 365) * CONFIG.vacancyBurdenFactor;
   const savings10Days = dailyBurden * 10;
@@ -113,7 +104,7 @@ export default function HiringCostCalculator() {
               options={METHOD_OPTIONS}
             />
             <p className="mt-1.5 text-[11.5px] leading-relaxed text-navy/90">
-              This is the method used in the Cost Breakdown tab. Compare all 6 methods in the tab to the right.
+              This is the method used in the Cost Breakdown tab. Compare all 5 methods in the tab to the right.
             </p>
           </div>
         </div>
@@ -171,9 +162,7 @@ export default function HiringCostCalculator() {
               </p>
               <p className="mt-1.5 font-heading text-[42px] font-bold leading-none">{fmt(result.total)}</p>
               <p className="mt-1 text-[13.5px] text-white/70">
-                {inputs.methodKey === "mintex_staffing"
-                  ? "Typically 12.5% of annual salary, depending on role difficulty. Contact our team for an exact quote."
-                  : `${fmtPct((result.total / inputs.salary) * 100)} of annual salary`}
+                {fmtPct((result.total / inputs.salary) * 100)} of annual salary
               </p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/[0.08] p-4">
@@ -193,36 +182,6 @@ export default function HiringCostCalculator() {
               <p className="mt-1.5 text-xl font-bold">{fmt(result.hiddenCosts)}</p>
               <p className="mt-1 text-[11.5px] text-steel-lighter">The &quot;invisible&quot; costs most teams miss</p>
             </div>
-          </div>
-        </div>
-
-        {/* Partner banner */}
-        <div className="mt-5 flex flex-wrap items-center gap-4 rounded-3xl border border-steel/50 bg-steel/[0.1] p-6">
-          <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-steel bg-white text-steel">
-            <svg viewBox="0 0 24 24" fill="none" strokeWidth={1.8} stroke="currentColor" className="h-5 w-5">
-              <path d="M12 3l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.1-5.4 3.1 1.3-6-4.6-4.1 6.1-.6L12 3z" strokeLinejoin="round" />
-            </svg>
-          </span>
-          <div className="min-w-[240px] flex-1">
-            <p className="flex flex-wrap items-center gap-2 font-heading text-[15px] font-semibold text-navy">
-              Skip the hassle — hire through Mintex Staffing
-              <span className="rounded-full bg-white border border-navy px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-navy">
-                Preferred Partner
-              </span>
-            </p>
-            <p className="mt-1.5 text-[13px] leading-relaxed text-navy">
-              {inputs.methodKey === "mintex_staffing"
-                ? "You're already set up with Mintex Staffing. We charge one flat fee on the candidate's annual salary and nothing else. No job-board spend, no background-check bills, no other vendor to pay."
-                : savingsVsMintex > 0
-                  ? `Mintex Staffing sources, screens and delivers ready-to-interview candidates in 12–48 hours for one flat fee — 12.5% of the candidate's annual salary — and nothing else. That's ${fmt(savingsVsMintex)} less than your current selection.`
-                  : `Mintex Staffing charges one flat fee — 12.5% of the candidate's annual salary — and nothing else: no job-board spend, no background-check bills, no other vendor. In exchange you get ready-to-interview candidates in 12–48 hrs instead of a ${inputs.ttf}-day search.`}
-            </p>
-          </div>
-          <div className="flex-shrink-0 rounded-2xl bg-navy px-5 py-3 text-center">
-            <p className="text-[10.5px] font-semibold uppercase tracking-wide text-steel-lighter">
-              Mintex Fee
-            </p>
-            <p className="mt-0.5 text-xl font-bold text-white">{fmt(mintexResult.total)}</p>
           </div>
         </div>
 
@@ -284,10 +243,7 @@ export default function HiringCostCalculator() {
               </table>
             </div>
             <p className="mt-5 rounded-2xl border border-steel/30 bg-steel/[0.08] p-4 text-[12.5px] leading-relaxed text-navy">
-              Your largest cost driver is &quot;{topItem.label}&quot;
-              {inputs.methodKey === "mintex_staffing"
-                ? " (Typically 12.5% of annual salary, depending on role difficulty. Contact our team for an exact quote.)"
-                : ""}{" "}
+              Your largest cost driver is &quot;{topItem.label}&quot;{" "}
               at {fmtPct((topItem.amount / result.total) * 100)}{" "}
               of total cost-to-hire. Vacancy and ramp-up productivity loss together account for{" "}
               {fmtPct((result.hiddenCosts / result.total) * 100)} of the total  costs most teams never put in a
@@ -317,29 +273,19 @@ export default function HiringCostCalculator() {
                   </tr>
                 </thead>
                 <tbody>
-                  {orderedMethodRows.map((r) => (
+                  {methodRows.map((r) => (
                     <tr
                       key={r.key}
-                      className={`border-b border-navy/10 ${
-                        r.cfg.isPartner ? "bg-steel/[0.08]" : r.total === cheapest ? "bg-emerald-50/60" : ""
-                      }`}
+                      className={`border-b border-navy/10 ${r.total === cheapest ? "bg-emerald-50/60" : ""}`}
                     >
-                      <td className={`py-3 ${r.cfg.isPartner ? "font-semibold text-navy" : "text-navy"}`}>
-                        {r.cfg.label}
-                      </td>
+                      <td className="py-3 text-navy">{r.cfg.label}</td>
                       <td className="py-3 text-center font-semibold text-navy">{fmt(r.total)}</td>
-                      <td className="py-3 text-center text-navy">
-                        {r.ttf} days
-                        {r.cfg.isPartner && (
-                          <span className="ml-1 text-steel">(candidates in 12–48 hrs)</span>
-                        )}
-                      </td>
+                      <td className="py-3 text-center text-navy">{r.ttf} days</td>
                       <td className="py-3 text-left text-[12.5px] text-navy/90">
                         {r.cfg.best}{" "}
                         {r.key === inputs.methodKey && <Badge>Selected</Badge>}
-                        {r.cfg.isPartner && <Badge tan>Preferred Partner</Badge>}
-                        {!r.cfg.isPartner && r.total === cheapest && <Badge>Lowest cost</Badge>}
-                        {!r.cfg.isPartner && r.ttf === fastest && <Badge>Fastest</Badge>}
+                        {r.total === cheapest && <Badge>Lowest cost</Badge>}
+                        {r.ttf === fastest && <Badge>Fastest</Badge>}
                       </td>
                     </tr>
                   ))}
@@ -347,11 +293,9 @@ export default function HiringCostCalculator() {
               </table>
             </div>
             <p className="mt-5 rounded-2xl border border-steel/30 bg-steel/[0.08] p-4 text-[12.5px] leading-relaxed text-navy">
-              {cheapestOverall
-                ? "At these inputs, Mintex Staffing is also the lowest total cost on the table — plus the fastest, most hands-off option. Mintex charges one flat fee (12.5% of annual salary) and nothing else."
-                : cheaperThanPaidAgencies
-                  ? `Mintex Staffing's flat 12.5% fee costs less than a Staffing Provider (20%) or Executive Recruiting Firm (28%) here — and it's the only cost you'll see, nothing else added. It shows higher than free/low-cost methods like In-House HR or Employee Recommendation in raw dollars — the trade you're paying for is candidates in 12–48 hrs instead of a ${inputs.ttf}-day search, with zero internal sourcing or screening effort.`
-                  : "Method comparison re-runs the same formulas with method-specific adjustments (fee %, faster/slower sourcing, less/more internal interview time), using your current salary, seniority and process inputs. Mintex Staffing's only cost is a flat 12.5% placement fee — nothing else."}
+              Method comparison re-runs the same formulas with method-specific adjustments (fee %,
+              faster/slower sourcing, less/more internal interview time), using your current salary,
+              seniority and process inputs.
             </p>
           </div>
         )}
@@ -511,13 +455,9 @@ function NumberField({
   );
 }
 
-function Badge({ children, tan }: { children: React.ReactNode; tan?: boolean }) {
+function Badge({ children }: { children: React.ReactNode }) {
   return (
-    <span
-      className={`ml-1 inline-block rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
-        tan ? "bg-white border border-navy text-navy" : "bg-mist text-navy"
-      }`}
-    >
+    <span className="ml-1 inline-block rounded-full bg-mist px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-navy">
       {children}
     </span>
   );
