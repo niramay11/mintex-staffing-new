@@ -59,9 +59,6 @@ function allGeneratedText(kit: InterviewKit): string {
       parts.push(q.question, q.subtext, ...q.what_strong_looks_like, ...q.what_weak_looks_like, ...q.follow_up_probes);
     }
   }
-  for (const dim of kit.how_youll_be_scored) {
-    parts.push(dim.dimension, dim.anchors["1"], dim.anchors["3"], dim.anchors["5"]);
-  }
   parts.push(...kit.prep.star_prompts, ...kit.prep.questions_to_ask_them, ...kit.prep.likely_skills_tests);
 
   return parts.join(" \n ");
@@ -80,22 +77,6 @@ function checkNoDuplicateQuestions(kit: InterviewKit): string[] {
         seen.set(hash, q.id);
       }
     }
-  }
-  return errors;
-}
-
-/** Rubric shape (2-6 dimensions, 1/3/5 anchors each) is already enforced by
- * the zod schema — this catches the lazier failure of pasting the same
- * anchor text across multiple "different" dimensions. */
-function checkRubricDistinct(kit: InterviewKit): string[] {
-  const errors: string[] = [];
-  const seenAnchors = new Set<string>();
-  for (const dim of kit.how_youll_be_scored) {
-    const key = dim.anchors["3"].trim().toLowerCase();
-    if (seenAnchors.has(key)) {
-      errors.push(`rubric dimension "${dim.dimension}" reuses another dimension's anchor text`);
-    }
-    seenAnchors.add(key);
   }
   return errors;
 }
@@ -197,7 +178,6 @@ export function validateKit(kit: InterviewKit, options: ValidateKitOptions): str
   const errors = scanContentIssues(allGeneratedText(kit), options);
 
   errors.push(...checkQuotas(kit, options.focus));
-  errors.push(...checkRubricDistinct(kit));
   errors.push(...checkNoDuplicateQuestions(kit));
 
   return errors;

@@ -114,16 +114,6 @@ export const LegallyConfusedSchema = z.object({
   guidance: z.string(),
 });
 
-// Per dimension, not a single blended scale. A candidate given one 1-5 score
-// across everything can't tell which dimension they're weak on, and an
-// interviewer can't score with it either — each dimension needs its own
-// anchors at 1, 3 and 5. See kit-schema.ts's RubricDimension for the origin
-// of this shape.
-export const RubricDimensionSchema = z.object({
-  dimension: z.string(),
-  anchors: z.object({ "1": z.string(), "3": z.string(), "5": z.string() }),
-});
-
 export const InterviewKitSchema = z.object({
   role: z.object({
     title: z.string(),
@@ -136,7 +126,6 @@ export const InterviewKitSchema = z.object({
   }),
   competency_map: z.array(CompetencySchema).min(3).max(10),
   sections: z.array(InterviewSectionSchema).min(1),
-  how_youll_be_scored: z.array(RubricDimensionSchema).min(2).max(6),
   your_rights: z.object({
     cannot_be_asked: z.array(CannotBeAskedSchema).max(8),
     state_specific: z.array(StateSpecificNoteSchema).max(6),
@@ -155,7 +144,6 @@ export const InterviewKitSchema = z.object({
 
 export type InterviewKit = z.infer<typeof InterviewKitSchema>;
 export type InterviewQuestion = z.infer<typeof InterviewQuestionSchema>;
-export type RubricDimension = z.infer<typeof RubricDimensionSchema>;
 export type CannotBeAsked = z.infer<typeof CannotBeAskedSchema>;
 export type StateSpecificNote = z.infer<typeof StateSpecificNoteSchema>;
 export type LegallyConfused = z.infer<typeof LegallyConfusedSchema>;

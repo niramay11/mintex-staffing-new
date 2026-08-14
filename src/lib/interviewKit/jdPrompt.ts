@@ -133,9 +133,6 @@ OUTPUT SHAPE — match field names and types exactly:
       ]
     }
   ],
-  "how_youll_be_scored": [
-    { "dimension": string, "anchors": { "1": string, "3": string, "5": string } }
-  ],  // 2-6 items, each dimension gets its OWN anchors, never one blended scale
   "your_rights": { "cannot_be_asked": [], "state_specific": [], "legally_confused": [] },  // always empty, filled in afterward
   "prep": {
     "star_prompts": string[],

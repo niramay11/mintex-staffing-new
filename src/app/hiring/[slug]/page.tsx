@@ -8,7 +8,7 @@ import { pageMetadata } from "@/lib/pageMetadata";
 
 // Employer-facing counterpart to /interview-questions/[slug] — same slug,
 // same cached kit (see implementation notes: "candidate: probe visible ...
-// employer: strongAnswer visible ... rendered as a printable scorecard").
+// employer: strongAnswer visible").
 // The URL param carries the literal "-interview-guide" suffix so the
 // public-facing path reads as /hiring/senior-react-developer...-interview-
 // guide; we strip it back off before decoding the underlying kit slug.
@@ -30,8 +30,8 @@ export async function generateMetadata({
   if (!kit) return {};
 
   return pageMetadata({
-    title: `${kit.role.title} Interview Guide & Scorecard for Employers (${kit.region.state})`,
-    description: `Printable interview scorecard for hiring a ${kit.role.title} in ${kit.region.state}: per-dimension rubric, question bank, and lawful phrasing for ${kit.region.state} compliance.`,
+    title: `${kit.role.title} Interview Guide for Employers (${kit.region.state})`,
+    description: `Printable interview guide for hiring a ${kit.role.title} in ${kit.region.state}: question bank, what a strong answer looks like, and lawful phrasing for ${kit.region.state} compliance.`,
     path: `/hiring/${rawSlug}`,
   });
 }

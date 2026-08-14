@@ -63,47 +63,6 @@ export default function InterviewKitView({
 
       {!isEmployer && <ExpandKit kit={kit} path={path} />}
 
-      <section className="rounded-2xl border border-navy/10 bg-white p-6">
-        <h3 className="font-heading text-xl font-semibold text-navy">
-          {isEmployer ? "Scorecard" : "How you'll be scored"}
-        </h3>
-        <div className="mt-4 space-y-4">
-          {kit.how_youll_be_scored.map((d) => (
-            <div key={d.dimension} className="rounded-xl border border-navy/10 p-4">
-              <div className="flex items-center justify-between gap-3">
-                <p className="font-semibold text-navy">{d.dimension}</p>
-                {isEmployer && (
-                  <div className="flex gap-1.5 print:hidden">
-                    {[1, 2, 3, 4, 5].map((n) => (
-                      <span
-                        key={n}
-                        className="flex h-7 w-7 items-center justify-center rounded-full border border-navy/20 text-xs text-navy/60"
-                      >
-                        {n}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div className="mt-3 grid gap-3 sm:grid-cols-3">
-                {(["1", "3", "5"] as const).map((n) => (
-                  <div key={n} className="rounded-lg bg-mist p-3 text-sm text-navy/75">
-                    <p className="font-semibold text-navy">{n} / 5</p>
-                    <p className="mt-1">{d.anchors[n]}</p>
-                  </div>
-                ))}
-              </div>
-              {isEmployer && (
-                <div className="mt-3">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-navy/50">Notes</p>
-                  <div className="mt-1 h-12 rounded-lg border border-dashed border-navy/20 print:h-16" />
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
-
       <section className="rounded-2xl border border-steel/40 bg-steel/[0.08] p-6">
         <h3 className="font-heading text-xl font-semibold text-navy">
           {isEmployer ? `Compliance in ${kit.region.state}` : `Know your rights in ${kit.region.state}`}

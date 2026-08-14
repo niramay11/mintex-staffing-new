@@ -81,9 +81,6 @@ OUTPUT SHAPE — match field names and types exactly:
       ]
     }
   ],
-  "how_youll_be_scored": [
-    { "dimension": string, "anchors": { "1": string, "3": string, "5": string } }
-  ],  // 2-6 items — see rule 7a, do NOT use one blended scale across all dimensions
   "your_rights": {
     "cannot_be_asked": [],   // always empty — see rule 7
     "state_specific": [],    // always empty — see rule 7
@@ -121,15 +118,6 @@ RULES:
 6. Produce 3 sections: phone_screen (4-5 questions), technical (5-6 questions),
    panel or final (4-5 questions) — pick panel for hands-on/technical roles,
    final for everything else.
-6a. In how_youll_be_scored, produce 2-6 dimensions and give EACH ONE its own
-   1/3/5 anchors — never one blended scale shared across all dimensions. A
-   candidate reading it should be able to tell which specific dimension they
-   are weak on. Anchors describe OBSERVABLE CANDIDATE BEHAVIOUR, not
-   alignment with a company's goals or culture (you don't know either).
-   Write each anchor so it works read from either side: "names metrics
-   without connecting them to a decision they changed" tells an interviewer
-   what to look for AND tells a candidate what to avoid; "candidate lacks
-   basic understanding" does neither.
 7. Leave your_rights.cannot_be_asked, your_rights.state_specific, and
    your_rights.legally_confused as EMPTY arrays. Do not generate any legal
    content — no illegal-question examples, no statute names, no state
