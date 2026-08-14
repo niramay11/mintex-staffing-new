@@ -8,6 +8,7 @@ import PasteJobDescriptionKit from "@/components/tools/PasteJobDescriptionKit";
 import type { Industry } from "@/content/types";
 import { US_STATES } from "@/lib/interviewKit/schema";
 import { buildKitSlug } from "@/lib/interviewKit/slug";
+import { hasHazardDomain } from "@/lib/interviewKit/hazardDomain";
 
 const seniorityOptions = [
   { value: "entry", label: "Entry" },
@@ -17,13 +18,13 @@ const seniorityOptions = [
 
 const stateOptions = US_STATES.map((state) => ({ value: state, label: state }));
 
-const focusOptions = [
+const BASE_FOCUS_OPTIONS = [
   { value: "", label: "Balanced" },
   { value: "technical", label: "Technical" },
   { value: "behavioral", label: "Behavioral" },
   { value: "culture", label: "Culture / reliability" },
-  { value: "safety", label: "Safety" },
 ];
+const SAFETY_FOCUS_OPTION = { value: "safety", label: "Safety" };
 
 // Redirect BEFORE generating, straight to the kit's own indexed URL — the
 // slug is deterministic from the form inputs (see slug.ts), so no API call
@@ -45,6 +46,19 @@ export default function AiInterviewGenerator({ industries }: { industries: Indus
   const [error, setError] = useState<string | null>(null);
 
   const industryName = industries.find((industry) => industry.slug === industrySlug)?.name ?? industrySlug;
+  const focusOptions = hasHazardDomain(industryName) ? [...BASE_FOCUS_OPTIONS, SAFETY_FOCUS_OPTION] : BASE_FOCUS_OPTIONS;
+
+  // If the user had Safety selected and then switches to an industry where
+  // it doesn't apply, don't silently submit a focus mode that's no longer
+  // shown as an option — reset it right here in the change handler rather
+  // than an effect, since this is a direct response to a user action.
+  function handleIndustryChange(newSlug: string) {
+    setIndustrySlug(newSlug);
+    const newIndustryName = industries.find((industry) => industry.slug === newSlug)?.name ?? newSlug;
+    if (focus === "safety" && !hasHazardDomain(newIndustryName)) {
+      setFocus("");
+    }
+  }
 
   function handleGenerate(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -108,7 +122,7 @@ export default function AiInterviewGenerator({ industries }: { industries: Indus
               />
             </label>
 
-            <Select label="Industry" value={industrySlug} onChange={setIndustrySlug} options={industryOptions} />
+            <Select label="Industry" value={industrySlug} onChange={handleIndustryChange} options={industryOptions} />
             <Select
               label="State"
               value={state}

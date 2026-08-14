@@ -9,6 +9,7 @@ import {
 import { generateWithSchema, KitGenerationError } from "./aiClient";
 import { withVerifiedRights } from "./generate";
 import { applySuppression } from "./feedback";
+import { validateKit, buildValidatorRepairPrompt } from "./validator";
 
 export { KitGenerationError, JD_MAX_CHARS };
 
@@ -46,9 +47,30 @@ export async function generateJdInterviewKit(
   };
 
   const prompt = buildJdKitPrompt(extraction, kitInput);
-  const kit = await generateWithSchema(InterviewKitSchema, prompt, buildJdKitRepairPrompt, "JD interview kit");
+  const first = await generateWithSchema(InterviewKitSchema, prompt, buildJdKitRepairPrompt, "JD interview kit");
+
+  const validationOptions = {
+    path: "jd" as const,
+    industryName: kitInput.industryName,
+    focus: kitInput.focus,
+    allowedVendors: extraction.namedTools,
+  };
+  const validationErrors = validateKit(first, validationOptions);
+
+  let kit = first;
+  if (validationErrors.length > 0) {
+    console.error("JD interview kit failed content validation (attempt 1):", validationErrors);
+    const repairPrompt = buildValidatorRepairPrompt(JSON.stringify(first), validationErrors);
+    const repaired = await generateWithSchema(InterviewKitSchema, repairPrompt, buildJdKitRepairPrompt, "JD interview kit (validator repair)");
+    const remainingErrors = validateKit(repaired, validationOptions);
+    if (remainingErrors.length > 0) {
+      console.error("JD interview kit still failed content validation after repair:", remainingErrors);
+    }
+    kit = repaired;
+  }
+
   const withRights = withVerifiedRights(kit);
-  const suppressed = await applySuppression(withRights).catch(() => withRights);
+  const suppressed = await applySuppression(withRights, "jd").catch(() => withRights);
 
   return { kit: suppressed, extraction };
 }

@@ -1,4 +1,6 @@
 import { ANSWER_FRAMEWORKS, FOCUS_TYPES, INTERVIEW_STAGES, type GenerateKitInput } from "./schema";
+import { DIFFICULTY_LEVEL_DEFINITIONS, getFocusQuotaInstruction } from "./promptFragments";
+import { getHazardDomain } from "./hazardDomain";
 
 // System prompt per plan_1.md §5.1 — candidate-only framing (never the
 // employer's point of view), plus the region layer's state input feeding the
@@ -24,6 +26,31 @@ ROLE:
   Seniority: ${seniority}
   State: ${state}
   ${focus ? `Focus emphasis: ${focus}` : ""}
+
+## What you know and what you do not know
+
+You are given a job title, an industry, a US state, a seniority level, and a focus
+mode. That is all you know. You do NOT know the hiring company — not its name, size,
+business model, tech stack, tools, clients, team structure, stated values, or internal
+metrics. Never invent any of these.
+
+The industry field describes the SECTOR THE CANDIDATE WORKS IN, not the hiring
+company's business model. Never assume the employer is a staffing or recruiting firm
+unless industry is explicitly "Staffing & Recruiting".
+
+## Voice rules
+
+- Write every question as a hiring manager would ask it aloud to a candidate. Second
+  person, addressed to the candidate.
+- NEVER use first-person-company possessives: no "our team", "our tech stack", "our
+  clients", "our brand", "we use", "our recruiters", "this company's values". These
+  assert facts about an employer you know nothing about.
+- Generalise instead: "our tech stack" becomes "a marketing automation stack"; "our
+  recruiters" becomes "the sales team you would support".
+- Never name a specific commercial product or vendor as something the employer uses.
+  You may name a CATEGORY ("a CRM", "a CI pipeline") or a technology intrinsic to the
+  role itself (SQL for a data analyst) — never as the employer's specific choice.
+- No invented numbers, benchmarks, market statistics, or salary figures.
 
 Since you have no external grounding data for this role, first infer — silently,
 do not output this step — the realistic day-to-day tasks, required skills, and
@@ -58,8 +85,9 @@ OUTPUT SHAPE — match field names and types exactly:
     { "dimension": string, "anchors": { "1": string, "3": string, "5": string } }
   ],  // 2-6 items — see rule 7a, do NOT use one blended scale across all dimensions
   "your_rights": {
-    "cannot_be_asked": [],  // always empty — see rule 7
-    "state_specific": []    // always empty — see rule 7
+    "cannot_be_asked": [],   // always empty — see rule 7
+    "state_specific": [],    // always empty — see rule 7
+    "legally_confused": []   // always empty — see rule 7
   },
   "prep": {
     "star_prompts": string[],              // 1-5 items
@@ -85,10 +113,11 @@ RULES:
 4. Calibrate difficulty (1-5) to seniority. Entry-level questions must be
    answerable by someone with no prior experience in the role — favour
    situational questions over behavioral ones, since they have no work history
-   to draw a "tell me about a time" answer from.
-5. Cover a realistic mix of question types (screening, technical/process,
-   behavioral, situational, culture, safety where relevant) — do not make
-   every question the same type.
+   to draw a "tell me about a time" answer from. Seniority sets the centre of
+   gravity: entry 1-3, mid 2-4, senior 3-5.
+
+   ${DIFFICULTY_LEVEL_DEFINITIONS}
+5. ${getFocusQuotaInstruction(focus, getHazardDomain(industryName))}
 6. Produce 3 sections: phone_screen (4-5 questions), technical (5-6 questions),
    panel or final (4-5 questions) — pick panel for hands-on/technical roles,
    final for everything else.
@@ -101,11 +130,13 @@ RULES:
    without connecting them to a decision they changed" tells an interviewer
    what to look for AND tells a candidate what to avoid; "candidate lacks
    basic understanding" does neither.
-7. Leave your_rights.cannot_be_asked and your_rights.state_specific as EMPTY
-   arrays. Do not generate any legal content — no illegal-question examples,
-   no statute names, no state worker-protection claims. That section is
-   filled in afterward from a verified, hand-checked dataset, not by you.
-   Output the field as { "cannot_be_asked": [], "state_specific": [] }.
+7. Leave your_rights.cannot_be_asked, your_rights.state_specific, and
+   your_rights.legally_confused as EMPTY arrays. Do not generate any legal
+   content — no illegal-question examples, no statute names, no state
+   worker-protection claims, no "this is actually legal" guidance either.
+   That whole section is filled in afterward from a verified, hand-checked
+   dataset, not by you. Output the field as
+   { "cannot_be_asked": [], "state_specific": [], "legally_confused": [] }.
 8. In "prep", write practice prompts and questions FOR the candidate to use —
    never content addressed to the employer.
 9. Output ONLY valid JSON matching the provided schema. No prose, no markdown

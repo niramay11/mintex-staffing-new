@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { generateGapAnalysis, KitGenerationError, RESUME_MAX_CHARS } from "@/lib/interviewKit/gapGenerate";
 import { extractResumeText, isSupportedResumeType, ResumeParseError } from "@/lib/interviewKit/resumeParse";
 import { InterviewKitSchema } from "@/lib/interviewKit/schema";
+import { checkRateLimit, getClientIp } from "@/lib/interviewKit/rateLimit";
 
 export const maxDuration = 60;
 
@@ -18,6 +19,9 @@ const MAX_FILE_BYTES = 5 * 1024 * 1024;
 // paste path, or multipart/form-data (resumeFile, kit, jdContext as a JSON
 // string field) for the upload path — same downstream logic either way.
 export async function POST(req: NextRequest) {
+  const allowed = await checkRateLimit("generate-gap-analysis", getClientIp(req));
+  if (!allowed) return NextResponse.json({ error: "Too many requests — please try again in a bit." }, { status: 429 });
+
   const contentType = req.headers.get("content-type") ?? "";
 
   let resumeText: string;

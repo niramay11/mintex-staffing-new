@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Section from "@/components/ui/Section";
 import InterviewKitView from "@/components/tools/InterviewKitView";
-import { loadKitBySlug } from "@/lib/interviewKit/loadKit";
+import { loadKitBySlug, RateLimitError } from "@/lib/interviewKit/loadKit";
 import { pageMetadata } from "@/lib/pageMetadata";
 
 // Employer-facing counterpart to /interview-questions/[slug] — same slug,
@@ -44,7 +44,21 @@ export default async function EmployerKitPage({
   const { slug: rawSlug } = await params;
   const kitSlug = stripSuffix(rawSlug);
   if (!kitSlug) notFound();
-  const kit = await loadKitBySlug(kitSlug).catch(() => null);
+
+  let kit;
+  try {
+    kit = await loadKitBySlug(kitSlug);
+  } catch (err) {
+    if (err instanceof RateLimitError) {
+      return (
+        <Section background="mist" className="!py-16 text-center">
+          <h1 className="font-heading text-2xl font-bold text-navy">Too many requests</h1>
+          <p className="mt-3 text-steel">You&apos;ve hit a lot of guides in a short time — give it a few minutes and try again.</p>
+        </Section>
+      );
+    }
+    kit = null;
+  }
   if (!kit) notFound();
 
   return (

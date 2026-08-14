@@ -2,7 +2,7 @@ import type { Industry } from "@/content/types";
 import { SENIORITIES, type GenerateKitInput } from "./schema";
 
 type Seniority = (typeof SENIORITIES)[number];
-import { canonicalizeJobTitle } from "./cache";
+import { canonicalizeJobTitle } from "./textNormalize";
 
 // The public kit's slug IS its cache key (see cache.ts) and its whole
 // identity — a visitor arriving straight from a Google result has nothing
@@ -15,7 +15,7 @@ import { canonicalizeJobTitle } from "./cache";
 
 const SLUG_DELIMITER = "_";
 
-const STATE_TO_ABBR: Record<string, string> = {
+export const STATE_TO_ABBR: Record<string, string> = {
   Alabama: "al", Alaska: "ak", Arizona: "az", Arkansas: "ar", California: "ca",
   Colorado: "co", Connecticut: "ct", Delaware: "de", "District of Columbia": "dc",
   Florida: "fl", Georgia: "ga", Hawaii: "hi", Idaho: "id", Illinois: "il",

@@ -5,10 +5,10 @@ import { IMAGE_LOCATIONS, IMAGE_CATEGORY_INFO } from "@/lib/imageLocations";
 import type { InsightPost, InsightCategoryRow, CaseStudy, CaseStudyType, TeamMember, Industry } from "@/content/types";
 
 const STORAGE_KEY = "mintex_admin_pw";
-const TABS = ["jobs", "clients", "social", "stories", "images", "messages", "resumes", "inquiries", "insights", "caseStudies", "team", "industries"] as const;
+const TABS = ["jobs", "clients", "social", "stories", "images", "messages", "resumes", "inquiries", "insights", "caseStudies", "team", "industries", "curation"] as const;
 type Tab = typeof TABS[number];
 const TAB_LABELS: Record<Tab, string> = {
-  jobs: "Jobs", clients: "Clients", social: "Social Links", stories: "Client Stories", images: "Site Images", messages: "Messages", resumes: "Resumes", inquiries: "Hiring Inquiries", insights: "Insights", caseStudies: "Case Studies", team: "Team", industries: "Industries",
+  jobs: "Jobs", clients: "Clients", social: "Social Links", stories: "Client Stories", images: "Site Images", messages: "Messages", resumes: "Resumes", inquiries: "Hiring Inquiries", insights: "Insights", caseStudies: "Case Studies", team: "Team", industries: "Industries", curation: "Interview Questions",
 };
 
 export default function AdminInsightsPage() {
@@ -102,6 +102,7 @@ export default function AdminInsightsPage() {
         {activeTab === "caseStudies" && <CaseStudiesTab password={activePassword} />}
         {activeTab === "team" && <TeamMembersTab password={activePassword} />}
         {activeTab === "industries" && <IndustriesTab password={activePassword} />}
+        {activeTab === "curation" && <CurationTab password={activePassword} />}
       </div>
     </div>
   );
@@ -4280,6 +4281,145 @@ function IndustriesTab({ password }: { password: string }) {
               </button>
             </div>
           </form>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Curation Tab ───────────────────────────────────────────────────────────
+// Turns the vote data collected on every generated interview kit into
+// something a recruiter actually looks at (see implementation-notes.md §7):
+// well-liked questions (5+ upvotes, 85%+ positive) surface here as
+// candidates worth reusing/promoting; suppressed ones (3+ downvotes, 60%+
+// negative) show what's already being filtered out of live kits. The
+// "reviewed" checkbox is just the recruiter's own tracking — it doesn't
+// change indexing or the kit itself.
+type QuestionFeedbackRow = {
+  hash: string;
+  text: string;
+  role_slug: string | null;
+  up: number;
+  down: number;
+  down_reasons: Record<string, number>;
+  reviewed: boolean;
+  status: "suppressed" | "promotion_candidate" | "neutral";
+};
+
+const CURATION_STATUS_STYLES: Record<string, string> = {
+  promotion_candidate: "bg-green-50 text-green-700 border-green-200",
+  suppressed: "bg-red-50 text-red-700 border-red-200",
+  neutral: "bg-mist text-navy/50 border-navy/10",
+};
+const CURATION_STATUS_LABELS: Record<string, string> = {
+  promotion_candidate: "Well-liked",
+  suppressed: "Suppressed",
+  neutral: "Neutral",
+};
+
+function CurationTab({ password }: { password: string }) {
+  const [rows, setRows] = useState<QuestionFeedbackRow[]>([]);
+  const [loaded, setLoaded] = useState(false);
+  const [loadError, setLoadError] = useState("");
+  const [filter, setFilter] = useState<"promotion_candidate" | "suppressed" | "all">("promotion_candidate");
+
+  const fetchData = () =>
+    fetch("/api/admin/question-curation", { headers: { "x-admin-password": password } })
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) { setRows(data); setLoadError(""); }
+        else setLoadError(data.error ?? "Failed to load question feedback");
+        setLoaded(true);
+      })
+      .catch(() => { setLoadError("Could not reach the server."); setLoaded(true); });
+
+  useEffect(() => { fetchData(); }, []);
+
+  const toggleReviewed = async (row: QuestionFeedbackRow) => {
+    setRows((prev) => prev.map((r) => (r.hash === row.hash ? { ...r, reviewed: !r.reviewed } : r)));
+    await fetch(`/api/admin/question-curation/${row.hash}`, {
+      method: "PUT",
+      headers: { "x-admin-password": password, "Content-Type": "application/json" },
+      body: JSON.stringify({ reviewed: !row.reviewed }),
+    });
+  };
+
+  if (!loaded) return (
+    <div className="flex items-center gap-3 py-10 text-navy/60">
+      <div className="w-5 h-5 border-2 border-navy/15 border-t-steel rounded-full animate-spin" />
+      Loading question feedback…
+    </div>
+  );
+
+  const candidateCount = rows.filter((r) => r.status === "promotion_candidate").length;
+  const suppressedCount = rows.filter((r) => r.status === "suppressed").length;
+  const filtered = filter === "all" ? rows : rows.filter((r) => r.status === filter);
+
+  return (
+    <div>
+      <div className="mb-5 flex items-center justify-between gap-4 flex-wrap">
+        <div>
+          <h2 className="text-xl font-semibold text-navy">Interview Question Feedback</h2>
+          <p className="text-sm text-navy/60 mt-1">
+            {rows.length} voted questions · {candidateCount} well-liked · {suppressedCount} suppressed
+          </p>
+        </div>
+        <button type="button" onClick={fetchData}
+          className="px-3 py-2 rounded-full bg-white hover:bg-mist text-navy/70 text-sm border border-navy/10 transition-colors">
+          ↻ Refresh
+        </button>
+      </div>
+
+      <div className="mb-5 flex gap-2">
+        {(["promotion_candidate", "suppressed", "all"] as const).map((f) => (
+          <button key={f} type="button" onClick={() => setFilter(f)}
+            className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+              filter === f ? "bg-navy text-white border-navy" : "bg-white text-navy/70 border-navy/10 hover:bg-mist"
+            }`}>
+            {f === "promotion_candidate" ? `Well-liked (${candidateCount})` : f === "suppressed" ? `Suppressed (${suppressedCount})` : `All (${rows.length})`}
+          </button>
+        ))}
+      </div>
+
+      {loadError && (
+        <div className="mb-6 px-4 py-3 rounded-lg text-sm font-medium bg-red-50 text-red-700 border border-red-200">
+          Couldn&apos;t load question feedback: {loadError}
+          {loadError.includes("question_feedback") && (
+            <> — run <code className="px-1 bg-red-100 rounded">supabase/migrations/023_question_curation.sql</code> in your Supabase SQL editor, then refresh.</>
+          )}
+        </div>
+      )}
+
+      {filtered.length === 0 && !loadError ? (
+        <div className="py-16 text-center text-navy/50 text-sm">
+          {filter === "promotion_candidate"
+            ? "No well-liked questions yet — they show up here once a question gets 5+ upvotes at 85%+ positive."
+            : "Nothing here yet."}
+        </div>
+      ) : (
+        <div className="rounded-2xl border border-navy/10 bg-white divide-y divide-navy/10 overflow-hidden">
+          {filtered.map((row) => (
+            <div key={row.hash} className="flex items-start gap-4 px-5 py-4">
+              <input
+                type="checkbox"
+                checked={row.reviewed}
+                onChange={() => toggleReviewed(row)}
+                className="mt-1 h-4 w-4 flex-shrink-0 rounded border-navy/20"
+                title="Mark reviewed"
+              />
+              <div className="min-w-0 flex-1">
+                <p className="text-sm text-navy">{row.text}</p>
+                <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                  <span className={`text-[11px] px-2 py-0.5 rounded-full border font-medium ${CURATION_STATUS_STYLES[row.status]}`}>
+                    {CURATION_STATUS_LABELS[row.status]}
+                  </span>
+                  <span className="text-xs text-navy/40">{row.up} up · {row.down} down</span>
+                  {row.role_slug && <span className="text-xs text-navy/40 truncate">· {row.role_slug}</span>}
+                  {row.reviewed && <span className="text-xs text-steel font-medium">· Reviewed</span>}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>

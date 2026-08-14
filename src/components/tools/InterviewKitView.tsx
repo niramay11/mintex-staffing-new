@@ -1,5 +1,8 @@
+import Link from "next/link";
 import type { InterviewKit } from "@/lib/interviewKit/schema";
-import QuestionVote from "@/components/tools/QuestionVote";
+import KitSection from "@/components/tools/KitSection";
+import ExpandKit from "@/components/tools/ExpandKit";
+import { stateToSlug } from "@/lib/interviewKit/legalRights";
 
 // Pure display component — no client state, no hooks. Used by the indexed
 // /interview-questions/[slug] candidate page, the /hiring/[slug]-interview-
@@ -15,13 +18,6 @@ import QuestionVote from "@/components/tools/QuestionVote";
 
 type View = "candidate" | "employer";
 
-const STAGE_LABELS: Record<string, string> = {
-  phone_screen: "Phone Screen",
-  technical: "Technical Round",
-  panel: "Panel",
-  final: "Final Round",
-};
-
 const WEIGHT_STYLES: Record<string, string> = {
   critical: "bg-steel/20 text-navy",
   important: "bg-mist text-navy/80",
@@ -32,10 +28,15 @@ export default function InterviewKitView({
   kit,
   view = "candidate",
   roleSlug,
+  path = "public",
 }: {
   kit: InterviewKit;
   view?: View;
   roleSlug?: string;
+  /** Which pipeline generated this kit — controls whether the "+" expansion
+   * feature allows employer-possessive language (jd path) or bans it
+   * entirely (public path), same rule as the base generation. */
+  path?: "public" | "jd";
 }) {
   const isEmployer = view === "employer";
 
@@ -57,81 +58,10 @@ export default function InterviewKitView({
       </section>
 
       {kit.sections.map((section) => (
-        <section key={section.stage}>
-          <h3 className="font-heading text-xl font-semibold text-navy">
-            {STAGE_LABELS[section.stage] ?? section.stage}
-            <span className="ml-2 text-sm font-normal text-navy/50">~{section.duration_minutes} min</span>
-          </h3>
-          <div className="mt-3 space-y-3">
-            {section.questions.map((q) => (
-              <details key={q.id} className="group rounded-2xl border border-navy/10 bg-white p-5" open={isEmployer}>
-                <summary className="flex cursor-pointer list-none items-start justify-between gap-4">
-                  <span className="text-sm font-medium text-navy">{q.question}</span>
-                  <span className="flex flex-shrink-0 items-center gap-2 print:hidden">
-                    <span className="rounded-full bg-mist px-2 py-0.5 text-[11px] font-medium text-navy/60">
-                      {q.type.replace("_", " ")}
-                    </span>
-                    <span className="rounded-full bg-mist px-2 py-0.5 text-[11px] font-medium text-navy/60">
-                      Lvl {q.difficulty}
-                    </span>
-                  </span>
-                </summary>
-                <div className="mt-4 space-y-3 border-t border-navy/10 pt-4 text-sm text-navy/75">
-                  <p className="italic text-navy/60">{q.subtext}</p>
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div>
-                      <p className="font-semibold text-navy">Strong answer includes</p>
-                      <ul className="mt-1.5 list-disc space-y-1 pl-4">
-                        {q.what_strong_looks_like.map((item) => (
-                          <li key={item}>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-navy">Weak answer looks like</p>
-                      <ul className="mt-1.5 list-disc space-y-1 pl-4">
-                        {q.what_weak_looks_like.map((item) => (
-                          <li key={item}>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-navy">Follow-up probes</p>
-                    <ul className="mt-1.5 list-disc space-y-1 pl-4">
-                      {q.follow_up_probes.map((item) => (
-                        <li key={item}>{item}</li>
-                      ))}
-                    </ul>
-                  </div>
-                  {!isEmployer && (
-                    <div className="flex items-center justify-between border-t border-navy/10 pt-3 print:hidden">
-                      <span className="text-xs text-navy/40">Was this question useful?</span>
-                      <QuestionVote questionText={q.question} roleSlug={roleSlug} />
-                    </div>
-                  )}
-                  {isEmployer && (
-                    <div className="grid grid-cols-5 gap-2 border-t border-navy/10 pt-3 print:mt-2">
-                      <span className="col-span-5 text-xs font-semibold uppercase tracking-wide text-navy/50">
-                        Score
-                      </span>
-                      {[1, 2, 3, 4, 5].map((n) => (
-                        <span
-                          key={n}
-                          className="flex h-8 w-8 items-center justify-center rounded-full border border-navy/20 text-xs text-navy/60"
-                        >
-                          {n}
-                        </span>
-                      ))}
-                      <div className="col-span-5 mt-1 h-10 rounded-lg border border-dashed border-navy/20 print:h-12" />
-                    </div>
-                  )}
-                </div>
-              </details>
-            ))}
-          </div>
-        </section>
+        <KitSection key={section.stage} kit={kit} section={section} isEmployer={isEmployer} roleSlug={roleSlug} path={path} />
       ))}
+
+      {!isEmployer && <ExpandKit kit={kit} path={path} />}
 
       <section className="rounded-2xl border border-navy/10 bg-white p-6">
         <h3 className="font-heading text-xl font-semibold text-navy">
@@ -179,27 +109,52 @@ export default function InterviewKitView({
           {isEmployer ? `Compliance in ${kit.region.state}` : `Know your rights in ${kit.region.state}`}
         </h3>
         <p className="mt-1 text-xs text-navy/50">
-          Not legal advice — verify anything specific with {kit.region.state}&apos;s labor office before relying on it.
+          Not legal advice — verify anything specific with {kit.region.state}&apos;s labor office before relying on
+          it.{" "}
+          <Link href={`/interview-rights/${stateToSlug(kit.region.state)}`} className="font-medium text-steel hover:text-navy">
+            Full {kit.region.state} rights guide →
+          </Link>
         </p>
         <div className="mt-4 space-y-3">
           {kit.your_rights.cannot_be_asked.map((item) => (
             <div key={item.question} className="rounded-xl bg-white p-4 text-sm">
-              <p className="text-navy/50 line-through">{item.question}</p>
+              <p className="text-navy/50 line-through">
+                <span className="sr-only">Prohibited question: </span>
+                {item.question}
+              </p>
               <p className="mt-1 text-navy/70">{item.why}</p>
               {isEmployer ? (
                 <p className="mt-1 font-medium text-navy">Ask this instead: {item.lawful_alternative}</p>
               ) : (
                 <p className="mt-1 font-medium text-navy">If you&apos;re asked this: {item.how_to_respond}</p>
               )}
+              <p className="mt-2 text-xs text-navy/40">Source: {item.source.label}</p>
             </div>
           ))}
         </div>
         {kit.your_rights.state_specific.length > 0 && (
-          <ul className="mt-4 list-disc space-y-1 pl-4 text-sm text-navy/70">
+          <ul className="mt-4 space-y-2 text-sm text-navy/70">
             {kit.your_rights.state_specific.map((note) => (
-              <li key={note}>{note}</li>
+              <li key={note.text} className="list-disc pl-4 marker:text-navy/30">
+                {note.text}
+                <span className="block text-xs text-navy/40">Source: {note.source.label}</span>
+              </li>
             ))}
           </ul>
+        )}
+        {kit.your_rights.legally_confused.length > 0 && (
+          <div className="mt-5 border-t border-navy/10 pt-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-navy/50">Often assumed illegal — but isn&apos;t</p>
+            <div className="mt-3 space-y-3">
+              {kit.your_rights.legally_confused.map((item) => (
+                <div key={item.question} className="rounded-xl bg-white p-4 text-sm">
+                  <p className="font-medium text-navy">{item.question}</p>
+                  <p className="mt-1 text-navy/70">{item.why}</p>
+                  <p className="mt-1 text-navy/70">{item.guidance}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
       </section>
 

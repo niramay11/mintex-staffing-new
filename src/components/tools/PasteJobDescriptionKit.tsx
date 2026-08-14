@@ -15,6 +15,9 @@ type JdContext = { mustHaveSkills?: string[]; namedTools?: string[] };
 // pattern as the by-title flow, just backed by the browser tab instead of
 // a cache entry, since a pasted JD has no reusable slug and shouldn't sit
 // on a shareable URL anyway. See KitPreviewClient.tsx for the read side.
+//
+// Text paste is the primary control (most people use it); file upload is
+// secondary, reusing the exact same PDF/DOCX parser built for resumes.
 
 const seniorityOptions = [
   { value: "entry", label: "Entry" },
@@ -34,7 +37,9 @@ const focusOptions = [
 
 export default function PasteJobDescriptionKit() {
   const router = useRouter();
+  const [mode, setMode] = useState<"paste" | "upload">("paste");
   const [jobDescription, setJobDescription] = useState("");
+  const [file, setFile] = useState<File | null>(null);
   const [seniority, setSeniority] = useState<"entry" | "mid" | "senior">("mid");
   const [state, setState] = useState<(typeof US_STATES)[number]>("New Jersey");
   const [focus, setFocus] = useState("");
@@ -45,22 +50,39 @@ export default function PasteJobDescriptionKit() {
 
   async function handleGenerate(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!jobDescription.trim()) {
-      setError("Paste the job description text.");
+
+    if (mode === "paste") {
+      if (!jobDescription.trim()) {
+        setError("Paste the job description text.");
+        return;
+      }
+      if (overLimit) {
+        setError(`That's too long (${jobDescription.length} characters, max ${JD_MAX_CHARS}) — paste just the job posting.`);
+        return;
+      }
+    } else if (!file) {
+      setError("Choose a PDF or Word (.docx) file.");
       return;
     }
-    if (overLimit) {
-      setError(`That's too long (${jobDescription.length} characters, max ${JD_MAX_CHARS}) — paste just the job posting.`);
-      return;
-    }
+
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/generate-jd-kit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobDescription, seniority, state, focus: focus || undefined }),
-      });
+      let res: Response;
+      if (mode === "upload" && file) {
+        const form = new FormData();
+        form.set("jdFile", file);
+        form.set("seniority", seniority);
+        form.set("state", state);
+        if (focus) form.set("focus", focus);
+        res = await fetch("/api/generate-jd-kit", { method: "POST", body: form });
+      } else {
+        res = await fetch("/api/generate-jd-kit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ jobDescription, seniority, state, focus: focus || undefined }),
+        });
+      }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Something went wrong.");
 
@@ -75,23 +97,56 @@ export default function PasteJobDescriptionKit() {
 
   return (
     <div className="mx-auto w-full">
+      <div className="mb-4 inline-flex rounded-full border border-navy/10 bg-mist p-1">
+        <button
+          type="button"
+          onClick={() => setMode("paste")}
+          className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+            mode === "paste" ? "bg-navy text-white" : "text-navy/60 hover:text-navy"
+          }`}
+        >
+          Paste text
+        </button>
+        <button
+          type="button"
+          onClick={() => setMode("upload")}
+          className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+            mode === "upload" ? "bg-navy text-white" : "text-navy/60 hover:text-navy"
+          }`}
+        >
+          Upload file
+        </button>
+      </div>
+
       <form
         onSubmit={handleGenerate}
         className="grid content-start gap-5 rounded-3xl border border-navy/[0.08] bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)]"
       >
-        <label className="block text-sm font-semibold text-navy">
-          Job description
-          <textarea
-            value={jobDescription}
-            onChange={(event) => setJobDescription(event.target.value)}
-            placeholder="Paste the full job posting text here…"
-            rows={8}
-            className="mt-2 w-full rounded-xl border border-navy/15 bg-white px-4 py-3 text-sm font-normal text-navy placeholder:text-navy/35 focus:border-steel focus:outline-none"
-          />
-          <span className={`mt-1 block text-right text-xs ${overLimit ? "text-red-600" : "text-navy/40"}`}>
-            {jobDescription.length.toLocaleString()} / {JD_MAX_CHARS.toLocaleString()}
-          </span>
-        </label>
+        {mode === "paste" ? (
+          <label className="block text-sm font-semibold text-navy">
+            Job description
+            <textarea
+              value={jobDescription}
+              onChange={(event) => setJobDescription(event.target.value)}
+              placeholder="Paste the full job posting text here…"
+              rows={8}
+              className="mt-2 w-full rounded-xl border border-navy/15 bg-white px-4 py-3 text-sm font-normal text-navy placeholder:text-navy/35 focus:border-steel focus:outline-none"
+            />
+            <span className={`mt-1 block text-right text-xs ${overLimit ? "text-red-600" : "text-navy/40"}`}>
+              {jobDescription.length.toLocaleString()} / {JD_MAX_CHARS.toLocaleString()}
+            </span>
+          </label>
+        ) : (
+          <div className="rounded-xl border border-dashed border-navy/20 bg-mist/40 p-6 text-center">
+            <input
+              type="file"
+              accept=".pdf,.docx"
+              onChange={(event) => setFile(event.target.files?.[0] ?? null)}
+              className="block w-full text-sm text-navy/70 file:mr-3 file:rounded-full file:border-0 file:bg-navy file:px-4 file:py-2 file:text-xs file:font-semibold file:text-white file:hover:bg-navy/90"
+            />
+            <p className="mt-2 text-xs text-navy/40">PDF or Word (.docx) job posting, up to 5MB.</p>
+          </div>
+        )}
 
         <Select
           label="State"
@@ -114,8 +169,9 @@ export default function PasteJobDescriptionKit() {
         </Button>
         {error && <p className="text-sm text-red-600">{error}</p>}
         <p className="text-xs text-navy/40">
-          This kit is generated fresh from the text you paste and is never saved on our servers or indexed. Not
-          legal advice; verify anything specific with your state&apos;s labor office.
+          This kit is generated fresh and is never saved on our servers or indexed — an uploaded file is read for
+          its text and discarded, never saved to disk. Not legal advice; verify anything specific with your
+          state&apos;s labor office.
         </p>
       </form>
     </div>

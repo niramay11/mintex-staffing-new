@@ -101,8 +101,8 @@ export default async function AiInterviewGeneratorPage() {
                 </svg>
               </span>
               <div>
-                <p className="text-sm font-semibold leading-none">500+ questions</p>
-                <p className="mt-1 text-xs text-navy/50">across 12 industries</p>
+                <p className="text-sm font-semibold leading-none">Full interview kits</p>
+                <p className="mt-1 text-xs text-navy/50">competencies, three rounds, scoring rubric</p>
               </div>
             </div>
           </div>

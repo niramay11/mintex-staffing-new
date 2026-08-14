@@ -12,6 +12,13 @@ export const JD_MAX_CHARS = 15000;
 // blocking the user, since most hits are boilerplate legalese, not attacks.
 export const JobDescriptionExtractionSchema = z.object({
   jobTitle: z.string().min(1),
+  // Free text, not the app's strict enums — a JD might say "Senior" or
+  // "Location: Remote (US)" in wording that doesn't map cleanly onto
+  // SENIORITIES/US_STATES. This is informational grounding for the
+  // generation prompt only; the user's own form selections (which ARE
+  // enum-validated) remain authoritative for scoring and legal rights.
+  seniority: z.string().nullable(),
+  state: z.string().nullable(),
   industry: z.string().nullable(),
   employerName: z.string().nullable(),
   namedTools: z.array(z.string()).max(20),

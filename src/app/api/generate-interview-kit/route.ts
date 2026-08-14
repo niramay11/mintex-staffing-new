@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { KitGenerationError } from "@/lib/interviewKit/generate";
 import { getCachedInterviewKit } from "@/lib/interviewKit/cache";
 import { SENIORITIES, US_STATES } from "@/lib/interviewKit/schema";
+import { checkRateLimit, getClientIp } from "@/lib/interviewKit/rateLimit";
 
 export const maxDuration = 60;
 
@@ -9,6 +10,9 @@ export const maxDuration = 60;
 // interview kit (not a flat question list) for the given role. See
 // src/lib/interviewKit for the schema/prompt/provider pieces.
 export async function POST(req: NextRequest) {
+  const allowed = await checkRateLimit("generate-interview-kit", getClientIp(req));
+  if (!allowed) return NextResponse.json({ error: "Too many requests — please try again in a bit." }, { status: 429 });
+
   const body = await req.json().catch(() => null);
   if (!body) return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
 

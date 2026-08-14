@@ -90,7 +90,7 @@ export default function KitPreviewClient() {
           Generated from your pasted job posting — grounded in the tools and requirements it actually named, not
           guessed. This isn&apos;t saved on our servers; it disappears once you close this tab.
         </p>
-        <InterviewKitView kit={kit} />
+        <InterviewKitView kit={kit} path="jd" />
         <div className="mt-8">
           <ResumeGapAnalysis kit={kit} jdContext={jdContext} />
         </div>

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import Section from "@/components/ui/Section";
 import InterviewKitView from "@/components/tools/InterviewKitView";
 import ResumeGapAnalysis from "@/components/tools/ResumeGapAnalysis";
-import { loadKitBySlug } from "@/lib/interviewKit/loadKit";
+import { loadKitBySlug, RateLimitError } from "@/lib/interviewKit/loadKit";
 import { pageMetadata } from "@/lib/pageMetadata";
 
 // The public, candidate-facing, INDEXED kit page — see implementation
@@ -36,7 +36,21 @@ export default async function InterviewKitPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const kit = await loadKitBySlug(slug).catch(() => null);
+
+  let kit;
+  try {
+    kit = await loadKitBySlug(slug);
+  } catch (err) {
+    if (err instanceof RateLimitError) {
+      return (
+        <Section background="mist" className="!py-16 text-center">
+          <h1 className="font-heading text-2xl font-bold text-navy">Too many requests</h1>
+          <p className="mt-3 text-steel">You&apos;ve hit a lot of kits in a short time — give it a few minutes and try again.</p>
+        </Section>
+      );
+    }
+    kit = null;
+  }
   if (!kit) notFound();
 
   return (

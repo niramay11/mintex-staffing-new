@@ -68,6 +68,15 @@ export const CompetencySchema = z.object({
   weight: z.enum(["critical", "important", "nice-to-have"]),
 });
 
+// Named source for a legal claim — never a pinpoint statute section (those
+// are easy to get subtly wrong and need a lawyer to check), just the
+// recognizable act name a reader could look up themselves. url is left
+// empty until independently verified; see legalRights.ts.
+export const SourceSchema = z.object({
+  label: z.string(),
+  url: z.string(),
+});
+
 // Renamed from v1's `ask_instead` (which told an interviewer what to ask
 // instead) to `how_to_respond` — a candidate can't rewrite the interviewer's
 // question, they can only redirect their own answer toward the legitimate
@@ -85,6 +94,24 @@ export const CannotBeAskedSchema = z.object({
   why: z.string(),
   how_to_respond: z.string(),
   lawful_alternative: z.string(),
+  source: SourceSchema,
+});
+
+export const StateSpecificNoteSchema = z.object({
+  text: z.string(),
+  source: SourceSchema,
+});
+
+// Distinct from cannot_be_asked: things a candidate commonly BELIEVES are
+// illegal but aren't ("Are you legally authorized to work?" is not just
+// legal, it's usually required). Reduces false anxiety instead of adding
+// to the "everything might be a violation" pile — a different failure mode
+// than the prohibited-questions list, so it gets its own category rather
+// than a caveat bolted onto that one.
+export const LegallyConfusedSchema = z.object({
+  question: z.string(),
+  why: z.string(),
+  guidance: z.string(),
 });
 
 // Per dimension, not a single blended scale. A candidate given one 1-5 score
@@ -111,8 +138,9 @@ export const InterviewKitSchema = z.object({
   sections: z.array(InterviewSectionSchema).min(1),
   how_youll_be_scored: z.array(RubricDimensionSchema).min(2).max(6),
   your_rights: z.object({
-    cannot_be_asked: z.array(CannotBeAskedSchema).max(5),
-    state_specific: z.array(z.string()).max(6),
+    cannot_be_asked: z.array(CannotBeAskedSchema).max(8),
+    state_specific: z.array(StateSpecificNoteSchema).max(6),
+    legally_confused: z.array(LegallyConfusedSchema).max(4),
   }),
   prep: z.object({
     star_prompts: z.array(z.string()).min(1).max(5),
@@ -129,6 +157,9 @@ export type InterviewKit = z.infer<typeof InterviewKitSchema>;
 export type InterviewQuestion = z.infer<typeof InterviewQuestionSchema>;
 export type RubricDimension = z.infer<typeof RubricDimensionSchema>;
 export type CannotBeAsked = z.infer<typeof CannotBeAskedSchema>;
+export type StateSpecificNote = z.infer<typeof StateSpecificNoteSchema>;
+export type LegallyConfused = z.infer<typeof LegallyConfusedSchema>;
+export type Source = z.infer<typeof SourceSchema>;
 
 export interface GenerateKitInput {
   jobTitle: string;

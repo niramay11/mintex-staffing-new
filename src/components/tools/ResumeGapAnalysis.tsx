@@ -6,6 +6,7 @@ import GapAnalysisView from "@/components/tools/GapAnalysisView";
 import type { InterviewKit } from "@/lib/interviewKit/schema";
 import type { GapAnalysis } from "@/lib/interviewKit/gapSchema";
 import { RESUME_MAX_CHARS } from "@/lib/interviewKit/gapSchema";
+import { GEMINI_PAID_TIER_CONFIRMED } from "@/lib/interviewKit/apiTier";
 
 const ACCEPTED_FILE_TYPES = [
   "application/pdf",
@@ -88,8 +89,9 @@ export default function ResumeGapAnalysis({
         which of the questions above are most likely for you.
       </p>
       <p className="mt-2 text-xs text-navy/40">
-        Processed in memory to generate this analysis and never stored — an uploaded file is read for its text and
-        discarded, never saved to disk. Nothing here is kept once you leave this page.
+        {GEMINI_PAID_TIER_CONFIRMED
+          ? "Your resume is processed in memory to generate this analysis and is never stored. It is sent to our AI provider for analysis under terms that prohibit using it for model training. Nothing is saved after this page closes."
+          : "Processed in memory to generate this analysis and never stored — an uploaded file is read for its text and discarded, never saved to disk. We have not yet independently confirmed whether our AI provider's terms exclude this from model training, so avoid uploading anything you would not want a third party to see."}
       </p>
 
       {!analysis && (
