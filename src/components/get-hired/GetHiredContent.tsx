@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { after } from "next/server";
 import Image from "next/image";
 import Section from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
@@ -11,6 +12,7 @@ import { getCachedJobs } from "@/lib/jobsCache";
 import { getJobMap } from "@/lib/ceipal-job-map";
 import { getCachedDescription, type JobDescription } from "@/lib/jobDescriptionCache";
 import { withTimeout } from "@/lib/withTimeout";
+import { warmIfNearExpiry } from "@/lib/warmCaches";
 import { isActiveJob, jobUrlSlug } from "@/components/jobs/utils";
 import { SITE_URL } from "@/lib/site";
 import type { CeipalJob } from "@/components/jobs/types";
@@ -51,6 +53,12 @@ const jobSeekerFaqs = [
 // Ceipal — the shell streams to the browser immediately and this section pops
 // in once the (warm-cache-fast, cold-cache-timed-out) jobs fetch resolves.
 async function JobBoardSection() {
+  // Fire-and-forget: if the jobs cache is within a few minutes of expiring,
+  // silently refresh everything in the background after THIS response is
+  // sent, so the next visitor never lands on the cold cache this one might
+  // have. No-op (near-instant) when the cache was refreshed recently.
+  after(() => warmIfNearExpiry());
+
   const { jobs } = await withTimeout(getCachedJobs(), 3000, { jobs: [] as unknown[], cachedAt: Date.now(), stale: true });
   const typedJobs = jobs as CeipalJob[];
 

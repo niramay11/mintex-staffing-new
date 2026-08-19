@@ -1,5 +1,5 @@
 import { getAllJobs, getAllPlacements } from "@/lib/data-cache";
-import { getCachedJobs } from "@/lib/jobsCache";
+import { getCachedJobs, isJobsCacheNearExpiry } from "@/lib/jobsCache";
 import { warmPortalJobsCache } from "@/lib/portalJobsCache";
 import { warmV2JobMapCache } from "@/lib/ceipal-job-map";
 import { warmJobDescriptions } from "@/lib/jobDescriptionCache";
@@ -34,4 +34,19 @@ export async function warmAllJobCaches(): Promise<void> {
     // own slowdown under that many back-to-back requests along the way.
     warmClientSubmissions(),
   ]);
+}
+
+// Called via `after()` from real page views (see get-hired page/job-details
+// page/api routes) so ordinary traffic itself keeps the cache warm ahead of
+// its natural expiry — deliberately not gated behind an external cron/pinger.
+// No-ops (cheap) when the jobs cache was refreshed recently; only pays the
+// full warm-up cost when a visit happens to land within the last few minutes
+// before that cache would otherwise expire.
+export async function warmIfNearExpiry(): Promise<void> {
+  if (!isJobsCacheNearExpiry()) return;
+  try {
+    await warmAllJobCaches();
+  } catch (err) {
+    console.error("[warmCaches] background warmIfNearExpiry failed:", err);
+  }
 }

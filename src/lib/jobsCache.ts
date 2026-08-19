@@ -287,6 +287,25 @@ async function readAllJobsFromSupabase(): Promise<JobRecord[]> {
   return all;
 }
 
+// Tracks when this instance last actually ran a live fetch (as opposed to
+// serving an already-cached value) — used by isJobsCacheNearExpiry() below to
+// trigger a background refresh (via `after()` in the page components) shortly
+// BEFORE the cache would otherwise expire, so the visitor who'd normally eat
+// the cold-start cost never has to. Per-instance and reset on cold starts —
+// that's fine, worst case it just misses a window and falls back to today's
+// existing reactive-refresh behavior, never worse than before this existed.
+let lastFetchAllJobsAt = 0;
+
+// Refresh a few minutes early rather than exactly at the deadline, so the
+// proactive refresh (which itself takes time) finishes before the window
+// actually lapses.
+const REFRESH_BUFFER_SECONDS = 3 * 60;
+
+export function isJobsCacheNearExpiry(): boolean {
+  if (lastFetchAllJobsAt === 0) return true;
+  return Date.now() - lastFetchAllJobsAt > (CACHE_TTL_SECONDS - REFRESH_BUFFER_SECONDS) * 1000;
+}
+
 async function fetchAllJobs(): Promise<JobRecord[]> {
   let fresh: JobRecord[] = [];
   try {
@@ -308,7 +327,10 @@ async function fetchAllJobs(): Promise<JobRecord[]> {
     // Supabase read came back empty — either genuinely nothing has ever
     // been synced yet, or Supabase itself is unreachable. If this cycle DID
     // get a fresh live batch, use it directly rather than losing it.
-    if (fresh.length > 0) return fresh;
+    if (fresh.length > 0) {
+      lastFetchAllJobsAt = Date.now();
+      return fresh;
+    }
     // Truly nothing anywhere. Throwing (instead of returning `[]`) stops
     // unstable_cache from caching that failure as if it were valid data —
     // this is never a legitimate answer, this site always has active jobs.
@@ -316,6 +338,7 @@ async function fetchAllJobs(): Promise<JobRecord[]> {
   }
 
   merged.sort((a, b) => jobCodeNum(b.job_code) - jobCodeNum(a.job_code));
+  lastFetchAllJobsAt = Date.now();
   return merged;
 }
 

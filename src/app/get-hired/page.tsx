@@ -14,6 +14,11 @@ export const metadata: Metadata = pageMetadata({
 // be fresh (cache-TTL-fresh) on every request, not a frozen build-time snapshot.
 export const dynamic = "force-dynamic";
 
+// GetHiredContent schedules a background cache warm-up (via `after()`) that
+// can take up to ~45s on a cold cache — without raising this, Vercel's
+// default timeout would kill that background work before it finishes.
+export const maxDuration = 60;
+
 export default function GetHiredPage() {
   return <GetHiredContent />;
 }

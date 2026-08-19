@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { after } from "next/server";
 import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import Section from "@/components/ui/Section";
@@ -7,6 +8,7 @@ import { IconBars, IconBriefcase, IconPeople, IconPin } from "@/components/jobs/
 import { getCachedJobs } from "@/lib/jobsCache";
 import { getJobMap } from "@/lib/ceipal-job-map";
 import { getCachedDescription } from "@/lib/jobDescriptionCache";
+import { warmIfNearExpiry } from "@/lib/warmCaches";
 import { isActiveJob, jobLocation, jobUrlSlug, fmtPay, fmtPosted, workType } from "@/components/jobs/utils";
 import { buildJobPostingSchema } from "@/lib/jobPostingSchema";
 import { SITE_URL } from "@/lib/site";
@@ -15,6 +17,11 @@ import type { CeipalJob } from "@/components/jobs/types";
 // Job data changes with Ceipal sync cycles — never bake a stale snapshot into
 // the build (same reasoning as /get-hired, see that page's own comment).
 export const dynamic = "force-dynamic";
+
+// This page schedules a background cache warm-up (via `after()`) that can
+// take up to ~45s on a cold cache — without raising this, Vercel's default
+// timeout would kill that background work before it finishes.
+export const maxDuration = 60;
 
 function IconArrowLeft({ className }: { className?: string }) {
   return (
@@ -121,6 +128,12 @@ export async function generateMetadata({
 }
 
 export default async function JobPage({ params }: { params: Promise<{ slug: string }> }) {
+  // Fire-and-forget: if the jobs/description cache is close to expiring,
+  // silently refresh everything in the background after THIS response is
+  // sent, so the next person to click into a job doesn't land on a cold
+  // Ceipal call. No-op (near-instant) when the cache was refreshed recently.
+  after(() => warmIfNearExpiry());
+
   const { slug } = await params;
   const decoded = decodeURIComponent(slug);
   const job = await findJobBySlug(decoded);
