@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { getNavItems } from "./navConfig";
+import ThemeToggle from "./ThemeToggle";
 import { BUSINESS } from "@/lib/site";
 import type { Industry } from "@/content/types";
 
@@ -29,7 +30,7 @@ export default function Header({ siteImages, industries }: { siteImages: Record<
 
   return (
     <header className="sticky top-4 z-50 px-4 sm:px-6 lg:px-8">
-      <div className="mx-auto flex max-w-[1700px] items-center justify-between gap-4 rounded-full border border-navy/[0.06] bg-white/85 py-2 pl-5 pr-2.5 shadow-[0_8px_30px_rgba(0,48,96,0.08)] backdrop-blur-md">
+      <div className="mx-auto flex max-w-[1700px] items-center justify-between gap-4 rounded-full border border-navy/[0.06] bg-white/85 py-2 pl-5 pr-2.5 shadow-[0_8px_30px_rgba(0,48,96,0.08)] backdrop-blur-md dark:border-white/[0.08] dark:bg-navy-900/85 dark:shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
         <Link
           href="/"
           className="flex flex-shrink-0 items-center"
@@ -40,8 +41,14 @@ export default function Header({ siteImages, industries }: { siteImages: Record<
             }
           }}
         >
-          <Image src={siteImages["global:header-logo-mark"]} alt="Mintex Staffing" width={72} height={36} preload className="h-9 w-auto object-contain lg:hidden" />
-          <Image src={siteImages["global:header-logo"]} alt="Mintex Staffing" width={183} height={25} preload className="hidden h-6 w-auto object-contain lg:block" />
+          <span className="lg:hidden">
+            <Image src={siteImages["global:header-logo-mark"]} alt="Mintex Staffing" width={72} height={36} preload className="h-9 w-auto object-contain dark:hidden" />
+            <Image src="/logo-mark-white.png" alt="Mintex Staffing" width={72} height={36} preload className="hidden h-9 w-auto object-contain dark:block" />
+          </span>
+          <span className="hidden lg:block">
+            <Image src={siteImages["global:header-logo"]} alt="Mintex Staffing" width={183} height={25} preload className="h-6 w-auto object-contain dark:hidden" />
+            <Image src="/logo-white.png" alt="Mintex Staffing" width={183} height={25} preload className="hidden h-6 w-auto object-contain dark:block" />
+          </span>
         </Link>
 
         <nav className="hidden flex-1 items-center justify-center gap-1 lg:flex">
@@ -54,7 +61,7 @@ export default function Header({ siteImages, industries }: { siteImages: Record<
                 onMouseEnter={() => item.children && setDesktopOpen(item.label)}
                 onMouseLeave={() => setDesktopOpen((current) => (current === item.label ? null : current))}
               >
-                <div className="flex items-center rounded-full text-[14.5px] font-medium text-navy hover:bg-navy/[0.06]">
+                <div className="flex items-center rounded-full text-[14.5px] font-medium text-navy hover:bg-navy/[0.06] dark:text-cream dark:hover:bg-white/10">
                   <Link
                     href={item.href}
                     onClick={(event) => {
@@ -73,7 +80,7 @@ export default function Header({ siteImages, industries }: { siteImages: Record<
                       onClick={() => setDesktopOpen((current) => (current === item.label ? null : item.label))}
                       className="py-2 pl-1 pr-4"
                     >
-                      <svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5 text-navy/50">
+                      <svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5 text-navy/50 dark:text-cream/50">
                         <path
                           fillRule="evenodd"
                           d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
@@ -86,7 +93,7 @@ export default function Header({ siteImages, industries }: { siteImages: Record<
 
                 {item.children && (
                   <div
-                    className={`absolute left-1/2 top-full z-50 grid w-64 max-h-[70vh] -translate-x-1/2 grid-cols-1 gap-1 overflow-y-auto rounded-2xl border border-navy/[0.06] bg-white p-2 shadow-[0_20px_50px_-15px_rgba(0,48,96,0.3)] transition-opacity duration-150 group-focus-within:visible group-focus-within:opacity-100 ${
+                    className={`absolute left-1/2 top-full z-50 grid w-64 max-h-[70vh] -translate-x-1/2 grid-cols-1 gap-1 overflow-y-auto rounded-2xl border border-navy/[0.06] bg-white p-2 shadow-[0_20px_50px_-15px_rgba(0,48,96,0.3)] transition-opacity duration-150 group-focus-within:visible group-focus-within:opacity-100 dark:border-white/[0.08] dark:bg-navy-900 dark:shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] ${
                       isOpen ? "visible opacity-100" : "invisible opacity-0"
                     }`}
                   >
@@ -98,7 +105,7 @@ export default function Header({ siteImages, industries }: { siteImages: Record<
                           event.currentTarget.blur();
                           setDesktopOpen(null);
                         }}
-                        className="rounded-lg px-3 py-2 text-sm text-navy hover:bg-cream"
+                        className="rounded-lg px-3 py-2 text-sm text-navy hover:bg-cream dark:text-cream dark:hover:bg-white/10"
                       >
                         {child.label}
                       </Link>
@@ -110,18 +117,22 @@ export default function Header({ siteImages, industries }: { siteImages: Record<
           })}
         </nav>
 
-        <Link
-          href="/client-portal"
-          className="hidden flex-shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-navy px-6 py-2.5 text-[14.5px] font-semibold text-white transition-colors hover:bg-navy-deep lg:inline-flex"
-        >
-          Client Login
-        </Link>
+        <div className="hidden flex-shrink-0 items-center gap-1 lg:flex">
+          <ThemeToggle className="p-3" />
+          <Link
+            href="/client-portal"
+            className="inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-navy px-6 py-2.5 text-[14.5px] font-semibold text-white transition-colors hover:bg-navy-deep dark:bg-steel dark:text-navy-950 dark:hover:bg-steel-light"
+          >
+            Client Login
+          </Link>
+        </div>
 
         <div className="flex flex-shrink-0 items-center gap-1 lg:hidden">
+          <ThemeToggle className="p-3.5" />
           <a
             href={`tel:${BUSINESS.telephone}`}
             aria-label="Call Mintex Staffing"
-            className="rounded-full p-3.5 text-navy hover:bg-navy/[0.06]"
+            className="rounded-full p-3.5 text-navy hover:bg-navy/[0.06] dark:text-cream dark:hover:bg-white/10"
           >
             <IconPhone className="h-5 w-5" />
           </a>
@@ -131,7 +142,7 @@ export default function Header({ siteImages, industries }: { siteImages: Record<
             onClick={() => setMobileOpen((open) => !open)}
             aria-expanded={mobileOpen}
             aria-label="Toggle navigation menu"
-            className="rounded-full p-3.5 text-navy hover:bg-navy/[0.06]"
+            className="rounded-full p-3.5 text-navy hover:bg-navy/[0.06] dark:text-cream dark:hover:bg-white/10"
           >
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-6 w-6">
               {mobileOpen ? (
@@ -155,14 +166,14 @@ export default function Header({ siteImages, industries }: { siteImages: Record<
       </div>
 
       {mobileOpen && (
-        <nav className="mx-auto mt-2 max-w-[1700px] rounded-3xl border border-navy/[0.06] bg-white p-3 shadow-[0_20px_50px_-15px_rgba(0,48,96,0.25)] lg:hidden">
+        <nav className="mx-auto mt-2 max-w-[1700px] rounded-3xl border border-navy/[0.06] bg-white p-3 shadow-[0_20px_50px_-15px_rgba(0,48,96,0.25)] dark:border-white/[0.08] dark:bg-navy-900 dark:shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] lg:hidden">
           {navItems.map((item) => (
-            <div key={item.label} className="border-b border-navy/[0.06] py-1 last:border-b-0">
+            <div key={item.label} className="border-b border-navy/[0.06] py-1 last:border-b-0 dark:border-white/[0.08]">
               <div className="flex items-center justify-between">
                 <Link
                   href={item.href}
                   onClick={() => setMobileOpen(false)}
-                  className="flex-1 py-3 text-sm font-medium text-navy"
+                  className="flex-1 py-3 text-sm font-medium text-navy dark:text-cream"
                 >
                   {item.label}
                 </Link>
@@ -173,7 +184,7 @@ export default function Header({ siteImages, industries }: { siteImages: Record<
                     onClick={() =>
                       setMobileExpanded((current) => (current === item.label ? null : item.label))
                     }
-                    className="p-3 text-navy/50"
+                    className="p-3 text-navy/50 dark:text-cream/50"
                   >
                     {mobileExpanded === item.label ? "−" : "+"}
                   </button>
@@ -186,7 +197,7 @@ export default function Header({ siteImages, industries }: { siteImages: Record<
                       key={child.href}
                       href={child.href}
                       onClick={() => setMobileOpen(false)}
-                      className="rounded-lg px-3 py-2 text-sm text-navy/70 hover:bg-cream"
+                      className="rounded-lg px-3 py-2 text-sm text-navy/70 hover:bg-cream dark:text-cream/70 dark:hover:bg-white/10"
                     >
                       {child.label}
                     </Link>
@@ -198,7 +209,7 @@ export default function Header({ siteImages, industries }: { siteImages: Record<
           <Link
             href="/client-portal"
             onClick={() => setMobileOpen(false)}
-            className="mt-2 flex items-center justify-center rounded-full bg-navy px-6 py-3 text-sm font-semibold text-white"
+            className="mt-2 flex items-center justify-center rounded-full bg-navy px-6 py-3 text-sm font-semibold text-white dark:bg-steel dark:text-navy-950"
           >
             Client Login
           </Link>

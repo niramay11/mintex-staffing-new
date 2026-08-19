@@ -50,10 +50,10 @@ const defaultForm = (): FormState => ({
 });
 
 const inputClass =
-  "mt-1 w-full rounded-md border px-3 py-2 text-sm text-navy focus:border-steel focus:outline-none focus:ring-1 focus:ring-steel";
+  "mt-1 w-full rounded-md border px-3 py-2 text-sm text-navy focus:border-steel focus:outline-none focus:ring-1 focus:ring-steel dark:bg-navy-900 dark:text-cream";
 
 function fieldBorder(hasError?: string) {
-  return hasError ? "border-red-400" : "border-navy/20";
+  return hasError ? "border-red-400" : "border-navy/20 dark:border-white/15";
 }
 
 function FieldError({ msg }: { msg?: string }) {
@@ -159,14 +159,14 @@ export default function ApplyModal({ jobs, onClose, onSuccess }: ApplyModalProps
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="w-full max-w-3xl rounded-2xl bg-white shadow-[0_30px_80px_-20px_rgba(0,48,96,0.5)]">
+      <div className="w-full max-w-3xl rounded-2xl bg-white shadow-[0_30px_80px_-20px_rgba(0,48,96,0.5)] dark:bg-navy-900">
         {/* Header */}
-        <div className="flex items-start justify-between gap-4 border-b border-navy/10 px-6 py-5 sm:px-8">
+        <div className="flex items-start justify-between gap-4 border-b border-navy/10 px-6 py-5 sm:px-8 dark:border-white/10">
           <div>
-            <h3 className="text-lg font-bold text-navy">Apply for {jobLabel}</h3>
+            <h3 className="text-lg font-bold text-navy dark:text-cream">Apply for {jobLabel}</h3>
             <div className="mt-2 flex flex-wrap gap-1.5">
               {jobs.map((job) => (
-                <span key={job.job_code} className="rounded-full bg-cream px-3 py-1 text-xs font-medium text-navy">
+                <span key={job.job_code} className="rounded-full bg-cream px-3 py-1 text-xs font-medium text-navy dark:bg-navy-800 dark:text-cream">
                   {job.job_title}
                 </span>
               ))}
@@ -176,7 +176,7 @@ export default function ApplyModal({ jobs, onClose, onSuccess }: ApplyModalProps
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-navy/50 hover:bg-mist hover:text-navy"
+            className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-navy/50 hover:bg-mist hover:text-navy dark:text-cream/50 dark:hover:bg-navy-800 dark:hover:text-cream"
           >
             &times;
           </button>
@@ -197,10 +197,10 @@ export default function ApplyModal({ jobs, onClose, onSuccess }: ApplyModalProps
             <div className="space-y-6">
               {/* Applicant details */}
               <div>
-                <h4 className="text-sm font-semibold uppercase tracking-wide text-navy/50">Your details</h4>
+                <h4 className="text-sm font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">Your details</h4>
                 <div className="mt-3 grid gap-4 sm:grid-cols-2">
                   <div className="sm:col-span-2">
-                    <label className="block text-sm font-medium text-navy">
+                    <label className="block text-sm font-medium text-navy dark:text-cream">
                       Full name <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -212,7 +212,7 @@ export default function ApplyModal({ jobs, onClose, onSuccess }: ApplyModalProps
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-navy">
+                    <label className="block text-sm font-medium text-navy dark:text-cream">
                       Mobile number <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -224,7 +224,7 @@ export default function ApplyModal({ jobs, onClose, onSuccess }: ApplyModalProps
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-navy">
+                    <label className="block text-sm font-medium text-navy dark:text-cream">
                       Email <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -237,7 +237,7 @@ export default function ApplyModal({ jobs, onClose, onSuccess }: ApplyModalProps
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-navy">
+                    <label className="block text-sm font-medium text-navy dark:text-cream">
                       Work authorization <span className="text-red-500">*</span>
                     </label>
                     <select
@@ -256,21 +256,21 @@ export default function ApplyModal({ jobs, onClose, onSuccess }: ApplyModalProps
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-navy">Availability</label>
+                    <label className="block text-sm font-medium text-navy dark:text-cream">Availability</label>
                     <input
                       value={form.availability}
                       onChange={(e) => set("availability", e.target.value)}
                       placeholder="e.g. Immediate / 2 weeks"
-                      className={`${inputClass} border-navy/20`}
+                      className={`${inputClass} border-navy/20 dark:border-white/15`}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-navy">State</label>
+                    <label className="block text-sm font-medium text-navy dark:text-cream">State</label>
                     <select
                       value={form.state}
                       onChange={(e) => set("state", e.target.value)}
-                      className={`${inputClass} border-navy/20`}
+                      className={`${inputClass} border-navy/20 dark:border-white/15`}
                     >
                       <option value="">Select</option>
                       {US_STATES.map((o) => (
@@ -282,7 +282,7 @@ export default function ApplyModal({ jobs, onClose, onSuccess }: ApplyModalProps
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-navy">
+                    <label className="block text-sm font-medium text-navy dark:text-cream">
                       City <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -294,25 +294,25 @@ export default function ApplyModal({ jobs, onClose, onSuccess }: ApplyModalProps
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-navy">Zip code</label>
+                    <label className="block text-sm font-medium text-navy dark:text-cream">Zip code</label>
                     <input
                       value={form.zipCode}
                       onChange={(e) => set("zipCode", e.target.value)}
-                      className={`${inputClass} border-navy/20`}
+                      className={`${inputClass} border-navy/20 dark:border-white/15`}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-navy">Relocation</label>
+                    <label className="block text-sm font-medium text-navy dark:text-cream">Relocation</label>
                     <div className="mt-2 flex items-center gap-5">
                       {(["Yes", "No"] as const).map((opt) => (
-                        <label key={opt} className="flex items-center gap-2 text-sm text-navy/80">
+                        <label key={opt} className="flex items-center gap-2 text-sm text-navy/80 dark:text-cream/80">
                           <input
                             type="radio"
                             name="relocation"
                             checked={form.relocation === opt}
                             onChange={() => set("relocation", opt)}
-                            className="h-4 w-4 border-navy/30 text-steel focus:ring-steel"
+                            className="h-4 w-4 border-navy/30 text-steel focus:ring-steel dark:border-white/15"
                           />
                           {opt}
                         </label>
@@ -321,12 +321,12 @@ export default function ApplyModal({ jobs, onClose, onSuccess }: ApplyModalProps
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="block text-sm font-medium text-navy">Video link (optional)</label>
+                    <label className="block text-sm font-medium text-navy dark:text-cream">Video link (optional)</label>
                     <input
                       value={form.videoLink}
                       onChange={(e) => set("videoLink", e.target.value)}
                       placeholder="YouTube / LinkedIn video URL"
-                      className={`${inputClass} border-navy/20`}
+                      className={`${inputClass} border-navy/20 dark:border-white/15`}
                     />
                   </div>
                 </div>
@@ -334,23 +334,23 @@ export default function ApplyModal({ jobs, onClose, onSuccess }: ApplyModalProps
 
               {/* Resume */}
               <div>
-                <h4 className="text-sm font-semibold uppercase tracking-wide text-navy/50">Resume</h4>
+                <h4 className="text-sm font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">Resume</h4>
                 <label
                   className={`mt-3 flex h-28 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed text-center transition-colors ${
-                    errors.resume ? "border-red-300 bg-red-50/40" : "border-navy/20 bg-mist/60 hover:border-steel"
+                    errors.resume ? "border-red-300 bg-red-50/40" : "border-navy/20 bg-mist/60 hover:border-steel dark:border-white/15 dark:bg-navy-800"
                   }`}
                 >
                   {form.resume ? (
                     <>
-                      <p className="text-sm font-semibold text-navy">{form.resume.name}</p>
-                      <p className="mt-1 text-xs text-navy/50">Click to change</p>
+                      <p className="text-sm font-semibold text-navy dark:text-cream">{form.resume.name}</p>
+                      <p className="mt-1 text-xs text-navy/50 dark:text-cream/50">Click to change</p>
                     </>
                   ) : (
                     <>
-                      <p className="text-sm text-navy/70">
-                        <span className="font-semibold text-navy">Click to upload</span> or drag and drop
+                      <p className="text-sm text-navy/70 dark:text-cream/70">
+                        <span className="font-semibold text-navy dark:text-cream">Click to upload</span> or drag and drop
                       </p>
-                      <p className="mt-1 text-xs text-navy/40">PDF, DOC, DOCX — max 5MB</p>
+                      <p className="mt-1 text-xs text-navy/40 dark:text-cream/40">PDF, DOC, DOCX — max 5MB</p>
                     </>
                   )}
                   <input
@@ -367,10 +367,10 @@ export default function ApplyModal({ jobs, onClose, onSuccess }: ApplyModalProps
 
               {/* Signature */}
               <div>
-                <h4 className="text-sm font-semibold uppercase tracking-wide text-navy/50">Signature</h4>
+                <h4 className="text-sm font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">Signature</h4>
                 <div className="mt-3 flex gap-5">
                   {(["type", "draw"] as const).map((opt) => (
-                    <label key={opt} className="flex cursor-pointer items-center gap-2 text-sm capitalize text-navy/80">
+                    <label key={opt} className="flex cursor-pointer items-center gap-2 text-sm capitalize text-navy/80 dark:text-cream/80">
                       <input
                         type="radio"
                         name="signatureType"
@@ -380,7 +380,7 @@ export default function ApplyModal({ jobs, onClose, onSuccess }: ApplyModalProps
                           set("signatureText", "");
                           set("signatureDataUrl", "");
                         }}
-                        className="h-4 w-4 border-navy/30 text-steel focus:ring-steel"
+                        className="h-4 w-4 border-navy/30 text-steel focus:ring-steel dark:border-white/15"
                       />
                       {opt} signature
                     </label>
@@ -408,12 +408,12 @@ export default function ApplyModal({ jobs, onClose, onSuccess }: ApplyModalProps
                   </div>
                 )}
 
-                <label className="mt-4 flex items-start gap-3 rounded-lg bg-mist/60 p-4 text-sm text-navy/80">
+                <label className="mt-4 flex items-start gap-3 rounded-lg bg-mist/60 p-4 text-sm text-navy/80 dark:bg-navy-800 dark:text-cream/80">
                   <input
                     type="checkbox"
                     checked={form.agreedToTerms}
                     onChange={(e) => set("agreedToTerms", e.target.checked)}
-                    className="mt-0.5 h-4 w-4 rounded border-navy/30 text-steel focus:ring-steel"
+                    className="mt-0.5 h-4 w-4 rounded border-navy/30 text-steel focus:ring-steel dark:border-white/15"
                   />
                   <span>
                     I agree to the terms and conditions and certify that the information provided is accurate and
@@ -427,11 +427,11 @@ export default function ApplyModal({ jobs, onClose, onSuccess }: ApplyModalProps
         </div>
 
         {/* Footer actions */}
-        <div className="flex items-center justify-end gap-3 border-t border-navy/10 px-6 py-5 sm:px-8">
+        <div className="flex items-center justify-end gap-3 border-t border-navy/10 px-6 py-5 sm:px-8 dark:border-white/10">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full border border-navy/20 px-5 py-2.5 text-sm font-semibold text-navy hover:bg-mist"
+            className="rounded-full border border-navy/20 px-5 py-2.5 text-sm font-semibold text-navy hover:bg-mist dark:border-white/10 dark:text-cream dark:hover:bg-navy-800"
           >
             {status?.type === "success" ? "Close" : "Cancel"}
           </button>
@@ -440,7 +440,7 @@ export default function ApplyModal({ jobs, onClose, onSuccess }: ApplyModalProps
               type="button"
               onClick={handleSubmit}
               disabled={submitting}
-              className="rounded-full bg-navy px-7 py-2.5 text-sm font-semibold text-white hover:bg-navy-secondary disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-full bg-navy px-7 py-2.5 text-sm font-semibold text-white hover:bg-navy-secondary disabled:cursor-not-allowed disabled:opacity-60 dark:bg-steel dark:text-navy-950 dark:hover:bg-steel-light"
             >
               {submitting ? "Submitting…" : "Submit application"}
             </button>
@@ -543,12 +543,12 @@ function SignatureCanvas({
   return (
     <div>
       <div
-        className={`relative overflow-hidden rounded-lg border-2 ${hasError ? "border-red-300" : "border-navy/20"}`}
+        className={`relative overflow-hidden rounded-lg border-2 ${hasError ? "border-red-300" : "border-navy/20 dark:border-white/15"}`}
         style={{ cursor: "crosshair" }}
       >
         <canvas
           ref={canvasRef}
-          className="block w-full bg-mist/40"
+          className="block w-full bg-mist/40 dark:bg-navy-800"
           style={{ height: 140, touchAction: "none" }}
           onMouseDown={startDraw}
           onMouseMove={draw}
@@ -559,17 +559,17 @@ function SignatureCanvas({
           onTouchEnd={endDraw}
         />
         {!hasStrokes && (
-          <p className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-sm text-navy/30">
+          <p className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-sm text-navy/30 dark:text-cream/30">
             Sign here
           </p>
         )}
       </div>
       <div className="mt-2 flex items-center justify-between">
-        <p className="text-xs text-navy/50">Use your mouse or finger to draw your signature</p>
+        <p className="text-xs text-navy/50 dark:text-cream/50">Use your mouse or finger to draw your signature</p>
         <button
           type="button"
           onClick={clear}
-          className="rounded-md border border-navy/20 px-3 py-1.5 text-xs font-semibold text-navy/60 hover:border-navy/40 hover:text-navy"
+          className="rounded-md border border-navy/20 px-3 py-1.5 text-xs font-semibold text-navy/60 hover:border-navy/40 hover:text-navy dark:border-white/15 dark:text-cream/60 dark:hover:border-white/25 dark:hover:text-cream"
         >
           Clear
         </button>

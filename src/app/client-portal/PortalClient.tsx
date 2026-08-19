@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import ThemeToggle from "@/components/layout/ThemeToggle";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 interface Job extends Record<string, any> {
@@ -26,13 +27,13 @@ interface Job extends Record<string, any> {
 type ClientInfo = { id: string; name: string; company: string; permissions: Record<string, boolean> };
 
 const STATUS_BADGE: Record<string, { badge: string; dot: string }> = {
-    Active:    { badge: 'bg-green-100 text-green-800',   dot: 'bg-green-600' },
-    Open:      { badge: 'bg-steel/10 text-steel',        dot: 'bg-steel' },
-    'On Hold': { badge: 'bg-amber-100 text-amber-800',   dot: 'bg-amber-500' },
-    Closed:    { badge: 'bg-red-100 text-red-700',       dot: 'bg-red-500' },
-    Filled:    { badge: 'bg-purple-100 text-purple-700', dot: 'bg-purple-500' },
+    Active:    { badge: 'bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-300',   dot: 'bg-green-600' },
+    Open:      { badge: 'bg-steel/10 text-steel dark:bg-steel/20 dark:text-steel-light',        dot: 'bg-steel' },
+    'On Hold': { badge: 'bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300',   dot: 'bg-amber-500' },
+    Closed:    { badge: 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300',       dot: 'bg-red-500' },
+    Filled:    { badge: 'bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300', dot: 'bg-purple-500' },
 };
-const STATUS_BADGE_FALLBACK = { badge: 'bg-cream text-navy/70', dot: 'bg-navy/30' };
+const STATUS_BADGE_FALLBACK = { badge: 'bg-cream text-navy/70 dark:bg-navy-800 dark:text-cream/70', dot: 'bg-navy/30 dark:bg-cream/30' };
 
 const TABLE_COLUMNS: { key: string; label: string }[] = [
     { key: "job_code",                      label: "Job Code" },
@@ -80,16 +81,20 @@ function LoginForm({ onLogin, siteImages }: { onLogin: (client: ClientInfo) => v
     };
 
     return (
-        <div className="min-h-screen flex flex-col bg-cream">
+        <div className="min-h-screen flex flex-col bg-cream dark:bg-navy-950">
             {/* Navbar */}
-            <header className={`fixed top-0 left-0 right-0 z-50 bg-white/85 backdrop-blur-md border-b border-navy/10 transition-shadow duration-300 ${scrolled ? 'shadow-[0_4px_20px_rgba(0,48,96,0.08)]' : ''}`}>
+            <header className={`fixed top-0 left-0 right-0 z-50 bg-white/85 backdrop-blur-md border-b border-navy/10 dark:bg-navy-900/85 dark:border-white/10 transition-shadow duration-300 ${scrolled ? 'shadow-[0_4px_20px_rgba(0,48,96,0.08)]' : ''}`}>
                 <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-[60px]">
                     <Link href="/" className="flex items-center">
-                        <Image src={siteImages["client-portal:header-logo"]} alt="Mintex Staffing" width={148} height={20} preload className="h-5 w-auto object-contain" />
+                        <Image src={siteImages["client-portal:header-logo"]} alt="Mintex Staffing" width={148} height={20} preload className="h-5 w-auto object-contain dark:hidden" />
+                        <Image src="/logo-white.png" alt="Mintex Staffing" width={148} height={20} preload className="hidden h-5 w-auto object-contain dark:block" />
                     </Link>
-                    <span className="rounded-full bg-cream px-3 py-1 text-[11px] font-semibold text-navy">
-                        Client Portal
-                    </span>
+                    <div className="flex items-center gap-3">
+                        <span className="rounded-full bg-cream px-3 py-1 text-[11px] font-semibold text-navy dark:bg-navy-800 dark:text-cream">
+                            Client Portal
+                        </span>
+                        <ThemeToggle className="p-2.5" />
+                    </div>
                 </div>
             </header>
 
@@ -98,43 +103,43 @@ function LoginForm({ onLogin, siteImages }: { onLogin: (client: ClientInfo) => v
                 <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                     className="w-full max-w-sm">
                     <div className="mb-8 text-center">
-                        <div className="inline-flex items-center gap-2 mb-4 rounded-full border border-navy/10 bg-white px-3 py-1">
+                        <div className="inline-flex items-center gap-2 mb-4 rounded-full border border-navy/10 bg-white px-3 py-1 dark:bg-navy-900 dark:border-white/10">
                             <span className="w-1.5 h-1.5 rounded-full bg-steel" />
-                            <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-navy/60">Client Portal</span>
+                            <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-navy/60 dark:text-cream/60">Client Portal</span>
                         </div>
-                        <h1 className="font-black text-3xl text-navy">Sign In</h1>
-                        <p className="text-sm mt-2 text-navy/60">Access your job postings &amp; candidates</p>
+                        <h1 className="font-black text-3xl text-navy dark:text-cream">Sign In</h1>
+                        <p className="text-sm mt-2 text-navy/60 dark:text-cream/60">Access your job postings &amp; candidates</p>
                     </div>
 
-                    <div className="rounded-2xl border border-navy/10 bg-white p-8 shadow-[0_8px_30px_rgba(0,48,96,0.08)]">
+                    <div className="rounded-2xl border border-navy/10 bg-white p-8 shadow-[0_8px_30px_rgba(0,48,96,0.08)] dark:bg-navy-900 dark:border-white/10">
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
-                                <label className="block text-xs font-semibold mb-2 uppercase tracking-wide text-navy/50">Username</label>
+                                <label className="block text-xs font-semibold mb-2 uppercase tracking-wide text-navy/50 dark:text-cream/50">Username</label>
                                 <input type="text" required value={username} onChange={e => setUsername(e.target.value)}
                                     placeholder="your_username" autoComplete="username"
-                                    className="w-full rounded-md border border-navy/20 bg-white px-3 py-2 text-sm text-navy transition-colors focus:border-steel focus:outline-none"
+                                    className="w-full rounded-md border border-navy/20 bg-white px-3 py-2 text-sm text-navy transition-colors focus:border-steel focus:outline-none dark:bg-navy-900 dark:border-white/15 dark:text-cream"
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs font-semibold mb-2 uppercase tracking-wide text-navy/50">Password</label>
+                                <label className="block text-xs font-semibold mb-2 uppercase tracking-wide text-navy/50 dark:text-cream/50">Password</label>
                                 <input type="password" required value={password} onChange={e => setPassword(e.target.value)}
                                     placeholder="••••••••" autoComplete="current-password"
-                                    className="w-full rounded-md border border-navy/20 bg-white px-3 py-2 text-sm text-navy transition-colors focus:border-steel focus:outline-none"
+                                    className="w-full rounded-md border border-navy/20 bg-white px-3 py-2 text-sm text-navy transition-colors focus:border-steel focus:outline-none dark:bg-navy-900 dark:border-white/15 dark:text-cream"
                                 />
                             </div>
 
                             {error && (
-                                <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                                <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
                                     {error}
                                 </div>
                             )}
 
                             <button type="submit" disabled={loading}
-                                className="w-full rounded-full bg-white border border-navy px-7 py-3.5 text-sm font-semibold text-navy transition-colors hover:bg-mist disabled:opacity-50">
+                                className="w-full rounded-full bg-white border border-navy px-7 py-3.5 text-sm font-semibold text-navy transition-colors hover:bg-mist disabled:opacity-50 dark:bg-navy-900 dark:border-steel dark:text-cream dark:hover:bg-navy-800">
                                 {loading ? "Signing in…" : "Sign In"}
                             </button>
                         </form>
-                        <p className="text-center text-xs mt-6 text-navy/40">
+                        <p className="text-center text-xs mt-6 text-navy/40 dark:text-cream/40">
                             Credentials provided by your Mintex account manager
                         </p>
                     </div>
@@ -207,32 +212,32 @@ function JobDetailModal({ job, permissions, onClose }: { job: Job; permissions: 
             onClick={e => e.target === e.currentTarget && onClose()}>
             <motion.div initial={{ opacity: 0, y: 24, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 12 }}
                 transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                className="w-full max-w-4xl rounded-2xl overflow-hidden bg-white border border-navy/10 shadow-xl">
+                className="w-full max-w-4xl rounded-2xl overflow-hidden bg-white border border-navy/10 shadow-xl dark:bg-navy-900 dark:border-white/10">
 
                 {/* Header */}
-                <div className="p-6 border-b border-navy/10">
+                <div className="p-6 border-b border-navy/10 dark:border-white/10">
                     <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap mb-2">
-                                <span className="font-mono text-xs px-2.5 py-1 rounded-md bg-cream text-navy">
+                                <span className="font-mono text-xs px-2.5 py-1 rounded-md bg-cream text-navy dark:bg-navy-800 dark:text-cream">
                                     {job.job_code}
                                 </span>
                                 <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${s.badge}`}>
                                     <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`} />{job.job_status}
                                 </span>
                             </div>
-                            <h2 className="text-2xl font-black text-navy truncate">{job.job_title}</h2>
-                            <p className="text-sm mt-1 text-navy/60">
+                            <h2 className="text-2xl font-black text-navy truncate dark:text-cream">{job.job_title}</h2>
+                            <p className="text-sm mt-1 text-navy/60 dark:text-cream/60">
                                 {[job.city, job.states, job.country].filter(Boolean).join(', ')}
                             </p>
                         </div>
-                        <button onClick={onClose} className="text-2xl leading-none transition-colors text-navy/40 hover:text-navy">
+                        <button onClick={onClose} className="text-2xl leading-none transition-colors text-navy/40 hover:text-navy dark:text-cream/40 dark:hover:text-cream">
                             &times;
                         </button>
                     </div>
 
                     {/* Quick stats */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-5 pt-5 border-t border-navy/10">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-5 pt-5 border-t border-navy/10 dark:border-white/10">
                         {[
                             { label: 'Positions',  value: job.number_of_positions },
                             { label: 'Type',       value: job.job_type },
@@ -240,18 +245,18 @@ function JobDetailModal({ job, permissions, onClose }: { job: Job; permissions: 
                             { label: 'Industry',   value: job.industry  || detail?.industry },
                         ].map(({ label, value }) => (
                             <div key={label}>
-                                <p className="text-[10px] uppercase tracking-wide font-semibold mb-0.5 text-navy/50">{label}</p>
-                                <p className="text-sm font-semibold text-navy">{String(value || '—')}</p>
+                                <p className="text-[10px] uppercase tracking-wide font-semibold mb-0.5 text-navy/50 dark:text-cream/50">{label}</p>
+                                <p className="text-sm font-semibold text-navy dark:text-cream">{String(value || '—')}</p>
                             </div>
                         ))}
                     </div>
                 </div>
 
                 {/* Tabs */}
-                <div className="flex border-b border-navy/10 px-6 overflow-x-auto gap-1">
+                <div className="flex border-b border-navy/10 px-6 overflow-x-auto gap-1 dark:border-white/10">
                     {tabKeys.map(key => (
                         <button key={key} onClick={() => setActiveTab(key as typeof activeTab)}
-                            className={`px-4 py-3 text-sm transition-colors whitespace-nowrap relative -mb-px border-b-2 ${activeTab === key ? 'text-navy border-steel font-semibold' : 'text-navy/50 hover:text-navy border-transparent font-medium'}`}>
+                            className={`px-4 py-3 text-sm transition-colors whitespace-nowrap relative -mb-px border-b-2 ${activeTab === key ? 'text-navy border-steel font-semibold dark:text-cream' : 'text-navy/50 hover:text-navy border-transparent font-medium dark:text-cream/50 dark:hover:text-cream'}`}>
                             {tabLabels[key]}
                         </button>
                     ))}
@@ -273,9 +278,9 @@ function JobDetailModal({ job, permissions, onClose }: { job: Job; permissions: 
                                 { label: 'Closing Date', val: detail?.closing_date },
                                 ...(permissions.show_bill_rate ? [{ label: 'Bill Rate', val: job.client_bill_rate___salary }] : []),
                             ].filter(x => x.val).map(({ label, val }) => (
-                                <div key={label} className="p-3 rounded-lg border border-navy/10 bg-cream/60">
-                                    <p className="text-[10px] uppercase tracking-wide font-semibold mb-0.5 text-navy/50">{label}</p>
-                                    <p className="text-sm text-navy/80">{String(val)}</p>
+                                <div key={label} className="p-3 rounded-lg border border-navy/10 bg-cream/60 dark:border-white/10 dark:bg-navy-800/60">
+                                    <p className="text-[10px] uppercase tracking-wide font-semibold mb-0.5 text-navy/50 dark:text-cream/50">{label}</p>
+                                    <p className="text-sm text-navy/80 dark:text-cream/80">{String(val)}</p>
                                 </div>
                             ))}
                         </div>
@@ -283,7 +288,7 @@ function JobDetailModal({ job, permissions, onClose }: { job: Job; permissions: 
 
                     {/* Description */}
                     {activeTab === 'description' && (
-                        <div className="text-sm leading-relaxed max-h-[55vh] overflow-y-auto pr-2 text-navy/80"
+                        <div className="text-sm leading-relaxed max-h-[55vh] overflow-y-auto pr-2 text-navy/80 dark:text-cream/80"
                             dangerouslySetInnerHTML={{ __html: desc }} />
                     )}
 
@@ -291,7 +296,7 @@ function JobDetailModal({ job, permissions, onClose }: { job: Job; permissions: 
                     {activeTab === 'skills' && (
                         <div className="flex flex-wrap gap-2">
                             {skills.split(/,\s*/).filter(Boolean).map(sk => (
-                                <span key={sk} className="rounded-full bg-cream px-3 py-1 text-xs font-medium text-navy">
+                                <span key={sk} className="rounded-full bg-cream px-3 py-1 text-xs font-medium text-navy dark:bg-navy-800 dark:text-cream">
                                     {sk.trim()}
                                 </span>
                             ))}
@@ -302,8 +307,8 @@ function JobDetailModal({ job, permissions, onClose }: { job: Job; permissions: 
                     {activeTab === 'submissions' && (
                         <div>
                             {subsLoading ? (
-                                <div className="flex items-center justify-center gap-3 py-10 text-navy/50">
-                                    <div className="w-5 h-5 animate-spin rounded-full border-2 border-navy/15 border-t-steel" />
+                                <div className="flex items-center justify-center gap-3 py-10 text-navy/50 dark:text-cream/50">
+                                    <div className="w-5 h-5 animate-spin rounded-full border-2 border-navy/15 border-t-steel dark:border-white/15" />
                                     <span className="text-xs tracking-widest uppercase">Loading submissions…</span>
                                 </div>
                             ) : (
@@ -311,12 +316,12 @@ function JobDetailModal({ job, permissions, onClose }: { job: Job; permissions: 
                                     {/* Stage filter */}
                                     <div className="flex flex-wrap gap-1.5 mb-5">
                                         <button onClick={() => setStageFilter('all')}
-                                            className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${stageFilter === 'all' ? 'border-navy bg-navy text-white' : 'border-navy/20 bg-white text-navy/70 hover:border-navy/40'}`}>
+                                            className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${stageFilter === 'all' ? 'border-navy bg-navy text-white dark:border-steel dark:bg-steel dark:text-navy-950' : 'border-navy/20 bg-white text-navy/70 hover:border-navy/40 dark:border-white/15 dark:bg-navy-900 dark:text-cream/70 dark:hover:border-white/30'}`}>
                                             All {submissions.length}
                                         </button>
                                         {PIPELINE_STAGES.map(stage => (stageCounts[stage] ?? 0) > 0 && (
                                             <button key={stage} onClick={() => setStageFilter(stage)}
-                                                className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${stageFilter === stage ? 'border-navy bg-navy text-white' : 'border-navy/20 bg-white text-navy/70 hover:border-navy/40'}`}>
+                                                className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${stageFilter === stage ? 'border-navy bg-navy text-white dark:border-steel dark:bg-steel dark:text-navy-950' : 'border-navy/20 bg-white text-navy/70 hover:border-navy/40 dark:border-white/15 dark:bg-navy-900 dark:text-cream/70 dark:hover:border-white/30'}`}>
                                                 {stage} {stageCounts[stage]}
                                             </button>
                                         ))}
@@ -324,33 +329,33 @@ function JobDetailModal({ job, permissions, onClose }: { job: Job; permissions: 
 
                                     {filteredSubs.length === 0 ? (
                                         <div className="py-12 text-center">
-                                            <p className="text-sm text-navy/50">
+                                            <p className="text-sm text-navy/50 dark:text-cream/50">
                                                 No submissions{stageFilter !== 'all' ? ` in "${stageFilter}"` : ''} yet.
                                             </p>
                                         </div>
                                     ) : (
-                                        <div className="border-t border-navy/10">
+                                        <div className="border-t border-navy/10 dark:border-white/10">
                                             {filteredSubs.map((sub, i) => {
                                                 const stageIdx    = mapStageIdx(sub.submission_status || sub.pipeline_status || '');
                                                 const statusLabel = sub.submission_status || sub.pipeline_status || 'Unknown';
                                                 const subOn = sub.submitted_on ? fmt(sub.submitted_on) : '';
 
                                                 return (
-                                                    <div key={sub.id ?? i} className="py-4 border-b border-navy/10">
+                                                    <div key={sub.id ?? i} className="py-4 border-b border-navy/10 dark:border-white/10">
                                                         {/* Row */}
                                                         <div className="flex items-start justify-between gap-3 mb-3">
                                                             <div>
-                                                                <p className="text-sm font-semibold text-navy">
+                                                                <p className="text-sm font-semibold text-navy dark:text-cream">
                                                                     {(sub as Record<string,unknown>).candidate_name
                                                                       ? String((sub as Record<string,unknown>).candidate_name)
                                                                       : `Submission #${sub.submission_id}`}
                                                                 </p>
-                                                                <p className="text-xs mt-0.5 text-navy/50">
+                                                                <p className="text-xs mt-0.5 text-navy/50 dark:text-cream/50">
                                                                     {sub.source ? `Source: ${sub.source}` : ''}
                                                                     {subOn ? ` · ${subOn}` : ''}
                                                                 </p>
                                                             </div>
-                                                            <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full whitespace-nowrap ${stageIdx >= 4 ? 'bg-steel/10 text-steel' : stageIdx >= 2 ? 'bg-amber-100 text-amber-800' : 'bg-green-100 text-green-800'}`}>
+                                                            <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full whitespace-nowrap ${stageIdx >= 4 ? 'bg-steel/10 text-steel dark:bg-steel/20 dark:text-steel-light' : stageIdx >= 2 ? 'bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300' : 'bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-300'}`}>
                                                                 {statusLabel}
                                                             </span>
                                                         </div>
@@ -365,20 +370,20 @@ function JobDetailModal({ job, permissions, onClose }: { job: Job; permissions: 
                                                                 return (
                                                                     <div key={stage} className="flex-1 flex flex-col items-center relative min-w-0">
                                                                         {idx < PIPELINE_STAGES.length - 1 && (
-                                                                            <div className={`absolute top-[7px] left-1/2 w-full h-0.5 z-0 ${lineColored ? 'bg-steel' : 'bg-navy/10'}`} />
+                                                                            <div className={`absolute top-[7px] left-1/2 w-full h-0.5 z-0 ${lineColored ? 'bg-steel' : 'bg-navy/10 dark:bg-white/10'}`} />
                                                                         )}
                                                                         {/* Dot with ✓ for completed */}
-                                                                        <div className={`relative z-10 w-4 h-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${active ? 'bg-navy border-navy shadow-sm' : done ? 'bg-steel border-steel' : 'bg-white border-navy/20'}`}>
+                                                                        <div className={`relative z-10 w-4 h-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${active ? 'bg-navy border-navy shadow-sm dark:bg-steel dark:border-steel' : done ? 'bg-steel border-steel' : 'bg-white border-navy/20 dark:bg-navy-900 dark:border-white/20'}`}>
                                                                             {done && (
                                                                                 <svg className="w-2.5 h-2.5" fill="none" stroke="white" strokeWidth={3} viewBox="0 0 24 24">
                                                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                                                                                 </svg>
                                                                             )}
                                                                         </div>
-                                                                        <p className={`text-[9px] mt-1 text-center truncate w-full px-0.5 ${active ? 'text-navy font-semibold' : done ? 'text-steel' : 'text-navy/40'}`}>
+                                                                        <p className={`text-[9px] mt-1 text-center truncate w-full px-0.5 ${active ? 'text-navy font-semibold dark:text-cream' : done ? 'text-steel dark:text-steel-light' : 'text-navy/40 dark:text-cream/40'}`}>
                                                                             {stage.split(' ')[0]}
                                                                         </p>
-                                                                        {active && subOn && <p className="text-[8px] text-center truncate w-full text-navy/60">{subOn}</p>}
+                                                                        {active && subOn && <p className="text-[8px] text-center truncate w-full text-navy/60 dark:text-cream/60">{subOn}</p>}
                                                                     </div>
                                                                 );
                                                             })}
@@ -387,9 +392,9 @@ function JobDetailModal({ job, permissions, onClose }: { job: Job; permissions: 
                                                         {/* Meta */}
                                                         {!!(sub.employment_type || sub.tax_term || (permissions.show_pay_rate && sub.pay_rate)) && (
                                                             <div className="flex flex-wrap gap-4 mt-2">
-                                                                {sub.employment_type && <span className="text-xs text-navy/50">Type: <span className="text-navy/80">{sub.employment_type}</span></span>}
-                                                                {sub.tax_term && <span className="text-xs text-navy/50">Tax: <span className="text-navy/80">{sub.tax_term}</span></span>}
-                                                                {permissions.show_pay_rate && sub.pay_rate && <span className="text-xs text-navy/50">Pay: <span className="font-medium text-steel">{sub.pay_rate}</span></span>}
+                                                                {sub.employment_type && <span className="text-xs text-navy/50 dark:text-cream/50">Type: <span className="text-navy/80 dark:text-cream/80">{sub.employment_type}</span></span>}
+                                                                {sub.tax_term && <span className="text-xs text-navy/50 dark:text-cream/50">Tax: <span className="text-navy/80 dark:text-cream/80">{sub.tax_term}</span></span>}
+                                                                {permissions.show_pay_rate && sub.pay_rate && <span className="text-xs text-navy/50 dark:text-cream/50">Pay: <span className="font-medium text-steel dark:text-steel-light">{sub.pay_rate}</span></span>}
                                                             </div>
                                                         )}
                                                     </div>
@@ -403,8 +408,8 @@ function JobDetailModal({ job, permissions, onClose }: { job: Job; permissions: 
                     )}
                 </div>
 
-                <div className="px-6 pb-6 flex justify-end border-t border-navy/10">
-                    <button onClick={onClose} className="mt-4 rounded-full border border-navy/10 bg-white px-5 py-2 text-xs font-semibold text-navy transition-colors hover:bg-mist">
+                <div className="px-6 pb-6 flex justify-end border-t border-navy/10 dark:border-white/10">
+                    <button onClick={onClose} className="mt-4 rounded-full border border-navy/10 bg-white px-5 py-2 text-xs font-semibold text-navy transition-colors hover:bg-mist dark:bg-navy-900 dark:border-white/10 dark:text-cream dark:hover:bg-navy-800">
                         Close
                     </button>
                 </div>
@@ -458,30 +463,30 @@ function SubmissionsModal({ onClose, permissions, onCountReady, jobCodes, initia
             onClick={e => e.target === e.currentTarget && onClose()}>
             <motion.div initial={{ opacity: 0, y: 24, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                className="w-full max-w-5xl rounded-2xl overflow-hidden bg-white border border-navy/10 shadow-xl">
+                className="w-full max-w-5xl rounded-2xl overflow-hidden bg-white border border-navy/10 shadow-xl dark:bg-navy-900 dark:border-white/10">
 
                 {/* Header */}
-                <div className="p-6 flex items-center justify-between border-b border-navy/10">
+                <div className="p-6 flex items-center justify-between border-b border-navy/10 dark:border-white/10">
                     <div>
-                        <h2 className="text-xl font-black text-navy">Total Submissions</h2>
-                        <p className="text-xs mt-1 text-navy/50">All candidates submitted across your job postings</p>
+                        <h2 className="text-xl font-black text-navy dark:text-cream">Total Submissions</h2>
+                        <p className="text-xs mt-1 text-navy/50 dark:text-cream/50">All candidates submitted across your job postings</p>
                     </div>
-                    <button onClick={onClose} className="text-2xl leading-none transition-colors text-navy/40 hover:text-navy">
+                    <button onClick={onClose} className="text-2xl leading-none transition-colors text-navy/40 hover:text-navy dark:text-cream/40 dark:hover:text-cream">
                         &times;
                     </button>
                 </div>
 
                 {/* Filters */}
-                <div className="px-6 py-4 flex flex-wrap gap-3 border-b border-navy/10 bg-mist">
+                <div className="px-6 py-4 flex flex-wrap gap-3 border-b border-navy/10 bg-mist dark:bg-navy-800 dark:border-white/10">
                     <input type="text" value={search} onChange={e => setSearch(e.target.value)}
                         placeholder="Search candidate, job title, code…"
-                        className="flex-1 min-w-[200px] rounded-md border border-navy/20 bg-white px-3 py-2 text-sm text-navy focus:border-steel focus:outline-none" />
+                        className="flex-1 min-w-[200px] rounded-md border border-navy/20 bg-white px-3 py-2 text-sm text-navy focus:border-steel focus:outline-none dark:bg-navy-900 dark:border-white/15 dark:text-cream" />
                     <select value={stageFilter} onChange={e => setStageFilter(e.target.value)}
-                        className="rounded-md border border-navy/20 bg-white px-3 py-2 text-sm text-navy focus:border-steel focus:outline-none cursor-pointer">
+                        className="rounded-md border border-navy/20 bg-white px-3 py-2 text-sm text-navy focus:border-steel focus:outline-none cursor-pointer dark:bg-navy-900 dark:border-white/15 dark:text-cream">
                         <option value="all">All Stages</option>
                         {allStages.map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
-                    <span className="rounded-full bg-cream px-3 py-2 text-xs font-medium text-navy">
+                    <span className="rounded-full bg-cream px-3 py-2 text-xs font-medium text-navy dark:bg-navy-900 dark:text-cream">
                         {filtered.length} result{filtered.length !== 1 ? 's' : ''}
                     </span>
                 </div>
@@ -490,12 +495,12 @@ function SubmissionsModal({ onClose, permissions, onCountReady, jobCodes, initia
                 <div className="p-6 max-h-[60vh] overflow-y-auto">
                     {loading ? (
                         <div className="flex items-center justify-center gap-3 py-16">
-                            <div className="w-5 h-5 animate-spin rounded-full border-2 border-navy/15 border-t-steel" />
-                            <span className="text-xs uppercase tracking-widest text-navy/50">Loading submissions…</span>
+                            <div className="w-5 h-5 animate-spin rounded-full border-2 border-navy/15 border-t-steel dark:border-white/15" />
+                            <span className="text-xs uppercase tracking-widest text-navy/50 dark:text-cream/50">Loading submissions…</span>
                         </div>
                     ) : filtered.length === 0 ? (
                         <div className="py-16 text-center">
-                            <p className="text-sm text-navy/50">No submissions found.</p>
+                            <p className="text-sm text-navy/50 dark:text-cream/50">No submissions found.</p>
                         </div>
                     ) : (
                         <div className="space-y-3">
@@ -513,39 +518,39 @@ function SubmissionsModal({ onClose, permissions, onCountReady, jobCodes, initia
                                 const isOnHold     = sl.includes('hold');
 
                                 const statusBadge = isRejected
-                                    ? 'bg-red-100 text-red-700'
+                                    ? 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300'
                                     : isPlaced
-                                    ? 'bg-purple-100 text-purple-700'
+                                    ? 'bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300'
                                     : isConfirmed
-                                    ? 'bg-green-100 text-green-800'
+                                    ? 'bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-300'
                                     : isInterview
-                                    ? 'bg-amber-100 text-amber-800'
+                                    ? 'bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300'
                                     : isSubmitted
-                                    ? 'bg-steel/10 text-steel'
+                                    ? 'bg-steel/10 text-steel dark:bg-steel/20 dark:text-steel-light'
                                     : isOnHold
-                                    ? 'bg-amber-100 text-amber-800'
-                                    : 'bg-cream text-navy/70';
+                                    ? 'bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300'
+                                    : 'bg-cream text-navy/70 dark:bg-navy-800 dark:text-cream/70';
 
                                 return (
-                                    <div key={i} className={`p-4 rounded-lg border ${isRejected ? 'border-red-200 bg-red-50/60' : 'border-navy/10 bg-white'}`}>
+                                    <div key={i} className={`p-4 rounded-lg border ${isRejected ? 'border-red-200 bg-red-50/60 dark:border-red-500/30 dark:bg-red-500/10' : 'border-navy/10 bg-white dark:border-white/10 dark:bg-navy-900'}`}>
                                         <div className="flex items-start justify-between gap-3 mb-3">
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-bold text-navy truncate">
+                                                <p className="text-sm font-bold text-navy truncate dark:text-cream">
                                                     {sub.candidate_name ? String(sub.candidate_name) : `Submission #${sub.submission_id ?? i + 1}`}
                                                 </p>
                                                 <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                                    <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-cream text-navy">
+                                                    <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-cream text-navy dark:bg-navy-800 dark:text-cream">
                                                         {String(sub.job_code ?? '')}
                                                     </span>
-                                                    <span className="text-xs text-navy/60">{String(sub.job_title ?? '')}</span>
-                                                    {!!sub.job_city && <span className="text-xs text-navy/50">{String(sub.job_city)}{sub.job_state ? `, ${String(sub.job_state)}` : ''}</span>}
+                                                    <span className="text-xs text-navy/60 dark:text-cream/60">{String(sub.job_title ?? '')}</span>
+                                                    {!!sub.job_city && <span className="text-xs text-navy/50 dark:text-cream/50">{String(sub.job_city)}{sub.job_state ? `, ${String(sub.job_state)}` : ''}</span>}
                                                 </div>
                                             </div>
                                             <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
                                                 <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full whitespace-nowrap ${statusBadge}`}>
                                                     {status}
                                                 </span>
-                                                {!!sub.submitted_on && <span className="text-[10px] text-navy/40">{fmt(String(sub.submitted_on))}</span>}
+                                                {!!sub.submitted_on && <span className="text-[10px] text-navy/40 dark:text-cream/40">{fmt(String(sub.submitted_on))}</span>}
                                             </div>
                                         </div>
                                         {/* Pipeline */}
@@ -555,12 +560,12 @@ function SubmissionsModal({ onClose, permissions, onCountReady, jobCodes, initia
                                                 return (
                                                     <div key={stage} className="flex-1 flex flex-col items-center relative min-w-0">
                                                         {idx < PIPELINE_STAGES.length - 1 && (
-                                                            <div className={`absolute top-[7px] left-1/2 w-full h-0.5 z-0 ${idx < stageIdx ? 'bg-steel' : 'bg-navy/10'}`} />
+                                                            <div className={`absolute top-[7px] left-1/2 w-full h-0.5 z-0 ${idx < stageIdx ? 'bg-steel' : 'bg-navy/10 dark:bg-white/10'}`} />
                                                         )}
-                                                        <div className={`relative z-10 w-3.5 h-3.5 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${active ? 'bg-navy border-navy shadow-sm' : done ? 'bg-steel border-steel' : 'bg-white border-navy/20'}`}>
+                                                        <div className={`relative z-10 w-3.5 h-3.5 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${active ? 'bg-navy border-navy shadow-sm dark:bg-steel dark:border-steel' : done ? 'bg-steel border-steel' : 'bg-white border-navy/20 dark:bg-navy-900 dark:border-white/20'}`}>
                                                             {done && <svg className="w-2 h-2" fill="none" stroke="white" strokeWidth={3} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
                                                         </div>
-                                                        <p className={`text-[8px] mt-0.5 text-center truncate w-full px-0.5 ${active ? 'text-navy font-semibold' : done ? 'text-steel' : 'text-navy/40'}`}>
+                                                        <p className={`text-[8px] mt-0.5 text-center truncate w-full px-0.5 ${active ? 'text-navy font-semibold dark:text-cream' : done ? 'text-steel dark:text-steel-light' : 'text-navy/40 dark:text-cream/40'}`}>
                                                             {stage.split(' ')[0]}
                                                         </p>
                                                     </div>
@@ -570,8 +575,8 @@ function SubmissionsModal({ onClose, permissions, onCountReady, jobCodes, initia
                                         {/* Meta */}
                                         {!!(sub.employment_type || sub.tax_term || (permissions.show_pay_rate && sub.pay_rate)) && (
                                             <div className="flex flex-wrap gap-4 mt-2">
-                                                {!!sub.employment_type && <span className="text-xs text-navy/50">Type: <span className="text-navy/80">{String(sub.employment_type)}</span></span>}
-                                                {!!(permissions.show_pay_rate && sub.pay_rate) && <span className="text-xs text-navy/50">Pay: <span className="font-medium text-steel">{String(sub.pay_rate)}</span></span>}
+                                                {!!sub.employment_type && <span className="text-xs text-navy/50 dark:text-cream/50">Type: <span className="text-navy/80 dark:text-cream/80">{String(sub.employment_type)}</span></span>}
+                                                {!!(permissions.show_pay_rate && sub.pay_rate) && <span className="text-xs text-navy/50 dark:text-cream/50">Pay: <span className="font-medium text-steel dark:text-steel-light">{String(sub.pay_rate)}</span></span>}
                                             </div>
                                         )}
                                     </div>
@@ -581,8 +586,8 @@ function SubmissionsModal({ onClose, permissions, onCountReady, jobCodes, initia
                     )}
                 </div>
 
-                <div className="px-6 pb-6 pt-4 flex justify-end border-t border-navy/10">
-                    <button onClick={onClose} className="rounded-full border border-navy/10 bg-white px-5 py-2 text-xs font-semibold text-navy transition-colors hover:bg-mist">
+                <div className="px-6 pb-6 pt-4 flex justify-end border-t border-navy/10 dark:border-white/10">
+                    <button onClick={onClose} className="rounded-full border border-navy/10 bg-white px-5 py-2 text-xs font-semibold text-navy transition-colors hover:bg-mist dark:bg-navy-900 dark:border-white/10 dark:text-cream dark:hover:bg-navy-800">
                         Close
                     </button>
                 </div>
@@ -639,25 +644,25 @@ function HiredModal({ onClose, permissions, onCountReady, jobCodes, initialData 
             onClick={e => e.target === e.currentTarget && onClose()}>
             <motion.div initial={{ opacity: 0, y: 24, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                className="w-full max-w-5xl rounded-2xl overflow-hidden bg-white border border-navy/10 shadow-xl">
+                className="w-full max-w-5xl rounded-2xl overflow-hidden bg-white border border-navy/10 shadow-xl dark:bg-navy-900 dark:border-white/10">
 
                 {/* Header */}
-                <div className="p-6 flex items-center justify-between border-b border-navy/10">
+                <div className="p-6 flex items-center justify-between border-b border-navy/10 dark:border-white/10">
                     <div>
-                        <h2 className="text-xl font-black text-navy">Total Hires</h2>
-                        <p className="text-xs mt-1 text-navy/50">All candidates placed/hired for your account</p>
+                        <h2 className="text-xl font-black text-navy dark:text-cream">Total Hires</h2>
+                        <p className="text-xs mt-1 text-navy/50 dark:text-cream/50">All candidates placed/hired for your account</p>
                     </div>
-                    <button onClick={onClose} className="text-2xl leading-none transition-colors text-navy/40 hover:text-navy">
+                    <button onClick={onClose} className="text-2xl leading-none transition-colors text-navy/40 hover:text-navy dark:text-cream/40 dark:hover:text-cream">
                         &times;
                     </button>
                 </div>
 
                 {/* Search */}
-                <div className="px-6 py-4 flex flex-wrap gap-3 border-b border-navy/10 bg-mist">
+                <div className="px-6 py-4 flex flex-wrap gap-3 border-b border-navy/10 bg-mist dark:bg-navy-800 dark:border-white/10">
                     <input type="text" value={search} onChange={e => setSearch(e.target.value)}
                         placeholder="Search candidate or job…"
-                        className="flex-1 min-w-[200px] rounded-md border border-navy/20 bg-white px-3 py-2 text-sm text-navy focus:border-steel focus:outline-none" />
-                    <span className="rounded-full bg-purple-100 px-3 py-2 text-xs font-medium text-purple-700">
+                        className="flex-1 min-w-[200px] rounded-md border border-navy/20 bg-white px-3 py-2 text-sm text-navy focus:border-steel focus:outline-none dark:bg-navy-900 dark:border-white/15 dark:text-cream" />
+                    <span className="rounded-full bg-purple-100 px-3 py-2 text-xs font-medium text-purple-700 dark:bg-purple-500/20 dark:text-purple-300">
                         {filtered.length} hired
                     </span>
                 </div>
@@ -666,12 +671,12 @@ function HiredModal({ onClose, permissions, onCountReady, jobCodes, initialData 
                 <div className="p-6 max-h-[60vh] overflow-y-auto">
                     {loading ? (
                         <div className="flex items-center justify-center gap-3 py-16">
-                            <div className="w-5 h-5 animate-spin rounded-full border-2 border-navy/15 border-t-steel" />
-                            <span className="text-xs uppercase tracking-widest text-navy/50">Loading placements…</span>
+                            <div className="w-5 h-5 animate-spin rounded-full border-2 border-navy/15 border-t-steel dark:border-white/15" />
+                            <span className="text-xs uppercase tracking-widest text-navy/50 dark:text-cream/50">Loading placements…</span>
                         </div>
                     ) : filtered.length === 0 ? (
                         <div className="py-16 text-center">
-                            <p className="text-sm text-navy/50">No hired candidates found.</p>
+                            <p className="text-sm text-navy/50 dark:text-cream/50">No hired candidates found.</p>
                         </div>
                     ) : (
                         <div className="space-y-3">
@@ -683,31 +688,31 @@ function HiredModal({ onClose, permissions, onCountReady, jobCodes, initialData 
                                 const location  = [String(p.job_city ?? ''), String(p.job_state ?? '')].filter(Boolean).join(', ');
                                 const status    = String(p.submission_status || p.pipeline_status || 'Placed');
                                 return (
-                                    <div key={i} className="p-4 rounded-lg border border-navy/10 bg-white">
+                                    <div key={i} className="p-4 rounded-lg border border-navy/10 bg-white dark:border-white/10 dark:bg-navy-900">
                                         <div className="flex items-start justify-between gap-3">
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                                    <p className="text-sm font-bold text-navy">{candidateName}</p>
-                                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">
+                                                    <p className="text-sm font-bold text-navy dark:text-cream">{candidateName}</p>
+                                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300">
                                                         ✓ Hired
                                                     </span>
                                                 </div>
                                                 <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1">
-                                                    {jobCode && <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-cream text-navy">{jobCode}</span>}
-                                                    <span className="text-xs text-navy/70">{jobTitle}</span>
-                                                    {location && <span className="text-xs text-navy/50">{location}</span>}
+                                                    {jobCode && <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-cream text-navy dark:bg-navy-800 dark:text-cream">{jobCode}</span>}
+                                                    <span className="text-xs text-navy/70 dark:text-cream/70">{jobTitle}</span>
+                                                    {location && <span className="text-xs text-navy/50 dark:text-cream/50">{location}</span>}
                                                 </div>
                                             </div>
                                             <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">✓ {status}</span>
-                                                {!!submittedOn && <span className="text-[10px] text-navy/40">{fmt(submittedOn)}</span>}
+                                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300">✓ {status}</span>
+                                                {!!submittedOn && <span className="text-[10px] text-navy/40 dark:text-cream/40">{fmt(submittedOn)}</span>}
                                             </div>
                                         </div>
                                         {/* Extra details */}
                                         {!!(p.employment_type || (permissions.show_pay_rate && p.pay_rate)) && (
-                                        <div className="flex flex-wrap gap-4 mt-2 pt-2 border-t border-navy/10">
-                                            {!!p.employment_type && <span className="text-xs text-navy/50">Type: <span className="text-navy/80">{String(p.employment_type)}</span></span>}
-                                            {!!(permissions.show_pay_rate && p.pay_rate) && <span className="text-xs text-navy/50">Pay: <span className="font-medium text-steel">{String(p.pay_rate)}</span></span>}
+                                        <div className="flex flex-wrap gap-4 mt-2 pt-2 border-t border-navy/10 dark:border-white/10">
+                                            {!!p.employment_type && <span className="text-xs text-navy/50 dark:text-cream/50">Type: <span className="text-navy/80 dark:text-cream/80">{String(p.employment_type)}</span></span>}
+                                            {!!(permissions.show_pay_rate && p.pay_rate) && <span className="text-xs text-navy/50 dark:text-cream/50">Pay: <span className="font-medium text-steel dark:text-steel-light">{String(p.pay_rate)}</span></span>}
                                         </div>
                                         )}
                                     </div>
@@ -717,8 +722,8 @@ function HiredModal({ onClose, permissions, onCountReady, jobCodes, initialData 
                     )}
                 </div>
 
-                <div className="px-6 pb-6 pt-4 flex justify-end border-t border-navy/10">
-                    <button onClick={onClose} className="rounded-full border border-navy/10 bg-white px-5 py-2 text-xs font-semibold text-navy transition-colors hover:bg-mist">
+                <div className="px-6 pb-6 pt-4 flex justify-end border-t border-navy/10 dark:border-white/10">
+                    <button onClick={onClose} className="rounded-full border border-navy/10 bg-white px-5 py-2 text-xs font-semibold text-navy transition-colors hover:bg-mist dark:bg-navy-900 dark:border-white/10 dark:text-cream dark:hover:bg-navy-800">
                         Close
                     </button>
                 </div>
@@ -839,7 +844,7 @@ export default function PortalClient({
         setClient(null); setJobs([]);
     };
 
-    if (!authChecked) return <div className="min-h-screen bg-cream" />;
+    if (!authChecked) return <div className="min-h-screen bg-cream dark:bg-navy-950" />;
 
     if (!client) return <LoginForm onLogin={setClient} siteImages={siteImages} />;
 
@@ -864,33 +869,35 @@ export default function PortalClient({
 
     const renderCell = (job: Job, key: string) => {
         const val = job[key];
-        if (val === null || val === undefined || val === "") return <span className="text-navy/20">—</span>;
-        if (key.includes("date") || key === "Created" || key === "Modified") return <span className="text-navy/60">{formatDate(String(val))}</span>;
+        if (val === null || val === undefined || val === "") return <span className="text-navy/20 dark:text-cream/20">—</span>;
+        if (key.includes("date") || key === "Created" || key === "Modified") return <span className="text-navy/60 dark:text-cream/60">{formatDate(String(val))}</span>;
         if (key === "job_status") {
             const s = STATUS_BADGE[val] ?? STATUS_BADGE_FALLBACK;
             return <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${s.badge}`}><span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${s.dot}`} />{val}</span>;
         }
-        if (key === "priority") { const pClasses: Record<string,string> = { High: 'text-red-600', Medium: 'text-amber-600', Low: 'text-green-700' }; return <span className={`text-[11px] font-semibold ${pClasses[val] ?? 'text-navy/60'}`}>{val}</span>; }
-        if (key === "remote_job") { const rClasses: Record<string,string> = { Remote: 'text-green-700', Hybrid: 'text-steel', 'On-site': 'text-red-600' }; return <span className={`text-[11px] ${rClasses[val] ?? 'text-navy/60'}`}>{val}</span>; }
-        return <span className="text-navy/80">{String(val)}</span>;
+        if (key === "priority") { const pClasses: Record<string,string> = { High: 'text-red-600 dark:text-red-400', Medium: 'text-amber-600 dark:text-amber-400', Low: 'text-green-700 dark:text-green-400' }; return <span className={`text-[11px] font-semibold ${pClasses[val] ?? 'text-navy/60 dark:text-cream/60'}`}>{val}</span>; }
+        if (key === "remote_job") { const rClasses: Record<string,string> = { Remote: 'text-green-700 dark:text-green-400', Hybrid: 'text-steel dark:text-steel-light', 'On-site': 'text-red-600 dark:text-red-400' }; return <span className={`text-[11px] ${rClasses[val] ?? 'text-navy/60 dark:text-cream/60'}`}>{val}</span>; }
+        return <span className="text-navy/80 dark:text-cream/80">{String(val)}</span>;
     };
 
     return (
         <>
-        <div className="min-h-screen bg-cream">
+        <div className="min-h-screen bg-cream dark:bg-navy-950">
             {/* Navbar */}
-            <header className={`fixed top-0 left-0 right-0 z-50 bg-white/85 backdrop-blur-md border-b border-navy/10 transition-shadow duration-300 ${scrolled ? 'shadow-[0_4px_20px_rgba(0,48,96,0.08)]' : ''}`}>
+            <header className={`fixed top-0 left-0 right-0 z-50 bg-white/85 backdrop-blur-md border-b border-navy/10 dark:bg-navy-900/85 dark:border-white/10 transition-shadow duration-300 ${scrolled ? 'shadow-[0_4px_20px_rgba(0,48,96,0.08)]' : ''}`}>
                 <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-[60px]">
                     <Link href="/" className="flex items-center">
-                        <Image src={siteImages["client-portal:header-logo"]} alt="Mintex Staffing" width={148} height={20} preload className="h-5 w-auto object-contain" />
+                        <Image src={siteImages["client-portal:header-logo"]} alt="Mintex Staffing" width={148} height={20} preload className="h-5 w-auto object-contain dark:hidden" />
+                        <Image src="/logo-white.png" alt="Mintex Staffing" width={148} height={20} preload className="hidden h-5 w-auto object-contain dark:block" />
                     </Link>
                     <div className="flex items-center gap-4">
                         <div className="hidden sm:flex flex-col items-end">
-                            <span className="text-xs font-semibold text-navy">{client.company || client.name}</span>
-                            <span className="text-[10px] text-navy/50">Client Portal</span>
+                            <span className="text-xs font-semibold text-navy dark:text-cream">{client.company || client.name}</span>
+                            <span className="text-[10px] text-navy/50 dark:text-cream/50">Client Portal</span>
                         </div>
+                        <ThemeToggle className="p-2.5" />
                         <button onClick={handleLogout}
-                            className="rounded-full border border-red-200 bg-white px-4 py-1.5 text-xs font-semibold text-red-600 transition-colors hover:bg-red-50">
+                            className="rounded-full border border-red-200 bg-white px-4 py-1.5 text-xs font-semibold text-red-600 transition-colors hover:bg-red-50 dark:border-red-500/30 dark:bg-navy-900 dark:text-red-300 dark:hover:bg-red-500/10">
                             Sign Out
                         </button>
                     </div>
@@ -900,18 +907,18 @@ export default function PortalClient({
             {/* Content */}
             <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-20 pb-20">
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                    className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-7 pb-6 border-b border-navy/10">
+                    className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-7 pb-6 border-b border-navy/10 dark:border-white/10">
                     <div>
-                        <div className="inline-flex items-center gap-2 mb-3 rounded-full border border-navy/10 bg-white px-3 py-1">
+                        <div className="inline-flex items-center gap-2 mb-3 rounded-full border border-navy/10 bg-white px-3 py-1 dark:bg-navy-900 dark:border-white/10">
                             <span className="w-1.5 h-1.5 rounded-full bg-steel" />
-                            <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-navy/60">Client Portal</span>
+                            <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-navy/60 dark:text-cream/60">Client Portal</span>
                         </div>
-                        <h1 className="font-black leading-tight text-navy" style={{ fontSize: 'clamp(1.6rem, 3vw, 2.2rem)' }}>
+                        <h1 className="font-black leading-tight text-navy dark:text-cream" style={{ fontSize: 'clamp(1.6rem, 3vw, 2.2rem)' }}>
                             <span>
                                 Job Postings Dashboard
                             </span>
                         </h1>
-                        <p className="text-sm mt-1 text-navy/60">
+                        <p className="text-sm mt-1 text-navy/60 dark:text-cream/60">
                             {jobs.length > 0 ? `${jobs.length} postings assigned to your account` : "Your assigned job postings from CEIPAL"}
                         </p>
                     </div>
@@ -934,9 +941,9 @@ export default function PortalClient({
                             return (
                                 <motion.button key={label} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
                                     onClick={() => setStatusFilter(isTotal ? "All" : (statusFilter === label ? "All" : label))}
-                                    className={`p-4 rounded-lg text-left border transition-colors duration-200 ${isActive ? 'border-navy bg-navy' : 'border-navy/20 bg-white hover:border-navy/40'}`}>
-                                    <p className={`text-2xl font-black mb-1 ${isActive ? 'text-white' : 'text-navy'}`}>{count}</p>
-                                    <p className={`text-[10px] font-semibold uppercase tracking-wide ${isActive ? 'text-white/70' : 'text-navy/50'}`}>{displayLabel}</p>
+                                    className={`p-4 rounded-lg text-left border transition-colors duration-200 ${isActive ? 'border-navy bg-navy dark:border-steel dark:bg-steel' : 'border-navy/20 bg-white hover:border-navy/40 dark:border-white/15 dark:bg-navy-900 dark:hover:border-white/30'}`}>
+                                    <p className={`text-2xl font-black mb-1 ${isActive ? 'text-white dark:text-navy-950' : 'text-navy dark:text-cream'}`}>{count}</p>
+                                    <p className={`text-[10px] font-semibold uppercase tracking-wide ${isActive ? 'text-white/70 dark:text-navy-950/70' : 'text-navy/50 dark:text-cream/50'}`}>{displayLabel}</p>
                                 </motion.button>
                             );
                         })}
@@ -944,21 +951,21 @@ export default function PortalClient({
                         {/* Total Submissions */}
                         <motion.button initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Object.keys(statusCounts).length * 0.04 }}
                             onClick={() => setShowSubmissions(true)}
-                            className="p-4 rounded-lg text-left border border-navy/20 bg-white transition-colors duration-200 hover:border-navy/40 group">
-                            <p className="text-2xl font-black mb-1 text-navy">
+                            className="p-4 rounded-lg text-left border border-navy/20 bg-white transition-colors duration-200 hover:border-navy/40 group dark:border-white/15 dark:bg-navy-900 dark:hover:border-white/30">
+                            <p className="text-2xl font-black mb-1 text-navy dark:text-cream">
                                 {submissionCount === null ? '…' : submissionCount}
                             </p>
-                            <p className="text-[10px] font-semibold uppercase tracking-wide text-navy/50">Total Submissions</p>
+                            <p className="text-[10px] font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">Total Submissions</p>
                         </motion.button>
 
                         {/* Total Hires */}
                         <motion.button initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: (Object.keys(statusCounts).length + 1) * 0.04 }}
                             onClick={() => setShowHired(true)}
-                            className="p-4 rounded-lg text-left border border-navy/20 bg-white transition-colors duration-200 hover:border-navy/40 group">
-                            <p className="text-2xl font-black mb-1 text-navy">
+                            className="p-4 rounded-lg text-left border border-navy/20 bg-white transition-colors duration-200 hover:border-navy/40 group dark:border-white/15 dark:bg-navy-900 dark:hover:border-white/30">
+                            <p className="text-2xl font-black mb-1 text-navy dark:text-cream">
                                 {hiredCount === null ? '…' : hiredCount}
                             </p>
-                            <p className="text-[10px] font-semibold uppercase tracking-wide text-navy/50">Total Hires</p>
+                            <p className="text-[10px] font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">Total Hires</p>
                         </motion.button>
                     </motion.div>
                 )}
@@ -966,7 +973,7 @@ export default function PortalClient({
                 {/* Lets the client know a slow "…" is Ceipal being slow, not a stuck page */}
                 {!loading && (submissionCount === null || hiredCount === null) && submissionsSlow && (
                     <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                        className="-mt-3 mb-6 text-xs text-navy/50">
+                        className="-mt-3 mb-6 text-xs text-navy/50 dark:text-cream/50">
                         Still fetching submissions &amp; hires — our data source (CEIPAL) can be slow, please wait a few seconds…
                     </motion.p>
                 )}
@@ -974,35 +981,35 @@ export default function PortalClient({
                 {/* Filter bar */}
                 {!loading && (
                     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-                        className="flex flex-wrap items-center gap-3 mb-5 px-4 py-3 rounded-lg border border-navy/10 bg-white">
+                        className="flex flex-wrap items-center gap-3 mb-5 px-4 py-3 rounded-lg border border-navy/10 bg-white dark:border-white/10 dark:bg-navy-900">
                         <div className="flex items-center gap-2">
-                            <label className="text-[10px] font-semibold uppercase tracking-wide text-navy/50">Status</label>
+                            <label className="text-[10px] font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">Status</label>
                             <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
-                                className="rounded-md border border-navy/20 bg-white px-3 py-2 text-xs font-semibold text-navy focus:border-steel focus:outline-none cursor-pointer">
+                                className="rounded-md border border-navy/20 bg-white px-3 py-2 text-xs font-semibold text-navy focus:border-steel focus:outline-none cursor-pointer dark:bg-navy-900 dark:border-white/15 dark:text-cream">
                                 <option value="All">All Statuses</option>
                                 {uniqueStatuses.map(s => <option key={s} value={s}>{s}</option>)}
                             </select>
                         </div>
-                        <div className="w-px h-5 bg-navy/10" />
+                        <div className="w-px h-5 bg-navy/10 dark:bg-white/10" />
                         <div className="flex-1 min-w-[220px] relative">
-                            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none text-navy/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none text-navy/40 dark:text-cream/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                             <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
                                 placeholder="Search by title, code, skills…"
-                                className="w-full pl-9 pr-4 py-2 rounded-md border border-navy/20 bg-white text-xs text-navy focus:border-steel focus:outline-none" />
+                                className="w-full pl-9 pr-4 py-2 rounded-md border border-navy/20 bg-white text-xs text-navy focus:border-steel focus:outline-none dark:bg-navy-900 dark:border-white/15 dark:text-cream" />
                         </div>
                         <div className="flex items-center gap-3 ml-auto">
-                            <span className="text-xs font-semibold text-navy/50">{filteredJobs.length} result{filteredJobs.length !== 1 ? "s" : ""}</span>
+                            <span className="text-xs font-semibold text-navy/50 dark:text-cream/50">{filteredJobs.length} result{filteredJobs.length !== 1 ? "s" : ""}</span>
                             {lastSynced && (
-                                <span className="text-[10px] text-navy/40">
+                                <span className="text-[10px] text-navy/40 dark:text-cream/40">
                                     Synced {lastSynced.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </span>
                             )}
                             <button
                                 onClick={() => fetchJobs(true)}
                                 disabled={syncing}
-                                className="flex items-center gap-1.5 rounded-full border border-navy/10 bg-white px-4 py-1.5 text-xs font-semibold text-navy transition-colors hover:bg-mist disabled:opacity-50">
+                                className="flex items-center gap-1.5 rounded-full border border-navy/10 bg-white px-4 py-1.5 text-xs font-semibold text-navy transition-colors hover:bg-mist disabled:opacity-50 dark:border-white/10 dark:bg-navy-900 dark:text-cream dark:hover:bg-navy-800">
                                 <svg className={`w-3.5 h-3.5 ${syncing ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                 </svg>
@@ -1016,12 +1023,12 @@ export default function PortalClient({
                 {loading && (
                     <div className="flex flex-col items-center justify-center py-28">
                         <div className="relative w-10 h-10 mb-4">
-                            <div className="absolute inset-0 rounded-full border-2 border-navy/15" />
+                            <div className="absolute inset-0 rounded-full border-2 border-navy/15 dark:border-white/15" />
                             <div className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-steel" />
                         </div>
-                        <p className="text-xs tracking-[0.25em] uppercase text-navy/50">Loading postings…</p>
+                        <p className="text-xs tracking-[0.25em] uppercase text-navy/50 dark:text-cream/50">Loading postings…</p>
                         {slowLoad && (
-                            <p className="mt-2 max-w-xs text-center text-xs text-navy/40">
+                            <p className="mt-2 max-w-xs text-center text-xs text-navy/40 dark:text-cream/40">
                                 Still working — this can take up to a minute right after things update. Thanks for your patience.
                             </p>
                         )}
@@ -1030,26 +1037,26 @@ export default function PortalClient({
 
                 {/* Error */}
                 {error && !loading && (
-                    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="p-6 rounded-2xl text-center bg-red-50 border border-red-200">
-                        <p className="text-sm font-semibold mb-3 text-red-700">{error}</p>
-                        <button onClick={() => fetchJobs()} className="rounded-full border border-red-200 bg-white px-5 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-100">Retry</button>
+                    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="p-6 rounded-2xl text-center bg-red-50 border border-red-200 dark:bg-red-500/10 dark:border-red-500/30">
+                        <p className="text-sm font-semibold mb-3 text-red-700 dark:text-red-300">{error}</p>
+                        <button onClick={() => fetchJobs()} className="rounded-full border border-red-200 bg-white px-5 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-100 dark:border-red-500/30 dark:bg-navy-900 dark:text-red-300 dark:hover:bg-red-500/10">Retry</button>
                     </motion.div>
                 )}
 
                 {/* No jobs assigned */}
                 {!loading && !error && jobs.length === 0 && (
                     <div className="py-24 text-center">
-                        <div className="w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4 border border-navy/10 bg-white">
+                        <div className="w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4 border border-navy/10 bg-white dark:border-white/10 dark:bg-navy-900">
                             <svg className="w-6 h-6 text-steel" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
                         </div>
-                        <p className="text-sm font-semibold text-navy/70">No job postings assigned yet</p>
-                        <p className="text-xs mt-1 mb-4 text-navy/50">Contact your Mintex account manager to get access to job postings.</p>
+                        <p className="text-sm font-semibold text-navy/70 dark:text-cream/70">No job postings assigned yet</p>
+                        <p className="text-xs mt-1 mb-4 text-navy/50 dark:text-cream/50">Contact your Mintex account manager to get access to job postings.</p>
                         <button
                             onClick={() => fetchJobs(true)}
                             disabled={syncing}
-                            className="inline-flex items-center gap-2 rounded-full bg-white border border-navy px-5 py-2.5 text-sm font-semibold text-navy transition-colors hover:bg-mist disabled:opacity-50">
+                            className="inline-flex items-center gap-2 rounded-full bg-white border border-navy px-5 py-2.5 text-sm font-semibold text-navy transition-colors hover:bg-mist disabled:opacity-50 dark:bg-navy-900 dark:border-steel dark:text-cream dark:hover:bg-navy-800">
                             <svg className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                             </svg>
@@ -1061,14 +1068,14 @@ export default function PortalClient({
                 {/* Table */}
                 {!loading && !error && filteredJobs.length > 0 && (
                     <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-                        className="rounded-lg overflow-hidden border border-navy/10 bg-white">
+                        className="rounded-lg overflow-hidden border border-navy/10 bg-white dark:border-white/10 dark:bg-navy-900">
                         <div className="overflow-x-auto">
                             <table className="min-w-full border-collapse">
                                 <thead>
-                                    <tr className="bg-mist border-b border-navy/10">
-                                        <th className="px-4 py-3 text-left w-10 text-xs font-semibold uppercase tracking-wide text-navy/50">#</th>
+                                    <tr className="bg-mist border-b border-navy/10 dark:bg-navy-800 dark:border-white/10">
+                                        <th className="px-4 py-3 text-left w-10 text-xs font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">#</th>
                                         {TABLE_COLUMNS.map(col => (
-                                            <th key={col.key} className="px-3 py-3 text-left whitespace-nowrap text-xs font-semibold uppercase tracking-wide text-navy/50">{col.label}</th>
+                                            <th key={col.key} className="px-3 py-3 text-left whitespace-nowrap text-xs font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">{col.label}</th>
                                         ))}
                                         <th className="px-3 py-3 w-10" />
                                     </tr>
@@ -1076,15 +1083,15 @@ export default function PortalClient({
                                 <tbody>
                                     {filteredJobs.map((job, index) => (
                                         <tr key={job.job_code || index}
-                                            className="cursor-pointer border-b border-navy/10 transition-colors duration-150 hover:bg-cream"
+                                            className="cursor-pointer border-b border-navy/10 transition-colors duration-150 hover:bg-cream dark:border-white/10 dark:even:bg-navy-800 dark:hover:bg-navy-800"
                                             onClick={() => setSelectedJob(job)}>
-                                            <td className="px-4 py-3 text-xs text-navy/40">{index + 1}</td>
+                                            <td className="px-4 py-3 text-xs text-navy/40 dark:text-cream/40">{index + 1}</td>
                                             {TABLE_COLUMNS.map(col => (
                                                 <td key={col.key} className="px-3 py-3 text-xs max-w-[180px] truncate">{renderCell(job, col.key)}</td>
                                             ))}
                                             <td className="px-3 py-3">
                                                 <button onClick={e => { e.stopPropagation(); setSelectedJob(job); }}
-                                                    className="rounded-full bg-white border border-navy px-3 py-1.5 text-[10px] font-semibold text-navy transition-colors hover:bg-mist">
+                                                    className="rounded-full bg-white border border-navy px-3 py-1.5 text-[10px] font-semibold text-navy transition-colors hover:bg-mist dark:bg-navy-900 dark:border-steel dark:text-cream dark:hover:bg-navy-800">
                                                     View
                                                 </button>
                                             </td>
@@ -1099,8 +1106,8 @@ export default function PortalClient({
                 {/* Empty filter state */}
                 {!loading && !error && filteredJobs.length === 0 && jobs.length > 0 && (
                     <div className="py-16 text-center">
-                        <p className="text-sm text-navy/50">No jobs match your filters.</p>
-                        <button onClick={() => { setStatusFilter("All"); setSearchQuery(""); }} className="mt-3 text-xs font-semibold text-steel transition-colors hover:text-navy">Clear filters</button>
+                        <p className="text-sm text-navy/50 dark:text-cream/50">No jobs match your filters.</p>
+                        <button onClick={() => { setStatusFilter("All"); setSearchQuery(""); }} className="mt-3 text-xs font-semibold text-steel transition-colors hover:text-navy dark:text-steel-light dark:hover:text-cream">Clear filters</button>
                     </div>
                 )}
             </div>

@@ -85,8 +85,8 @@ export default async function ResourcesPage() {
   return (
     <>
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
-        <h1 className="font-heading text-4xl font-bold text-navy sm:text-5xl">Resources</h1>
-        <p className="mt-4 max-w-2xl text-steel">
+        <h1 className="font-heading text-4xl font-bold text-navy dark:text-cream sm:text-5xl">Resources</h1>
+        <p className="mt-4 max-w-2xl text-steel dark:text-steel-light">
           Free tools for hiring teams and job seekers, hiring cost calculator, and AI interview
           question generator from Mintex Staffing.
         </p>
@@ -94,8 +94,8 @@ export default async function ResourcesPage() {
 
       <Section background="white" className="!py-12 sm:!py-14 lg:!py-16">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">Why it helps</p>
-          <h2 className="mt-2.5 text-3xl font-bold text-navy sm:text-4xl">Built for hiring teams and candidates</h2>
+          <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Why it helps</p>
+          <h2 className="mt-2.5 text-3xl font-bold text-navy dark:text-cream sm:text-4xl">Built for hiring teams and candidates</h2>
         </div>
 
         <div className="mx-auto mt-10 max-w-5xl space-y-10 lg:space-y-14">
@@ -110,7 +110,7 @@ export default async function ResourcesPage() {
                 <div className="relative hidden flex-shrink-0 lg:block" style={{ width: 320 }}>
                   <div
                     aria-hidden="true"
-                    className="absolute -inset-3 rounded-[2rem] border border-navy/10"
+                    className="absolute -inset-3 rounded-[2rem] border border-navy/10 dark:border-white/10"
                   />
                   <div className="relative aspect-[4/3] overflow-hidden rounded-[1.5rem] shadow-[0_20px_45px_-20px_rgba(0,48,96,0.25)]">
                     <Image
@@ -122,13 +122,13 @@ export default async function ResourcesPage() {
                   </div>
                 </div>
 
-                <div className="group flex w-full flex-1 gap-4 rounded-2xl border border-navy/[0.08] bg-white p-5 transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-20px_rgba(0,48,96,0.3)]">
-                  <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel">
+                <div className="group flex w-full flex-1 gap-4 rounded-2xl border border-navy/[0.08] bg-white p-5 transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-20px_rgba(0,48,96,0.3)] dark:border-white/10 dark:bg-navy-900">
+                  <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel dark:text-steel-light">
                     <PointIcon className="h-4 w-4" />
                   </span>
                   <div>
-                    <h3 className="font-semibold text-navy">{point.title}</h3>
-                    <p className="mt-1 text-sm text-navy/70">{point.description}</p>
+                    <h3 className="font-semibold text-navy dark:text-cream">{point.title}</h3>
+                    <p className="mt-1 text-sm text-navy/70 dark:text-cream/70">{point.description}</p>
                   </div>
                 </div>
               </div>

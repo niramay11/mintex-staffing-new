@@ -19,9 +19,9 @@ import { stateToSlug } from "@/lib/interviewKit/legalRights";
 type View = "candidate" | "employer";
 
 const WEIGHT_STYLES: Record<string, string> = {
-  critical: "bg-steel/20 text-navy",
-  important: "bg-mist text-navy/80",
-  "nice-to-have": "bg-mist text-navy/50",
+  critical: "bg-steel/20 text-navy dark:bg-steel/25 dark:text-cream",
+  important: "bg-mist text-navy/80 dark:bg-navy-800 dark:text-cream/80",
+  "nice-to-have": "bg-mist text-navy/50 dark:bg-navy-800 dark:text-cream/50",
 };
 
 export default function InterviewKitView({
@@ -43,7 +43,7 @@ export default function InterviewKitView({
   return (
     <div className="space-y-8">
       <section>
-        <h3 className="font-heading text-xl font-semibold text-navy">Competency map</h3>
+        <h3 className="font-heading text-xl font-semibold text-navy dark:text-cream">Competency map</h3>
         <div className="mt-3 flex flex-wrap gap-2">
           {kit.competency_map.map((c) => (
             <span
@@ -63,53 +63,53 @@ export default function InterviewKitView({
 
       {!isEmployer && <ExpandKit kit={kit} path={path} />}
 
-      <section className="rounded-2xl border border-steel/40 bg-steel/[0.08] p-6">
-        <h3 className="font-heading text-xl font-semibold text-navy">
+      <section className="rounded-2xl border border-steel/40 bg-steel/[0.08] p-6 dark:border-steel/30 dark:bg-steel/10">
+        <h3 className="font-heading text-xl font-semibold text-navy dark:text-cream">
           {isEmployer ? `Compliance in ${kit.region.state}` : `Know your rights in ${kit.region.state}`}
         </h3>
-        <p className="mt-1 text-xs text-navy/50">
+        <p className="mt-1 text-xs text-navy/50 dark:text-cream/50">
           Not legal advice — verify anything specific with {kit.region.state}&apos;s labor office before relying on
           it.{" "}
-          <Link href={`/interview-rights/${stateToSlug(kit.region.state)}`} className="font-medium text-steel hover:text-navy">
+          <Link href={`/interview-rights/${stateToSlug(kit.region.state)}`} className="font-medium text-steel hover:text-navy dark:text-steel-light dark:hover:text-cream">
             Full {kit.region.state} rights guide →
           </Link>
         </p>
         <div className="mt-4 space-y-3">
           {kit.your_rights.cannot_be_asked.map((item) => (
-            <div key={item.question} className="rounded-xl bg-white p-4 text-sm">
-              <p className="text-navy/50 line-through">
+            <div key={item.question} className="rounded-xl bg-white p-4 text-sm dark:bg-navy-800">
+              <p className="text-navy/50 line-through dark:text-cream/50">
                 <span className="sr-only">Prohibited question: </span>
                 {item.question}
               </p>
-              <p className="mt-1 text-navy/70">{item.why}</p>
+              <p className="mt-1 text-navy/70 dark:text-cream/70">{item.why}</p>
               {isEmployer ? (
-                <p className="mt-1 font-medium text-navy">Ask this instead: {item.lawful_alternative}</p>
+                <p className="mt-1 font-medium text-navy dark:text-cream">Ask this instead: {item.lawful_alternative}</p>
               ) : (
-                <p className="mt-1 font-medium text-navy">If you&apos;re asked this: {item.how_to_respond}</p>
+                <p className="mt-1 font-medium text-navy dark:text-cream">If you&apos;re asked this: {item.how_to_respond}</p>
               )}
-              <p className="mt-2 text-xs text-navy/40">Source: {item.source.label}</p>
+              <p className="mt-2 text-xs text-navy/40 dark:text-cream/40">Source: {item.source.label}</p>
             </div>
           ))}
         </div>
         {kit.your_rights.state_specific.length > 0 && (
-          <ul className="mt-4 space-y-2 text-sm text-navy/70">
+          <ul className="mt-4 space-y-2 text-sm text-navy/70 dark:text-cream/70">
             {kit.your_rights.state_specific.map((note) => (
-              <li key={note.text} className="list-disc pl-4 marker:text-navy/30">
+              <li key={note.text} className="list-disc pl-4 marker:text-navy/30 dark:marker:text-cream/30">
                 {note.text}
-                <span className="block text-xs text-navy/40">Source: {note.source.label}</span>
+                <span className="block text-xs text-navy/40 dark:text-cream/40">Source: {note.source.label}</span>
               </li>
             ))}
           </ul>
         )}
         {kit.your_rights.legally_confused.length > 0 && (
-          <div className="mt-5 border-t border-navy/10 pt-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-navy/50">Often assumed illegal — but isn&apos;t</p>
+          <div className="mt-5 border-t border-navy/10 pt-4 dark:border-white/10">
+            <p className="text-xs font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">Often assumed illegal — but isn&apos;t</p>
             <div className="mt-3 space-y-3">
               {kit.your_rights.legally_confused.map((item) => (
-                <div key={item.question} className="rounded-xl bg-white p-4 text-sm">
-                  <p className="font-medium text-navy">{item.question}</p>
-                  <p className="mt-1 text-navy/70">{item.why}</p>
-                  <p className="mt-1 text-navy/70">{item.guidance}</p>
+                <div key={item.question} className="rounded-xl bg-white p-4 text-sm dark:bg-navy-800">
+                  <p className="font-medium text-navy dark:text-cream">{item.question}</p>
+                  <p className="mt-1 text-navy/70 dark:text-cream/70">{item.why}</p>
+                  <p className="mt-1 text-navy/70 dark:text-cream/70">{item.guidance}</p>
                 </div>
               ))}
             </div>
@@ -118,20 +118,20 @@ export default function InterviewKitView({
       </section>
 
       {!isEmployer && (
-        <section className="rounded-2xl border border-navy/10 bg-white p-6">
-          <h3 className="font-heading text-xl font-semibold text-navy">Prep before you go in</h3>
+        <section className="rounded-2xl border border-navy/10 bg-white p-6 dark:border-white/10 dark:bg-navy-900">
+          <h3 className="font-heading text-xl font-semibold text-navy dark:text-cream">Prep before you go in</h3>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <div>
-              <p className="text-sm font-semibold text-navy">Think through these before the interview</p>
-              <ul className="mt-1.5 list-disc space-y-1 pl-4 text-sm text-navy/70">
+              <p className="text-sm font-semibold text-navy dark:text-cream">Think through these before the interview</p>
+              <ul className="mt-1.5 list-disc space-y-1 pl-4 text-sm text-navy/70 dark:text-cream/70">
                 {kit.prep.star_prompts.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
               </ul>
             </div>
             <div>
-              <p className="text-sm font-semibold text-navy">Questions to ask them</p>
-              <ul className="mt-1.5 list-disc space-y-1 pl-4 text-sm text-navy/70">
+              <p className="text-sm font-semibold text-navy dark:text-cream">Questions to ask them</p>
+              <ul className="mt-1.5 list-disc space-y-1 pl-4 text-sm text-navy/70 dark:text-cream/70">
                 {kit.prep.questions_to_ask_them.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
@@ -140,8 +140,8 @@ export default function InterviewKitView({
           </div>
           {kit.prep.likely_skills_tests.length > 0 && (
             <div className="mt-4">
-              <p className="text-sm font-semibold text-navy">You may also be tested on</p>
-              <ul className="mt-1.5 list-disc space-y-1 pl-4 text-sm text-navy/70">
+              <p className="text-sm font-semibold text-navy dark:text-cream">You may also be tested on</p>
+              <ul className="mt-1.5 list-disc space-y-1 pl-4 text-sm text-navy/70 dark:text-cream/70">
                 {kit.prep.likely_skills_tests.map((item) => (
                   <li key={item}>{item}</li>
                 ))}

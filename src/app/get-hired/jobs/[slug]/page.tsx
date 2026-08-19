@@ -185,36 +185,36 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
         <Link
           href="/get-hired/apply-to-jobs"
-          className="flex w-fit items-center gap-1.5 text-sm font-medium text-navy/60 transition-colors hover:text-navy"
+          className="flex w-fit items-center gap-1.5 text-sm font-medium text-navy/60 transition-colors hover:text-navy dark:text-cream/60 dark:hover:text-cream"
         >
           <IconArrowLeft className="h-4 w-4" />
           All open roles
         </Link>
 
         <div className="mt-6 flex flex-wrap items-center gap-3">
-          <span className="rounded-full border border-navy/10 bg-white px-3 py-1 font-mono text-[11px] font-medium text-navy/70">
+          <span className="rounded-full border border-navy/10 bg-white px-3 py-1 font-mono text-[11px] font-medium text-navy/70 dark:border-white/10 dark:bg-navy-900 dark:text-cream/70">
             {job.job_code}
           </span>
-          {posted && <span className="text-xs text-navy/50">Posted {posted}</span>}
+          {posted && <span className="text-xs text-navy/50 dark:text-cream/50">Posted {posted}</span>}
         </div>
 
-        <h1 className="mt-4 font-heading text-3xl font-bold text-navy sm:text-5xl">{job.job_title}</h1>
+        <h1 className="mt-4 font-heading text-3xl font-bold text-navy sm:text-5xl dark:text-cream">{job.job_title}</h1>
 
-        <p className="mt-4 flex items-center gap-1.5 text-steel">
+        <p className="mt-4 flex items-center gap-1.5 text-steel dark:text-steel-light">
           <IconPin className="h-4 w-4 flex-shrink-0" />
           {jobLocation(job)}
         </p>
 
         <div className="mt-6 flex flex-wrap items-center gap-2.5">
-          {pay && <span className="rounded-full bg-navy px-4 py-2 text-base font-semibold text-white">{pay}</span>}
+          {pay && <span className="rounded-full bg-navy px-4 py-2 text-base font-semibold text-white dark:bg-steel dark:text-navy-950">{pay}</span>}
           {job.job_type && (
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-navy/15 bg-white px-3.5 py-1.5 text-xs font-medium text-navy/70">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-navy/15 bg-white px-3.5 py-1.5 text-xs font-medium text-navy/70 dark:border-white/10 dark:bg-navy-900 dark:text-cream/70">
               <IconBriefcase className="h-3.5 w-3.5" />
               {job.job_type}
             </span>
           )}
           {remoteLabel && (
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-navy/15 bg-white px-3.5 py-1.5 text-xs font-medium text-navy/70">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-navy/15 bg-white px-3.5 py-1.5 text-xs font-medium text-navy/70 dark:border-white/10 dark:bg-navy-900 dark:text-cream/70">
               <IconGlobe className="h-3.5 w-3.5" />
               {remoteLabel}
             </span>
@@ -230,13 +230,13 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
       <Section background="white">
         <div className="lg:grid lg:grid-cols-[1fr_320px] lg:items-start lg:gap-10">
           {/* Main column */}
-          <div className="rounded-2xl border border-navy/[0.08] bg-white p-6 sm:p-8">
+          <div className="rounded-2xl border border-navy/[0.08] bg-white p-6 sm:p-8 dark:border-white/10 dark:bg-navy-900">
             {skills.length > 0 && (
               <div>
-                <p className="mb-2.5 text-xs font-semibold uppercase tracking-wide text-navy/50">Skills</p>
+                <p className="mb-2.5 text-xs font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">Skills</p>
                 <div className="flex flex-wrap gap-1.5">
                   {skills.map((skill) => (
-                    <span key={skill} className="rounded-full bg-mist px-3 py-1 text-xs font-medium text-navy">
+                    <span key={skill} className="rounded-full bg-mist px-3 py-1 text-xs font-medium text-navy dark:bg-navy-800 dark:text-cream">
                       {skill}
                     </span>
                   ))}
@@ -246,17 +246,18 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
 
             {description && (
               <div className={skills.length > 0 ? "mt-8" : ""}>
-                <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-navy/50">Job Description</p>
+                <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">Job Description</p>
                 <div
                   className="text-[15px] leading-relaxed text-navy/80
+                    dark:text-cream/80
                     [&_p]:mb-3 [&_p:last-child]:mb-0
-                    [&_strong]:font-semibold [&_strong]:text-navy
+                    [&_strong]:font-semibold [&_strong]:text-navy dark:[&_strong]:text-cream
                     [&_ul]:my-3 [&_ul]:list-disc [&_ul]:space-y-1.5 [&_ul]:pl-5
                     [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:space-y-1.5 [&_ol]:pl-5
-                    [&_h1]:mb-2 [&_h1]:mt-6 [&_h1]:text-lg [&_h1]:font-bold [&_h1]:text-navy [&_h1:first-child]:mt-0
-                    [&_h2]:mb-2 [&_h2]:mt-6 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:text-navy [&_h2:first-child]:mt-0
-                    [&_h3]:mb-2 [&_h3]:mt-5 [&_h3]:text-base [&_h3]:font-bold [&_h3]:text-navy [&_h3:first-child]:mt-0
-                    [&_a]:font-medium [&_a]:text-steel [&_a]:no-underline [&_a:hover]:underline"
+                    [&_h1]:mb-2 [&_h1]:mt-6 [&_h1]:text-lg [&_h1]:font-bold [&_h1]:text-navy [&_h1:first-child]:mt-0 dark:[&_h1]:text-cream
+                    [&_h2]:mb-2 [&_h2]:mt-6 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:text-navy [&_h2:first-child]:mt-0 dark:[&_h2]:text-cream
+                    [&_h3]:mb-2 [&_h3]:mt-5 [&_h3]:text-base [&_h3]:font-bold [&_h3]:text-navy [&_h3:first-child]:mt-0 dark:[&_h3]:text-cream
+                    [&_a]:font-medium [&_a]:text-steel [&_a]:no-underline [&_a:hover]:underline dark:[&_a]:text-steel-light"
                   dangerouslySetInnerHTML={{ __html: description }}
                 />
               </div>
@@ -265,28 +266,28 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
 
           {/* Sidebar */}
           <aside className="mt-6 lg:sticky lg:top-24 lg:mt-0 lg:self-start">
-            <div className="rounded-2xl border border-navy/[0.08] bg-white p-6">
-              <h2 className="text-sm font-semibold text-navy">Role at a glance</h2>
+            <div className="rounded-2xl border border-navy/[0.08] bg-white p-6 dark:border-white/10 dark:bg-navy-900">
+              <h2 className="text-sm font-semibold text-navy dark:text-cream">Role at a glance</h2>
               <div className="mt-4 space-y-4">
                 {snapshot
                   .filter((s) => s.value)
                   .map(({ label, value, Icon }) => (
                     <div key={label} className="flex items-start gap-3">
-                      <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-mist text-steel">
+                      <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-mist text-steel dark:bg-navy-800 dark:text-steel-light">
                         <Icon className="h-4 w-4" />
                       </span>
                       <div className="min-w-0">
-                        <p className="text-[10px] font-semibold uppercase tracking-wide text-navy/45">{label}</p>
-                        <p className="mt-0.5 text-sm font-medium text-navy">{String(value)}</p>
+                        <p className="text-[10px] font-semibold uppercase tracking-wide text-navy/45 dark:text-cream/45">{label}</p>
+                        <p className="mt-0.5 text-sm font-medium text-navy dark:text-cream">{String(value)}</p>
                       </div>
                     </div>
                   ))}
               </div>
 
-              <div className="mt-6 border-t border-navy/10 pt-5">
+              <div className="mt-6 border-t border-navy/10 pt-5 dark:border-white/10">
                 <JobPageApply
                   job={selectedJob}
-                  className="flex w-full items-center justify-center gap-2 rounded-full bg-white border border-navy px-6 py-3 text-sm font-semibold text-navy transition-colors hover:bg-mist"
+                  className="flex w-full items-center justify-center gap-2 rounded-full bg-white border border-navy px-6 py-3 text-sm font-semibold text-navy transition-colors hover:bg-mist dark:bg-navy-900 dark:border-steel dark:text-cream dark:hover:bg-navy-800"
                 />
               </div>
             </div>

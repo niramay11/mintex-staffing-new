@@ -105,16 +105,16 @@ export default function ClientStories() {
 
   return (
     <>
-    <section className="border-t border-navy/[0.06] bg-mist">
+    <section className="border-t border-navy/[0.06] bg-mist dark:bg-navy-900 dark:border-white/10">
       <div className="mx-auto max-w-[1920px] px-6 py-16 sm:px-10 sm:py-20 lg:px-16 lg:py-24">
       <div className="mx-auto max-w-2xl text-center">
-        <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
+        <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
           Client stories
         </p>
-        <h2 className="mt-3.5 font-heading text-[36px] font-bold leading-tight text-navy sm:text-[40px]">
+        <h2 className="mt-3.5 font-heading text-[36px] font-bold leading-tight text-navy sm:text-[40px] dark:text-cream">
           You need to see it to believe it
         </h2>
-        <p className="mt-4 text-lg text-steel">
+        <p className="mt-4 text-lg text-steel dark:text-steel-light">
           Let our work do the talking while we help businesses <b>lower the time to</b> fill a specific role, help beat the AI resumes and connect them with pre-qualified talents to solve their
 hiring challenges with intentional staffing solutions created for solving the hiring issues.
         </p>
@@ -126,7 +126,7 @@ hiring challenges with intentional staffing solutions created for solving the hi
             type="button"
             onClick={() => setActive(featured)}
             aria-label={`Play video${featured.author ? `: ${featured.author}` : ""}`}
-            className="group relative flex aspect-[16/11] flex-col justify-end overflow-hidden rounded-3xl bg-gradient-to-br from-navy-secondary to-navy p-7 text-left shadow-[0_20px_50px_-24px_rgba(0,48,96,0.5)]"
+            className="group relative flex aspect-[16/11] flex-col justify-end overflow-hidden rounded-3xl bg-gradient-to-br from-navy-secondary to-navy p-7 text-left shadow-[0_20px_50px_-24px_rgba(0,48,96,0.5)] dark:from-navy-800 dark:to-navy-900"
           >
             <CardVisual story={featured} opacityClassName="opacity-70" />
             <span className="absolute inset-0 flex items-center justify-center">
@@ -147,7 +147,7 @@ hiring challenges with intentional staffing solutions created for solving the hi
             )}
           </button>
         ) : (
-          <div className="flex aspect-[16/11] flex-col items-center justify-center rounded-3xl border border-dashed border-navy/15 text-sm text-navy/40">
+          <div className="flex aspect-[16/11] flex-col items-center justify-center rounded-3xl border border-dashed border-navy/15 text-sm text-navy/40 dark:border-white/10 dark:text-cream/40">
             No client story videos yet.
           </div>
         )}
@@ -169,11 +169,11 @@ hiring challenges with intentional staffing solutions created for solving the hi
               )}
             </button>
           ) : (
-            <div className="flex min-h-[130px] flex-1 items-center justify-center rounded-3xl border border-dashed border-navy/15 text-sm text-navy/40">
+            <div className="flex min-h-[130px] flex-1 items-center justify-center rounded-3xl border border-dashed border-navy/15 text-sm text-navy/40 dark:border-white/10 dark:text-cream/40">
               &mdash;
             </div>
           )}
-          <div className="flex flex-1 flex-col justify-center rounded-3xl bg-navy p-6 text-white">
+          <div className="flex flex-1 flex-col justify-center rounded-3xl bg-navy p-6 text-white dark:bg-navy-800">
             <div className="font-heading text-3xl font-bold">
               4.9<span className="text-lg font-normal text-steel-lighter">/5</span>
             </div>

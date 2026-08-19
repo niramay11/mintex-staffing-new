@@ -4,8 +4,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 
 const inputClasses =
-  "mt-1.5 w-full rounded-xl border border-navy/15 bg-mist/40 px-4 py-2.5 text-sm text-navy placeholder:text-navy/30 transition-colors focus:border-steel focus:bg-white focus:outline-none focus:ring-4 focus:ring-steel/15";
-const labelClasses = "block text-sm font-semibold text-navy";
+  "mt-1.5 w-full rounded-xl border border-navy/15 bg-mist/40 px-4 py-2.5 text-sm text-navy placeholder:text-navy/30 transition-colors focus:border-steel focus:bg-white focus:outline-none focus:ring-4 focus:ring-steel/15 dark:bg-navy-900 dark:border-white/15 dark:text-cream dark:placeholder:text-cream/40 dark:focus:bg-navy-900";
+const labelClasses = "block text-sm font-semibold text-navy dark:text-cream";
 
 export default function ResumeForm() {
   const [submitted, setSubmitted] = useState(false);
@@ -36,7 +36,7 @@ export default function ResumeForm() {
 
   if (submitted) {
     return (
-      <p className="rounded-xl bg-steel-lighter/40 p-4 text-sm text-navy">
+      <p className="rounded-xl bg-steel-lighter/40 p-4 text-sm text-navy dark:text-cream">
         Thanks for sharing your resume! Our team will review it and reach out if there&apos;s a
         fit.
       </p>
@@ -75,9 +75,9 @@ export default function ResumeForm() {
         </label>
         <label
           htmlFor="resume-file"
-          className="mt-1.5 flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-dashed border-navy/25 bg-mist/40 px-4 py-3.5 text-sm transition-colors hover:border-steel hover:bg-white"
+          className="mt-1.5 flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-dashed border-navy/25 bg-mist/40 px-4 py-3.5 text-sm transition-colors hover:border-steel hover:bg-white dark:bg-navy-900 dark:border-white/10 dark:hover:bg-navy-800"
         >
-          <span className="flex items-center gap-2.5 text-navy/70">
+          <span className="flex items-center gap-2.5 text-navy/70 dark:text-cream/70">
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4.5 w-4.5 flex-shrink-0">
               <path
                 d="M12 4v11m0-11 4 4m-4-4-4 4M5 17v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2"
@@ -89,7 +89,7 @@ export default function ResumeForm() {
             </svg>
             {fileName || "Choose a file to upload"}
           </span>
-          <span className="flex-shrink-0 rounded-full bg-navy/[0.06] px-3 py-1 text-xs font-semibold text-navy">
+          <span className="flex-shrink-0 rounded-full bg-navy/[0.06] px-3 py-1 text-xs font-semibold text-navy dark:bg-navy-800 dark:text-cream">
             Browse
           </span>
         </label>

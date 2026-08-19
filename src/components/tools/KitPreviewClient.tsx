@@ -19,7 +19,7 @@ type StoredKit = { kit: InterviewKit; jdContext?: JdContext };
 function PreviewSection({ className = "", children }: { className?: string; children: React.ReactNode }) {
   return (
     <section
-      className={`relative mx-auto max-w-[1920px] overflow-hidden border-t border-navy/[0.06] bg-mist px-6 py-16 sm:px-10 sm:py-20 lg:px-16 lg:py-24 ${className}`}
+      className={`relative mx-auto max-w-[1920px] overflow-hidden border-t border-navy/[0.06] bg-mist px-6 py-16 dark:border-white/[0.08] dark:bg-navy-900 sm:px-10 sm:py-20 lg:px-16 lg:py-24 ${className}`}
     >
       <div className="relative">{children}</div>
     </section>
@@ -58,12 +58,12 @@ export default function KitPreviewClient() {
   if (!stored) {
     return (
       <PreviewSection className="!py-12 sm:!py-14 lg:!py-16">
-        <div className="rounded-2xl border border-navy/10 bg-white p-8 text-center">
-          <p className="text-navy/70">
+        <div className="rounded-2xl border border-navy/10 bg-white p-8 text-center dark:border-white/10 dark:bg-navy-900">
+          <p className="text-navy/70 dark:text-cream/70">
             This preview isn&apos;t available — it only lives in this browser tab and doesn&apos;t survive being
             reopened elsewhere.
           </p>
-          <Link href="/resources/ai-interview-generator" className="mt-3 inline-block font-medium text-steel hover:text-navy">
+          <Link href="/resources/ai-interview-generator" className="mt-3 inline-block font-medium text-steel hover:text-navy dark:text-steel-light dark:hover:text-cream">
             Generate a new kit →
           </Link>
         </div>
@@ -76,17 +76,17 @@ export default function KitPreviewClient() {
   return (
     <>
       <PreviewSection className="!py-12 sm:!py-14 lg:!py-16">
-        <Link href="/resources/ai-interview-generator" className="text-sm font-medium text-steel hover:text-navy">
+        <Link href="/resources/ai-interview-generator" className="text-sm font-medium text-steel hover:text-navy dark:text-steel-light dark:hover:text-cream">
           ← Generate another kit
         </Link>
-        <h1 className="mt-3 font-heading text-4xl font-bold text-navy sm:text-5xl">
+        <h1 className="mt-3 font-heading text-4xl font-bold text-navy sm:text-5xl dark:text-cream">
           {kit.role.title} Interview Questions
         </h1>
-        <p className="mt-4 max-w-2xl text-steel">{kit.role.summary}</p>
+        <p className="mt-4 max-w-2xl text-steel dark:text-steel-light">{kit.role.summary}</p>
       </PreviewSection>
 
       <PreviewSection>
-        <p className="mb-6 rounded-xl bg-steel/10 px-4 py-3 text-sm text-navy/70">
+        <p className="mb-6 rounded-xl bg-steel/10 px-4 py-3 text-sm text-navy/70 dark:text-cream/70">
           Generated from your pasted job posting — grounded in the tools and requirements it actually named, not
           guessed. This isn&apos;t saved on our servers; it disappears once you close this tab.
         </p>

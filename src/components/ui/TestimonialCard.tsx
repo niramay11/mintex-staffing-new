@@ -59,23 +59,23 @@ export default function TestimonialCard({ caseStudy }: { caseStudy: CaseStudy })
 
   return (
     <>
-      <figure className="flex flex-col rounded-[32px] bg-white p-8 shadow-[0_4px_20px_-6px_rgba(0,48,96,0.12)] transition-shadow hover:shadow-[0_24px_50px_-20px_rgba(0,48,96,0.35)] sm:p-9">
+      <figure className="flex flex-col rounded-[32px] bg-white p-8 shadow-[0_4px_20px_-6px_rgba(0,48,96,0.12)] transition-shadow hover:shadow-[0_24px_50px_-20px_rgba(0,48,96,0.35)] dark:bg-navy-900 dark:shadow-[0_4px_20px_-6px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_24px_50px_-20px_rgba(0,0,0,0.5)] sm:p-9">
         <div>
           {caseStudy.video_url && (
             <VideoThumbnail caseStudy={caseStudy} onPlay={() => setPlaying(true)} />
           )}
-          <svg aria-hidden="true" viewBox="0 0 32 24" fill="currentColor" className="h-7 w-9 text-steel">
+          <svg aria-hidden="true" viewBox="0 0 32 24" fill="currentColor" className="h-7 w-9 text-steel dark:text-steel-light">
             <path d="M0 24V14.4C0 9.87 1.253 6.507 3.76 4.304 6.267 2.101 9.387 0.64 13.12 0L14.72 3.68C12.373 4.373 10.507 5.44 9.12 6.88 7.787 8.267 7.12 9.973 7.12 12H13.6V24H0ZM18.4 24V14.4C18.4 9.87 19.653 6.507 22.16 4.304 24.667 2.101 27.787 0.64 31.52 0L33.12 3.68C30.773 4.373 28.907 5.44 27.52 6.88 26.187 8.267 25.52 9.973 25.52 12H32V24H18.4Z" />
           </svg>
           <blockquote>
-            <p className="mt-3 font-heading text-[17px] italic leading-relaxed text-navy">
+            <p className="mt-3 font-heading text-[17px] italic leading-relaxed text-navy dark:text-cream">
               {caseStudy.quote}
             </p>
           </blockquote>
         </div>
         <figcaption className="mt-7">
-          <p className="text-sm font-semibold text-navy">{caseStudy.title}</p>
-          <p className="mt-0.5 text-sm text-steel">
+          <p className="text-sm font-semibold text-navy dark:text-cream">{caseStudy.title}</p>
+          <p className="mt-0.5 text-sm text-steel dark:text-steel-light">
             {caseStudy.author}
             {caseStudy.role ? ` · ${caseStudy.role}` : ""}
           </p>

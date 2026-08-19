@@ -82,12 +82,12 @@ export default function AiInterviewGenerator({ industries }: { industries: Indus
 
   return (
     <div className="mx-auto w-full">
-      <div className="mb-6 inline-flex rounded-full border border-navy/10 bg-white p-1">
+      <div className="mb-6 inline-flex rounded-full border border-navy/10 bg-white p-1 dark:border-white/10 dark:bg-navy-900">
         <button
           type="button"
           onClick={() => setTab("title")}
           className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-            tab === "title" ? "bg-navy text-white" : "text-navy/60 hover:text-navy"
+            tab === "title" ? "bg-navy text-white dark:bg-steel dark:text-navy-950 dark:hover:bg-steel-light" : "text-navy/60 hover:text-navy dark:text-cream/60 dark:hover:text-cream"
           }`}
         >
           By job title
@@ -96,7 +96,7 @@ export default function AiInterviewGenerator({ industries }: { industries: Indus
           type="button"
           onClick={() => setTab("jd")}
           className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-            tab === "jd" ? "bg-navy text-white" : "text-navy/60 hover:text-navy"
+            tab === "jd" ? "bg-navy text-white dark:bg-steel dark:text-navy-950 dark:hover:bg-steel-light" : "text-navy/60 hover:text-navy dark:text-cream/60 dark:hover:text-cream"
           }`}
         >
           Paste a job description
@@ -109,16 +109,16 @@ export default function AiInterviewGenerator({ industries }: { industries: Indus
         <div className="mx-auto grid w-full items-start gap-8 lg:grid-cols-2">
           <form
             onSubmit={handleGenerate}
-            className="grid content-start gap-5 rounded-3xl border border-navy/[0.08] bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)]"
+            className="grid content-start gap-5 rounded-3xl border border-navy/[0.08] bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)] dark:border-white/10 dark:bg-navy-900"
           >
-            <label className="block text-sm font-semibold text-navy">
+            <label className="block text-sm font-semibold text-navy dark:text-cream">
               Job title
               <input
                 type="text"
                 value={jobTitle}
                 onChange={(event) => setJobTitle(event.target.value)}
                 placeholder="e.g. Warehouse Associate, Registered Nurse, CNC Machinist"
-                className="mt-2 w-full rounded-xl border border-navy/15 bg-white px-4 py-3 text-sm font-normal text-navy placeholder:text-navy/35 focus:border-steel focus:outline-none"
+                className="mt-2 w-full rounded-xl border border-navy/15 bg-white px-4 py-3 text-sm font-normal text-navy placeholder:text-navy/35 focus:border-steel focus:outline-none dark:border-white/15 dark:bg-navy-900 dark:text-cream dark:placeholder:text-cream/35"
               />
             </label>
 
@@ -142,14 +142,14 @@ export default function AiInterviewGenerator({ industries }: { industries: Indus
             <Button type="submit" className="mt-1 w-full" disabled={navigating}>
               {navigating ? "Loading your kit…" : "Generate Interview Kit"}
             </Button>
-            {error && <p className="text-sm text-red-600">{error}</p>}
-            <p className="text-xs text-navy/40">
+            {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+            <p className="text-xs text-navy/40 dark:text-cream/40">
               AI-generated to help you prepare — not legal advice. Employment law varies by state; verify anything
               specific with your state&apos;s labor office before relying on it.
             </p>
           </form>
 
-          <div className="rounded-3xl bg-navy p-7 text-white shadow-[0_20px_50px_-24px_rgba(0,48,96,0.5)]">
+          <div className="rounded-3xl bg-navy p-7 text-white shadow-[0_20px_50px_-24px_rgba(0,48,96,0.5)] dark:bg-navy-800 dark:shadow-[0_20px_50px_-24px_rgba(0,0,0,0.5)]">
             <h3 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel-lighter">Your Interview Kit</h3>
             <p className="mt-5 text-sm text-steel-lighter">
               Enter a job title, pick your state, industry, and seniority, then generate a full kit — competency

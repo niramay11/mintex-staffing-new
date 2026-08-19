@@ -111,9 +111,9 @@ async function JobBoardSection() {
 
 function JobBoardSkeleton() {
   return (
-    <div className="mt-6 flex flex-col items-center justify-center rounded-lg border border-navy/10 bg-white py-16">
-      <div className="h-10 w-10 animate-spin rounded-full border-2 border-navy/15 border-t-steel" />
-      <p className="mt-4 text-sm font-medium uppercase tracking-wide text-navy/40">Loading open roles…</p>
+    <div className="mt-6 flex flex-col items-center justify-center rounded-lg border border-navy/10 bg-white py-16 dark:border-white/10 dark:bg-navy-900">
+      <div className="h-10 w-10 animate-spin rounded-full border-2 border-navy/15 border-t-steel dark:border-white/15 dark:border-t-steel-light" />
+      <p className="mt-4 text-sm font-medium uppercase tracking-wide text-navy/40 dark:text-cream/40">Loading open roles…</p>
     </div>
   );
 }
@@ -141,12 +141,12 @@ export default async function GetHiredContent() {
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
         <div className="relative mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-14">
           <div>
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[13px] font-medium text-navy/70">
+            <div className="inline-flex items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[13px] font-medium text-navy/70 dark:border-white/10 dark:bg-navy-900 dark:text-cream/70">
               <span className="h-[7px] w-[7px] rounded-full bg-steel shadow-[0_0_0_4px_rgba(74,115,140,0.25)]" />
               For Job Seekers
             </div>
-            <h1 className="mt-5 font-heading text-4xl font-bold text-navy sm:text-5xl">Get Hired</h1>
-            <p className="mt-4 max-w-xl text-steel">
+            <h1 className="mt-5 font-heading text-4xl font-bold text-navy sm:text-5xl dark:text-cream">Get Hired</h1>
+            <p className="mt-4 max-w-xl text-steel dark:text-steel-light">
               Find jobs according to your career goals, whether you are beginning your career or
 planning to switch roles, we got you covered. Join our talent network to stay ahead of new
 roles as they go live.
@@ -163,17 +163,17 @@ roles as they go live.
               className="absolute left-1/2 top-1/2 h-[320px] w-[320px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-steel/15 blur-[100px]"
             />
 
-            <div className="absolute -left-8 -top-8 z-20 flex items-center gap-3 rounded-2xl border border-navy/10 bg-white px-4 py-3 shadow-[0_25px_60px_-15px_rgba(0,48,96,0.2)]">
-              <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel">
+            <div className="absolute -left-8 -top-8 z-20 flex items-center gap-3 rounded-2xl border border-navy/10 bg-white px-4 py-3 shadow-[0_25px_60px_-15px_rgba(0,48,96,0.2)] dark:border-white/10 dark:bg-navy-900">
+              <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel dark:text-steel-light">
                 <IconBriefcase className="h-5 w-5" />
               </span>
               <div>
-                <p className="font-heading text-xl font-bold leading-none text-navy">14k+</p>
-                <p className="mt-1 text-xs leading-none text-navy/50">Placements made</p>
+                <p className="font-heading text-xl font-bold leading-none text-navy dark:text-cream">14k+</p>
+                <p className="mt-1 text-xs leading-none text-navy/50 dark:text-cream/50">Placements made</p>
               </div>
             </div>
 
-            <div className="relative aspect-[4/5] w-full max-w-[280px] overflow-hidden rounded-[32px] border border-navy/10 shadow-[0_40px_90px_-25px_rgba(0,48,96,0.3)]">
+            <div className="relative aspect-[4/5] w-full max-w-[280px] overflow-hidden rounded-[32px] border border-navy/10 shadow-[0_40px_90px_-25px_rgba(0,48,96,0.3)] dark:border-white/10">
               <Image
                 src={siteImages["get-hired:hero-visual"]}
                 alt="Job seeker preparing for an interview with Mintex Staffing's recruitment team"
@@ -182,13 +182,13 @@ roles as they go live.
               />
             </div>
 
-            <div className="absolute -bottom-8 -right-8 z-20 flex items-center gap-3 rounded-2xl border border-navy/10 bg-white px-4 py-3 shadow-[0_25px_60px_-15px_rgba(0,48,96,0.2)]">
-              <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel">
+            <div className="absolute -bottom-8 -right-8 z-20 flex items-center gap-3 rounded-2xl border border-navy/10 bg-white px-4 py-3 shadow-[0_25px_60px_-15px_rgba(0,48,96,0.2)] dark:border-white/10 dark:bg-navy-900">
+              <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel dark:text-steel-light">
                 <IconBriefcase className="h-5 w-5" />
               </span>
               <div>
-                <p className="font-heading text-xl font-bold leading-none text-navy">9 days</p>
-                <p className="mt-1 text-xs leading-none text-navy/50">Avg. time to fill</p>
+                <p className="font-heading text-xl font-bold leading-none text-navy dark:text-cream">9 days</p>
+                <p className="mt-1 text-xs leading-none text-navy/50 dark:text-cream/50">Avg. time to fill</p>
               </div>
             </div>
           </div>
@@ -196,8 +196,8 @@ roles as they go live.
       </Section>
 
       <Section id="apply-to-jobs" background="white">
-        <h2 className="font-heading text-3xl font-bold text-navy">Apply to Jobs</h2>
-        <p className="mt-2 max-w-2xl text-navy/70">
+        <h2 className="font-heading text-3xl font-bold text-navy dark:text-cream">Apply to Jobs</h2>
+        <p className="mt-2 max-w-2xl text-navy/70 dark:text-cream/70">
           Explore current openings across every industry we staff.
         </p>
         <div className="mt-8">
@@ -208,7 +208,7 @@ roles as they go live.
       </Section>
 
       <Section background="mist">
-        <h2 className="font-heading text-3xl font-bold text-navy">Frequently Asked Questions</h2>
+        <h2 className="font-heading text-3xl font-bold text-navy dark:text-cream">Frequently Asked Questions</h2>
         <FaqAccordion items={jobSeekerFaqs} />
       </Section>
 
@@ -218,7 +218,7 @@ roles as they go live.
           variant="secondary"
           className="group inline-flex items-center gap-3 !px-8 !py-4 text-base !transition-all shadow-[0_10px_30px_-14px_rgba(0,48,96,0.22)] hover:-translate-y-0.5 hover:border-steel/40 hover:shadow-[0_16px_40px_-14px_rgba(0,48,96,0.3)]"
         >
-          <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel">
+          <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel dark:text-steel-light">
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4">
               <path d="M12 2 13.8 8.2 20 10 13.8 11.8 12 18 10.2 11.8 4 10 10.2 8.2 12 2Z" fill="currentColor" />
             </svg>
@@ -228,7 +228,7 @@ roles as they go live.
             aria-hidden="true"
             viewBox="0 0 20 20"
             fill="none"
-            className="h-4 w-4 flex-shrink-0 text-navy/50 transition-transform group-hover:translate-x-1"
+            className="h-4 w-4 flex-shrink-0 text-navy/50 transition-transform group-hover:translate-x-1 dark:text-cream/50"
           >
             <path
               d="M4 10h12M11 5l5 5-5 5"

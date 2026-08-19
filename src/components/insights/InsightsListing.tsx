@@ -30,7 +30,9 @@ export default async function InsightsListing({ activeCategory }: { activeCatego
         <Link
           href="/insights"
           className={`rounded-full px-4 py-2 text-sm font-medium ${
-            activeCategory === "all" ? "bg-navy text-white" : "bg-white text-navy hover:bg-mist"
+            activeCategory === "all"
+              ? "bg-navy text-white dark:bg-steel dark:text-navy-950"
+              : "bg-white text-navy hover:bg-mist dark:bg-navy-900 dark:text-cream dark:hover:bg-navy-800"
           }`}
         >
           All
@@ -40,7 +42,9 @@ export default async function InsightsListing({ activeCategory }: { activeCatego
             key={cat.id}
             href={`/insights/category/${cat.slug}`}
             className={`rounded-full px-4 py-2 text-sm font-medium ${
-              activeCategory === cat.slug ? "bg-navy text-white" : "bg-white text-navy hover:bg-mist"
+              activeCategory === cat.slug
+                ? "bg-navy text-white dark:bg-steel dark:text-navy-950"
+                : "bg-white text-navy hover:bg-mist dark:bg-navy-900 dark:text-cream dark:hover:bg-navy-800"
             }`}
           >
             {cat.label}
@@ -53,9 +57,9 @@ export default async function InsightsListing({ activeCategory }: { activeCatego
           <Link
             key={post.slug}
             href={`/insights/post/${post.slug}`}
-            className="group flex flex-col overflow-hidden rounded-2xl border border-navy/10 bg-white shadow-[0_1px_3px_rgba(0,48,96,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_36px_-16px_rgba(0,48,96,0.25)]"
+            className="group flex flex-col overflow-hidden rounded-2xl border border-navy/10 bg-white shadow-[0_1px_3px_rgba(0,48,96,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_36px_-16px_rgba(0,48,96,0.25)] dark:border-white/10 dark:bg-navy-900"
           >
-            <div className="relative aspect-[16/10] w-full overflow-hidden bg-mist">
+            <div className="relative aspect-[16/10] w-full overflow-hidden bg-mist dark:bg-navy-800">
               {post.image_url ? (
                 // eslint-disable-next-line @next/next/no-img-element -- arbitrary admin-supplied URL
                 <img
@@ -70,15 +74,15 @@ export default async function InsightsListing({ activeCategory }: { activeCatego
                   </span>
                 </div>
               )}
-              <span className="absolute left-3 top-3 rounded-full bg-white/95 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-navy shadow-sm">
+              <span className="absolute left-3 top-3 rounded-full bg-white/95 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-navy shadow-sm dark:bg-navy-900/95 dark:text-cream">
                 {labelFor(post.category)}
               </span>
             </div>
 
             <div className="flex flex-1 flex-col p-6">
-              <h2 className="font-semibold text-navy">{post.title}</h2>
-              <p className="mt-2 flex-1 text-sm text-navy/70">{post.excerpt}</p>
-              <span className="mt-4 text-xs text-navy/50">
+              <h2 className="font-semibold text-navy dark:text-cream">{post.title}</h2>
+              <p className="mt-2 flex-1 text-sm text-navy/70 dark:text-cream/70">{post.excerpt}</p>
+              <span className="mt-4 text-xs text-navy/50 dark:text-cream/50">
                 {new Date(post.published_at).toLocaleDateString("en-US", {
                   month: "long",
                   day: "numeric",
@@ -91,7 +95,7 @@ export default async function InsightsListing({ activeCategory }: { activeCatego
       </div>
 
       {posts.length === 0 && (
-        <p className="mt-8 text-sm text-navy/50">No insights in this category yet.</p>
+        <p className="mt-8 text-sm text-navy/50 dark:text-cream/50">No insights in this category yet.</p>
       )}
     </Section>
   );

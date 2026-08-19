@@ -143,30 +143,30 @@ export default async function AboutPage() {
   return (
     <>
       {/* Hero — flat, edge-to-edge */}
-      <section className="bg-mist">
+      <section className="bg-mist dark:bg-navy-900">
         <div className="grid lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:items-stretch">
           <div className="flex flex-col justify-center px-6 py-16 sm:px-10 sm:py-20 lg:px-16 lg:py-24 xl:px-24">
-            <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-navy/60">
-              <Link href="/" className="font-medium text-navy transition-colors hover:text-navy-secondary">
+            <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-navy/60 dark:text-cream/60">
+              <Link href="/" className="font-medium text-navy transition-colors hover:text-navy-secondary dark:text-cream">
                 Home
               </Link>
               <span aria-hidden="true">/</span>
               <span>About Us</span>
             </nav>
-            <h1 className="mt-5 font-heading text-[44px] font-bold leading-[1.05] text-navy sm:text-[56px] lg:text-[64px]">
+            <h1 className="mt-5 font-heading text-[44px] font-bold leading-[1.05] text-navy sm:text-[56px] lg:text-[64px] dark:text-cream">
               About Us
             </h1>
             <span aria-hidden="true" className="mt-4 block h-1.5 w-20 rounded-full bg-steel" />
-            <p className="mt-5 max-w-md text-lg leading-relaxed text-steel">
+            <p className="mt-5 max-w-md text-lg leading-relaxed text-steel dark:text-steel-light">
               Mintex Staffing is a professional recruitment firm dedicated to connecting the
               right talent with the right opportunities. Since our founding, we have built our
               reputation on trust, precision, and a genuine commitment to the success of both
               our clients and candidates.
             </p>
-            <p className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-steel">
+            <p className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-steel dark:text-steel-light">
               <span>{BUSINESS.streetAddress}, {BUSINESS.addressLocality}, {BUSINESS.addressRegion} {BUSINESS.postalCode}</span>
               <span aria-hidden="true">&middot;</span>
-              <a href={`tel:${BUSINESS.telephone}`} className="font-medium text-navy hover:text-navy-secondary">{BUSINESS.telephoneDisplay}</a>
+              <a href={`tel:${BUSINESS.telephone}`} className="font-medium text-navy hover:text-navy-secondary dark:text-cream">{BUSINESS.telephoneDisplay}</a>
             </p>
           </div>
 
@@ -188,14 +188,14 @@ export default async function AboutPage() {
       </section>
 
       {/* Highlights strip */}
-      <section className="border-y border-navy/[0.06] bg-white">
+      <section className="border-y border-navy/[0.06] bg-white dark:border-white/10 dark:bg-navy-900">
         <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-center gap-3 px-6 py-7 sm:px-10 sm:gap-4 lg:px-16">
           {highlights.map((item) => (
             <span
               key={item.label}
-              className="inline-flex items-center gap-2 rounded-full border border-navy/10 bg-mist px-4 py-2 text-[13.5px] text-navy/70"
+              className="inline-flex items-center gap-2 rounded-full border border-navy/10 bg-mist px-4 py-2 text-[13.5px] text-navy/70 dark:border-white/10 dark:bg-navy-800 dark:text-cream/70"
             >
-              <span className="font-heading font-semibold text-navy">{item.value}</span>
+              <span className="font-heading font-semibold text-navy dark:text-cream">{item.value}</span>
               {item.label}
             </span>
           ))}
@@ -203,24 +203,24 @@ export default async function AboutPage() {
       </section>
 
       {/* Our Story */}
-      <section className="bg-white">
+      <section className="bg-white dark:bg-navy-900">
         <div className="mx-auto max-w-6xl px-6 py-20 sm:px-10 lg:px-16 lg:py-24">
           <div className="grid items-center gap-14 lg:grid-cols-[1fr_0.9fr] lg:gap-16">
             <div>
-              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
+              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
                 Our Story
               </p>
-              <h2 className="mt-2.5 font-heading text-3xl font-bold leading-tight text-navy sm:text-4xl">
+              <h2 className="mt-2.5 font-heading text-3xl font-bold leading-tight text-navy sm:text-4xl dark:text-cream">
                 Built on People. Driven by Purpose.
               </h2>
               <ul className="mt-6 space-y-4">
                 {storyPoints.map((point) => (
                   <li key={point.title} className="flex gap-3">
-                    <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel">
+                    <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel dark:text-steel-light">
                       <IconCheck className="h-3.5 w-3.5" />
                     </span>
-                    <p className="text-[15.5px] leading-relaxed text-steel">
-                      <span className="font-semibold text-navy">{point.title}:</span>{" "}
+                    <p className="text-[15.5px] leading-relaxed text-steel dark:text-steel-light">
+                      <span className="font-semibold text-navy dark:text-cream">{point.title}:</span>{" "}
                       {point.description}
                     </p>
                   </li>
@@ -230,7 +230,7 @@ export default async function AboutPage() {
                 <ButtonLink
                   href="/contact"
                   variant="primary"
-                  className="!bg-navy !text-white hover:!bg-navy-deep"
+                  className="!bg-navy !text-white hover:!bg-navy-deep dark:!bg-steel dark:!text-navy-950 dark:hover:!bg-steel-light"
                 >
                   Learn More About Us
                 </ButtonLink>
@@ -250,7 +250,7 @@ export default async function AboutPage() {
       </section>
 
       {/* The Mintex Approach */}
-      <section className="border-t border-navy/[0.06] bg-mist">
+      <section className="border-t border-navy/[0.06] bg-mist dark:border-white/10 dark:bg-navy-900">
         <div className="mx-auto max-w-6xl px-6 py-20 sm:px-10 lg:px-16 lg:py-24">
           <div className="grid items-center gap-14 lg:grid-cols-[0.9fr_1fr] lg:gap-16">
             <div className="relative mx-auto aspect-[4/3] w-full max-w-[480px] overflow-hidden rounded-2xl shadow-[0_25px_55px_-20px_rgba(0,48,96,0.35)] lg:order-1">
@@ -263,13 +263,13 @@ export default async function AboutPage() {
             </div>
 
             <div className="lg:order-2">
-              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
+              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
                 Our Approach
               </p>
-              <h2 className="mt-2.5 font-heading text-3xl font-bold leading-tight text-navy sm:text-4xl">
+              <h2 className="mt-2.5 font-heading text-3xl font-bold leading-tight text-navy sm:text-4xl dark:text-cream">
                 The Mintex Approach
               </h2>
-              <p className="mt-5 text-[15.5px] leading-relaxed text-steel">
+              <p className="mt-5 text-[15.5px] leading-relaxed text-steel dark:text-steel-light">
                 We believe in quality over quantity. Rather than trying to mass-produce
                 placements or take over your entire hiring process, we take a focused and
                 thoughtful approach.
@@ -277,11 +277,11 @@ export default async function AboutPage() {
               <ul className="mt-6 space-y-4">
                 {approachPoints.map((point) => (
                   <li key={point.title} className="flex gap-3">
-                    <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel">
+                    <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel dark:text-steel-light">
                       <IconCheck className="h-3.5 w-3.5" />
                     </span>
-                    <p className="text-[15.5px] leading-relaxed text-steel">
-                      <span className="font-semibold text-navy">{point.title}:</span>{" "}
+                    <p className="text-[15.5px] leading-relaxed text-steel dark:text-steel-light">
+                      <span className="font-semibold text-navy dark:text-cream">{point.title}:</span>{" "}
                       {point.description}
                     </p>
                   </li>
@@ -293,22 +293,22 @@ export default async function AboutPage() {
       </section>
 
       {/* Our Values */}
-      <section className="border-t border-navy/[0.06] bg-white">
+      <section className="border-t border-navy/[0.06] bg-white dark:border-white/10 dark:bg-navy-900">
         <div className="mx-auto max-w-6xl px-6 py-20 sm:px-10 lg:px-16 lg:py-24">
           <div className="flex items-center justify-center gap-4">
-            <span aria-hidden="true" className="h-px flex-1 bg-navy/10" />
-            <p className="flex-shrink-0 text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
+            <span aria-hidden="true" className="h-px flex-1 bg-navy/10 dark:bg-white/10" />
+            <p className="flex-shrink-0 text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
               Our Values
             </p>
-            <span aria-hidden="true" className="h-px flex-1 bg-navy/10" />
+            <span aria-hidden="true" className="h-px flex-1 bg-navy/10 dark:bg-white/10" />
           </div>
 
           <div className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
             {values.map((value) => (
               <div key={value.title}>
-                <value.icon className="h-8 w-8 text-navy" />
-                <h3 className="mt-4 font-heading text-lg font-semibold text-navy">{value.title}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-steel">{value.description}</p>
+                <value.icon className="h-8 w-8 text-navy dark:text-cream" />
+                <h3 className="mt-4 font-heading text-lg font-semibold text-navy dark:text-cream">{value.title}</h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-steel dark:text-steel-light">{value.description}</p>
               </div>
             ))}
           </div>
@@ -317,23 +317,23 @@ export default async function AboutPage() {
 
       {/* Leadership */}
       {teamMembers.length > 0 && (
-        <section className="border-t border-navy/[0.06] bg-mist">
+        <section className="border-t border-navy/[0.06] bg-mist dark:border-white/10 dark:bg-navy-900">
           <div className="mx-auto max-w-7xl px-6 py-20 sm:px-10 lg:px-16 lg:py-24">
             <div className="flex items-center justify-center gap-4">
-              <span aria-hidden="true" className="h-px flex-1 bg-navy/10" />
-              <p className="flex-shrink-0 text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
+              <span aria-hidden="true" className="h-px flex-1 bg-navy/10 dark:bg-white/10" />
+              <p className="flex-shrink-0 text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
                 Leadership
               </p>
-              <span aria-hidden="true" className="h-px flex-1 bg-navy/10" />
+              <span aria-hidden="true" className="h-px flex-1 bg-navy/10 dark:bg-white/10" />
             </div>
 
             <div className="mt-12 grid grid-cols-1 items-start gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {teamMembers.map((member) => (
                 <div
                   key={member.id}
-                  className="flex flex-col overflow-hidden rounded-2xl border border-navy/[0.08] bg-white shadow-[0_1px_3px_rgba(0,48,96,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)]"
+                  className="flex flex-col overflow-hidden rounded-2xl border border-navy/[0.08] bg-white shadow-[0_1px_3px_rgba(0,48,96,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)] dark:border-white/10 dark:bg-navy-800"
                 >
-                  <div className="relative aspect-[4/5] w-full bg-navy/10">
+                  <div className="relative aspect-[4/5] w-full bg-navy/10 dark:bg-white/10">
                     {member.photo_url ? (
                       <Image
                         src={member.photo_url}
@@ -344,23 +344,23 @@ export default async function AboutPage() {
                         className="object-cover object-top"
                       />
                     ) : (
-                      <span className="flex h-full w-full items-center justify-center font-heading text-3xl font-semibold text-navy/40">
+                      <span className="flex h-full w-full items-center justify-center font-heading text-3xl font-semibold text-navy/40 dark:text-cream/40">
                         {initials(member.name)}
                       </span>
                     )}
                   </div>
 
                   <div className="flex flex-1 flex-col p-6">
-                    <h3 className="font-heading text-lg font-semibold text-navy">{member.name}</h3>
-                    <p className="text-sm font-medium text-steel">{member.title}</p>
+                    <h3 className="font-heading text-lg font-semibold text-navy dark:text-cream">{member.name}</h3>
+                    <p className="text-sm font-medium text-steel dark:text-steel-light">{member.title}</p>
 
                     {member.bio && (
                       <details className="group mt-3">
                         <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                          <span className="line-clamp-4 text-[13.5px] leading-relaxed text-steel group-open:hidden">
+                          <span className="line-clamp-4 text-[13.5px] leading-relaxed text-steel group-open:hidden dark:text-steel-light">
                             {member.bio}
                           </span>
-                          <span className="hidden text-[13.5px] leading-relaxed text-steel group-open:inline">
+                          <span className="hidden text-[13.5px] leading-relaxed text-steel group-open:inline dark:text-steel-light">
                             {member.bio}
                           </span>
                           <span className="mt-1.5 block text-xs font-semibold text-navy-secondary group-open:hidden">
@@ -379,7 +379,7 @@ export default async function AboutPage() {
                           href={member.linkedin_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-xs font-semibold text-navy hover:text-navy-secondary"
+                          className="inline-flex items-center gap-1.5 text-xs font-semibold text-navy hover:text-navy-secondary dark:text-cream"
                         >
                           LinkedIn
                           <IconLinkedIn className="h-4 w-4" />

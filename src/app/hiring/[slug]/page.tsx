@@ -52,8 +52,8 @@ export default async function EmployerKitPage({
     if (err instanceof RateLimitError) {
       return (
         <Section background="mist" className="!py-16 text-center">
-          <h1 className="font-heading text-2xl font-bold text-navy">Too many requests</h1>
-          <p className="mt-3 text-steel">You&apos;ve hit a lot of guides in a short time — give it a few minutes and try again.</p>
+          <h1 className="font-heading text-2xl font-bold text-navy dark:text-cream">Too many requests</h1>
+          <p className="mt-3 text-steel dark:text-steel-light">You&apos;ve hit a lot of guides in a short time — give it a few minutes and try again.</p>
         </Section>
       );
     }
@@ -64,13 +64,13 @@ export default async function EmployerKitPage({
   return (
     <>
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16 print:hidden">
-        <Link href="/resources/ai-interview-generator" className="text-sm font-medium text-steel hover:text-navy">
+        <Link href="/resources/ai-interview-generator" className="text-sm font-medium text-steel hover:text-navy dark:text-steel-light dark:hover:text-cream">
           ← Build another guide
         </Link>
-        <h1 className="mt-3 font-heading text-4xl font-bold text-navy sm:text-5xl">
+        <h1 className="mt-3 font-heading text-4xl font-bold text-navy dark:text-cream sm:text-5xl">
           {kit.role.title} — Interviewer Guide
         </h1>
-        <p className="mt-4 max-w-2xl text-steel">
+        <p className="mt-4 max-w-2xl text-steel dark:text-steel-light">
           Printable question bank and scorecard for hiring a {kit.role.title} in {kit.region.state}. Score each
           candidate live, or print this page beforehand.
         </p>
@@ -78,9 +78,9 @@ export default async function EmployerKitPage({
 
       <Section background="cream">
         <InterviewKitView kit={kit} view="employer" />
-        <p className="mt-8 text-sm text-navy/50 print:hidden">
+        <p className="mt-8 text-sm text-navy/50 dark:text-cream/50 print:hidden">
           Looking to fill this role faster?{" "}
-          <Link href="/contact" className="font-medium text-steel hover:text-navy">
+          <Link href="/contact" className="font-medium text-steel hover:text-navy dark:text-steel-light dark:hover:text-cream">
             Talk to Mintex Staffing →
           </Link>
         </p>

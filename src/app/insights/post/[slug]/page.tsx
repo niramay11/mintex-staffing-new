@@ -80,11 +80,11 @@ export default async function InsightPostPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
-        <Link href="/insights" className="text-sm text-navy/60 hover:text-navy">
+        <Link href="/insights" className="text-sm text-navy/60 hover:text-navy dark:text-cream/60 dark:hover:text-cream">
           &larr; Back to Insights
         </Link>
-        <h1 className="mt-4 font-heading text-4xl font-bold text-navy sm:text-5xl">{post.title}</h1>
-        <p className="mt-4 text-sm text-steel">
+        <h1 className="mt-4 font-heading text-4xl font-bold text-navy dark:text-cream sm:text-5xl">{post.title}</h1>
+        <p className="mt-4 text-sm text-steel dark:text-steel-light">
           By {post.author} &middot;{" "}
           {new Date(post.published_at).toLocaleDateString("en-US", {
             month: "long",
@@ -100,30 +100,30 @@ export default async function InsightPostPage({
             <Image src={post.image_url} alt={post.title} fill className="object-cover" />
           </div>
         )}
-        <div className="max-w-2xl space-y-5 text-navy/80">
+        <div className="max-w-2xl space-y-5 text-navy/80 dark:text-cream/80">
           {post.body.map((paragraph, index) => (
             <p key={index}>{paragraph}</p>
           ))}
         </div>
 
         {post.author_bio && (
-          <div className="mt-12 flex max-w-2xl items-start gap-4 rounded-2xl border border-navy/10 bg-white p-6">
-            <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-full bg-navy/10">
+          <div className="mt-12 flex max-w-2xl items-start gap-4 rounded-2xl border border-navy/10 bg-white p-6 dark:border-white/10 dark:bg-navy-900">
+            <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-full bg-navy/10 dark:bg-navy-800">
               {post.author_photo_url ? (
                 <Image src={post.author_photo_url} alt={post.author} fill className="object-cover object-top" />
               ) : (
-                <span className="flex h-full w-full items-center justify-center font-heading text-lg font-semibold text-navy/40">
+                <span className="flex h-full w-full items-center justify-center font-heading text-lg font-semibold text-navy/40 dark:text-cream/40">
                   {post.author.split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join("")}
                 </span>
               )}
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-navy/50">About the author</p>
-              <p className="mt-1 font-semibold text-navy">
+              <p className="text-xs font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">About the author</p>
+              <p className="mt-1 font-semibold text-navy dark:text-cream">
                 {post.author}
-                {post.author_title && <span className="font-normal text-navy/60"> · {post.author_title}</span>}
+                {post.author_title && <span className="font-normal text-navy/60 dark:text-cream/60"> · {post.author_title}</span>}
               </p>
-              <p className="mt-1.5 text-sm leading-relaxed text-navy/70">{post.author_bio}</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-navy/70 dark:text-cream/70">{post.author_bio}</p>
             </div>
           </div>
         )}

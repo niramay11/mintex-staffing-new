@@ -74,10 +74,10 @@ export default function KitSection({
 
   return (
     <section>
-      <h3 className="flex items-center justify-between font-heading text-xl font-semibold text-navy">
+      <h3 className="flex items-center justify-between font-heading text-xl font-semibold text-navy dark:text-cream">
         <span>
           {STAGE_LABELS[section.stage] ?? section.stage}
-          <span className="ml-2 text-sm font-normal text-navy/50">~{section.duration_minutes} min</span>
+          <span className="ml-2 text-sm font-normal text-navy/50 dark:text-cream/50">~{section.duration_minutes} min</span>
         </span>
         {!isEmployer && (
           <button
@@ -85,7 +85,7 @@ export default function KitSection({
             onClick={handleAddMore}
             disabled={loading}
             title={`Add more ${STAGE_LABELS[section.stage] ?? section.stage} questions`}
-            className="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-navy/15 px-3 py-1.5 text-xs font-medium text-navy/60 transition-colors hover:border-steel hover:text-steel disabled:opacity-50 print:hidden"
+            className="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-navy/15 px-3 py-1.5 text-xs font-medium text-navy/60 transition-colors hover:border-steel hover:text-steel disabled:opacity-50 print:hidden dark:border-white/15 dark:text-cream/60 dark:hover:border-steel-light dark:hover:text-steel-light"
           >
             <PlusIcon spinning={loading} />
             {loading ? "Adding…" : "Add question"}
@@ -100,7 +100,7 @@ export default function KitSection({
           <QuestionCard key={q.id} question={q} isEmployer={isEmployer} roleSlug={roleSlug} />
         ))}
       </div>
-      {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
+      {error && <p className="mt-2 text-xs text-red-600 dark:text-red-400">{error}</p>}
     </section>
   );
 }

@@ -67,14 +67,14 @@ const SUBJECT_OPTIONS = [
 
 function FieldIcon({ children }: { children: React.ReactNode }) {
   return (
-    <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-navy/40">
+    <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-navy/40 dark:text-cream/40">
       {children}
     </span>
   );
 }
 
 const inputClass =
-  "mt-1.5 w-full rounded-lg border border-navy/15 py-2.5 pl-10 pr-3.5 text-sm placeholder:text-navy/40 focus:border-steel focus:outline-none";
+  "mt-1.5 w-full rounded-lg border border-navy/15 py-2.5 pl-10 pr-3.5 text-sm placeholder:text-navy/40 focus:border-steel focus:outline-none dark:bg-navy-900 dark:border-white/15 dark:text-cream dark:placeholder:text-cream/40";
 
 export default function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
@@ -113,7 +113,7 @@ export default function ContactForm() {
 
   if (submitted) {
     return (
-      <p className="rounded-md bg-steel-lighter/40 p-4 text-sm text-navy">
+      <p className="rounded-md bg-steel-lighter/40 p-4 text-sm text-navy dark:text-cream">
         Thanks for reaching out! A member of our team will get back to you shortly.
       </p>
     );
@@ -122,7 +122,7 @@ export default function ContactForm() {
   return (
     <form onSubmit={handleSubmit} className="grid gap-5 sm:grid-cols-2">
       <div>
-        <label htmlFor="contact-name" className="block text-sm font-semibold text-navy">
+        <label htmlFor="contact-name" className="block text-sm font-semibold text-navy dark:text-cream">
           Full Name
         </label>
         <div className="relative">
@@ -140,7 +140,7 @@ export default function ContactForm() {
         </div>
       </div>
       <div>
-        <label htmlFor="contact-email" className="block text-sm font-semibold text-navy">
+        <label htmlFor="contact-email" className="block text-sm font-semibold text-navy dark:text-cream">
           Email Address
         </label>
         <div className="relative">
@@ -158,7 +158,7 @@ export default function ContactForm() {
         </div>
       </div>
       <div>
-        <label htmlFor="contact-company" className="block text-sm font-semibold text-navy">
+        <label htmlFor="contact-company" className="block text-sm font-semibold text-navy dark:text-cream">
           Company Name
         </label>
         <div className="relative">
@@ -175,7 +175,7 @@ export default function ContactForm() {
         </div>
       </div>
       <div>
-        <label htmlFor="contact-phone" className="block text-sm font-semibold text-navy">
+        <label htmlFor="contact-phone" className="block text-sm font-semibold text-navy dark:text-cream">
           Phone Number
         </label>
         <div className="relative">
@@ -196,7 +196,7 @@ export default function ContactForm() {
         <input type="hidden" name="subject" value={subject} />
       </div>
       <div className="sm:col-span-2">
-        <label htmlFor="contact-message" className="block text-sm font-semibold text-navy">
+        <label htmlFor="contact-message" className="block text-sm font-semibold text-navy dark:text-cream">
           Message
         </label>
         <textarea
@@ -205,7 +205,7 @@ export default function ContactForm() {
           rows={5}
           required
           placeholder="Write your message here..."
-          className="mt-1.5 w-full rounded-lg border border-navy/15 px-3.5 py-2.5 text-sm placeholder:text-navy/40 focus:border-steel focus:outline-none"
+          className="mt-1.5 w-full rounded-lg border border-navy/15 px-3.5 py-2.5 text-sm placeholder:text-navy/40 focus:border-steel focus:outline-none dark:bg-navy-900 dark:border-white/15 dark:text-cream dark:placeholder:text-cream/40"
         />
       </div>
       {error && (
@@ -217,7 +217,7 @@ export default function ContactForm() {
         <button
           type="submit"
           disabled={submitting}
-          className="inline-flex items-center justify-center gap-2 rounded-full bg-navy px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-navy-secondary focus-visible:outline-2 focus-visible:outline-steel disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 rounded-full bg-navy px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-navy-secondary focus-visible:outline-2 focus-visible:outline-steel disabled:opacity-60 dark:bg-steel dark:text-navy-950 dark:hover:bg-steel-light"
         >
           <IconSend className="h-4 w-4" />
           {submitting ? "Sending…" : "Send Message"}

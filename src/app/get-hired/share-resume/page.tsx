@@ -70,12 +70,12 @@ export default async function ShareResumePage() {
       <Section background="mist" className="relative !py-12 sm:!py-14 lg:!py-16">
         <div className="relative mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
           <div>
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[13px] font-medium text-navy/70">
+            <div className="inline-flex items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[13px] font-medium text-navy/70 dark:border-white/10 dark:bg-navy-900 dark:text-cream/70">
               <span className="h-[7px] w-[7px] rounded-full bg-steel shadow-[0_0_0_4px_rgba(74,115,140,0.25)]" />
               For job seekers
             </div>
-            <h1 className="mt-5 font-heading text-4xl font-bold text-navy sm:text-5xl">Share Your Resume</h1>
-            <p className="mt-4 max-w-xl text-steel">
+            <h1 className="mt-5 font-heading text-4xl font-bold text-navy sm:text-5xl dark:text-cream">Share Your Resume</h1>
+            <p className="mt-4 max-w-xl text-steel dark:text-steel-light">
               Don&apos;t see the right role yet? Share your resume once and stay visible to our
               recruiters across every industry we staff, we&apos;ll reach out when a match comes
               up.
@@ -87,7 +87,7 @@ export default async function ShareResumePage() {
               aria-hidden="true"
               className="absolute left-1/2 top-1/2 h-[320px] w-[320px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-steel/15 blur-[100px]"
             />
-            <div className="relative aspect-[4/5] w-full max-w-[300px] overflow-hidden rounded-[32px] border border-navy/10 shadow-[0_40px_90px_-25px_rgba(0,48,96,0.3)]">
+            <div className="relative aspect-[4/5] w-full max-w-[300px] overflow-hidden rounded-[32px] border border-navy/10 shadow-[0_40px_90px_-25px_rgba(0,48,96,0.3)] dark:border-white/10">
               <Image src={siteImages["share-resume:hero-visual"]} alt="Candidate preparing their resume to share with Mintex Staffing's recruitment team" fill className="object-cover" />
             </div>
           </div>
@@ -97,30 +97,30 @@ export default async function ShareResumePage() {
       <Section background="white">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
           <div>
-            <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">Why share it</p>
-            <h2 className="mt-2.5 font-heading text-2xl font-bold text-navy sm:text-3xl">What happens next</h2>
+            <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Why share it</p>
+            <h2 className="mt-2.5 font-heading text-2xl font-bold text-navy sm:text-3xl dark:text-cream">What happens next</h2>
             <div className="mt-7 space-y-4">
               {benefits.map(({ title, description, icon: Icon }) => (
                 <div
                   key={title}
-                  className="group flex gap-4 rounded-2xl border border-navy/[0.08] bg-white p-5 transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-20px_rgba(0,48,96,0.3)]"
+                  className="group flex gap-4 rounded-2xl border border-navy/[0.08] bg-white p-5 transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-20px_rgba(0,48,96,0.3)] dark:border-white/10 dark:bg-navy-800"
                 >
-                  <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel transition-colors duration-300 group-hover:bg-steel group-hover:text-white">
+                  <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel transition-colors duration-300 group-hover:bg-steel group-hover:text-white dark:text-steel-light">
                     <Icon className="h-4 w-4" />
                   </span>
                   <div>
-                    <h3 className="font-semibold text-navy">{title}</h3>
-                    <p className="mt-1 text-sm text-navy/70">{description}</p>
+                    <h3 className="font-semibold text-navy dark:text-cream">{title}</h3>
+                    <p className="mt-1 text-sm text-navy/70 dark:text-cream/70">{description}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="rounded-3xl bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)] sm:p-10">
-            <h2 className="text-2xl font-bold text-navy">Submit your resume</h2>
+          <div className="rounded-3xl bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)] sm:p-10 dark:bg-navy-800">
+            <h2 className="text-2xl font-bold text-navy dark:text-cream">Submit your resume</h2>
             <div className="mt-2 h-1 w-12 rounded-full bg-steel" />
-            <p className="mt-3 text-sm text-navy/70">
+            <p className="mt-3 text-sm text-navy/70 dark:text-cream/70">
               Takes less than two minutes &mdash; we&apos;ll take it from there.
             </p>
             <div className="mt-6">

@@ -16,8 +16,8 @@ export default function FaqAccordion({
         return (
           <div
             key={faq.question}
-            className={`overflow-hidden rounded-2xl border bg-white shadow-[0_1px_3px_rgba(0,48,96,0.05)] transition-colors ${
-              isOpen ? "border-steel/40" : "border-navy/10"
+            className={`overflow-hidden rounded-2xl border bg-white shadow-[0_1px_3px_rgba(0,48,96,0.05)] transition-colors dark:bg-navy-900 dark:shadow-[0_1px_3px_rgba(0,0,0,0.3)] ${
+              isOpen ? "border-steel/40" : "border-navy/10 dark:border-white/10"
             }`}
           >
             <button
@@ -26,10 +26,10 @@ export default function FaqAccordion({
               aria-expanded={isOpen}
               className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left"
             >
-              <span className="text-base font-bold text-navy">{faq.question}</span>
+              <span className="text-base font-bold text-navy dark:text-cream">{faq.question}</span>
               <span
-                className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-mist text-navy transition-transform duration-300 ${
-                  isOpen ? "rotate-180 bg-steel/15 text-steel" : ""
+                className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-mist text-navy transition-transform duration-300 dark:bg-navy-800 dark:text-cream ${
+                  isOpen ? "rotate-180 bg-steel/15 text-steel dark:text-steel-light" : ""
                 }`}
               >
                 <svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
@@ -47,7 +47,7 @@ export default function FaqAccordion({
               }`}
             >
               <div className="overflow-hidden">
-                <p className="px-6 pb-5 text-sm leading-relaxed text-navy/70">{faq.answer}</p>
+                <p className="px-6 pb-5 text-sm leading-relaxed text-navy/70 dark:text-cream/70">{faq.answer}</p>
               </div>
             </div>
           </div>

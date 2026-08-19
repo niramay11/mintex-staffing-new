@@ -33,11 +33,11 @@ function CaseStudyGroup({
   return (
     <Section id={id} background={background}>
       <div className="mx-auto max-w-2xl text-center">
-        <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">{eyebrow}</p>
-        <h2 className="mt-3.5 font-heading text-[32px] font-semibold leading-tight text-navy sm:text-[36px]">
+        <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">{eyebrow}</p>
+        <h2 className="mt-3.5 font-heading text-[32px] font-semibold leading-tight text-navy dark:text-cream sm:text-[36px]">
           {title}
         </h2>
-        <p className="mt-4 text-lg text-steel">{intro}</p>
+        <p className="mt-4 text-lg text-steel dark:text-steel-light">{intro}</p>
       </div>
 
       {studies.length > 0 ? (
@@ -47,7 +47,7 @@ function CaseStudyGroup({
           ))}
         </div>
       ) : (
-        <p className="mt-11 text-center text-sm text-navy/50">{emptyText}</p>
+        <p className="mt-11 text-center text-sm text-navy/50 dark:text-cream/50">{emptyText}</p>
       )}
     </Section>
   );
@@ -67,9 +67,9 @@ export default async function CaseStudiesPage() {
   return (
     <>
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
-        <h1 className="font-heading text-4xl font-bold text-navy sm:text-5xl">Case Studies</h1>
+        <h1 className="font-heading text-4xl font-bold text-navy dark:text-cream sm:text-5xl">Case Studies</h1>
         <div className="mt-3 h-1 w-16 rounded-full bg-steel" />
-        <p className="mt-4 max-w-2xl text-steel">
+        <p className="mt-4 max-w-2xl text-steel dark:text-steel-light">
           Real outcomes from the clients and candidates we&apos;ve partnered with.
         </p>
       </Section>

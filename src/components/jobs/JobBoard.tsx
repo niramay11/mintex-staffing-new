@@ -61,7 +61,7 @@ function remoteBadge(remote?: string) {
   const v = remote.toLowerCase();
   if (v === "yes" || v === "remote") return { label: "Remote", cls: "bg-green-100 text-green-800" };
   if (v === "no") return { label: "On-site", cls: "bg-red-100 text-red-700" };
-  return { label: remote, cls: "bg-navy/10 text-navy" };
+  return { label: remote, cls: "bg-navy/10 text-navy dark:bg-navy-800 dark:text-cream" };
 }
 
 const NEW_JOB_WINDOW_DAYS = 7;
@@ -87,17 +87,17 @@ function FilterSection({
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="border-t border-navy/10 pt-4 first:border-t-0 first:pt-0">
+    <div className="border-t border-navy/10 pt-4 first:border-t-0 first:pt-0 dark:border-white/10">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
         className="flex w-full items-center justify-between text-left"
       >
-        <span className="text-xs font-semibold uppercase tracking-wide text-navy/50">
+        <span className="text-xs font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">
           {title}
-          {typeof count === "number" && count > 0 && <span className="ml-1 text-navy/35">({count})</span>}
+          {typeof count === "number" && count > 0 && <span className="ml-1 text-navy/35 dark:text-cream/35">({count})</span>}
         </span>
-        <IconChevron className={`h-3.5 w-3.5 text-navy/35 transition-transform ${open ? "" : "-rotate-90"}`} />
+        <IconChevron className={`h-3.5 w-3.5 text-navy/35 transition-transform dark:text-cream/35 ${open ? "" : "-rotate-90"}`} />
       </button>
       {open && <div className="mt-3">{children}</div>}
     </div>
@@ -116,12 +116,12 @@ function CheckboxList({
   return (
     <div className="space-y-2">
       {options.map((opt) => (
-        <label key={opt} className="flex cursor-pointer items-center gap-2.5 text-sm text-navy/75 hover:text-navy">
+        <label key={opt} className="flex cursor-pointer items-center gap-2.5 text-sm text-navy/75 hover:text-navy dark:text-cream/75 dark:hover:text-cream">
           <input
             type="checkbox"
             checked={selected.has(opt)}
             onChange={() => onToggle(opt)}
-            className="h-4 w-4 rounded border-navy/30 accent-steel"
+            className="h-4 w-4 rounded border-navy/30 accent-steel dark:border-white/15"
           />
           {opt}
         </label>
@@ -152,23 +152,23 @@ function OptionCard({
       type="button"
       onClick={onClick}
       className={`flex w-full items-center gap-3 rounded-lg border px-3 py-2.5 text-left transition-colors ${
-        active ? "border-navy bg-mist" : "border-navy/10 hover:border-navy/30"
+        active ? "border-navy bg-mist dark:border-steel dark:bg-navy-800" : "border-navy/10 hover:border-navy/30 dark:border-white/10 dark:hover:border-white/25"
       }`}
     >
       <span
         className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-md ${
-          active ? "bg-navy text-white" : "bg-mist text-navy/45"
+          active ? "bg-navy text-white dark:bg-steel dark:text-navy-950" : "bg-mist text-navy/45 dark:bg-navy-800 dark:text-cream/45"
         }`}
       >
         {icon}
       </span>
       <span className="min-w-0 flex-1">
-        <span className={`block truncate text-sm font-medium ${active ? "text-navy" : "text-navy/80"}`}>{label}</span>
-        {subtitle && <span className="block text-xs text-navy/45">{subtitle}</span>}
+        <span className={`block truncate text-sm font-medium ${active ? "text-navy dark:text-cream" : "text-navy/80 dark:text-cream/80"}`}>{label}</span>
+        {subtitle && <span className="block text-xs text-navy/45 dark:text-cream/45">{subtitle}</span>}
       </span>
       <span
         className={`h-4 w-4 flex-shrink-0 border ${indicatorShape === "circle" ? "rounded-full" : "rounded-[4px]"} ${
-          active ? "border-navy bg-navy" : "border-navy/25"
+          active ? "border-navy bg-navy dark:border-steel dark:bg-steel" : "border-navy/25 dark:border-white/20"
         }`}
       />
     </button>
@@ -199,18 +199,18 @@ function LocationSelect({ value, onChange }: { value: string; onChange: (v: stri
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex w-full items-center justify-between rounded-md border border-navy/20 bg-white px-3 py-2 text-sm focus:border-steel focus:outline-none"
+        className="flex w-full items-center justify-between rounded-md border border-navy/20 bg-white px-3 py-2 text-sm focus:border-steel focus:outline-none dark:border-white/15 dark:bg-navy-900"
       >
-        <span className={value ? "text-navy" : "text-navy/50"}>{value || "All locations"}</span>
-        <IconChevron className={`h-3.5 w-3.5 flex-shrink-0 text-navy/40 transition-transform ${open ? "rotate-180" : ""}`} />
+        <span className={value ? "text-navy dark:text-cream" : "text-navy/50 dark:text-cream/50"}>{value || "All locations"}</span>
+        <IconChevron className={`h-3.5 w-3.5 flex-shrink-0 text-navy/40 transition-transform dark:text-cream/40 ${open ? "rotate-180" : ""}`} />
       </button>
       {open && (
-        <div className="absolute z-20 mt-1.5 max-h-56 w-full overflow-y-auto rounded-lg border border-navy/10 bg-white p-1 shadow-[0_12px_32px_-8px_rgba(0,48,96,0.25)]">
+        <div className="absolute z-20 mt-1.5 max-h-56 w-full overflow-y-auto rounded-lg border border-navy/10 bg-white p-1 shadow-[0_12px_32px_-8px_rgba(0,48,96,0.25)] dark:border-white/10 dark:bg-navy-900">
           <button
             type="button"
             onClick={() => select("")}
             className={`block w-full rounded-md px-3 py-1.5 text-left text-sm ${
-              !value ? "bg-mist font-medium text-navy" : "text-navy/70 hover:bg-mist"
+              !value ? "bg-mist font-medium text-navy dark:bg-white/10 dark:text-cream" : "text-navy/70 hover:bg-mist dark:text-cream/70 dark:hover:bg-white/10"
             }`}
           >
             All locations
@@ -221,7 +221,7 @@ function LocationSelect({ value, onChange }: { value: string; onChange: (v: stri
               type="button"
               onClick={() => select(opt)}
               className={`block w-full rounded-md px-3 py-1.5 text-left text-sm ${
-                value === opt ? "bg-mist font-medium text-navy" : "text-navy/70 hover:bg-mist"
+                value === opt ? "bg-mist font-medium text-navy dark:bg-white/10 dark:text-cream" : "text-navy/70 hover:bg-mist dark:text-cream/70 dark:hover:bg-white/10"
               }`}
             >
               {opt}
@@ -451,16 +451,16 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
       {/* Search bar */}
       <form
         onSubmit={(e) => e.preventDefault()}
-        className="flex flex-col gap-3 rounded-lg border border-navy/10 bg-white p-4 sm:flex-row sm:items-center"
+        className="flex flex-col gap-3 rounded-lg border border-navy/10 bg-white p-4 sm:flex-row sm:items-center dark:border-white/10 dark:bg-navy-900"
       >
         <div className="relative flex-1">
-          <IconSearch className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-navy/35" />
+          <IconSearch className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-navy/35 dark:text-cream/35" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by job title, skill, or location"
-            className="w-full rounded-md border border-navy/20 bg-white py-2.5 pl-9 pr-3 text-sm text-navy focus:border-steel focus:outline-none"
+            className="w-full rounded-md border border-navy/20 bg-white py-2.5 pl-9 pr-3 text-sm text-navy focus:border-steel focus:outline-none dark:border-white/15 dark:bg-navy-900 dark:text-cream"
           />
         </div>
         <input
@@ -468,9 +468,9 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
           value={zip}
           onChange={(e) => setZip(e.target.value)}
           placeholder="Zip code"
-          className="w-full rounded-md border border-navy/20 bg-white px-3 py-2.5 text-sm text-navy focus:border-steel focus:outline-none sm:max-w-[160px]"
+          className="w-full rounded-md border border-navy/20 bg-white px-3 py-2.5 text-sm text-navy focus:border-steel focus:outline-none sm:max-w-[160px] dark:border-white/15 dark:bg-navy-900 dark:text-cream"
         />
-        <button type="submit" className="rounded-full bg-white border border-navy px-6 py-2.5 text-sm font-semibold text-navy hover:bg-mist sm:flex-shrink-0">
+        <button type="submit" className="rounded-full bg-white border border-navy px-6 py-2.5 text-sm font-semibold text-navy hover:bg-mist sm:flex-shrink-0 dark:bg-navy-900 dark:border-steel dark:text-cream dark:hover:bg-navy-800">
           Search
         </button>
       </form>
@@ -479,7 +479,7 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
         <button
           type="button"
           onClick={() => setAlertOpen(true)}
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-steel hover:text-navy"
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-steel hover:text-navy dark:text-steel-light dark:hover:text-cream"
         >
           <IconBell className="h-4 w-4" />
           Create job alert
@@ -489,14 +489,14 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
       <div className="mt-6 lg:grid lg:grid-cols-[260px_1fr] lg:items-start lg:gap-8">
         {/* Filters — left sidebar on desktop, stacked panel on mobile */}
         <aside className="lg:sticky lg:top-24 lg:self-start">
-          <div className="rounded-lg border border-navy/10 bg-white p-5">
+          <div className="rounded-lg border border-navy/10 bg-white p-5 dark:border-white/10 dark:bg-navy-900">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-navy">Filters</h3>
+              <h3 className="text-sm font-semibold text-navy dark:text-cream">Filters</h3>
               {activeFilterCount > 0 && (
                 <button
                   type="button"
                   onClick={clearAllFilters}
-                  className="text-xs font-medium text-steel underline-offset-2 hover:underline"
+                  className="text-xs font-medium text-steel underline-offset-2 hover:underline dark:text-steel-light"
                 >
                   Clear all
                 </button>
@@ -566,12 +566,12 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
 
         {/* Results */}
         <div className="mt-6 lg:mt-0">
-          <p className="text-sm text-navy/60">
+          <p className="text-sm text-navy/60 dark:text-cream/60">
             {loading ? (
               "Loading open roles…"
             ) : (
               <>
-                <span className="font-semibold text-navy">{filteredJobs.length}</span> active position
+                <span className="font-semibold text-navy dark:text-cream">{filteredJobs.length}</span> active position
                 {filteredJobs.length === 1 ? "" : "s"} found
               </>
             )}
@@ -580,10 +580,10 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
           {/* Loading state */}
           {loading && (
             <div className="mt-6 flex flex-col items-center justify-center py-16 text-center">
-              <div className="h-10 w-10 animate-spin rounded-full border-2 border-navy/15 border-t-steel" />
-              <p className="mt-4 text-sm font-medium uppercase tracking-wide text-navy/40">Loading positions…</p>
+              <div className="h-10 w-10 animate-spin rounded-full border-2 border-navy/15 border-t-steel dark:border-white/15 dark:border-t-steel-light" />
+              <p className="mt-4 text-sm font-medium uppercase tracking-wide text-navy/40 dark:text-cream/40">Loading positions…</p>
               {slowLoad && (
-                <p className="mt-2 max-w-xs text-xs text-navy/40">
+                <p className="mt-2 max-w-xs text-xs text-navy/40 dark:text-cream/40">
                   Still working — this can take up to a minute right after things update. Thanks for your patience.
                 </p>
               )}
@@ -592,21 +592,21 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
 
           {/* Error state */}
           {!loading && error && (
-            <div className="mt-6 rounded-lg border border-navy/10 bg-white p-8 text-center">
-              <p className="text-sm text-navy/70">{error}</p>
+            <div className="mt-6 rounded-lg border border-navy/10 bg-white p-8 text-center dark:border-white/10 dark:bg-navy-900">
+              <p className="text-sm text-navy/70 dark:text-cream/70">{error}</p>
             </div>
           )}
 
           {/* Empty state */}
           {!loading && !error && filteredJobs.length === 0 && (
-            <div className="mt-6 rounded-lg border border-navy/10 bg-white p-8 text-center">
-              <p className="text-base font-semibold text-navy">No roles match your filters</p>
-              <p className="mt-1 text-sm text-navy/60">Try adjusting your search or clearing filters.</p>
+            <div className="mt-6 rounded-lg border border-navy/10 bg-white p-8 text-center dark:border-white/10 dark:bg-navy-900">
+              <p className="text-base font-semibold text-navy dark:text-cream">No roles match your filters</p>
+              <p className="mt-1 text-sm text-navy/60 dark:text-cream/60">Try adjusting your search or clearing filters.</p>
               {activeFilterCount > 0 && (
                 <button
                   type="button"
                   onClick={clearAllFilters}
-                  className="mt-4 rounded-full bg-navy px-5 py-2 text-sm font-semibold text-white hover:bg-navy-secondary"
+                  className="mt-4 rounded-full bg-navy px-5 py-2 text-sm font-semibold text-white hover:bg-navy-secondary dark:bg-steel dark:text-navy-950 dark:hover:bg-steel-light"
                 >
                   Clear all filters
                 </button>
@@ -628,16 +628,16 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
                   return (
                     <div
                       key={job.job_code}
-                      className={`relative flex flex-col gap-4 rounded-2xl border border-l-[3px] bg-white p-6 shadow-[0_1px_3px_rgba(0,48,96,0.05)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_36px_-16px_rgba(0,48,96,0.2)] sm:flex-row sm:items-center sm:justify-between ${
-                        isSelected ? "border-navy/10 border-l-steel bg-mist/40 ring-1 ring-steel/30" : "border-navy/10 border-l-steel"
+                      className={`relative flex flex-col gap-4 rounded-2xl border border-l-[3px] bg-white p-6 shadow-[0_1px_3px_rgba(0,48,96,0.05)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_36px_-16px_rgba(0,48,96,0.2)] sm:flex-row sm:items-center sm:justify-between dark:bg-navy-900 ${
+                        isSelected ? "border-navy/10 border-l-steel bg-mist/40 ring-1 ring-steel/30 dark:border-white/10 dark:bg-navy-800" : "border-navy/10 border-l-steel dark:border-white/10"
                       }`}
                     >
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2.5">
-                          <h3 className="text-lg font-bold text-navy">
+                          <h3 className="text-lg font-bold text-navy dark:text-cream">
                             <Link
                               href={`/get-hired/jobs/${jobUrlSlug(job)}`}
-                              className="hover:text-steel hover:underline"
+                              className="hover:text-steel hover:underline dark:hover:text-steel-light"
                             >
                               {job.job_title}
                             </Link>
@@ -650,12 +650,12 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
                         </div>
 
                         <div className="mt-2.5 flex flex-wrap items-center gap-2">
-                          <span className="inline-flex items-center gap-1 rounded-full bg-mist px-3 py-1 text-xs font-medium text-navy/70">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-mist px-3 py-1 text-xs font-medium text-navy/70 dark:bg-navy-800 dark:text-cream/70">
                             <IconPin className="h-3 w-3 flex-shrink-0" />
                             <span className="truncate">{jobLocation(job)}</span>
                           </span>
                           {job.number_of_positions && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-mist px-3 py-1 text-xs font-medium text-navy/70">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-mist px-3 py-1 text-xs font-medium text-navy/70 dark:bg-navy-800 dark:text-cream/70">
                               <IconPeople className="h-3 w-3" />
                               {job.number_of_positions}
                             </span>
@@ -664,14 +664,14 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
                             <span className={`rounded-full px-3 py-1 text-xs font-medium ${remote.cls}`}>{remote.label}</span>
                           )}
                           {job.job_type && (
-                            <span className="rounded-full bg-mist px-3 py-1 text-xs font-medium text-navy">{job.job_type}</span>
+                            <span className="rounded-full bg-mist px-3 py-1 text-xs font-medium text-navy dark:bg-navy-800 dark:text-cream">{job.job_type}</span>
                           )}
                         </div>
 
-                        <p className="mt-2.5 flex flex-wrap items-center gap-1.5 text-sm text-navy/60">
+                        <p className="mt-2.5 flex flex-wrap items-center gap-1.5 text-sm text-navy/60 dark:text-cream/60">
                           {pay && (
-                            <span className="inline-flex items-center gap-1 font-semibold text-navy">
-                              <IconBriefcase className="h-3.5 w-3.5 flex-shrink-0 text-navy/40" />
+                            <span className="inline-flex items-center gap-1 font-semibold text-navy dark:text-cream">
+                              <IconBriefcase className="h-3.5 w-3.5 flex-shrink-0 text-navy/40 dark:text-cream/40" />
                               {pay}
                             </span>
                           )}
@@ -687,25 +687,25 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
                       </div>
 
                       <div className="flex flex-shrink-0 items-center gap-2.5 sm:flex-col sm:items-stretch">
-                        <label className="flex cursor-pointer items-center justify-end gap-1.5 text-xs font-medium text-navy/50 hover:text-navy/70">
+                        <label className="flex cursor-pointer items-center justify-end gap-1.5 text-xs font-medium text-navy/50 hover:text-navy/70 dark:text-cream/50 dark:hover:text-cream/70">
                           <input
                             type="checkbox"
                             checked={isSelected}
                             onChange={() => toggleInSet(setSelected, job.job_code)}
-                            className="h-3.5 w-3.5 rounded border-navy/30 accent-steel"
+                            className="h-3.5 w-3.5 rounded border-navy/30 accent-steel dark:border-white/15"
                           />
                           Select to bulk apply
                         </label>
                         <Link
                           href={`/get-hired/jobs/${jobUrlSlug(job)}`}
-                          className="inline-flex items-center justify-center gap-1.5 rounded-full border border-navy/20 bg-white px-5 py-2.5 text-sm font-semibold text-navy transition-colors hover:border-navy/40 hover:bg-mist"
+                          className="inline-flex items-center justify-center gap-1.5 rounded-full border border-navy/20 bg-white px-5 py-2.5 text-sm font-semibold text-navy transition-colors hover:border-navy/40 hover:bg-mist dark:border-white/15 dark:bg-navy-900 dark:text-cream dark:hover:border-white/25 dark:hover:bg-navy-800"
                         >
                           View details
                         </Link>
                         <button
                           type="button"
                           onClick={() => openApplyForJob(job)}
-                          className="inline-flex items-center justify-center gap-1.5 rounded-full bg-navy px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-navy-secondary"
+                          className="inline-flex items-center justify-center gap-1.5 rounded-full bg-navy px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-navy-secondary dark:bg-steel dark:text-navy-950 dark:hover:bg-steel-light"
                         >
                           Apply now
                           <IconArrowRight className="h-3.5 w-3.5" />
@@ -723,14 +723,14 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
                     type="button"
                     onClick={() => goToPage(safePage - 1)}
                     disabled={safePage === 1}
-                    className="rounded-full border border-navy/20 bg-white px-3 py-2 text-sm font-medium text-navy hover:border-navy/40 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="rounded-full border border-navy/20 bg-white px-3 py-2 text-sm font-medium text-navy hover:border-navy/40 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/15 dark:bg-navy-900 dark:text-cream dark:hover:border-white/25"
                     aria-label="Previous page"
                   >
                     &larr;
                   </button>
                   {pageWindow(safePage, totalPages).map((p, i) =>
                     p === "…" ? (
-                      <span key={`ellipsis-${i}`} className="px-1.5 text-sm text-navy/40">
+                      <span key={`ellipsis-${i}`} className="px-1.5 text-sm text-navy/40 dark:text-cream/40">
                         …
                       </span>
                     ) : (
@@ -740,7 +740,7 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
                         onClick={() => goToPage(p)}
                         aria-current={p === safePage ? "page" : undefined}
                         className={`h-9 min-w-[2.25rem] rounded-full px-2 text-sm font-semibold transition-colors ${
-                          p === safePage ? "bg-navy text-white" : "text-navy/70 hover:bg-mist"
+                          p === safePage ? "bg-navy text-white dark:bg-steel dark:text-navy-950" : "text-navy/70 hover:bg-mist dark:text-cream/70 dark:hover:bg-navy-800"
                         }`}
                       >
                         {p}
@@ -751,7 +751,7 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
                     type="button"
                     onClick={() => goToPage(safePage + 1)}
                     disabled={safePage === totalPages}
-                    className="rounded-full border border-navy/20 bg-white px-3 py-2 text-sm font-medium text-navy hover:border-navy/40 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="rounded-full border border-navy/20 bg-white px-3 py-2 text-sm font-medium text-navy hover:border-navy/40 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/15 dark:bg-navy-900 dark:text-cream dark:hover:border-white/25"
                     aria-label="Next page"
                   >
                     &rarr;

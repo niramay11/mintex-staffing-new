@@ -151,11 +151,11 @@ export default async function HowWeWorkPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
-        <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
+        <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
           Our process
         </p>
-        <h1 className="mt-2.5 font-heading text-4xl font-bold text-navy sm:text-5xl">How Our Staffing Process Works</h1>
-        <p className="mt-4 max-w-2xl text-steel">
+        <h1 className="mt-2.5 font-heading text-4xl font-bold text-navy sm:text-5xl dark:text-cream">How Our Staffing Process Works</h1>
+        <p className="mt-4 max-w-2xl text-steel dark:text-steel-light">
           At Mintex Staffing, every partnership begins with a conversation. We take time to
           understand your team, culture, and hiring timeline before recommending a single
           candidate, because a great fit starts with real insight. Our proven hiring process
@@ -167,19 +167,19 @@ export default async function HowWeWorkPage() {
         <div className="mx-auto max-w-6xl">
           <div className="grid items-center gap-14 lg:grid-cols-[1fr_0.8fr] lg:gap-20">
             <div>
-              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
+              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
                 For clients
               </p>
-              <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl">
+              <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl dark:text-cream">
                 How We Help Our Clients
               </h2>
 
-              <p className="mt-6 text-[15px] leading-relaxed text-navy/70">
+              <p className="mt-6 text-[15px] leading-relaxed text-navy/70 dark:text-cream/70">
                 {clientSteps[0].description}
               </p>
               <Link
                 href="/seek-talent/how-we-work/for-clients"
-                className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-navy transition-colors hover:text-navy-secondary"
+                className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-navy transition-colors hover:text-navy-secondary dark:text-cream"
               >
                 Know more
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4">
@@ -227,19 +227,19 @@ export default async function HowWeWorkPage() {
             </div>
 
             <div>
-              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
+              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
                 For job seekers
               </p>
-              <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl">
+              <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl dark:text-cream">
                 How We Help Job Seekers
               </h2>
 
-              <p className="mt-6 text-[15px] leading-relaxed text-navy/70">
+              <p className="mt-6 text-[15px] leading-relaxed text-navy/70 dark:text-cream/70">
                 {steps[0].description}
               </p>
               <Link
                 href="/get-hired/how-we-work/for-job-seekers"
-                className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-navy transition-colors hover:text-navy-secondary"
+                className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-navy transition-colors hover:text-navy-secondary dark:text-cream"
               >
                 Know more
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4">
@@ -255,10 +255,10 @@ export default async function HowWeWorkPage() {
             </div>
           </div>
 
-          <div className="mt-14 flex flex-col items-start justify-between gap-5 rounded-2xl border border-navy/10 bg-white p-7 shadow-[0_15px_35px_-15px_rgba(0,48,96,0.15)] sm:flex-row sm:items-center sm:p-8">
+          <div className="mt-14 flex flex-col items-start justify-between gap-5 rounded-2xl border border-navy/10 bg-white p-7 shadow-[0_15px_35px_-15px_rgba(0,48,96,0.15)] sm:flex-row sm:items-center sm:p-8 dark:border-white/10 dark:bg-navy-900">
             <div>
-              <h3 className="text-lg font-semibold text-navy">Already a client?</h3>
-              <p className="mt-1 text-sm text-navy/70">
+              <h3 className="text-lg font-semibold text-navy dark:text-cream">Already a client?</h3>
+              <p className="mt-1 text-sm text-navy/70 dark:text-cream/70">
                 Sign in to the client portal to review candidates, track open roles, and manage
                 your account.
               </p>
@@ -269,10 +269,10 @@ export default async function HowWeWorkPage() {
           </div>
 
           <div className="mt-16">
-            <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
+            <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
               Common questions
             </p>
-            <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl">
+            <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl dark:text-cream">
               Frequently asked questions
             </h2>
             <FaqAccordion items={faqs} />

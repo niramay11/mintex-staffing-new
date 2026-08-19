@@ -76,7 +76,7 @@ const contactCards = [
     label: "Phone",
     detail: (
       <>
-        <a href={`tel:${BUSINESS.telephone}`} className="hover:text-navy">{BUSINESS.telephoneDisplay}</a>
+        <a href={`tel:${BUSINESS.telephone}`} className="hover:text-navy dark:hover:text-cream">{BUSINESS.telephoneDisplay}</a>
         <br />
         Mon - Fri: 9AM - 6PM
       </>
@@ -85,7 +85,7 @@ const contactCards = [
   },
   {
     label: "Email",
-    detail: <a href="mailto:info@mintexstaffing.com" className="hover:text-navy">info@mintexstaffing.com</a>,
+    detail: <a href="mailto:info@mintexstaffing.com" className="hover:text-navy dark:hover:text-cream">info@mintexstaffing.com</a>,
     icon: IconEnvelope,
   },
   {
@@ -99,9 +99,9 @@ export default function ContactPage() {
   return (
     <>
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
-        <h1 className="font-heading text-4xl font-bold text-navy sm:text-5xl">Contact Us</h1>
+        <h1 className="font-heading text-4xl font-bold text-navy sm:text-5xl dark:text-cream">Contact Us</h1>
         <div className="mt-3 h-1 w-16 rounded-full bg-steel" />
-        <p className="mt-4 max-w-2xl text-steel">
+        <p className="mt-4 max-w-2xl text-steel dark:text-steel-light">
           Have a question or want to discuss your hiring needs?{" "}
           <br className="hidden sm:block" />
           We&apos;re here to help and will get back to you as soon as possible.
@@ -110,10 +110,10 @@ export default function ContactPage() {
 
       <Section background="white">
         <div className="grid items-start gap-6 lg:grid-cols-3">
-          <div className="rounded-3xl bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)] sm:p-8">
-            <h2 className="text-2xl font-bold text-navy">Get in Touch</h2>
+          <div className="rounded-3xl bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)] sm:p-8 dark:bg-navy-800">
+            <h2 className="text-2xl font-bold text-navy dark:text-cream">Get in Touch</h2>
             <div className="mt-2 h-1 w-12 rounded-full bg-steel" />
-            <p className="mt-3 text-sm text-navy/70">
+            <p className="mt-3 text-sm text-navy/70 dark:text-cream/70">
               Reach out to us through any of the following ways.
             </p>
 
@@ -121,20 +121,20 @@ export default function ContactPage() {
               {contactCards.map(({ label, detail, icon: Icon }) => (
                 <div
                   key={label}
-                  className="flex items-center gap-4 rounded-2xl bg-mist p-5 shadow-[0_1px_3px_rgba(0,48,96,0.05)]"
+                  className="flex items-center gap-4 rounded-2xl bg-mist p-5 shadow-[0_1px_3px_rgba(0,48,96,0.05)] dark:bg-navy-900"
                 >
                   <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-navy text-white">
                     <Icon className="h-5 w-5" />
                   </span>
                   <div>
-                    <div className="font-semibold text-navy">{label}</div>
-                    <div className="mt-0.5 text-sm text-navy/70">{detail}</div>
+                    <div className="font-semibold text-navy dark:text-cream">{label}</div>
+                    <div className="mt-0.5 text-sm text-navy/70 dark:text-cream/70">{detail}</div>
                   </div>
                 </div>
               ))}
             </div>
 
-            <div className="mt-4 overflow-hidden rounded-2xl border border-navy/10">
+            <div className="mt-4 overflow-hidden rounded-2xl border border-navy/10 dark:border-white/10">
               <iframe
                 title={`Mintex Staffing office location — ${OFFICE_ADDRESS}`}
                 src={`https://www.google.com/maps?q=${encodeURIComponent(OFFICE_ADDRESS)}&output=embed`}
@@ -147,17 +147,17 @@ export default function ContactPage() {
               href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(OFFICE_ADDRESS)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-navy hover:text-steel"
+              className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-navy hover:text-steel dark:text-cream dark:hover:text-steel-light"
             >
               Get Directions
               <IconArrowRight className="h-3.5 w-3.5" />
             </a>
           </div>
 
-          <div className="rounded-3xl bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)] sm:p-10 lg:col-span-2">
-            <h2 className="text-2xl font-bold text-navy">Send Us a Message</h2>
+          <div className="rounded-3xl bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)] sm:p-10 lg:col-span-2 dark:bg-navy-800">
+            <h2 className="text-2xl font-bold text-navy dark:text-cream">Send Us a Message</h2>
             <div className="mt-2 h-1 w-12 rounded-full bg-steel" />
-            <p className="mt-3 text-sm text-navy/70">
+            <p className="mt-3 text-sm text-navy/70 dark:text-cream/70">
               Fill out the form below and our team will get back to you.
             </p>
             <div className="mt-6">

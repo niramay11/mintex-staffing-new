@@ -52,9 +52,9 @@ export default function ExpandKit({ kit, path }: { kit: InterviewKit; path: "pub
         </div>
       )}
 
-      <div className="rounded-2xl border border-dashed border-navy/15 bg-mist/40 p-5">
-        <p className="text-sm font-semibold text-navy">Want more questions?</p>
-        <p className="mt-1 text-xs text-navy/50">Adds 4 new questions — never repeats what&apos;s already above.</p>
+      <div className="rounded-2xl border border-dashed border-navy/15 bg-mist/40 p-5 dark:border-white/15 dark:bg-navy-800/60">
+        <p className="text-sm font-semibold text-navy dark:text-cream">Want more questions?</p>
+        <p className="mt-1 text-xs text-navy/50 dark:text-cream/50">Adds 4 new questions — never repeats what&apos;s already above.</p>
         <div className="mt-3 flex flex-wrap gap-2">
           <Button
             type="button"
@@ -90,7 +90,7 @@ export default function ExpandKit({ kit, path }: { kit: InterviewKit; path: "pub
             );
           })}
         </div>
-        {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+        {error && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{error}</p>}
       </div>
     </section>
   );

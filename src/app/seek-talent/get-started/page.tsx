@@ -28,18 +28,18 @@ export default async function SeekTalentGetStartedPage() {
       <Section background="mist" className="relative !py-12 sm:!py-14 lg:!py-16">
         <Link
           href="/seek-talent"
-          className="flex w-fit items-center gap-1.5 text-sm font-medium text-navy/60 transition-colors hover:text-navy"
+          className="flex w-fit items-center gap-1.5 text-sm font-medium text-navy/60 transition-colors hover:text-navy dark:text-cream/60 dark:hover:text-cream"
         >
           <IconArrowLeft className="h-4 w-4" />
           Seek Talent
         </Link>
 
-        <div className="mt-6 flex w-fit items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[13px] font-medium text-navy/70">
+        <div className="mt-6 flex w-fit items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[13px] font-medium text-navy/70 dark:border-white/10 dark:bg-navy-900 dark:text-cream/70">
           <IconBriefcase className="h-4 w-4 flex-shrink-0" />
           For Employers
         </div>
-        <h1 className="mt-5 font-heading text-4xl font-bold text-navy sm:text-5xl">Find Skilled Talent, Faster</h1>
-        <p className="mt-4 max-w-2xl text-steel">
+        <h1 className="mt-5 font-heading text-4xl font-bold text-navy sm:text-5xl dark:text-cream">Find Skilled Talent, Faster</h1>
+        <p className="mt-4 max-w-2xl text-steel dark:text-steel-light">
           From IT staffing to healthcare staffing to logistics staffing, we connect businesses
           with the right people, right on time.
         </p>
@@ -55,12 +55,12 @@ export default async function SeekTalentGetStartedPage() {
           className="pointer-events-none absolute -bottom-28 -right-16 h-[380px] w-[380px] rounded-full bg-steel/20 blur-[120px]"
         />
 
-        <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[32px] border border-navy/[0.06] bg-white p-7 shadow-[0_30px_70px_-25px_rgba(0,48,96,0.25)] sm:p-10">
+        <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[32px] border border-navy/[0.06] bg-white p-7 shadow-[0_30px_70px_-25px_rgba(0,48,96,0.25)] sm:p-10 dark:border-white/10 dark:bg-navy-900">
           <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.14em] text-steel">Get in touch</p>
-              <h2 className="mt-2 text-2xl font-bold text-navy sm:text-3xl">Connect with our experts</h2>
-              <p className="mt-1.5 text-sm text-navy/70">
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Get in touch</p>
+              <h2 className="mt-2 text-2xl font-bold text-navy sm:text-3xl dark:text-cream">Connect with our experts</h2>
+              <p className="mt-1.5 text-sm text-navy/70 dark:text-cream/70">
                 Share your hiring goals and our recruiters will design a candidate search
                 customized to your business.
               </p>

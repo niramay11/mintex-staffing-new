@@ -61,8 +61,8 @@ export default function HiringCostCalculator() {
     <div className="grid gap-8">
       {/* INPUT PANELS */}
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-3xl border border-navy/10 bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)]">
-          <h3 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">Role &amp; Salary</h3>
+        <div className="rounded-3xl border border-navy/10 bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)] dark:border-white/10 dark:bg-navy-900">
+          <h3 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Role &amp; Salary</h3>
 
           <NumberField
             label="Annual Salary"
@@ -79,7 +79,7 @@ export default function HiringCostCalculator() {
               onChange={(v) => setField("seniorityKey", v as typeof inputs.seniorityKey)}
               options={SENIORITY_OPTIONS}
             />
-            <p className="mt-1.5 text-[11.5px] leading-relaxed text-navy/90">
+            <p className="mt-1.5 text-[11.5px] leading-relaxed text-navy/90 dark:text-cream/90">
               Drives onboarding length, ramp-up time and interview depth assumptions.
             </p>
           </div>
@@ -91,7 +91,7 @@ export default function HiringCostCalculator() {
               onChange={(v) => setField("industryKey", v as typeof inputs.industryKey)}
               options={INDUSTRY_OPTIONS}
             />
-            <p className="mt-1.5 text-[11.5px] leading-relaxed text-navy/90">
+            <p className="mt-1.5 text-[11.5px] leading-relaxed text-navy/90 dark:text-cream/90">
               Avg for this industry: {fmt(industry.avgCost)}/hire &middot; {industry.avgDays} days to fill
             </p>
           </div>
@@ -103,14 +103,14 @@ export default function HiringCostCalculator() {
               onChange={(v) => setField("methodKey", v as MethodKey)}
               options={METHOD_OPTIONS}
             />
-            <p className="mt-1.5 text-[11.5px] leading-relaxed text-navy/90">
+            <p className="mt-1.5 text-[11.5px] leading-relaxed text-navy/90 dark:text-cream/90">
               This is the method used in the Cost Breakdown tab. Compare all 5 methods in the tab to the right.
             </p>
           </div>
         </div>
 
-        <div className="rounded-3xl border border-navy/10 bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)]">
-          <h3 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">Hiring Process</h3>
+        <div className="rounded-3xl border border-navy/10 bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)] dark:border-white/10 dark:bg-navy-900">
+          <h3 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Hiring Process</h3>
 
           <NumberField
             label="Time to Fill"
@@ -154,7 +154,7 @@ export default function HiringCostCalculator() {
 
       {/* RESULTS */}
       <div>
-        <div className="rounded-3xl bg-gradient-to-br from-navy via-navy-deep to-navy-secondary p-8 text-white shadow-[0_30px_70px_-28px_rgba(0,48,96,0.4)]">
+        <div className="rounded-3xl bg-gradient-to-br from-navy via-navy-deep to-navy-secondary p-8 text-white shadow-[0_30px_70px_-28px_rgba(0,48,96,0.4)] dark:from-navy-900 dark:via-navy-800 dark:to-navy-900 dark:shadow-[0_30px_70px_-28px_rgba(0,0,0,0.5)]">
           <div className="grid gap-6 lg:grid-cols-[1.3fr_1fr_1fr]">
             <div>
               <p className="text-[12.5px] font-semibold uppercase tracking-[0.14em] text-steel-lighter">
@@ -186,14 +186,16 @@ export default function HiringCostCalculator() {
         </div>
 
         {/* Tabs */}
-        <div className="mt-7 flex gap-1 border-b border-navy/10">
+        <div className="mt-7 flex gap-1 border-b border-navy/10 dark:border-white/10">
           {TABS.map((t) => (
             <button
               key={t.key}
               type="button"
               onClick={() => setTab(t.key)}
               className={`-mb-px border-b-2 px-4 py-3 text-sm font-semibold transition-colors ${
-                tab === t.key ? "border-steel text-navy" : "border-transparent text-steel hover:text-navy"
+                tab === t.key
+                  ? "border-steel text-navy dark:text-cream"
+                  : "border-transparent text-steel hover:text-navy dark:text-steel-light dark:hover:text-cream"
               }`}
             >
               {t.label}
@@ -202,25 +204,25 @@ export default function HiringCostCalculator() {
         </div>
 
         {tab === "breakdown" && (
-          <div className="mt-5 rounded-3xl border border-navy/10 bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)]">
+          <div className="mt-5 rounded-3xl border border-navy/10 bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)] dark:border-white/10 dark:bg-navy-900">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr>
-                    <th className="border-b border-navy/10 pb-2.5 text-left text-[11.5px] font-semibold uppercase tracking-wide text-steel">
+                    <th className="border-b border-navy/10 dark:border-white/10 pb-2.5 text-left text-[11.5px] font-semibold uppercase tracking-wide text-steel dark:text-steel-light">
                       Cost Item
                     </th>
-                    <th className="border-b border-navy/10 pb-2.5 text-right text-[11.5px] font-semibold uppercase tracking-wide text-steel">
+                    <th className="border-b border-navy/10 dark:border-white/10 pb-2.5 text-right text-[11.5px] font-semibold uppercase tracking-wide text-steel dark:text-steel-light">
                       Amount
                     </th>
-                    <th className="border-b border-navy/10 pb-2.5 text-right text-[11.5px] font-semibold uppercase tracking-wide text-steel">
+                    <th className="border-b border-navy/10 dark:border-white/10 pb-2.5 text-right text-[11.5px] font-semibold uppercase tracking-wide text-steel dark:text-steel-light">
                       %
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   {breakdownRows.map((row, i) => (
-                    <tr key={row.key} className="border-b border-navy/10">
+                    <tr key={row.key} className="border-b border-navy/10 dark:border-white/10">
                       <td className="py-3">
                         <span
                           className="mr-2 inline-block h-2.5 w-2.5 rounded-[3px]"
@@ -228,21 +230,21 @@ export default function HiringCostCalculator() {
                         />
                         {row.label}
                       </td>
-                      <td className="py-3 text-right font-semibold text-navy">{fmt(row.amount)}</td>
-                      <td className="py-3 text-right text-steel">{fmtPct(row.pct)}</td>
+                      <td className="py-3 text-right font-semibold text-navy dark:text-cream">{fmt(row.amount)}</td>
+                      <td className="py-3 text-right text-steel dark:text-steel-light">{fmtPct(row.pct)}</td>
                     </tr>
                   ))}
                 </tbody>
                 <tfoot>
                   <tr>
-                    <td className="pt-4 text-base font-extrabold text-navy">Total Cost-to-Hire</td>
-                    <td className="pt-4 text-right text-base font-extrabold text-navy">{fmt(result.total)}</td>
+                    <td className="pt-4 text-base font-extrabold text-navy dark:text-cream">Total Cost-to-Hire</td>
+                    <td className="pt-4 text-right text-base font-extrabold text-navy dark:text-cream">{fmt(result.total)}</td>
                     <td className="pt-4"></td>
                   </tr>
                 </tfoot>
               </table>
             </div>
-            <p className="mt-5 rounded-2xl border border-steel/30 bg-steel/[0.08] p-4 text-[12.5px] leading-relaxed text-navy">
+            <p className="mt-5 rounded-2xl border border-steel/30 bg-steel/[0.08] p-4 text-[12.5px] leading-relaxed text-navy dark:bg-steel/10 dark:text-cream">
               Your largest cost driver is &quot;{topItem.label}&quot;{" "}
               at {fmtPct((topItem.amount / result.total) * 100)}{" "}
               of total cost-to-hire. Vacancy and ramp-up productivity loss together account for{" "}
@@ -253,21 +255,21 @@ export default function HiringCostCalculator() {
         )}
 
         {tab === "methods" && (
-          <div className="mt-5 rounded-3xl border border-navy/10 bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)]">
+          <div className="mt-5 rounded-3xl border border-navy/10 bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)] dark:border-white/10 dark:bg-navy-900">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr>
-                    <th className="border-b border-navy/10 pb-2.5 text-left text-[11.5px] font-semibold uppercase tracking-wide text-steel">
+                    <th className="border-b border-navy/10 dark:border-white/10 pb-2.5 text-left text-[11.5px] font-semibold uppercase tracking-wide text-steel dark:text-steel-light">
                       Method
                     </th>
-                    <th className="border-b border-navy/10 pb-2.5 text-center text-[11.5px] font-semibold uppercase tracking-wide text-steel">
+                    <th className="border-b border-navy/10 dark:border-white/10 pb-2.5 text-center text-[11.5px] font-semibold uppercase tracking-wide text-steel dark:text-steel-light">
                       Total Cost
                     </th>
-                    <th className="border-b border-navy/10 pb-2.5 text-center text-[11.5px] font-semibold uppercase tracking-wide text-steel">
+                    <th className="border-b border-navy/10 dark:border-white/10 pb-2.5 text-center text-[11.5px] font-semibold uppercase tracking-wide text-steel dark:text-steel-light">
                       Est. Time to Fill
                     </th>
-                    <th className="border-b border-navy/10 pb-2.5 text-left text-[11.5px] font-semibold uppercase tracking-wide text-steel">
+                    <th className="border-b border-navy/10 dark:border-white/10 pb-2.5 text-left text-[11.5px] font-semibold uppercase tracking-wide text-steel dark:text-steel-light">
                       Best For
                     </th>
                   </tr>
@@ -276,12 +278,12 @@ export default function HiringCostCalculator() {
                   {methodRows.map((r) => (
                     <tr
                       key={r.key}
-                      className={`border-b border-navy/10 ${r.total === cheapest ? "bg-emerald-50/60" : ""}`}
+                      className={`border-b border-navy/10 dark:border-white/10 ${r.total === cheapest ? "bg-emerald-50/60 dark:bg-emerald-400/10" : ""}`}
                     >
-                      <td className="py-3 text-navy">{r.cfg.label}</td>
-                      <td className="py-3 text-center font-semibold text-navy">{fmt(r.total)}</td>
-                      <td className="py-3 text-center text-navy">{r.ttf} days</td>
-                      <td className="py-3 text-left text-[12.5px] text-navy/90">
+                      <td className="py-3 text-navy dark:text-cream">{r.cfg.label}</td>
+                      <td className="py-3 text-center font-semibold text-navy dark:text-cream">{fmt(r.total)}</td>
+                      <td className="py-3 text-center text-navy dark:text-cream">{r.ttf} days</td>
+                      <td className="py-3 text-left text-[12.5px] text-navy/90 dark:text-cream/90">
                         {r.cfg.best}{" "}
                         {r.key === inputs.methodKey && <Badge>Selected</Badge>}
                         {r.total === cheapest && <Badge>Lowest cost</Badge>}
@@ -292,7 +294,7 @@ export default function HiringCostCalculator() {
                 </tbody>
               </table>
             </div>
-            <p className="mt-5 rounded-2xl border border-steel/30 bg-steel/[0.08] p-4 text-[12.5px] leading-relaxed text-navy">
+            <p className="mt-5 rounded-2xl border border-steel/30 bg-steel/[0.08] p-4 text-[12.5px] leading-relaxed text-navy dark:bg-steel/10 dark:text-cream">
               Method comparison re-runs the same formulas with method-specific adjustments (fee %,
               faster/slower sourcing, less/more internal interview time), using your current salary,
               seniority and process inputs.
@@ -301,7 +303,7 @@ export default function HiringCostCalculator() {
         )}
 
         {tab === "roi" && (
-          <div className="mt-5 rounded-3xl border border-navy/10 bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)]">
+          <div className="mt-5 rounded-3xl border border-navy/10 bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)] dark:border-white/10 dark:bg-navy-900">
             <div className="grid gap-4 sm:grid-cols-3">
               <RoiCard
                 icon="⏱"
@@ -326,56 +328,56 @@ export default function HiringCostCalculator() {
                 }
               />
             </div>
-            <p className="mt-5 rounded-2xl border border-steel/30 bg-steel/[0.08] p-4 text-[12.5px] leading-relaxed text-navy">
+            <p className="mt-5 rounded-2xl border border-steel/30 bg-steel/[0.08] p-4 text-[12.5px] leading-relaxed text-navy dark:bg-steel/10 dark:text-cream">
               Reference figures (mis-hire cost, industry benchmarks) are illustrative planning estimates drawn from
               commonly cited HR industry ranges, not a live data feed. Use your own historical data where available.
             </p>
           </div>
         )}
 
-        <details className="mt-6 rounded-3xl border border-navy/10 bg-white shadow-[0_1px_3px_rgba(0,48,96,0.05)]">
-          <summary className="cursor-pointer list-none px-6 py-4 font-heading text-sm font-semibold text-navy">
+        <details className="mt-6 rounded-3xl border border-navy/10 bg-white shadow-[0_1px_3px_rgba(0,48,96,0.05)] dark:border-white/10 dark:bg-navy-900">
+          <summary className="cursor-pointer list-none px-6 py-4 font-heading text-sm font-semibold text-navy dark:text-cream">
             How this calculator works (methodology &amp; assumptions)
           </summary>
-          <div className="space-y-3 px-6 pb-6 text-[13.5px] leading-relaxed text-navy">
+          <div className="space-y-3 px-6 pb-6 text-[13.5px] leading-relaxed text-navy dark:text-cream">
             <p>
               This tool uses standard HR / talent-acquisition cost-per-hire methodology (in the spirit of SHRM&apos;s
               cost-per-hire framework), broken into seven components.
             </p>
-            <h5 className="mt-3 font-heading text-[13.5px] font-semibold text-navy">1. Job Posting &amp; Advertising</h5>
+            <h5 className="mt-3 font-heading text-[13.5px] font-semibold text-navy dark:text-cream">1. Job Posting &amp; Advertising</h5>
             <p>
               Flat cost by hiring method (e.g. $350 for In-House HR Department, $0 for Staffing Provider / Executive
               Recruiting Firm / Employee Recommendation since it&apos;s bundled into the fee or unnecessary, $500 for
               Job Board Recruitment).
             </p>
-            <h5 className="mt-3 font-heading text-[13.5px] font-semibold text-navy">2. Interview &amp; Screening Time</h5>
+            <h5 className="mt-3 font-heading text-[13.5px] font-semibold text-navy dark:text-cream">2. Interview &amp; Screening Time</h5>
             <p>
               Candidates screened &times; blended hours per candidate (by seniority) &times; interviewer hourly rate.
               Hours/candidate rises with seniority (2.5h entry &rarr; 8.5h director) to reflect more rounds and more
               senior interviewers.
             </p>
-            <h5 className="mt-3 font-heading text-[13.5px] font-semibold text-navy">3. Assessment &amp; Background Check</h5>
+            <h5 className="mt-3 font-heading text-[13.5px] font-semibold text-navy dark:text-cream">3. Assessment &amp; Background Check</h5>
             <p>Direct pass-through of your input.</p>
-            <h5 className="mt-3 font-heading text-[13.5px] font-semibold text-navy">4. Onboarding &amp; Training</h5>
+            <h5 className="mt-3 font-heading text-[13.5px] font-semibold text-navy dark:text-cream">4. Onboarding &amp; Training</h5>
             <p>
               Annual salary &times; onboarding % (3%&ndash;5% by seniority) &mdash; covers buddy/manager time,
               training materials and paperwork during the first weeks.
             </p>
-            <h5 className="mt-3 font-heading text-[13.5px] font-semibold text-navy">5. Equipment &amp; IT Setup</h5>
+            <h5 className="mt-3 font-heading text-[13.5px] font-semibold text-navy dark:text-cream">5. Equipment &amp; IT Setup</h5>
             <p>Flat allocation by seniority tier ($1,200&ndash;$3,500) for hardware, software licenses and account provisioning.</p>
-            <h5 className="mt-3 font-heading text-[13.5px] font-semibold text-navy">6. Vacancy Cost</h5>
+            <h5 className="mt-3 font-heading text-[13.5px] font-semibold text-navy dark:text-cream">6. Vacancy Cost</h5>
             <p>
               Time-to-fill days &times; (annual salary &divide; 365) &times; 0.55 &mdash; the 0.55 factor represents
               the average share of the vacant role&apos;s daily value that&apos;s lost to coverage gaps, overtime and
               delayed output while the seat is empty.
             </p>
-            <h5 className="mt-3 font-heading text-[13.5px] font-semibold text-navy">7. Ramp-Up Productivity Loss</h5>
+            <h5 className="mt-3 font-heading text-[13.5px] font-semibold text-navy dark:text-cream">7. Ramp-Up Productivity Loss</h5>
             <p>
               Ramp-up months &times; (annual salary &divide; 12) &times; (1 &minus; average capacity during ramp-up).
               Average capacity during ramp-up ranges from 65% (entry-level, short ramp) down to 45%
               (director/executive, long ramp), based on common new-hire productivity curves.
             </p>
-            <h5 className="mt-3 font-heading text-[13.5px] font-semibold text-navy">
+            <h5 className="mt-3 font-heading text-[13.5px] font-semibold text-navy dark:text-cream">
               8. Employee Recommendation Bonus (only for that method)
             </h5>
             <p>Flat recommendation bonus paid to the recommending employee, default $1,500.</p>
@@ -428,9 +430,9 @@ function NumberField({
 
   return (
     <div className={last ? "mt-5" : "mt-5 first:mt-0"}>
-      <span className="text-sm font-semibold text-navy">{label}</span>
-      <div className="mt-2 flex items-center gap-2 rounded-xl border border-navy/15 bg-white px-4 py-3 transition-colors focus-within:border-steel hover:border-navy/25">
-        {prefix && <span className="flex-shrink-0 text-sm font-semibold text-navy/50">{prefix}</span>}
+      <span className="text-sm font-semibold text-navy dark:text-cream">{label}</span>
+      <div className="mt-2 flex items-center gap-2 rounded-xl border border-navy/15 bg-white px-4 py-3 transition-colors focus-within:border-steel hover:border-navy/25 dark:border-white/15 dark:bg-navy-900 dark:hover:border-white/25">
+        {prefix && <span className="flex-shrink-0 text-sm font-semibold text-navy/50 dark:text-cream/50">{prefix}</span>}
         <input
           type="text"
           inputMode="numeric"
@@ -446,18 +448,18 @@ function NumberField({
             setText(String(clamped));
             onChange(clamped);
           }}
-          className="w-full flex-1 border-0 bg-transparent text-sm font-semibold text-navy !outline-none"
+          className="w-full flex-1 border-0 bg-transparent text-sm font-semibold text-navy !outline-none dark:text-cream"
         />
-        {suffix && <span className="flex-shrink-0 text-sm font-medium text-navy/50">{suffix}</span>}
+        {suffix && <span className="flex-shrink-0 text-sm font-medium text-navy/50 dark:text-cream/50">{suffix}</span>}
       </div>
-      <p className="mt-1.5 text-[11.5px] leading-relaxed text-navy/90">{hint}</p>
+      <p className="mt-1.5 text-[11.5px] leading-relaxed text-navy/90 dark:text-cream/90">{hint}</p>
     </div>
   );
 }
 
 function Badge({ children }: { children: React.ReactNode }) {
   return (
-    <span className="ml-1 inline-block rounded-full bg-mist px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-navy">
+    <span className="ml-1 inline-block rounded-full bg-mist px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-navy dark:bg-navy-800 dark:text-cream">
       {children}
     </span>
   );
@@ -465,11 +467,11 @@ function Badge({ children }: { children: React.ReactNode }) {
 
 function RoiCard({ icon, label, num, text }: { icon: string; label: string; num: string; text: string }) {
   return (
-    <div className="rounded-2xl border border-navy/10 bg-mist/60 p-5">
+    <div className="rounded-2xl border border-navy/10 bg-mist/60 p-5 dark:border-white/10 dark:bg-navy-800">
       <span className="text-lg">{icon}</span>
-      <h4 className="mt-2 font-heading text-sm font-semibold text-navy">{label}</h4>
-      <p className="mt-1 text-2xl font-extrabold text-navy-secondary">{num}</p>
-      <p className="mt-1.5 text-[12.5px] leading-relaxed text-navy/90">{text}</p>
+      <h4 className="mt-2 font-heading text-sm font-semibold text-navy dark:text-cream">{label}</h4>
+      <p className="mt-1 text-2xl font-extrabold text-navy-secondary dark:text-steel-light">{num}</p>
+      <p className="mt-1.5 text-[12.5px] leading-relaxed text-navy/90 dark:text-cream/90">{text}</p>
     </div>
   );
 }

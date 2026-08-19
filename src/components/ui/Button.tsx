@@ -2,8 +2,10 @@ import Link from "next/link";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 const variants = {
-  primary: "bg-white text-navy border border-navy hover:bg-mist",
-  secondary: "bg-white text-navy hover:bg-mist border border-navy/10",
+  primary:
+    "bg-white text-navy border border-navy hover:bg-mist dark:border-cream/30 dark:bg-navy-900 dark:text-cream dark:hover:bg-navy-800",
+  secondary:
+    "bg-white text-navy hover:bg-mist border border-navy/10 dark:border-white/10 dark:bg-navy-900 dark:text-cream dark:hover:bg-navy-800",
   outline: "border border-white text-white hover:bg-white hover:text-navy",
 } as const;
 

@@ -97,12 +97,14 @@ export default function PasteJobDescriptionKit() {
 
   return (
     <div className="mx-auto w-full">
-      <div className="mb-4 inline-flex rounded-full border border-navy/10 bg-mist p-1">
+      <div className="mb-4 inline-flex rounded-full border border-navy/10 bg-mist p-1 dark:border-white/10 dark:bg-navy-900">
         <button
           type="button"
           onClick={() => setMode("paste")}
           className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-            mode === "paste" ? "bg-navy text-white" : "text-navy/60 hover:text-navy"
+            mode === "paste"
+              ? "bg-navy text-white dark:bg-steel dark:text-navy-950"
+              : "text-navy/60 hover:text-navy dark:text-cream/60 dark:hover:text-cream"
           }`}
         >
           Paste text
@@ -111,7 +113,9 @@ export default function PasteJobDescriptionKit() {
           type="button"
           onClick={() => setMode("upload")}
           className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-            mode === "upload" ? "bg-navy text-white" : "text-navy/60 hover:text-navy"
+            mode === "upload"
+              ? "bg-navy text-white dark:bg-steel dark:text-navy-950"
+              : "text-navy/60 hover:text-navy dark:text-cream/60 dark:hover:text-cream"
           }`}
         >
           Upload file
@@ -120,31 +124,31 @@ export default function PasteJobDescriptionKit() {
 
       <form
         onSubmit={handleGenerate}
-        className="grid content-start gap-5 rounded-3xl border border-navy/[0.08] bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)]"
+        className="grid content-start gap-5 rounded-3xl border border-navy/[0.08] bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)] dark:border-white/10 dark:bg-navy-900"
       >
         {mode === "paste" ? (
-          <label className="block text-sm font-semibold text-navy">
+          <label className="block text-sm font-semibold text-navy dark:text-cream">
             Job description
             <textarea
               value={jobDescription}
               onChange={(event) => setJobDescription(event.target.value)}
               placeholder="Paste the full job posting text here…"
               rows={8}
-              className="mt-2 w-full rounded-xl border border-navy/15 bg-white px-4 py-3 text-sm font-normal text-navy placeholder:text-navy/35 focus:border-steel focus:outline-none"
+              className="mt-2 w-full rounded-xl border border-navy/15 bg-white px-4 py-3 text-sm font-normal text-navy placeholder:text-navy/35 focus:border-steel focus:outline-none dark:border-white/15 dark:bg-navy-900 dark:text-cream dark:placeholder:text-cream/35"
             />
-            <span className={`mt-1 block text-right text-xs ${overLimit ? "text-red-600" : "text-navy/40"}`}>
+            <span className={`mt-1 block text-right text-xs ${overLimit ? "text-red-600" : "text-navy/40 dark:text-cream/40"}`}>
               {jobDescription.length.toLocaleString()} / {JD_MAX_CHARS.toLocaleString()}
             </span>
           </label>
         ) : (
-          <div className="rounded-xl border border-dashed border-navy/20 bg-mist/40 p-6 text-center">
+          <div className="rounded-xl border border-dashed border-navy/20 bg-mist/40 p-6 text-center dark:border-white/10 dark:bg-navy-800/40">
             <input
               type="file"
               accept=".pdf,.docx"
               onChange={(event) => setFile(event.target.files?.[0] ?? null)}
-              className="block w-full text-sm text-navy/70 file:mr-3 file:rounded-full file:border-0 file:bg-navy file:px-4 file:py-2 file:text-xs file:font-semibold file:text-white file:hover:bg-navy/90"
+              className="block w-full text-sm text-navy/70 file:mr-3 file:rounded-full file:border-0 file:bg-navy file:px-4 file:py-2 file:text-xs file:font-semibold file:text-white file:hover:bg-navy/90 dark:text-cream/70 dark:file:bg-steel dark:file:text-navy-950 dark:file:hover:bg-steel-light"
             />
-            <p className="mt-2 text-xs text-navy/40">PDF or Word (.docx) job posting, up to 5MB.</p>
+            <p className="mt-2 text-xs text-navy/40 dark:text-cream/40">PDF or Word (.docx) job posting, up to 5MB.</p>
           </div>
         )}
 
@@ -168,7 +172,7 @@ export default function PasteJobDescriptionKit() {
           {loading ? "Reading the posting and generating…" : "Generate Interview Kit From This Posting"}
         </Button>
         {error && <p className="text-sm text-red-600">{error}</p>}
-        <p className="text-xs text-navy/40">
+        <p className="text-xs text-navy/40 dark:text-cream/40">
           This kit is generated fresh and is never saved on our servers or indexed — an uploaded file is read for
           its text and discarded, never saved to disk. Not legal advice; verify anything specific with your
           state&apos;s labor office.

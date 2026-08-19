@@ -86,8 +86,21 @@ export default async function RootLayout({
   ReactDOM.preconnect("https://img.youtube.com");
 
   return (
-    <html lang="en-US" className={`${inter.variable} ${poppins.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col bg-cream">
+    <html
+      lang="en-US"
+      data-theme="light"
+      suppressHydrationWarning
+      className={`${inter.variable} ${poppins.variable} h-full antialiased`}
+    >
+      <head>
+        <script
+          id="theme-init"
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem("theme")||"light";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();`,
+          }}
+        />
+      </head>
+      <body className="flex min-h-full flex-col bg-cream text-navy dark:bg-navy-950 dark:text-cream" suppressHydrationWarning>
         <script
           id="local-business-schema"
           type="application/ld+json"

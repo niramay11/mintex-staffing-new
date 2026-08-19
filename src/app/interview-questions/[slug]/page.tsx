@@ -44,8 +44,8 @@ export default async function InterviewKitPage({
     if (err instanceof RateLimitError) {
       return (
         <Section background="mist" className="!py-16 text-center">
-          <h1 className="font-heading text-2xl font-bold text-navy">Too many requests</h1>
-          <p className="mt-3 text-steel">You&apos;ve hit a lot of kits in a short time — give it a few minutes and try again.</p>
+          <h1 className="font-heading text-2xl font-bold text-navy dark:text-cream">Too many requests</h1>
+          <p className="mt-3 text-steel dark:text-steel-light">You&apos;ve hit a lot of kits in a short time — give it a few minutes and try again.</p>
         </Section>
       );
     }
@@ -56,13 +56,13 @@ export default async function InterviewKitPage({
   return (
     <>
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
-        <Link href="/resources/ai-interview-generator" className="text-sm font-medium text-steel hover:text-navy">
+        <Link href="/resources/ai-interview-generator" className="text-sm font-medium text-steel hover:text-navy dark:text-steel-light dark:hover:text-cream">
           ← Generate another kit
         </Link>
-        <h1 className="mt-3 font-heading text-4xl font-bold text-navy sm:text-5xl">
+        <h1 className="mt-3 font-heading text-4xl font-bold text-navy dark:text-cream sm:text-5xl">
           {kit.role.title} Interview Questions
         </h1>
-        <p className="mt-4 max-w-2xl text-steel">{kit.role.summary}</p>
+        <p className="mt-4 max-w-2xl text-steel dark:text-steel-light">{kit.role.summary}</p>
       </Section>
 
       <Section background="cream">
@@ -70,9 +70,9 @@ export default async function InterviewKitPage({
         <div className="mt-8">
           <ResumeGapAnalysis kit={kit} />
         </div>
-        <p className="mt-8 text-sm text-navy/50">
+        <p className="mt-8 text-sm text-navy/50 dark:text-cream/50">
           Hiring for this role?{" "}
-          <Link href={`/hiring/${slug}-interview-guide`} className="font-medium text-steel hover:text-navy">
+          <Link href={`/hiring/${slug}-interview-guide`} className="font-medium text-steel hover:text-navy dark:text-steel-light dark:hover:text-cream">
             Get the printable interviewer scorecard →
           </Link>
         </p>

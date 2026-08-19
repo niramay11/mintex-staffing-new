@@ -26,7 +26,7 @@ export default function HiringCalculatorPreview() {
   const savings = traditionalCost - ourCost;
 
   return (
-    <div className="rounded-3xl bg-gradient-to-br from-navy to-navy-secondary p-8 text-white">
+    <div className="rounded-3xl bg-gradient-to-br from-navy to-navy-secondary p-8 text-white dark:from-navy-900 dark:to-navy-800">
       <span className="inline-flex items-center rounded-full bg-steel/[0.16] px-3.5 py-1.5 text-[12.5px] font-semibold tracking-wide text-steel-lighter">
         HIRING COST CALCULATOR
       </span>

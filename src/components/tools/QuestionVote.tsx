@@ -31,7 +31,7 @@ export default function QuestionVote({ questionText, roleSlug }: { questionText:
   }
 
   if (state === "voted") {
-    return <span className="text-xs text-navy/40">Thanks for the feedback</span>;
+    return <span className="text-xs text-navy/40 dark:text-cream/40">Thanks for the feedback</span>;
   }
 
   return (
@@ -40,7 +40,7 @@ export default function QuestionVote({ questionText, roleSlug }: { questionText:
         type="button"
         aria-label="This question is helpful"
         onClick={() => sendVote("up")}
-        className="rounded-full p-1.5 text-navy/40 hover:bg-mist hover:text-navy"
+        className="rounded-full p-1.5 text-navy/40 hover:bg-mist hover:text-navy dark:text-cream/40 dark:hover:bg-navy-800 dark:hover:text-cream"
       >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
           <path d="M7 10v11H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1h3Zm0 0 5-7a2 2 0 0 1 3.6 1.2L14.5 9H19a2 2 0 0 1 2 2.3l-1.4 8A2 2 0 0 1 17.6 21H7" />
@@ -50,7 +50,7 @@ export default function QuestionVote({ questionText, roleSlug }: { questionText:
         type="button"
         aria-label="This question needs work"
         onClick={() => setShowReasons((v) => !v)}
-        className="rounded-full p-1.5 text-navy/40 hover:bg-mist hover:text-navy"
+        className="rounded-full p-1.5 text-navy/40 hover:bg-mist hover:text-navy dark:text-cream/40 dark:hover:bg-navy-800 dark:hover:text-cream"
       >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
           <path d="M17 14V3h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-3Zm0 0-5 7a2 2 0 0 1-3.6-1.2l1.1-4.8H5a2 2 0 0 1-2-2.3l1.4-8A2 2 0 0 1 6.4 3H17" />
@@ -58,13 +58,13 @@ export default function QuestionVote({ questionText, roleSlug }: { questionText:
       </button>
 
       {showReasons && (
-        <div className="absolute right-0 top-full z-10 mt-1 w-48 rounded-xl border border-navy/10 bg-white p-2 shadow-lg">
+        <div className="absolute right-0 top-full z-10 mt-1 w-48 rounded-xl border border-navy/10 bg-white p-2 shadow-lg dark:border-white/10 dark:bg-navy-900">
           {Object.entries(DOWN_REASON_LABELS).map(([reason, label]) => (
             <button
               key={reason}
               type="button"
               onClick={() => sendVote("down", reason)}
-              className="block w-full rounded-lg px-2 py-1.5 text-left text-xs text-navy/70 hover:bg-mist"
+              className="block w-full rounded-lg px-2 py-1.5 text-left text-xs text-navy/70 hover:bg-mist dark:text-cream/70 dark:hover:bg-navy-800"
             >
               {label}
             </button>

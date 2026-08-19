@@ -107,18 +107,18 @@ export default async function HiringServicePage({
       <Section background="mist" className="relative !py-12 sm:!py-14 lg:!py-16">
         <Link
           href="/seek-talent"
-          className="flex w-fit items-center gap-1.5 text-sm font-medium text-navy/60 transition-colors hover:text-navy"
+          className="flex w-fit items-center gap-1.5 text-sm font-medium text-navy/60 transition-colors hover:text-navy dark:text-cream/60 dark:hover:text-cream"
         >
           <IconArrowLeft className="h-4 w-4" />
           Seek Talent
         </Link>
 
-        <div className="mt-6 flex w-fit items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[13px] font-medium text-navy/70">
+        <div className="mt-6 flex w-fit items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[13px] font-medium text-navy/70 dark:border-white/10 dark:bg-navy-900 dark:text-cream/70">
           <Icon className="h-4 w-4 flex-shrink-0" />
           {service.badge}
         </div>
-        <h1 className="mt-5 font-heading text-4xl font-bold text-navy sm:text-5xl">{service.name}</h1>
-        <p className="mt-4 max-w-2xl text-steel">{service.intro}</p>
+        <h1 className="mt-5 font-heading text-4xl font-bold text-navy sm:text-5xl dark:text-cream">{service.name}</h1>
+        <p className="mt-4 max-w-2xl text-steel dark:text-steel-light">{service.intro}</p>
         <div className="mt-8 flex flex-wrap gap-3.5">
           <ButtonLink href="/seek-talent/get-started" variant="primary" className="inline-flex items-center gap-2">
             Discuss your hiring needs
@@ -127,7 +127,7 @@ export default async function HiringServicePage({
           <ButtonLink
             href="/seek-talent"
             variant="outline"
-            className="!border-navy !text-navy inline-flex items-center gap-2 hover:!bg-navy hover:!text-white"
+            className="!border-navy !text-navy inline-flex items-center gap-2 hover:!bg-navy hover:!text-white dark:!border-steel dark:!text-cream dark:hover:!bg-steel dark:hover:!text-navy-950"
           >
             See all services
             <IconArrowRight className="h-4 w-4" />
@@ -137,8 +137,8 @@ export default async function HiringServicePage({
 
       <Section background="white" className="!py-12 sm:!py-14 lg:!py-16">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">Why choose us</p>
-          <h2 className="mt-2.5 text-3xl font-bold text-navy sm:text-4xl">What&apos;s included</h2>
+          <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Why choose us</p>
+          <h2 className="mt-2.5 text-3xl font-bold text-navy sm:text-4xl dark:text-cream">What&apos;s included</h2>
         </div>
 
         <div className="mx-auto mt-10 max-w-5xl space-y-10 lg:space-y-14">
@@ -153,7 +153,7 @@ export default async function HiringServicePage({
                 <div className="relative hidden flex-shrink-0 lg:block" style={{ width: 320 }}>
                   <div
                     aria-hidden="true"
-                    className="absolute -inset-3 rounded-[2rem] border border-navy/10"
+                    className="absolute -inset-3 rounded-[2rem] border border-navy/10 dark:border-white/10"
                   />
                   <div className="relative aspect-[4/3] overflow-hidden rounded-[1.5rem] shadow-[0_20px_45px_-20px_rgba(0,48,96,0.25)]">
                     <Image
@@ -165,13 +165,13 @@ export default async function HiringServicePage({
                   </div>
                 </div>
 
-                <div className="group flex w-full flex-1 gap-4 rounded-2xl border border-navy/[0.08] bg-white p-5 transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-20px_rgba(0,48,96,0.3)]">
-                  <span className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full ${accentBg} ${accentText}`}>
+                <div className="group flex w-full flex-1 gap-4 rounded-2xl border border-navy/[0.08] bg-white p-5 transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-20px_rgba(0,48,96,0.3)] dark:border-white/10 dark:bg-navy-900">
+                  <span className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full ${accentBg} ${accentText} dark:text-steel-light`}>
                     <PointIcon className="h-4 w-4" />
                   </span>
                   <div>
-                    <h3 className="font-semibold text-navy">{point.title}</h3>
-                    <p className="mt-1 text-sm text-navy/70">{point.description}</p>
+                    <h3 className="font-semibold text-navy dark:text-cream">{point.title}</h3>
+                    <p className="mt-1 text-sm text-navy/70 dark:text-cream/70">{point.description}</p>
                     {index === service.points.length - 1 && (
                       <ButtonLink
                         href="/seek-talent/get-started"

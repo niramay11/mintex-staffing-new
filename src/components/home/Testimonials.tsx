@@ -17,11 +17,11 @@ function IconChevron({ direction, className }: { direction: "left" | "right"; cl
 
 function TestimonialCard({ story }: { story: CaseStudy }) {
   return (
-    <div className="flex w-[360px] flex-shrink-0 snap-start flex-col justify-between rounded-3xl border border-navy/10 bg-white p-8 shadow-[0_10px_30px_-15px_rgba(0,0,0,0.15)] sm:w-[420px]">
-      <p className="font-heading text-lg italic leading-relaxed text-navy/80">
+    <div className="flex w-[360px] flex-shrink-0 snap-start flex-col justify-between rounded-3xl border border-navy/10 bg-white p-8 shadow-[0_10px_30px_-15px_rgba(0,0,0,0.15)] sm:w-[420px] dark:bg-navy-900 dark:border-white/10">
+      <p className="font-heading text-lg italic leading-relaxed text-navy/80 dark:text-cream/80">
         &ldquo;{story.quote}&rdquo;
       </p>
-      {story.author && <p className="mt-8 text-navy/70">- {story.author}</p>}
+      {story.author && <p className="mt-8 text-navy/70 dark:text-cream/70">- {story.author}</p>}
     </div>
   );
 }
@@ -58,8 +58,8 @@ export default function Testimonials({ stories }: { stories: CaseStudy[] }) {
   };
 
   return (
-    <section className="border-t border-navy/[0.06] bg-mist px-4 py-20 sm:px-6 sm:py-24 lg:px-8">
-      <h2 className="text-center font-heading text-[42px] font-bold text-navy sm:text-[52px]">
+    <section className="border-t border-navy/[0.06] bg-mist px-4 py-20 sm:px-6 sm:py-24 lg:px-8 dark:bg-navy-900 dark:border-white/10">
+      <h2 className="text-center font-heading text-[42px] font-bold text-navy sm:text-[52px] dark:text-cream">
         Testimonials
       </h2>
 
@@ -76,11 +76,11 @@ export default function Testimonials({ stories }: { stories: CaseStudy[] }) {
         {/* Edge fades hint that more cards are scrollable off-screen */}
         <div
           aria-hidden="true"
-          className={`pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-mist to-transparent transition-opacity duration-300 ${canScrollLeft ? "opacity-100" : "opacity-0"}`}
+          className={`pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-mist to-transparent transition-opacity duration-300 dark:from-navy-900 ${canScrollLeft ? "opacity-100" : "opacity-0"}`}
         />
         <div
           aria-hidden="true"
-          className={`pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-mist to-transparent transition-opacity duration-300 ${canScrollRight ? "opacity-100" : "opacity-0"}`}
+          className={`pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-mist to-transparent transition-opacity duration-300 dark:from-navy-900 ${canScrollRight ? "opacity-100" : "opacity-0"}`}
         />
 
         {stories.length > 1 && (
@@ -90,7 +90,7 @@ export default function Testimonials({ stories }: { stories: CaseStudy[] }) {
               onClick={() => scrollBy("left")}
               disabled={!canScrollLeft}
               aria-label="Scroll testimonials left"
-              className="absolute left-2 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white text-navy shadow-[0_8px_24px_-8px_rgba(0,48,96,0.35)] transition-all hover:-translate-x-0.5 hover:shadow-[0_10px_28px_-6px_rgba(0,48,96,0.45)] disabled:pointer-events-none disabled:opacity-0"
+              className="absolute left-2 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white text-navy shadow-[0_8px_24px_-8px_rgba(0,48,96,0.35)] transition-all hover:-translate-x-0.5 hover:shadow-[0_10px_28px_-6px_rgba(0,48,96,0.45)] disabled:pointer-events-none disabled:opacity-0 dark:bg-navy-800 dark:text-cream"
             >
               <IconChevron direction="left" className="h-5 w-5" />
             </button>
@@ -99,7 +99,7 @@ export default function Testimonials({ stories }: { stories: CaseStudy[] }) {
               onClick={() => scrollBy("right")}
               disabled={!canScrollRight}
               aria-label="Scroll testimonials right"
-              className="absolute right-2 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white text-navy shadow-[0_8px_24px_-8px_rgba(0,48,96,0.35)] transition-all hover:translate-x-0.5 hover:shadow-[0_10px_28px_-6px_rgba(0,48,96,0.45)] disabled:pointer-events-none disabled:opacity-0"
+              className="absolute right-2 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white text-navy shadow-[0_8px_24px_-8px_rgba(0,48,96,0.35)] transition-all hover:translate-x-0.5 hover:shadow-[0_10px_28px_-6px_rgba(0,48,96,0.45)] disabled:pointer-events-none disabled:opacity-0 dark:bg-navy-800 dark:text-cream"
             >
               <IconChevron direction="right" className="h-5 w-5" />
             </button>

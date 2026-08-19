@@ -4,8 +4,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 
 const inputClasses =
-  "mt-1.5 w-full rounded-xl border border-navy/15 bg-mist/40 px-4 py-2.5 text-sm text-navy placeholder:text-navy/30 transition-colors focus:border-steel focus:bg-white focus:outline-none focus:ring-4 focus:ring-steel/15";
-const labelClasses = "block text-sm font-semibold text-navy";
+  "mt-1.5 w-full rounded-xl border border-navy/15 bg-mist/40 px-4 py-2.5 text-sm text-navy placeholder:text-navy/30 transition-colors focus:border-steel focus:bg-white focus:outline-none focus:ring-4 focus:ring-steel/15 dark:bg-navy-900 dark:border-white/15 dark:text-cream dark:placeholder:text-cream/40 dark:focus:bg-navy-900";
+const labelClasses = "block text-sm font-semibold text-navy dark:text-cream";
 
 const contactOptions = [
   { value: "phone", label: "Phone" },
@@ -52,7 +52,7 @@ export default function HiringInquiryForm() {
 
   if (submitted) {
     return (
-      <p className="rounded-xl bg-steel-lighter/40 p-4 text-sm text-navy">
+      <p className="rounded-xl bg-steel-lighter/40 p-4 text-sm text-navy dark:text-cream">
         Thanks for reaching out! One of our recruiters will connect with you shortly.
       </p>
     );
@@ -75,7 +75,7 @@ export default function HiringInquiryForm() {
 
       <div className="sm:col-span-2 mt-1 flex items-center gap-3">
         <span className="h-px flex-1 bg-navy/10" />
-        <p className="text-xs font-bold uppercase tracking-[0.12em] text-steel">Contact information</p>
+        <p className="text-xs font-bold uppercase tracking-[0.12em] text-steel dark:text-steel-light">Contact information</p>
         <span className="h-px flex-1 bg-navy/10" />
       </div>
 
@@ -122,7 +122,7 @@ export default function HiringInquiryForm() {
         <div
           role="radiogroup"
           aria-labelledby="hiring-preferred-contact-label"
-          className="mt-1.5 inline-flex rounded-xl border border-navy/15 bg-cream/40 p-1"
+          className="mt-1.5 inline-flex rounded-xl border border-navy/15 bg-cream/40 p-1 dark:bg-navy-800 dark:border-white/10"
         >
           {contactOptions.map((option) => (
             <button
@@ -132,7 +132,9 @@ export default function HiringInquiryForm() {
               aria-checked={preferredContact === option.value}
               onClick={() => setPreferredContact(option.value)}
               className={`px-6 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                preferredContact === option.value ? "bg-navy text-white" : "text-navy/60 hover:text-navy"
+                preferredContact === option.value
+                  ? "bg-navy text-white dark:bg-steel dark:text-navy-950 dark:hover:bg-steel-light"
+                  : "text-navy/60 hover:text-navy dark:text-cream/60 dark:hover:text-cream"
               }`}
             >
               {option.label}

@@ -34,28 +34,30 @@ export default function ResourceRows() {
           key={row.href}
           href={row.href}
           className={`flex items-center gap-4 rounded-2xl p-5 transition-colors ${
-            row.highlight ? "bg-white border border-navy hover:bg-mist" : "bg-mist hover:bg-mist-dark"
+            row.highlight
+              ? "bg-white border border-navy hover:bg-mist dark:bg-navy-900 dark:border-white/10 dark:hover:bg-navy-800"
+              : "bg-mist hover:bg-mist-dark dark:bg-navy-900 dark:hover:bg-navy-800"
           }`}
         >
-          <span className="flex h-11 w-11 flex-none items-center justify-center rounded-xl bg-white">
+          <span className="flex h-11 w-11 flex-none items-center justify-center rounded-xl bg-white dark:bg-navy-800">
             <svg
               aria-hidden="true"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="#003060"
+              stroke="currentColor"
               strokeWidth={1.8}
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="h-5 w-5"
+              className="h-5 w-5 text-navy dark:text-cream"
             >
               {row.icon}
             </svg>
           </span>
           <span className="flex-1">
-            <span className="block font-heading text-[15.5px] font-semibold text-navy">
+            <span className="block font-heading text-[15.5px] font-semibold text-navy dark:text-cream">
               {row.title}
             </span>
-            <span className="block text-[13px] text-steel">{row.description}</span>
+            <span className="block text-[13px] text-steel dark:text-steel-light">{row.description}</span>
           </span>
           <svg
             aria-hidden="true"
@@ -65,7 +67,7 @@ export default function ResourceRows() {
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="h-[18px] w-[18px] flex-none text-steel"
+            className="h-[18px] w-[18px] flex-none text-steel dark:text-steel-light"
           >
             <path d="M5 12h14M13 6l6 6-6 6" />
           </svg>

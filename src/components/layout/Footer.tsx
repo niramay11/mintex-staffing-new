@@ -45,7 +45,7 @@ function BackToTopButton() {
       type="button"
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       aria-label="Back to top"
-      className={`fixed bottom-6 right-6 z-50 flex h-11 w-11 items-center justify-center rounded-full bg-white border border-navy text-navy shadow-lg transition-all duration-300 hover:bg-mist ${
+      className={`fixed bottom-6 right-6 z-50 flex h-11 w-11 items-center justify-center rounded-full bg-white border border-navy text-navy shadow-lg transition-all duration-300 hover:bg-mist dark:border-white/15 dark:bg-navy-900 dark:text-cream dark:hover:bg-navy-800 ${
         visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"
       }`}
     >
@@ -76,7 +76,7 @@ export default function Footer({ siteImages, industries }: { siteImages: Record<
 
   return (
     <>
-      <footer className="border-t border-navy/[0.06] bg-navy px-6 pb-8 pt-14 text-white sm:px-10 lg:px-16">
+      <footer className="border-t border-navy/[0.06] bg-navy px-6 pb-8 pt-14 text-white dark:border-white/10 dark:bg-navy-900 sm:px-10 lg:px-16">
         <div className="mx-auto grid max-w-[1920px] grid-cols-2 gap-10 border-b border-white/10 pb-11 sm:grid-cols-3 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div className="col-span-2 max-w-[300px] sm:col-span-1">
             <Link

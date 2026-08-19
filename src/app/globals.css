@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 @theme {
   --color-navy: #003060;
   --color-navy-secondary: #013d79;
@@ -17,6 +19,13 @@
   --color-mist: #f2f2f2;
   --color-mist-dark: #e9e7e2;
 
+  /* Dark-mode surfaces. Same hue as brand navy (~212°) but desaturated to
+     ~25% (brand navy is 100%) so the theme reads as neutral dark-mode with
+     a navy undertone, not "navy blue in low light". */
+  --color-navy-950: #0d1216;
+  --color-navy-900: #192129;
+  --color-navy-800: #24303d;
+
   --font-sans: var(--font-inter);
   --font-heading: var(--font-poppins);
 }
@@ -25,6 +34,11 @@ body {
   background: var(--color-cream);
   color: var(--color-navy);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+html[data-theme="dark"] body {
+  background: var(--color-navy-950);
+  color: var(--color-cream);
 }
 
 h1,
@@ -43,6 +57,10 @@ h4 {
 :focus-visible {
   outline: 2px solid var(--color-steel);
   outline-offset: 2px;
+}
+
+html[data-theme="dark"] :focus-visible {
+  outline-color: var(--color-steel-light);
 }
 
 .bg-grid-pattern {

@@ -25,8 +25,8 @@ export default async function AiInterviewGeneratorPage() {
   return (
     <>
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
-        <h1 className="font-heading text-4xl font-bold text-navy sm:text-5xl">AI Interview Question Generator</h1>
-        <p className="mt-4 max-w-2xl text-steel">
+        <h1 className="font-heading text-4xl font-bold text-navy dark:text-cream sm:text-5xl">AI Interview Question Generator</h1>
+        <p className="mt-4 max-w-2xl text-steel dark:text-steel-light">
           Generate tailored interview questions for IT, healthcare, engineering &amp; more. Free AI-powered tool from Mintex Staffing, no sign-up required.
         </p>
       </Section>
@@ -34,20 +34,20 @@ export default async function AiInterviewGeneratorPage() {
       <Section background="white">
         <div className="mx-auto grid w-full items-start gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-24">
           <div>
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[13px] font-medium text-navy/70">
+            <div className="inline-flex items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[13px] font-medium text-navy/70 dark:border-white/10 dark:bg-navy-800 dark:text-cream/70">
               <span className="h-[7px] w-[7px] rounded-full bg-steel" />
               AI-Powered Prep
             </div>
-            <h2 className="mt-5 font-heading text-[32px] font-semibold leading-tight text-navy sm:text-[40px]">
+            <h2 className="mt-5 font-heading text-[32px] font-semibold leading-tight text-navy dark:text-cream sm:text-[40px]">
               Walk into your next interview ready for anything
             </h2>
             <div className="mt-6 space-y-5">
               {interviewPrepPoints.map((point, index) => (
                 <div key={index} className="flex gap-3">
-                  <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-navy text-xs font-semibold text-white">
+                  <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-navy text-xs font-semibold text-white dark:bg-steel dark:text-navy-950">
                     {index + 1}
                   </span>
-                  <p className="text-base leading-relaxed text-steel">{point}</p>
+                  <p className="text-base leading-relaxed text-steel dark:text-steel-light">{point}</p>
                 </div>
               ))}
             </div>
@@ -91,10 +91,10 @@ export default async function AiInterviewGeneratorPage() {
             </div>
 
             <div
-              className="absolute left-0 flex items-center gap-3 rounded-2xl border border-navy/10 bg-white px-5 py-4 text-navy shadow-[0_20px_45px_-18px_rgba(0,48,96,0.3)]"
+              className="absolute left-0 flex items-center gap-3 rounded-2xl border border-navy/10 bg-white px-5 py-4 text-navy shadow-[0_20px_45px_-18px_rgba(0,48,96,0.3)] dark:border-white/10 dark:bg-navy-900 dark:text-cream"
               style={{ top: "70%" }}
             >
-              <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel">
+              <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel dark:text-steel-light">
                 <svg viewBox="0 0 24 24" fill="none" strokeWidth={1.8} stroke="currentColor" className="h-5 w-5">
                   <path d="M11.5 3 13 8l5 1.5-5 1.5-1.5 5L10 11 5 9.5 10 8z" strokeLinejoin="round" />
                   <path d="M18.5 15.5 19.5 18l2.5 1-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1z" strokeLinejoin="round" />
@@ -102,7 +102,7 @@ export default async function AiInterviewGeneratorPage() {
               </span>
               <div>
                 <p className="text-sm font-semibold leading-none">Full interview kits</p>
-                <p className="mt-1 text-xs text-navy/50">competencies, three rounds, scoring rubric</p>
+                <p className="mt-1 text-xs text-navy/50 dark:text-cream/50">competencies, three rounds, scoring rubric</p>
               </div>
             </div>
           </div>

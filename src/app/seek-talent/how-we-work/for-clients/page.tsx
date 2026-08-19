@@ -62,11 +62,11 @@ export default async function HowWeHelpClientsPage() {
   return (
     <>
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
-        <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
+        <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
           For clients
         </p>
-        <h1 className="mt-2.5 font-heading text-4xl font-bold text-navy sm:text-5xl">How We Help Our Clients</h1>
-        <p className="mt-4 max-w-2xl text-steel">
+        <h1 className="mt-2.5 font-heading text-4xl font-bold text-navy sm:text-5xl dark:text-cream">How We Help Our Clients</h1>
+        <p className="mt-4 max-w-2xl text-steel dark:text-steel-light">
           A closer look at how Mintex Staffing scopes, sources, and supports every client
           engagement, from the first conversation through onboarding and beyond.
         </p>
@@ -79,7 +79,7 @@ export default async function HowWeHelpClientsPage() {
               <div className="relative mt-2">
                 <div
                   aria-hidden="true"
-                  className="absolute left-[18px] top-9 bottom-9 border-l-2 border-dashed border-navy/20"
+                  className="absolute left-[18px] top-9 bottom-9 border-l-2 border-dashed border-navy/20 dark:border-white/10"
                 />
                 <div className="space-y-6">
                   {clientSteps.map((step) => (
@@ -87,7 +87,7 @@ export default async function HowWeHelpClientsPage() {
                       <span className="relative z-10 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-navy text-sm font-bold text-white">
                         {step.number}
                       </span>
-                      <p className="mt-1 text-sm leading-relaxed text-navy/65">{step.description}</p>
+                      <p className="mt-1 text-sm leading-relaxed text-navy/65 dark:text-cream/65">{step.description}</p>
                     </div>
                   ))}
                 </div>
@@ -117,10 +117,10 @@ export default async function HowWeHelpClientsPage() {
           </div>
 
           <div className="mt-20">
-            <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
+            <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
               Helpful for hiring teams
             </p>
-            <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl">
+            <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl dark:text-cream">
               Resources
             </h2>
 
@@ -140,10 +140,10 @@ export default async function HowWeHelpClientsPage() {
 
           {insights.length > 0 && (
             <div className="mt-16">
-              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel">
+              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
                 Job market insights
               </p>
-              <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl">
+              <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl dark:text-cream">
                 Insights
               </h2>
 

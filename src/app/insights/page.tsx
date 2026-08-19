@@ -15,8 +15,8 @@ export default function InsightsPage() {
   return (
     <>
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
-        <h1 className="font-heading text-4xl font-bold text-navy sm:text-5xl">Insights</h1>
-        <p className="mt-4 max-w-2xl text-steel">
+        <h1 className="font-heading text-4xl font-bold text-navy dark:text-cream sm:text-5xl">Insights</h1>
+        <p className="mt-4 max-w-2xl text-steel dark:text-steel-light">
           Career advice, job market data, and ongoing hiring trends from our research team.
         </p>
       </Section>
