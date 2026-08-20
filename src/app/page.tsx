@@ -162,7 +162,7 @@ on paper.
           </div>
 
           <div className="mt-11 grid grid-cols-2 gap-5 sm:grid-cols-3">
-            <div className="group rounded-2xl border border-navy/[0.08] p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)] dark:border-white/10">
+            <div className="group rounded-2xl border-2 border-navy/15 p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)] dark:border-white/15">
               <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-steel/[0.14] text-steel transition-colors duration-300 group-hover:bg-steel group-hover:text-white dark:text-steel-light">
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
                   <path
@@ -183,7 +183,7 @@ on paper.
               <div className="mt-3.5 font-heading text-3xl font-semibold text-navy dark:text-cream">14,000+</div>
               <p className="mt-1 text-sm text-steel dark:text-steel-light">Placements made</p>
             </div>
-            <div className="group rounded-2xl border border-navy/[0.08] p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)] dark:border-white/10">
+            <div className="group rounded-2xl border-2 border-navy/15 p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)] dark:border-white/15">
               <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-steel/[0.14] text-steel transition-colors duration-300 group-hover:bg-steel group-hover:text-white dark:text-steel-light">
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
                   <path
@@ -198,20 +198,20 @@ on paper.
               <div className="mt-3.5 font-heading text-3xl font-semibold text-navy dark:text-cream">93%</div>
               <p className="mt-1 text-sm text-steel dark:text-steel-light">Client retention</p>
             </div>
-            <div className="group col-span-2 rounded-2xl bg-navy p-6 text-center text-white transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.5)] dark:bg-navy-800 sm:col-span-1">
-              <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-white/[0.12] text-steel-lighter">
+            <div className="group col-span-2 rounded-2xl border-2 border-navy/15 p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)] dark:border-white/15 sm:col-span-1">
+              <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-steel/[0.14] text-steel transition-colors duration-300 group-hover:bg-steel group-hover:text-white dark:text-steel-light">
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
                   <path d="M12 7v5.5l3.5 2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
                   <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.6" />
                 </svg>
               </span>
-              <div className="mt-3.5 font-heading text-3xl font-semibold">9 days</div>
-              <p className="mt-1 text-sm text-steel-lighter">Avg. time to fill</p>
+              <div className="mt-3.5 font-heading text-3xl font-semibold text-navy dark:text-cream">9 days</div>
+              <p className="mt-1 text-sm text-steel dark:text-steel-light">Avg. time to fill</p>
             </div>
           </div>
 
           <div className="mt-6 grid gap-5 sm:grid-cols-3">
-            <div className="group rounded-2xl border border-navy/[0.08] p-7 transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)] dark:border-white/10">
+            <div className="group rounded-2xl border-2 border-navy/15 p-7 transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)] dark:border-white/15">
               <span className="flex h-11 w-11 items-center justify-center rounded-full bg-steel/[0.14] text-steel transition-colors duration-300 group-hover:bg-steel group-hover:text-white dark:text-steel-light">
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
                   <path
@@ -228,7 +228,7 @@ on paper.
                 A track record of fast, durable placements across nine industries.
               </p>
             </div>
-            <div className="group rounded-2xl border border-navy/[0.08] p-7 transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)] dark:border-white/10">
+            <div className="group rounded-2xl border-2 border-navy/15 p-7 transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)] dark:border-white/15">
               <span className="flex h-11 w-11 items-center justify-center rounded-full bg-steel/[0.14] text-steel transition-colors duration-300 group-hover:bg-steel group-hover:text-white dark:text-steel-light">
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
                   <path
@@ -245,7 +245,7 @@ on paper.
                 Ongoing research on hiring trends, so you&apos;re never staffing blind.
               </p>
             </div>
-            <div className="group rounded-2xl border border-navy/[0.08] p-7 transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)] dark:border-white/10">
+            <div className="group rounded-2xl border-2 border-navy/15 p-7 transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)] dark:border-white/15">
               <span className="flex h-11 w-11 items-center justify-center rounded-full bg-steel/[0.14] text-steel transition-colors duration-300 group-hover:bg-steel group-hover:text-white dark:text-steel-light">
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
                   <path
@@ -356,7 +356,7 @@ on paper.
                 <a
                   key={industry.slug}
                   href={`/industries/${industry.slug}`}
-                  className="group relative rounded-2xl border border-navy/[0.08] bg-white p-6 transition-all duration-300 hover:-translate-y-1.5 hover:border-steel/40 hover:bg-steel/5 hover:shadow-[0_20px_45px_-20px_rgba(1,35,64,0.3)] dark:bg-navy-800 dark:border-white/10"
+                  className="group relative rounded-2xl border-2 border-navy/15 bg-white p-6 transition-all duration-300 hover:-translate-y-1.5 hover:border-steel/40 hover:bg-steel/5 hover:shadow-[0_20px_45px_-20px_rgba(1,35,64,0.3)] dark:bg-navy-800 dark:border-white/15"
                 >
                   <div className="mb-5 flex items-center justify-between">
                     <div className="flex h-10 w-10 items-center justify-center rounded-[11px] bg-steel/[0.16] font-heading text-[15px] font-semibold text-steel transition-colors duration-300 group-hover:bg-steel group-hover:text-white dark:text-steel-light">
