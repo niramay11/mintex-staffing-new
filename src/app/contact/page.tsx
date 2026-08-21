@@ -3,6 +3,7 @@ import Section from "@/components/ui/Section";
 import ContactForm from "@/components/forms/ContactForm";
 import { pageMetadata } from "@/lib/pageMetadata";
 import { BUSINESS } from "@/lib/site";
+import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
 
 export const metadata: Metadata = pageMetadata({
   title: "Contact Us",
@@ -95,9 +96,19 @@ const contactCards = [
   },
 ];
 
+const breadcrumbSchema = buildBreadcrumbSchema([
+  { name: "Home", path: "/" },
+  { name: "Contact", path: "/contact" },
+]);
+
 export default function ContactPage() {
   return (
     <>
+      <script
+        id="contact-breadcrumb-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
         <h1 className="font-heading text-4xl font-bold text-navy sm:text-5xl dark:text-cream">Contact Us</h1>
         <div className="mt-3 h-1 w-16 rounded-full bg-steel" />

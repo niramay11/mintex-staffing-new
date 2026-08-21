@@ -6,12 +6,19 @@ import { IconBriefcase } from "@/components/jobs/icons";
 import HiringInquiryForm from "@/components/forms/HiringInquiryForm";
 import { getSiteImages } from "@/lib/siteImages";
 import { pageMetadata } from "@/lib/pageMetadata";
+import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
 
 export const metadata: Metadata = pageMetadata({
   title: "Find Skilled Talent, Faster",
   description: "From IT staffing to healthcare staffing to logistics staffing, we connect businesses with the right people, right on time.",
   path: "/seek-talent/get-started",
 });
+
+const breadcrumbSchema = buildBreadcrumbSchema([
+  { name: "Home", path: "/" },
+  { name: "Seek Talent", path: "/seek-talent" },
+  { name: "Get Started", path: "/seek-talent/get-started" },
+]);
 
 function IconArrowLeft({ className }: { className?: string }) {
   return (
@@ -25,6 +32,11 @@ export default async function SeekTalentGetStartedPage() {
   const siteImages = await getSiteImages();
   return (
     <>
+      <script
+        id="seek-talent-get-started-breadcrumb-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <Section background="mist" className="relative !py-12 sm:!py-14 lg:!py-16">
         <Link
           href="/seek-talent"

@@ -6,6 +6,7 @@ import { getSiteImages } from "@/lib/siteImages";
 import { pageMetadata } from "@/lib/pageMetadata";
 import { BUSINESS } from "@/lib/site";
 import { getTeamMembers } from "@/lib/teamMembers";
+import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
 
 function initials(name: string): string {
   return name
@@ -140,8 +141,18 @@ export default async function AboutPage() {
   const siteImages = await getSiteImages();
   const teamMembers = await getTeamMembers();
 
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "About Us", path: "/about" },
+  ]);
+
   return (
     <>
+      <script
+        id="about-breadcrumb-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       {/* Hero — flat, edge-to-edge */}
       <section className="bg-mist dark:bg-navy-900">
         <div className="grid lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:items-stretch">

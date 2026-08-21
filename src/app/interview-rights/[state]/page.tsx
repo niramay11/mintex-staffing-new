@@ -5,6 +5,7 @@ import Section from "@/components/ui/Section";
 import { US_STATES } from "@/lib/interviewKit/schema";
 import { getVerifiedRights, slugToState, stateToSlug, FEDERAL_DISPLAY_NOTICE } from "@/lib/interviewKit/legalRights";
 import { pageMetadata } from "@/lib/pageMetadata";
+import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
 
 // Standalone, indexed legal reference — separate from any generated kit.
 // Per implementation-notes.md this is the single best-citable asset in the
@@ -46,8 +47,21 @@ export default async function InterviewRightsPage({
 
   const rights = getVerifiedRights(state);
 
+  // No /interview-rights index page exists (only this dynamic [state] route),
+  // so a middle "Interview Rights" crumb would point BreadcrumbList at a
+  // real page a page never renders — straight to state instead.
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: `Interview Rights — ${state}`, path: `/interview-rights/${slug}` },
+  ]);
+
   return (
     <>
+      <script
+        id="interview-rights-breadcrumb-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
         <h1 className="font-heading text-4xl font-bold text-navy dark:text-cream sm:text-5xl">
           Your Rights in a Job Interview — {state}

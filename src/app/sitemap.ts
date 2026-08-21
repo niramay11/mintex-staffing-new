@@ -19,6 +19,7 @@ const staticRoutes = [
   "",
   "/get-hired",
   "/get-hired/share-resume",
+  "/industries",
   "/seek-talent",
   "/seek-talent/how-we-work",
   "/seek-talent/get-started",

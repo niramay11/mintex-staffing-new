@@ -36,7 +36,7 @@ export function getNavItems(industries: Industry[]): NavItem[] {
     },
     {
       label: "Industries",
-      href: "/#industries",
+      href: "/industries",
       children: industries.map((industry) => ({ label: industry.name, href: `/industries/${industry.slug}` })),
     },
     {

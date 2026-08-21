@@ -6,6 +6,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import FaqAccordion from "@/components/ui/FaqAccordion";
 import { getSiteImages } from "@/lib/siteImages";
 import { pageMetadata } from "@/lib/pageMetadata";
+import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
 
 export const metadata: Metadata = pageMetadata({
   title: "How We Work",
@@ -143,8 +144,18 @@ const faqSchema = {
 
 export default async function HowWeWorkPage() {
   const siteImages = await getSiteImages();
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Seek Talent", path: "/seek-talent" },
+    { name: "How We Work", path: "/seek-talent/how-we-work" },
+  ]);
   return (
     <>
+      <script
+        id="how-we-work-breadcrumb-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <script
         id="how-we-work-faq-schema"
         type="application/ld+json"

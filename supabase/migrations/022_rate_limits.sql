@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION check_rate_limit(
   p_window_seconds INTEGER,
   p_max_requests INTEGER
 ) RETURNS BOOLEAN AS $$
-DECLARE
+DECLARE 
   v_count INTEGER;
 BEGIN
   INSERT INTO rate_limits (bucket_key, count, window_start)

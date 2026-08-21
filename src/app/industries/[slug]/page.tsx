@@ -135,7 +135,7 @@ export default async function IndustryPage({
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
-      { "@type": "ListItem", position: 2, name: "Industries", item: `${SITE_URL}/#industries` },
+      { "@type": "ListItem", position: 2, name: "Industries", item: `${SITE_URL}/industries` },
       { "@type": "ListItem", position: 3, name: industry.name, item: `${SITE_URL}/industries/${industry.slug}` },
     ],
   };

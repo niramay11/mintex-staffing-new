@@ -3,6 +3,7 @@
 > Mintex Staffing is a staffing and recruitment agency based in Edison, New Jersey, connecting employers with vetted, ready-to-work talent across contract, contract-to-hire, and permanent placements.
 
 ## Industries Served
+- [All Industries](https://www.mintexstaffing.com/industries)
 - [IT Staffing](https://www.mintexstaffing.com/industries/it-staffing)
 - [Healthcare Staffing](https://www.mintexstaffing.com/industries/healthcare-staffing)
 - [Engineering Staffing](https://www.mintexstaffing.com/industries/engineering-staffing)
@@ -12,6 +13,9 @@
 - [Sales Staffing](https://www.mintexstaffing.com/industries/sales-staffing)
 - [Customer Service Staffing](https://www.mintexstaffing.com/industries/customer-service-staffing)
 - [Logistics Staffing](https://www.mintexstaffing.com/industries/logistics-staffing)
+- [Legal Staffing](https://www.mintexstaffing.com/industries/legal-staffing)
+- [Hospitality Staffing](https://www.mintexstaffing.com/industries/hospitality-staffing)
+- [Creative & Design Staffing](https://www.mintexstaffing.com/industries/creative-design-staffing)
 
 ## For Employers
 - [Seek Talent](https://www.mintexstaffing.com/seek-talent)
@@ -23,7 +27,13 @@
 - [Apply to Jobs](https://www.mintexstaffing.com/get-hired/apply-to-jobs)
 - [Share Your Resume](https://www.mintexstaffing.com/get-hired/share-resume)
 
+## Free Tools
+- [Resources](https://www.mintexstaffing.com/resources)
+- [Hiring Cost Calculator](https://www.mintexstaffing.com/resources/hiring-cost-calculator)
+- [AI Interview Question Generator](https://www.mintexstaffing.com/resources/ai-interview-generator)
+
 ## Company
 - [About Us](https://www.mintexstaffing.com/about)
 - [Contact](https://www.mintexstaffing.com/contact)
+- [Case Studies](https://www.mintexstaffing.com/case-studies)
 - [Insights (Blog)](https://www.mintexstaffing.com/insights)

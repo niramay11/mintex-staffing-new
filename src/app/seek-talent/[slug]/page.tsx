@@ -7,6 +7,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { hiringServices, getHiringServiceBySlug } from "@/content/hiringServices";
 import { getSiteImages } from "@/lib/siteImages";
 import { pageMetadata } from "@/lib/pageMetadata";
+import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
 
 export function generateStaticParams() {
   return hiringServices.map((service) => ({ slug: service.slug }));
@@ -102,8 +103,19 @@ export default async function HiringServicePage({
   const accentText = "text-steel";
   const accentBg = "bg-steel/15";
 
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Seek Talent", path: "/seek-talent" },
+    { name: service.name, path: `/seek-talent/${service.slug}` },
+  ]);
+
   return (
     <>
+      <script
+        id="hiring-service-breadcrumb-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <Section background="mist" className="relative !py-12 sm:!py-14 lg:!py-16">
         <Link
           href="/seek-talent"

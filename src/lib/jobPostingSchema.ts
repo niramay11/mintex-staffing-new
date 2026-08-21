@@ -17,6 +17,12 @@ function toIsoDate(raw?: string): string | undefined {
   return isNaN(d.getTime()) ? undefined : d.toISOString();
 }
 
+function sixMonthsAfter(isoDate: string): string {
+  const d = new Date(isoDate);
+  d.setMonth(d.getMonth() + 6);
+  return d.toISOString();
+}
+
 function toCountryCode(raw?: string): string {
   const s = (raw || "").trim().toLowerCase();
   if (!s || s === "us" || s === "usa" || s.includes("united states")) return "US";
@@ -56,7 +62,14 @@ function parseSalaryForSchema(raw?: string): { minValue: number; maxValue: numbe
 export function buildJobPostingSchema(job: CeipalJob, description: string) {
   const datePosted =
     toIsoDate(job.career_portal_published_date) ?? toIsoDate(job.Modified) ?? toIsoDate(job.modified) ?? new Date().toISOString();
-  const validThrough = toIsoDate(job.job_end_date);
+  // Ceipal's job_end_date is blank for most listings, and Google requires
+  // validThrough eventually (an empty one just means Google keeps showing a
+  // stale posting forever). Falling back to 6 months past datePosted mirrors
+  // the site's own staleness window (isActiveJob in components/jobs/utils.ts,
+  // "mirror the admin panel's Active definition"), so Google's own automatic
+  // expiry lines up with the point this site would already stop listing it —
+  // no separate cron/expiry job needed, and no new business rule invented.
+  const validThrough = toIsoDate(job.job_end_date) ?? sixMonthsAfter(datePosted);
   const isRemote = ["yes", "remote"].includes((job.remote_job || "").trim().toLowerCase());
   const salary = parseSalaryForSchema(job.pay_rate___salary);
   const { city, region } = resolveCityState(job);

@@ -1,5 +1,6 @@
 import { pageMetadata } from "@/lib/pageMetadata";
 import LegalPageLayout from "@/components/legal/LegalPageLayout";
+import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
 
 export const metadata = pageMetadata({
   title: "Privacy Policy",
@@ -9,9 +10,20 @@ export const metadata = pageMetadata({
 
 const LAST_UPDATED = "July 27, 2026";
 
+const breadcrumbSchema = buildBreadcrumbSchema([
+  { name: "Home", path: "/" },
+  { name: "Privacy Policy", path: "/privacy" },
+]);
+
 export default function PrivacyPolicyPage() {
   return (
-    <LegalPageLayout
+    <>
+      <script
+        id="privacy-breadcrumb-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <LegalPageLayout
       title="Privacy Policy"
       lastUpdated={LAST_UPDATED}
       intro={
@@ -122,6 +134,7 @@ export default function PrivacyPolicyPage() {
           ),
         },
       ]}
-    />
+      />
+    </>
   );
 }

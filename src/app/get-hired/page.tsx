@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import GetHiredContent from "@/components/get-hired/GetHiredContent";
 import { pageMetadata } from "@/lib/pageMetadata";
+import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
 
 export const metadata: Metadata = pageMetadata({
   title: "Get Hired",
@@ -8,6 +9,11 @@ export const metadata: Metadata = pageMetadata({
     "Apply to open roles, share your resume, sign up for job alerts, and prep for your next interview with Mintex Staffing.",
   path: "/get-hired",
 });
+
+const breadcrumbSchema = buildBreadcrumbSchema([
+  { name: "Home", path: "/" },
+  { name: "Get Hired", path: "/get-hired" },
+]);
 
 // Without this, Next would statically prerender this page at build time and
 // bake the Ceipal jobs fetched below into the HTML permanently — jobs need to
@@ -20,5 +26,14 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 export default function GetHiredPage() {
-  return <GetHiredContent />;
+  return (
+    <>
+      <script
+        id="get-hired-breadcrumb-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <GetHiredContent />
+    </>
+  );
 }

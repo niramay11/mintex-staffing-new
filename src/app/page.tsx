@@ -101,8 +101,8 @@ export default async function HomePage() {
 
       {/* Sec 1.5 — What We Do */}
       <section className="border-t border-navy/[0.06] bg-white dark:bg-navy-900 dark:border-white/10">
-        <div className="mx-auto max-w-6xl px-6 py-16 sm:px-10 sm:py-20 lg:px-16">
-          <div className="grid items-start gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
+        <div className="mx-auto max-w-[1920px] px-6 py-16 sm:px-10 sm:py-20 lg:px-16 lg:py-24">
+          <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
             <div>
               <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
                 What we do
@@ -124,13 +124,19 @@ export default async function HomePage() {
               </p>
             </div>
 
-            <div className="relative mx-auto aspect-[4/3] w-full max-w-[480px] overflow-hidden rounded-2xl shadow-[0_25px_55px_-20px_rgba(0,48,96,0.35)]">
-              <Image
-                src={siteImages["home:what-we-do-visual"]}
-                alt="Mintex Staffing recruiter discussing a candidate's fit with a client"
-                fill
-                className="object-cover"
+            <div className="relative mx-auto flex w-full max-w-[480px] items-center justify-center">
+              <div
+                aria-hidden="true"
+                className="absolute left-1/2 top-1/2 h-[85%] w-[85%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-steel/15 blur-[90px]"
               />
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl shadow-[0_25px_55px_-20px_rgba(0,48,96,0.35)]">
+                <Image
+                  src={siteImages["home:what-we-do-visual"]}
+                  alt="Mintex Staffing recruiter discussing a candidate's fit with a client"
+                  fill
+                  className="object-cover"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -397,7 +403,12 @@ on paper.
               className="absolute right-0 top-[8%] h-[80%] w-[80%] rounded-[2.5rem] border-2 border-steel/40"
             />
             <div className="absolute left-0 top-0 h-[80%] w-[80%] overflow-hidden rounded-[2.5rem] shadow-[0_25px_60px_-20px_rgba(1,35,64,0.25)]">
-              <Image src={siteImages["home:industries-collage"]} alt="" fill className="object-cover" />
+              <Image
+                src={siteImages["home:industries-collage"]}
+                alt="Mintex Staffing recruiters collaborating with clients across industries"
+                fill
+                className="object-cover"
+              />
             </div>
           </div>
 

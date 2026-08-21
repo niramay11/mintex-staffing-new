@@ -5,6 +5,7 @@ import Section from "@/components/ui/Section";
 import { IconBriefcase, IconBars, IconArrowRight } from "@/components/jobs/icons";
 import { getSiteImages } from "@/lib/siteImages";
 import { pageMetadata } from "@/lib/pageMetadata";
+import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
 
 function IconChat({ className }: { className?: string }) {
   return (
@@ -82,8 +83,17 @@ const tools = [
 
 export default async function ResourcesPage() {
   const siteImages = await getSiteImages();
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Resources", path: "/resources" },
+  ]);
   return (
     <>
+      <script
+        id="resources-breadcrumb-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
         <h1 className="font-heading text-4xl font-bold text-navy dark:text-cream sm:text-5xl">Resources</h1>
         <p className="mt-4 max-w-2xl text-steel dark:text-steel-light">

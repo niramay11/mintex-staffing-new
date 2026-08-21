@@ -4,6 +4,7 @@ import TestimonialCard from "@/components/ui/TestimonialCard";
 import { supabase } from "@/lib/supabase";
 import type { CaseStudy } from "@/content/types";
 import { pageMetadata } from "@/lib/pageMetadata";
+import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
 
 export const metadata: Metadata = pageMetadata({
   title: "Case Studies",
@@ -64,8 +65,18 @@ export default async function CaseStudiesPage() {
   const candidateStudies = caseStudies.filter((cs) => cs.type === "candidate");
   const otherStudies = caseStudies.filter((cs) => cs.type === "other");
 
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Case Studies", path: "/case-studies" },
+  ]);
+
   return (
     <>
+      <script
+        id="case-studies-breadcrumb-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
         <h1 className="font-heading text-4xl font-bold text-navy dark:text-cream sm:text-5xl">Case Studies</h1>
         <div className="mt-3 h-1 w-16 rounded-full bg-steel" />

@@ -6,6 +6,7 @@ import InterviewKitView from "@/components/tools/InterviewKitView";
 import ResumeGapAnalysis from "@/components/tools/ResumeGapAnalysis";
 import { loadKitBySlug, RateLimitError } from "@/lib/interviewKit/loadKit";
 import { pageMetadata } from "@/lib/pageMetadata";
+import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
 
 // The public, candidate-facing, INDEXED kit page — see implementation
 // notes: this is what unlocks SEO for the tool at all. Server-rendered so
@@ -53,8 +54,19 @@ export default async function InterviewKitPage({
   }
   if (!kit) notFound();
 
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "AI Interview Question Generator", path: "/resources/ai-interview-generator" },
+    { name: `${kit.role.title} Interview Questions`, path: `/interview-questions/${slug}` },
+  ]);
+
   return (
     <>
+      <script
+        id="interview-kit-breadcrumb-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
         <Link href="/resources/ai-interview-generator" className="text-sm font-medium text-steel hover:text-navy dark:text-steel-light dark:hover:text-cream">
           ← Generate another kit

@@ -83,6 +83,16 @@ async function findJobByLegacyCode(code: string): Promise<CeipalJob | null> {
   return job ?? null;
 }
 
+// Ceipal job descriptions are recruiter-pasted rich text (often straight out
+// of Word/Outlook), which sometimes carries a literal <h1> for a section
+// title. The page itself already has the real <h1> (the job title), so any
+// <h1> surviving inside the description would give the page two — bumping
+// it to <h2> keeps the heading hierarchy valid no matter what a given job's
+// source HTML contains.
+function demoteDescriptionHeadings(html: string): string {
+  return html.replace(/<(\/?)h1(\s|>)/gi, "<$1h2$2");
+}
+
 async function loadDescription(job: CeipalJob): Promise<string> {
   const fallback = job.public_job_description || job.job_description || "";
   try {
@@ -90,16 +100,16 @@ async function loadDescription(job: CeipalJob): Promise<string> {
     const id = jobMap[job.job_code];
     if (!id) {
       console.warn(`[job-page] no v2 id found for job_code "${job.job_code}" — jobMap has ${Object.keys(jobMap).length} entries`);
-      return fallback;
+      return demoteDescriptionHeadings(fallback);
     }
     const desc = await getCachedDescription(job.job_code, id);
     if (!desc.public_job_description && !desc.job_description) {
       console.warn(`[job-page] getCachedDescription returned empty for job_code "${job.job_code}" (id ${id})`);
     }
-    return desc.public_job_description || desc.job_description || fallback;
+    return demoteDescriptionHeadings(desc.public_job_description || desc.job_description || fallback);
   } catch (err) {
     console.error(`[job-page] loadDescription threw for job_code "${job.job_code}":`, err);
-    return fallback;
+    return demoteDescriptionHeadings(fallback);
   }
 }
 
@@ -114,12 +124,18 @@ export async function generateMetadata({
   if (!job) return { title: "Job Not Found", robots: { index: false, follow: false } };
 
   const title = job.job_title;
-  const fullTitle = `${title} | Mintex Staffing`;
+  // "{Job Title} – {City}, {State}" captures long-tail searches like "executive
+  // chef jobs new york city" that a bare job title never would. Falls back to
+  // the bare title when location data is missing rather than showing the
+  // "Location not specified" placeholder in a real <title> tag.
+  const location = jobLocation(job);
+  const titleWithLocation = location === "Location not specified" ? title : `${title} – ${location}`;
+  const fullTitle = `${titleWithLocation} | Mintex Staffing`;
   const description = `${job.job_title} in ${jobLocation(job)}${job.job_type ? ` — ${job.job_type}` : ""}. Apply now with Mintex Staffing.`;
   const path = `/get-hired/jobs/${jobUrlSlug(job)}`;
 
   return {
-    title,
+    title: titleWithLocation,
     description,
     alternates: { canonical: path },
     openGraph: { title: fullTitle, description, url: path, type: "website" },
@@ -158,6 +174,7 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
 
   const pay = fmtPay(job.pay_rate___salary);
   const posted = fmtPosted(job.career_portal_published_date);
+  const postedIso = job.career_portal_published_date ? new Date(job.career_portal_published_date).toISOString() : null;
   const remoteLabel = workType(job.remote_job);
   const skills = (job.primary_skills || "")
     .split(",")
@@ -208,7 +225,11 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
           <span className="rounded-full border border-navy/10 bg-white px-3 py-1 font-mono text-[11px] font-medium text-navy/70 dark:border-white/10 dark:bg-navy-900 dark:text-cream/70">
             {job.job_code}
           </span>
-          {posted && <span className="text-xs text-navy/50 dark:text-cream/50">Posted {posted}</span>}
+          {posted && (
+            <time dateTime={postedIso ?? undefined} className="text-xs text-navy/50 dark:text-cream/50">
+              Posted {posted}
+            </time>
+          )}
         </div>
 
         <h1 className="mt-4 font-heading text-3xl font-bold text-navy sm:text-5xl dark:text-cream">{job.job_title}</h1>

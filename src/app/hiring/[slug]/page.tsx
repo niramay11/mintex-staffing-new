@@ -5,6 +5,7 @@ import Section from "@/components/ui/Section";
 import InterviewKitView from "@/components/tools/InterviewKitView";
 import { loadKitBySlug, RateLimitError } from "@/lib/interviewKit/loadKit";
 import { pageMetadata } from "@/lib/pageMetadata";
+import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
 
 // Employer-facing counterpart to /interview-questions/[slug] — same slug,
 // same cached kit (see implementation notes: "candidate: probe visible ...
@@ -61,8 +62,19 @@ export default async function EmployerKitPage({
   }
   if (!kit) notFound();
 
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "AI Interview Question Generator", path: "/resources/ai-interview-generator" },
+    { name: `${kit.role.title} Interview Guide for Employers`, path: `/hiring/${rawSlug}` },
+  ]);
+
   return (
     <>
+      <script
+        id="employer-kit-breadcrumb-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16 print:hidden">
         <Link href="/resources/ai-interview-generator" className="text-sm font-medium text-steel hover:text-navy dark:text-steel-light dark:hover:text-cream">
           ← Build another guide

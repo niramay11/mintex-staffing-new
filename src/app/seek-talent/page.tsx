@@ -9,6 +9,7 @@ import { getSiteImages } from "@/lib/siteImages";
 import { pageMetadata } from "@/lib/pageMetadata";
 import Testimonials from "@/components/home/Testimonials";
 import { getHomepageTestimonials } from "@/lib/caseStudies";
+import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
 
 export const metadata: Metadata = pageMetadata({
   title: "Seek Talent",
@@ -16,6 +17,11 @@ export const metadata: Metadata = pageMetadata({
     "Hire contract, permanent, or executive talent with Mintex Staffing, built around how your team actually works.",
   path: "/seek-talent",
 });
+
+const breadcrumbSchema = buildBreadcrumbSchema([
+  { name: "Home", path: "/" },
+  { name: "Seek Talent", path: "/seek-talent" },
+]);
 
 function IconArrowRight({ className }: { className?: string }) {
   return (
@@ -37,6 +43,11 @@ export default async function SeekTalentPage() {
   const testimonials = await getHomepageTestimonials();
   return (
     <>
+      <script
+        id="seek-talent-breadcrumb-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
         <div className="relative mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-14">
           <div>

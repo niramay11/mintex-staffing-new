@@ -3,7 +3,9 @@ import Image from "next/image";
 import Section from "@/components/ui/Section";
 import ResumeForm from "@/components/forms/ResumeForm";
 import { getSiteImages } from "@/lib/siteImages";
+import { getIndustries } from "@/lib/industries";
 import { pageMetadata } from "@/lib/pageMetadata";
+import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
 
 export const metadata: Metadata = pageMetadata({
   title: "Share Your Resume",
@@ -42,6 +44,29 @@ function IconLock({ className }: { className?: string }) {
   );
 }
 
+function IconInbox({ className }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="M4 13.5 6.5 5h11L20 13.5v4a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5v-4Z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+      <path d="M4 13.5h5l1 2h4l1-2h5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function IconClock({ className }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={className}>
+      <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M12 7.5V12l3.2 2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 const benefits = [
   {
     title: "Always in the running",
@@ -65,8 +90,19 @@ const benefits = [
 
 export default async function ShareResumePage() {
   const siteImages = await getSiteImages();
+  const industries = await getIndustries();
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Get Hired", path: "/get-hired" },
+    { name: "Share Your Resume", path: "/get-hired/share-resume" },
+  ]);
   return (
     <>
+      <script
+        id="share-resume-breadcrumb-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <Section background="mist" className="relative !py-12 sm:!py-14 lg:!py-16">
         <div className="relative mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
           <div>
@@ -126,6 +162,83 @@ export default async function ShareResumePage() {
             <div className="mt-6">
               <ResumeForm />
             </div>
+          </div>
+        </div>
+      </Section>
+
+      <Section background="cream">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Good to know</p>
+          <h2 className="mt-2.5 font-heading text-3xl font-bold text-navy sm:text-4xl dark:text-cream">What to expect after you submit</h2>
+          <p className="mt-3 text-steel dark:text-steel-light">
+            No surprises, here&apos;s exactly what happens to your resume once it&apos;s in our hands.
+          </p>
+        </div>
+
+        <div className="mt-11 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="group rounded-2xl border border-navy/[0.08] bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-20px_rgba(0,48,96,0.3)] dark:border-white/10 dark:bg-navy-800">
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-steel/15 text-steel transition-colors duration-300 group-hover:bg-steel group-hover:text-white dark:text-steel-light">
+              <IconInbox className="h-5 w-5" />
+            </span>
+            <h3 className="mt-4 font-heading font-semibold text-navy dark:text-cream">What happens to your resume</h3>
+            <p className="mt-2 text-sm leading-relaxed text-navy/70 dark:text-cream/70">
+              Your resume and contact details go straight into our candidate database, and our team
+              is notified right away, with a confirmation email sent to you so you know it went
+              through. From there, a recruiter reviews your background and adds you to the pool we
+              search whenever a matching role opens, today or next month.
+            </p>
+          </div>
+
+          <div className="group rounded-2xl border border-navy/[0.08] bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-20px_rgba(0,48,96,0.3)] dark:border-white/10 dark:bg-navy-800">
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-steel/15 text-steel transition-colors duration-300 group-hover:bg-steel group-hover:text-white dark:text-steel-light">
+              <IconClock className="h-5 w-5" />
+            </span>
+            <h3 className="mt-4 font-heading font-semibold text-navy dark:text-cream">How long we keep it on file</h3>
+            <p className="mt-2 text-sm leading-relaxed text-navy/70 dark:text-cream/70">
+              We don&apos;t put an expiration date on it. Your resume stays on file indefinitely, so
+              you&apos;re considered for new openings as they come up, not just whatever was available
+              the week you applied. Prefer we remove it?{" "}
+              <a href="/contact" className="font-medium text-steel hover:text-navy dark:text-steel-light dark:hover:text-cream">Contact us</a> and
+              we will, per our{" "}
+              <a href="/privacy" className="font-medium text-steel hover:text-navy dark:text-steel-light dark:hover:text-cream">Privacy Policy</a>.
+            </p>
+          </div>
+
+          <div className="group rounded-2xl border border-navy/[0.08] bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-20px_rgba(0,48,96,0.3)] dark:border-white/10 dark:bg-navy-800">
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-steel/15 text-steel transition-colors duration-300 group-hover:bg-steel group-hover:text-white dark:text-steel-light">
+              <IconLayers className="h-5 w-5" />
+            </span>
+            <h3 className="mt-4 font-heading font-semibold text-navy dark:text-cream">Which roles you&apos;re considered for</h3>
+            <p className="mt-2 text-sm leading-relaxed text-navy/70 dark:text-cream/70">
+              Sharing your resume this way isn&apos;t tied to one posting, it puts you in front of
+              recruiters across every industry we staff, including{" "}
+              {industries.map((industry, index) => (
+                <span key={industry.slug}>
+                  <a
+                    href={`/industries/${industry.slug}`}
+                    className="font-medium text-steel hover:text-navy dark:text-steel-light dark:hover:text-cream"
+                  >
+                    {industry.name}
+                  </a>
+                  {index < industries.length - 2 ? ", " : index === industries.length - 2 ? ", and " : ""}
+                </span>
+              ))}
+              . A preferred industry on the form gets prioritized first, but your profile stays
+              visible for any role that fits.
+            </p>
+          </div>
+
+          <div className="group rounded-2xl border border-navy/[0.08] bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-20px_rgba(0,48,96,0.3)] dark:border-white/10 dark:bg-navy-800">
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-steel/15 text-steel transition-colors duration-300 group-hover:bg-steel group-hover:text-white dark:text-steel-light">
+              <IconLock className="h-5 w-5" />
+            </span>
+            <h3 className="mt-4 font-heading font-semibold text-navy dark:text-cream">Privacy</h3>
+            <p className="mt-2 text-sm leading-relaxed text-navy/70 dark:text-cream/70">
+              Your resume is stored privately and never published or made publicly searchable. Only
+              Mintex&apos;s own recruiting team can access it internally, and it&apos;s only ever
+              shared with a specific employer once we&apos;ve confirmed a real fit and you&apos;ve
+              agreed, we never submit your details without your consent first.
+            </p>
           </div>
         </div>
       </Section>
