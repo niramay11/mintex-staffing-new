@@ -370,6 +370,32 @@ function Disclose({
   );
 }
 
+function DiscloseTrigger({ title, sub, open, onToggle }: { title: string; sub?: string; open: boolean; onToggle: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-expanded={open}
+      className="flex w-full items-center justify-between gap-3 rounded-3xl border border-navy/10 bg-white px-6 py-4 text-left font-heading text-sm font-semibold text-navy dark:border-white/10 dark:bg-navy-900 dark:text-cream"
+    >
+      <span>
+        {title}
+        {sub && (
+          <>
+            {" "}
+            <em className="ml-2 text-xs font-normal not-italic text-steel dark:text-steel-light">{sub}</em>
+          </>
+        )}
+      </span>
+      <span className={`text-lg text-steel transition-transform dark:text-steel-light ${open ? "rotate-90" : ""}`}>&rsaquo;</span>
+    </button>
+  );
+}
+
+function DisclosePanel({ children }: { children: ReactNode }) {
+  return <div className="space-y-0.5 rounded-3xl border border-navy/10 bg-white p-6 dark:border-white/10 dark:bg-navy-900">{children}</div>;
+}
+
 function BackButton({ onClick }: { onClick: () => void }) {
   return (
     <button type="button" onClick={onClick} className="mb-4 text-sm text-steel hover:text-navy dark:text-steel-light dark:hover:text-cream">← Change who you are</button>
@@ -732,8 +758,16 @@ export default function HiringCostCalculator() {
             <Prompt>
               <b>Read this before you trust the number above.</b>{" "}We&apos;ve started you off with low, careful figures — we&apos;d rather come in under what you really spend than over. Open{" "}<b>Your numbers</b>{" "}below and change anything that doesn&apos;t match how you hire. Most people find the total goes up once they put their own figures in.</Prompt>
 
-            <div className="space-y-5">
-              <Disclose title="Show me how we got there" sub="every number, in plain English" open={showWork} onToggle={() => setShowWork(!showWork)}>
+            <div className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <DiscloseTrigger title="Show me how we got there" sub="every number, in plain English" open={showWork} onToggle={() => setShowWork(!showWork)} />
+                <DiscloseTrigger title="Your numbers" sub="change anything that looks wrong" open={showAssump} onToggle={() => setShowAssump(!showAssump)} />
+              </div>
+
+              <div className="grid items-start gap-4 sm:grid-cols-2">
+              <div>
+              {showWork && (
+              <DisclosePanel>
                   <div className="mb-2.5 mt-1 flex items-center justify-between">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-steel dark:text-steel-light">What you spend today</p>
                     <button type="button" onClick={() => setExpandAll(!expandAll)} className="text-[12.5px] font-semibold text-emerald-600 dark:text-emerald-400">
@@ -919,9 +953,13 @@ export default function HiringCostCalculator() {
 
                   <Note>
                     <b>Two things we deliberately left out</b>, because including them would make our numbers look better than they should. We don&apos;t claim to save you the{" "}{money(R.rampCost * H)}{" "}of new starters getting up to speed — we can&apos;t make someone learn faster, we just start the clock sooner, and that&apos;s already in the empty-seat line. And we&apos;ve left out laptops and IT setup, since that costs the same however you hire.</Note>
-                </Disclose>
+              </DisclosePanel>
+              )}
+              </div>
 
-              <Disclose title="Your numbers" sub="change anything that looks wrong" open={showAssump} onToggle={() => setShowAssump(!showAssump)}>
+              <div>
+              {showAssump && (
+              <DisclosePanel>
                   <p className="mb-4 mt-1 text-[12.5px] leading-relaxed text-navy/70 dark:text-cream/70">Click into any box and we&apos;ll light up the lines it changes.</p>
 
                   <div onFocus={() => setLive("team")} onBlur={() => setLive(null)}>
@@ -999,7 +1037,10 @@ export default function HiringCostCalculator() {
                       </span>
                     </label>
                   </div>
-                </Disclose>
+              </DisclosePanel>
+              )}
+              </div>
+              </div>
             </div>
 
             <CtaRow onSave={makeShareLink} saved={copied} />
