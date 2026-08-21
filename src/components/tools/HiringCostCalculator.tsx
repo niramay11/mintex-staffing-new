@@ -524,9 +524,7 @@ export default function HiringCostCalculator() {
             >
               <h3 className="font-heading text-base font-semibold text-navy dark:text-cream">{m.title}</h3>
               <p className="mt-1.5 flex-1 text-sm text-navy/80 dark:text-cream/80">{m.desc}</p>
-              <span className="mt-3 text-sm font-semibold text-navy transition-colors group-hover:text-navy-secondary dark:text-cream dark:group-hover:text-steel-light">
-                Start &rarr;
-              </span>
+              <span className="mt-3 text-sm font-semibold text-navy transition-colors group-hover:text-navy-secondary dark:text-cream dark:group-hover:text-steel-light">Start →</span>
             </button>
           ))}
         </div>
@@ -541,6 +539,24 @@ export default function HiringCostCalculator() {
     const oneRole = view === "One role";
     const div = oneRole ? Math.max(1, H) : 1;
     const unitLab = oneRole ? "per role" : "per year";
+    const plural = (n: number, w: string) => `${n} ${w}${n === 1 ? "" : "s"}`;
+    const parts = [
+      { k: "your recruiting team", v: R.fixedAnnual },
+      { k: "interview time", v: R.interviewTotal * H },
+      { k: "onboarding and ads", v: R.onbTotal * H },
+      { k: "seats sitting empty", v: R.vacancyCost * H },
+      { k: "new starters getting up to speed", v: R.rampCost * H },
+      { k: "searches that find nobody", v: R.failedAnnual },
+      { k: "people leaving early", v: R.attritionAnnual },
+    ];
+    const big = parts.reduce((m, x) => (x.v > m.v ? x : m), parts[0]);
+    const topHeavy = R.fixedPerHire > 0.15 * a.salary && a.recruiters > 0;
+    const scenarioOptions: [string, number][] = [
+      ["carrying on", R.totalToday],
+      ["another recruiter", scenAdd.totalToday],
+      ["Mintex", R.totalToday - R.lo.total],
+    ];
+    const cheapestOption = scenarioOptions.reduce((m, x) => (x[1] < m[1] ? x : m))[0];
 
     return (
       <div>
@@ -667,75 +683,128 @@ export default function HiringCostCalculator() {
             </div>
 
             <div className="rounded-3xl bg-gradient-to-br from-navy via-navy-deep to-navy-secondary p-7 text-white dark:from-navy-900 dark:via-navy-800 dark:to-navy-900">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/60">Cost Mintex takes off the table &middot; {unitLab}</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/60">What Mintex saves you &middot; {unitLab}</p>
               <p className="mt-3 font-heading text-4xl font-bold tabular-nums sm:text-[42px]">
                 {money(R.lo.total / div)} &ndash; {money(R.hi.total / div)}
               </p>
               <p className="mt-3 max-w-lg text-[13.5px] text-white/75">
                 {oneRole ? (
-                  <>For a single{" "}{a.seniority.toLowerCase()} role at {money(a.salary)}. Across all {a.routed} you&apos;d send us, that&apos;s{" "}
-                    {money(R.lo.total)}&ndash;{money(R.hi.total)}{" "}a year.</>
+                  <>One {a.seniority.toLowerCase()} role at {money(a.salary)}.</>
                 ) : (
-                  <>Across{" "}{a.routed} {a.routed === 1 ? "role" : "roles"} a year. That&apos;s {money(R.lo.total / a.routed)}–{" "}{money(R.hi.total / a.routed)}{" "}per hire, built entirely from the numbers you entered.</>
+                  <>Across{" "}{plural(a.routed, "role")} a year &mdash; {money(R.lo.total / a.routed)} to {money(R.hi.total / a.routed)}{" "}each.</>
                 )}
               </p>
             </div>
 
             <div className="mt-5 grid gap-4 sm:grid-cols-3">
               <StatCard
-                label={`You spend now · ${unitLab}`}
+                label="Hiring costs you"
                 value={
                   <>
                     {money(R.totalToday / div)}
                     <Chip delta={delta} />
                   </>
                 }
-                sub={oneRole ? `${money(R.totalToday)} across all ${a.hires} hires` : `${money(R.perHireToday)} for every hire you make`}
+                sub={oneRole ? `${money(R.totalToday)} across ${plural(a.hires, "hire")}` : `${money(R.perHireToday)} a hire`}
               />
               <StatCard
-                label="Days a role stays open"
-                value={`${Math.round(R.daysHi)}–${Math.round(R.daysLo)}`}
-                sub={`instead of ${a.days} days now`}
+                label="Your seat stays empty"
+                value={`${Math.round(R.daysHi)}–${Math.round(R.daysLo)} days`}
+                sub={`yours today: ${a.days} days`}
                 tone="accent"
               />
-              <StatCard
-                label={`Never on a spreadsheet · ${unitLab}`}
-                value={money(R.invisible / div)}
-                sub="empty seats, failed searches, early leavers"
-                tone="warn"
-              />
+              <StatCard label="Your biggest cost" value={money(big.v / div)} sub={`${big.k} — ${pct(big.v / R.totalToday)} of the total`} tone="warn" />
             </div>
+
+            {topHeavy && (
+              <Note>You&apos;re paying{" "}<b>{money(R.fixedPerHire)}</b> in team and tools for every hire, before anyone is interviewed. At {plural(a.hires, "hire")}{" "}{" "}a year that&apos;s the number to look at first.</Note>
+            )}
 
             <div className="mt-5 rounded-3xl border border-navy/10 bg-white p-6 dark:border-white/10 dark:bg-navy-900">
               <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.12em] text-steel dark:text-steel-light">Your three choices, side by side</p>
               <div className="grid gap-3 sm:grid-cols-3">
-                <div className="rounded-2xl border border-navy/10 bg-mist p-4 dark:border-white/10 dark:bg-navy-800">
-                  <p className="text-[13px] font-semibold text-steel dark:text-steel-light">Carry on as you are</p>
-                  <p className="mt-2 font-heading text-xl font-bold tabular-nums text-navy dark:text-cream">{money(R.totalToday / div)}</p>
-                  <p className="mt-2 text-xs leading-relaxed text-navy/70 dark:text-cream/70">
-                    {a.days} days to fill &middot; you fill {pct(a.fillInhouse)}{" "}of roles yourself</p>
-                </div>
-                <div className="rounded-2xl border border-navy/10 bg-mist p-4 dark:border-white/10 dark:bg-navy-800">
-                  <p className="text-[13px] font-semibold text-amber-600 dark:text-amber-400">Hire another recruiter</p>
-                  <p className="mt-2 font-heading text-xl font-bold tabular-nums text-navy dark:text-cream">{money(scenAdd.totalToday / div)}</p>
-                  <p className={`mt-1 text-xs font-semibold tabular-nums ${scenAdd.totalToday > R.totalToday ? "text-amber-600 dark:text-amber-400" : "text-emerald-600 dark:text-emerald-400"}`}>
-                    {scenAdd.totalToday > R.totalToday ? "+" : "−"}
-                    {money(Math.abs(scenAdd.totalToday - R.totalToday) / div)}{" "}vs today</p>
-                  <p className="mt-2 text-xs leading-relaxed text-navy/70 dark:text-cream/70">
-                    {Math.round(addDays)} days &middot; fills {pct(addFillRate)} &middot; {money(a.recruiterSalary * 1.28 + a.liCost)}{" "}more going out every year, busy or not</p>
-                </div>
-                <div className="rounded-2xl border-2 border-emerald-500 bg-emerald-50 p-4 dark:bg-emerald-400/10">
-                  <p className="text-[13px] font-semibold text-emerald-700 dark:text-emerald-400">Bring in Mintex</p>
-                  <p className="mt-2 font-heading text-xl font-bold tabular-nums text-emerald-700 dark:text-emerald-400">
-                    {money((R.totalToday - R.lo.total) / div)}
-                  </p>
-                  <p className="mt-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400">&minus;{money(R.lo.total / div)} vs today</p>
-                  <p className="mt-2 text-xs leading-relaxed text-navy/70 dark:text-cream/70">
-                    {Math.round(R.daysLo)} days &middot; fills {pct(a.fillMintex)} &middot; nothing goes out until we place someone{" "}
-                    <em>(before our fee)</em>
-                  </p>
-                </div>
+                {(
+                  [
+                    {
+                      title: "Carry on as you are",
+                      color: "text-steel dark:text-steel-light",
+                      value: R.totalToday,
+                      delta: null as number | null,
+                      best: false,
+                      rows: [
+                        ["Seat empty for", `${a.days} days`],
+                        ["You fill", pct(a.fillInhouse)],
+                        ["Fixed cost a year", money(R.fixedAnnual)],
+                        ["If hiring stops", "you still pay it"],
+                      ],
+                    },
+                    {
+                      title: "Hire another recruiter",
+                      color: "text-amber-600 dark:text-amber-400",
+                      value: scenAdd.totalToday,
+                      delta: scenAdd.totalToday - R.totalToday,
+                      best: false,
+                      rows: [
+                        ["Seat empty for", `${Math.round(addDays)} days`],
+                        ["You fill", pct(addFillRate)],
+                        ["Fixed cost a year", money(scenAdd.fixedAnnual)],
+                        ["If hiring stops", "you still pay it"],
+                      ],
+                    },
+                    {
+                      title: "Bring in Mintex",
+                      color: "text-emerald-700 dark:text-emerald-400",
+                      value: R.totalToday - R.lo.total,
+                      delta: -R.lo.total,
+                      best: true,
+                      rows: [
+                        ["Seat empty for", `${Math.round(R.daysLo)} days`],
+                        ["You fill", pct(a.fillMintex)],
+                        ["Fixed cost a year", "none"],
+                        ["If hiring stops", "you pay nothing"],
+                      ],
+                    },
+                  ] as const
+                ).map((o) => (
+                  <div
+                    key={o.title}
+                    className={
+                      o.best
+                        ? "rounded-2xl border-2 border-emerald-500 bg-emerald-50 p-4 dark:bg-emerald-400/10"
+                        : "rounded-2xl border border-navy/10 bg-mist p-4 dark:border-white/10 dark:bg-navy-800"
+                    }
+                  >
+                    <p className={`text-[13px] font-semibold ${o.color}`}>{o.title}</p>
+                    <p
+                      className={`mt-2 font-heading text-xl font-bold tabular-nums ${
+                        o.best ? "text-emerald-700 dark:text-emerald-400" : "text-navy dark:text-cream"
+                      }`}
+                    >
+                      {money(o.value / div)}
+                    </p>
+                    {o.delta !== null && (
+                      <p
+                        className={`mt-1 text-xs font-semibold tabular-nums ${
+                          o.delta > 0 ? "text-amber-600 dark:text-amber-400" : "text-emerald-600 dark:text-emerald-400"
+                        }`}
+                      >
+                        {o.delta > 0 ? "+" : "−"}
+                        {money(Math.abs(o.delta) / div)}{" "}vs today</p>
+                    )}
+                    <div className="mt-3 space-y-1.5 border-t border-navy/10 pt-3 dark:border-white/10">
+                      {o.rows.map(([k, v]) => (
+                        <div key={k} className="flex items-center justify-between gap-2 text-xs text-navy/70 dark:text-cream/70">
+                          <span>{k}</span>
+                          <span className="font-semibold text-navy dark:text-cream">{v}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
+
+              <div className="mt-4 rounded-xl bg-mist p-3.5 text-[13px] text-navy dark:bg-navy-800 dark:text-cream">Cheapest here:{" "}<b>{cheapestOption}</b> &mdash; and a recruiter costs{" "}
+                {money(Math.abs(scenAdd.totalToday - (R.totalToday - R.lo.total)) / div)}{" "}more than we would, before our fee.</div>
 
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
                 <Field label={`A new recruiter would fill roles ${pct(a.addSpeed)} faster`}>
@@ -745,7 +814,7 @@ export default function HiringCostCalculator() {
                   <Slider min={0} max={20} value={Math.round(a.addFill * 100)} onChange={(x) => upA("addFill", x / 100)} />
                 </Field>
               </div>
-              <p className="text-[11.5px] leading-relaxed text-navy/60 dark:text-cream/60">Those two are guesses only you can make — move them and the middle column changes. We&apos;ve assumed the new recruiter takes four months to get going, same as anyone.</p>
+              <p className="text-[11.5px] leading-relaxed text-navy/60 dark:text-cream/60">Your guess, not ours. We&apos;ve assumed four months before a new recruiter is going properly.</p>
             </div>
 
             {R.vacancyIsNeutral && (
@@ -756,7 +825,7 @@ export default function HiringCostCalculator() {
             )}
 
             <Prompt>
-              <b>Read this before you trust the number above.</b>{" "}We&apos;ve started you off with low, careful figures — we&apos;d rather come in under what you really spend than over. Open{" "}<b>Your numbers</b>{" "}below and change anything that doesn&apos;t match how you hire. Most people find the total goes up once they put their own figures in.</Prompt>
+              <b>These are careful starting figures, not yours.</b> Open <b>Your numbers</b>{" "}and change anything that&apos;s wrong — the total usually goes up.</Prompt>
 
             <div className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
@@ -783,9 +852,9 @@ export default function HiringCostCalculator() {
                     label="Your recruiting team and the tools they use"
                     perYear={money(R.fixedAnnual)}
                     note={
-                      <>You pay this whether you hire one person or fifty.{" "}<b>{a.recruiters}</b> {a.recruiters === 1 ? "recruiter" : "recruiters"} at{" "}
-                        {exact(a.recruiterSalary)} becomes <b>{exact(R.recruiterCost)}</b>{" "}once you add tax and benefits{" "}{a.pctTime < 1 && ` and count only the ${pct(a.pctTime)} of their time spent hiring`}. Software and job boards add{" "}
-                        <b>{exact(R.tooling)}</b>. Together <b>{exact(R.fixedAnnual)}</b> — which is <b>{money(R.fixedPerHire)}</b> for each of your {H}{" "}{" "}hires, before anyone has been interviewed.</>
+                      <>
+                        {exact(R.recruiterCost)} of salary with tax and benefits, plus {exact(R.tooling)} of software and job boards. That&apos;s{" "}
+                        <b>{money(R.fixedPerHire)}</b>{" "}a hire before anyone is interviewed — and you pay it either way.</>
                     }
                   />
 
@@ -797,9 +866,8 @@ export default function HiringCostCalculator() {
                     perHire={money(R.interviewTotal)}
                     perYear={money(R.interviewTotal * H)}
                     note={
-                      <>Per role: your recruiter phone-screens{" "}<b>{a.nScreened}</b> people (45 minutes each) = {exact(R.screening)}. Your team interviews{" "}
-                        <b>{a.nInterviewed}</b> for about {R.sn.panelHrs} hours each = {exact(R.interview)}. <b>{a.nFinalists}</b>{" "}finalists meet a senior leader ={" "}{exact(R.finalPanel)}. Add <b>{a.coordHours} hours</b> of scheduling = {exact(R.coordination)}. That&apos;s{" "}
-                        <b>{exact(R.interviewTotal)}</b>{" "}per hire.</>
+                      <>
+                        {a.nScreened} screened ({exact(R.screening)}), {a.nInterviewed} interviewed ({exact(R.interview)}), {a.nFinalists}{" "}met a leader ({" "}{exact(R.finalPanel)}), plus {a.coordHours} hours of scheduling ({exact(R.coordination)}).</>
                     }
                   />
 
@@ -811,7 +879,9 @@ export default function HiringCostCalculator() {
                     perHire={money(R.onbTotal)}
                     perYear={money(R.onbTotal * H)}
                     note={
-                      <>Getting someone started costs about{" "}{pct(R.sn.onb)} of salary = <b>{exact(R.onboarding)}</b>{" "}— the manager&apos;s time, training, paperwork, someone showing them the ropes. Plus{" "}{exact(a.ads)} advertising and {exact(a.assessment)}{" "}for checks.</>
+                      <>
+                        {pct(R.sn.onb)} of salary ({exact(R.onboarding)}) in manager time, training and paperwork. Plus {exact(a.ads)} to advertise and{" "}
+                        {exact(a.assessment)}{" "}for checks.</>
                     }
                   />
 
@@ -821,9 +891,7 @@ export default function HiringCostCalculator() {
                     perHire={money(R.vacancyCost)}
                     perYear={money(R.vacancyCost * H)}
                     note={
-                      <>This is the one people argue about, so here&apos;s the whole sum. Someone in this role is worth roughly{" "}
-                        <b>{exact(R.dailyValue)} a day</b>{" "}to the business — more than their salary, because a role only exists if it produces more than it costs. While the seat is empty you lose about{" "}<b>{exact(R.dailyLost)} a day</b>{" "}of that (not all of it, since some work waits and some gets picked up). Covering with overtime or temps costs another{" "}<b>{exact(R.dailyCover)} a day</b>. But you&apos;re{" "}
-                        <b>not paying the salary</b>, so we take <b>{exact(R.dailyNotPaid)} a day</b> back off. That leaves <b>{exact(R.netVacDay)} a day</b>{" "}{" "}— over{" "}{a.days} days, <b>{money(R.vacancyCost)}</b>{" "}per hire.</>
+                      <>The job is worth{" "}{exact(R.dailyValue)} a day. You lose {exact(R.dailyLost)} of that while it&apos;s empty, plus {exact(R.dailyCover)}{" "}{" "}covering it — but you save{" "}{exact(R.dailyNotPaid)} in unpaid salary. Net: <b>{exact(R.netVacDay)} a day</b>.</>
                     }
                   />
 
@@ -833,8 +901,8 @@ export default function HiringCostCalculator() {
                     perHire={money(R.rampCost)}
                     perYear={money(R.rampCost * H)}
                     note={
-                      <>A new{" "}{a.seniority.toLowerCase()} hire takes about <b>{R.sn.ramp} months</b> to get up to speed, working at roughly{" "}
-                        <b>{pct(R.sn.cap)}</b> meanwhile. The missing {pct(1 - R.sn.cap)} comes to <b>{money(R.rampCost)}</b>. We don&apos;t claim to save you this — see the note at the bottom.</>
+                      <>
+                        {R.sn.ramp} months at roughly {pct(R.sn.cap)} output. The missing {pct(1 - R.sn.cap)} is <b>{money(R.rampCost)}</b>. We don&apos;t claim to save you this.</>
                     }
                   />
 
@@ -845,8 +913,8 @@ export default function HiringCostCalculator() {
                     label="Searches that end without a hire"
                     perYear={money(R.failedAnnual)}
                     note={
-                      <>You fill about{" "}<b>{pct(a.fillInhouse)}</b> of roles on your own. To end up with {H} hires you have to run around{" "}
-                        <b>{R.attempted.toFixed(1)}</b> searches — so roughly <b>{R.failedSearches.toFixed(1)} a year</b>{" "}produce nobody. Each still burns about{" "}{exact(R.failedWork)} of screening and interview time and leaves the seat empty another 30 days ({exact(R.failedVac)}). About{" "}<b>{money(R.costPerFailed)}</b>{" "}each.</>
+                      <>At{" "}{pct(a.fillInhouse)}, getting {H} hires means running {R.attempted.toFixed(1)} searches &mdash;{" "}
+                        <b>{R.failedSearches.toFixed(1)} find nobody</b>. Each burns {exact(R.failedWork)}{" "}of your team&apos;s time and 30 more days of empty seat.</>
                     }
                   />
 
@@ -857,8 +925,9 @@ export default function HiringCostCalculator() {
                     label="People who leave within the first year"
                     perYear={money(R.attritionAnnual)}
                     note={
-                      <>If{" "}<b>{pct(a.pExit)}</b> of new hires leave inside a year, that&apos;s <b>{R.leavers.toFixed(1)} of your {H}</b>. Each means doing it all again:{" "}{money(R.variablePerHire)} of recruiting, half the training investment wasted ({money(R.rampCost * 0.5)}), and another{" "}
-                        {a.days} days empty ({money(R.vacancyCost)}). About <b>{money(R.costPerEarlyExit)}</b>{" "}each time.</>
+                      <>
+                        <b>{R.leavers.toFixed(1)} of your {H}</b> leave inside a year. Each one means doing the whole hire again &mdash; about{" "}
+                        <b>{money(R.costPerEarlyExit)}</b>.</>
                     }
                   />
 
@@ -876,9 +945,9 @@ export default function HiringCostCalculator() {
                     perHire={money(R.lo.savVac / a.routed)}
                     perYear={`${money(R.lo.savVac)}–${money(R.hi.savVac)}`}
                     note={
-                      <>We fill roles{" "}<b>30&ndash;40% faster</b> than the {a.days}-day average you gave us — about{" "}
+                      <>
                         <b>
-                          {Math.round(R.lo.daysSaved)}–{Math.round(R.hi.daysSaved)}{" "}days sooner</b>{" "}. At{" "}{exact(R.netVacDay)} a day across {a.routed} roles, that&apos;s <b>{money(R.lo.savVac)}–{money(R.hi.savVac)}</b>.</>
+                          {Math.round(R.lo.daysSaved)}–{Math.round(R.hi.daysSaved)}{" "}days sooner</b>{" "}{" "}(we fill 30–40% faster), at{" "}{exact(R.netVacDay)}{" "}a day.</>
                     }
                   />
 
@@ -891,7 +960,8 @@ export default function HiringCostCalculator() {
                     perHire={money(R.lo.savTime / a.routed)}
                     perYear={money(R.lo.savTime)}
                     note={
-                      <>We do the sourcing, screening and scheduling:{" "}{exact(R.lo.savScreen)} and {exact(R.lo.savCoord)}{" "}per role off your team&apos;s plate. And because we send fewer, better-matched people, your team interviews about{" "}<b>3 instead of {a.nInterviewed}</b>, saving another{" "}{exact(R.lo.savInt)}. You still run final interviews and make the call.</>
+                      <>We take the sourcing, screening and scheduling ({exact(R.lo.savScreen + R.lo.savCoord)}), and you interview{" "}
+                        <b>3 instead of {a.nInterviewed}</b> ({exact(R.lo.savInt)}). You still make the call.</>
                     }
                   />
 
@@ -924,8 +994,8 @@ export default function HiringCostCalculator() {
                     label="Searches that no longer come up empty"
                     perYear={money(R.lo.savFailed)}
                     note={
-                      <>We fill{" "}<b>{pct(a.fillMintex)}</b> against your <b>{pct(a.fillInhouse)}</b>. On {a.routed} roles that&apos;s about{" "}
-                        <b>{R.lo.failedNow.toFixed(1)}</b> failed searches today versus <b>{R.lo.failedMx.toFixed(1)}</b> with us, at{" "}
+                      <>
+                        <b>{R.lo.failedNow.toFixed(1)}</b> dead searches today, <b>{R.lo.failedMx.toFixed(1)}</b> with us &mdash; at{" "}
                         {money(R.costPerFailed)}{" "}each.</>
                     }
                   />
@@ -938,8 +1008,7 @@ export default function HiringCostCalculator() {
                     label="Replacements we cover free under guarantee"
                     perYear={money(R.lo.savGuar)}
                     note={
-                      <>Most early leavers go in the first weeks. Of the{" "}{(a.pExit * a.routed).toFixed(1)} expected to leave inside a year, about{" "}
-                        <b>{R.lo.exitsInside.toFixed(1)}</b>{" "}would go inside our 30–90 day guarantee — we replace those at no fee.</>
+                      <>About{" "}<b>{R.lo.exitsInside.toFixed(1)}</b>{" "}would leave inside our 30–90 day guarantee. We replace those free.</>
                     }
                   />
 
@@ -952,7 +1021,7 @@ export default function HiringCostCalculator() {
                   )}
 
                   <Note>
-                    <b>Two things we deliberately left out</b>, because including them would make our numbers look better than they should. We don&apos;t claim to save you the{" "}{money(R.rampCost * H)}{" "}of new starters getting up to speed — we can&apos;t make someone learn faster, we just start the clock sooner, and that&apos;s already in the empty-seat line. And we&apos;ve left out laptops and IT setup, since that costs the same however you hire.</Note>
+                    <b>Left out on purpose:</b> the {money(R.rampCost * H)}{" "}of getting up to speed (we start the clock earlier, we don&apos;t shorten it), and laptops and IT setup (same cost either way).</Note>
               </DisclosePanel>
               )}
               </div>
@@ -960,7 +1029,7 @@ export default function HiringCostCalculator() {
               <div>
               {showAssump && (
               <DisclosePanel>
-                  <p className="mb-4 mt-1 text-[12.5px] leading-relaxed text-navy/70 dark:text-cream/70">Click into any box and we&apos;ll light up the lines it changes.</p>
+                  <p className="mb-4 mt-1 text-[12.5px] leading-relaxed text-navy/70 dark:text-cream/70">Click a box &mdash; we&apos;ll light up the lines it changes.</p>
 
                   <div onFocus={() => setLive("team")} onBlur={() => setLive(null)}>
                     <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-steel dark:text-steel-light">Your team &amp; tools &middot; per year</p>
