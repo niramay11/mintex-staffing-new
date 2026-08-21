@@ -14,9 +14,33 @@ import { buildJobPostingSchema } from "@/lib/jobPostingSchema";
 import { SITE_URL } from "@/lib/site";
 import type { CeipalJob } from "@/components/jobs/types";
 
-// Job data changes with Ceipal sync cycles — never bake a stale snapshot into
-// the build (same reasoning as /get-hired, see that page's own comment).
-export const dynamic = "force-dynamic";
+// Job data changes with Ceipal sync cycles, so this can't be a one-time
+// static build — but `force-dynamic` was overkill: it also forced Next to
+// treat generateMetadata's job lookup as unpredictable per-request runtime
+// data, which triggers Next's automatic streaming-metadata optimization
+// (title/canonical/meta tags get appended to <body> instead of <head> so the
+// rest of the page doesn't wait on them — fine for Googlebot, but it's what
+// SEO crawlers like Screaming Frog flag, and non-JS bots never see them at
+// all). ISR with a revalidate window matching jobsCache.ts's own
+// CACHE_TTL_SECONDS (20 min) keeps job data just as fresh — the underlying
+// Ceipal cache was already the real freshness bottleneck, not page
+// rendering — while letting metadata resolve during the periodic
+// re-render instead of streaming, and restoring CDN/bfcache caching for
+// this route (previously served as Cache-Control: no-store).
+export const revalidate = 1200;
+
+// Confirmed live (this Next.js version's docs warn its caching model has
+// changed from what training data assumes): a `[slug]` route with no
+// generateStaticParams at all renders fully dynamically on every single
+// request — `export const revalidate` above is silently ignored — no matter
+// what value it's set to. An empty array is enough to opt every unlisted
+// slug into on-demand ISR (render once, cache for `revalidate` seconds,
+// background-refresh after) instead of listing real job codes here, which
+// would require querying Ceipal/Supabase at build time — exactly the stale
+// build-time snapshot the comment above is trying to avoid.
+export async function generateStaticParams() {
+  return [];
+}
 
 // This page schedules a background cache warm-up (via `after()`) that can
 // take up to ~45s on a cold cache — without raising this, Vercel's default
