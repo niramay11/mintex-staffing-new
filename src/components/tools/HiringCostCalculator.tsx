@@ -242,7 +242,7 @@ export default function HiringCostCalculator() {
   if (!mode) {
     return (
       <div className="mx-auto max-w-4xl">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Start with who you are</p>
+        <h2 className="text-[15px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Start with who you are</h2>
         <div className="mt-5 grid gap-4 sm:grid-cols-3">
           {MODE_CARDS.map((m) => (
             <button
