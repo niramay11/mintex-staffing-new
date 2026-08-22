@@ -310,3 +310,43 @@ export async function sendContactNotification(fields: {
     html: wrapEmail(body, 'View and manage all messages in the admin panel.'),
   });
 }
+
+// ─── Hiring calculator breakdown ──────────────────────────────────────────────
+export async function sendHiringCalculatorBreakdown(fields: {
+  to: string;
+  heading: string;
+  headlineLabel: string;
+  headlineValue: string;
+  lines: { label: string; value: string; strong?: boolean; accent?: boolean }[];
+}) {
+  const fromName  = process.env.SMTP_FROM_NAME  || 'Mintex Staffing';
+  const fromEmail = process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER;
+
+  const rows = fields.lines.map((line) => `
+    <div style="display:flex;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid ${BRAND.tanLight};">
+      <span style="${line.strong ? 'font-weight:700;' : ''}color:${BRAND.navy};">${escapeHtml(line.label)}</span>
+      <span style="${line.strong ? 'font-weight:700;' : 'font-weight:600;'}color:${line.accent ? '#0f7a52' : BRAND.navy};white-space:nowrap;">${escapeHtml(line.value)}</span>
+    </div>
+  `).join('');
+
+  const body = `
+    <h2 style="margin:0 0 4px;color:${BRAND.navy};">${escapeHtml(fields.heading)}</h2>
+    <p style="margin:0 0 20px;color:${BRAND.steel};">Here's the full breakdown from your Mintex Hiring Cost Calculator session.</p>
+    <div style="background:${BRAND.cream};border-radius:10px;padding:16px 20px;margin-bottom:20px;">
+      <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:${BRAND.steel};">${escapeHtml(fields.headlineLabel)}</p>
+      <p style="margin:6px 0 0;font-size:26px;font-weight:700;color:${BRAND.navy};">${escapeHtml(fields.headlineValue)}</p>
+    </div>
+    <div style="border-radius:10px;overflow:hidden;">
+      ${rows}
+    </div>
+    <p style="margin:24px 0 0;">${button('Talk to Mintex about your numbers', `${siteUrl()}/seek-talent/get-started`)}</p>
+    <p style="margin:16px 0 0;font-size:12px;color:${BRAND.steel};">These are planning estimates based on the numbers you entered, not a quote.</p>
+  `;
+
+  await sendBrandedMail({
+    from: `"${fromName}" <${fromEmail}>`,
+    to: fields.to,
+    subject: 'Your Hiring Cost Breakdown — Mintex Staffing',
+    html: wrapEmail(body),
+  });
+}

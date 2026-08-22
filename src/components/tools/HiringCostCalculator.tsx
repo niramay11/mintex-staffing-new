@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { ButtonLink } from "@/components/ui/Button";
 import Select from "@/components/ui/Select";
+import { packState, unpackState, type CalculatorBreakdownLine } from "@/lib/calculatorShare";
 import {
   INDUSTRIES,
   SENIORITY,
@@ -27,32 +28,6 @@ type Mode = "employer" | "staffing" | "search" | null;
 const money = (n: number) => "$" + (Math.round((n || 0) / 100) * 100).toLocaleString("en-US");
 const exact = (n: number) => "$" + Math.round(n || 0).toLocaleString("en-US");
 const pct = (n: number) => Math.round(n * 100) + "%";
-
-const packState = (o: unknown): string => {
-  try {
-    const json = JSON.stringify(o);
-    const bytes = encodeURIComponent(json).replace(/%([0-9A-F]{2})/g, (_, p1: string) =>
-      String.fromCharCode(parseInt(p1, 16))
-    );
-    return btoa(bytes);
-  } catch {
-    return "";
-  }
-};
-
-const unpackState = (token: string): Record<string, unknown> | null => {
-  try {
-    const bytes = atob(token);
-    const json = decodeURIComponent(
-      Array.from(bytes)
-        .map((c) => "%" + c.charCodeAt(0).toString(16).padStart(2, "0"))
-        .join("")
-    );
-    return JSON.parse(json) as Record<string, unknown>;
-  } catch {
-    return null;
-  }
-};
 
 const INDUSTRY_OPTIONS = Object.keys(INDUSTRIES).map((k) => ({ value: k, label: k }));
 const ROLE_TYPE_OPTIONS = Object.keys(ROLE_TYPES).map((k) => ({ value: k, label: k }));
@@ -402,10 +377,10 @@ function BackButton({ onClick }: { onClick: () => void }) {
   );
 }
 
-function CtaRow({ onSave, saved }: { onSave: () => void; saved: boolean }) {
+function CtaRow({ onSave, saved, emailHref }: { onSave: () => void; saved: boolean; emailHref: string }) {
   return (
     <div className="mt-6 flex flex-wrap gap-3">
-      <ButtonLink href="/seek-talent/get-started" variant="primary">Email me this breakdown</ButtonLink>
+      <ButtonLink href={emailHref} variant="primary">Email me this breakdown</ButtonLink>
       <button
         type="button"
         onClick={onSave}
@@ -557,6 +532,34 @@ export default function HiringCostCalculator() {
       ["Mintex", R.totalToday - R.lo.total],
     ];
     const cheapestOption = scenarioOptions.reduce((m, x) => (x[1] < m[1] ? x : m))[0];
+
+    const employerEmailLines: CalculatorBreakdownLine[] = [
+      { label: "Total hiring cost today", value: money(R.totalToday), strong: true },
+      { label: "Cost per hire today", value: money(R.perHireToday) },
+      { label: "Your recruiting team & tools (fixed, per year)", value: money(R.fixedAnnual) },
+      { label: "Interview & screening time", value: money(R.interviewTotal * H) },
+      { label: "Onboarding & advertising", value: money(R.onbTotal * H) },
+      { label: "Vacancy cost — seats sitting empty", value: money(R.vacancyCost * H) },
+      { label: "Ramp-up productivity loss", value: money(R.rampCost * H) },
+      { label: "Failed searches", value: money(R.failedAnnual) },
+      { label: "Early leavers (attrition)", value: money(R.attritionAnnual) },
+      { label: "Average days a seat stays open", value: `${a.days} days` },
+      {
+        label: `Savings with Mintex (${a.routed} of ${H} roles routed)`,
+        value: `${money(R.lo.total)} – ${money(R.hi.total)}`,
+        accent: true,
+      },
+      { label: "Hiring cost with Mintex", value: money(R.totalToday - R.lo.total), strong: true, accent: true },
+    ];
+    const employerEmailHref =
+      "/resources/hiring-cost-calculator/email-results#s=" +
+      packState({
+        mode: "employer",
+        heading: "Your hiring cost, per year",
+        headlineLabel: "What Mintex saves you",
+        headlineValue: `${money(R.lo.total)} – ${money(R.hi.total)}`,
+        lines: employerEmailLines,
+      });
 
     return (
       <div>
@@ -1112,7 +1115,7 @@ export default function HiringCostCalculator() {
               </div>
             </div>
 
-            <CtaRow onSave={makeShareLink} saved={copied} />
+            <CtaRow onSave={makeShareLink} saved={copied} emailHref={employerEmailHref} />
             {shareUrl && <ShareBox url={shareUrl} copied={copied} />}
 
             <p className="mt-6 text-xs leading-relaxed text-navy/60 dark:text-cream/60">Estimates for planning. Where you haven&apos;t given us a number we&apos;ve used a US industry benchmark — all editable above. Check against your own records before budgeting from this.</p>
@@ -1125,6 +1128,31 @@ export default function HiringCostCalculator() {
   /* ----------------------------------------------------------- STAFFING */
   if (mode === "staffing") {
     const sourcingOnly = b.engagement === "Sourcing only";
+
+    const staffingEmailLines: CalculatorBreakdownLine[] = [
+      { label: "Reqs that come in per year", value: `${b.reqs}` },
+      { label: "Placements you make", value: `${b.fills}` },
+      { label: "Coverage — reqs your team can actually work", value: `${pct(RB.coverage)} (${Math.round(RB.worked)} of ${b.reqs})` },
+      { label: "Reqs nobody gets to", value: `${Math.round(RB.uncovered)} reqs` },
+      { label: "Placements you'd have made from the rest", value: `${Math.round(RB.newPlacements)}` },
+      { label: "Money sitting on the table", value: money(RB.gpCreated), strong: true, accent: true },
+      { label: "Your recruiters & tools (fixed cost, per year)", value: money(RB.fixedAnnual) },
+      { label: "Cost carried by every placement", value: money(RB.costPerPlacement) },
+      { label: "Cost of a quiet quarter", value: money(RB.slowQuarter) },
+      { label: "Hiring another recruiter — year one, all in", value: money(RB.firstYearCost) },
+      { label: "Risk if that recruiter doesn't work out", value: money(RB.hireRisk) },
+      { label: "With Mintex — year one cost", value: "$0 until we place", accent: true },
+    ];
+    const staffingEmailHref =
+      "/resources/hiring-cost-calculator/email-results#s=" +
+      packState({
+        mode: "staffing",
+        heading: "How many of your reqs never get worked?",
+        headlineLabel: "Reqs nobody gets to, per year",
+        headlineValue: `${Math.round(RB.uncovered)} reqs · ${money(RB.gpCreated)}`,
+        lines: staffingEmailLines,
+      });
+
     return (
       <div>
         <BackButton onClick={() => setMode(null)} />
@@ -1305,7 +1333,7 @@ export default function HiringCostCalculator() {
               </Note>
             </Disclose>
 
-            <CtaRow onSave={makeShareLink} saved={copied} />
+            <CtaRow onSave={makeShareLink} saved={copied} emailHref={staffingEmailHref} />
             {shareUrl && <ShareBox url={shareUrl} copied={copied} />}
 
             <p className="mt-6 text-xs leading-relaxed text-navy/60 dark:text-cream/60">Estimates for planning. We apply your own fill rate to uncovered reqs, not ours — change any number above and everything recalculates.</p>
@@ -1317,6 +1345,32 @@ export default function HiringCostCalculator() {
 
   /* ------------------------------------------------------------- SEARCH */
   const researchOnly = c.engagement === "Research only";
+
+  const searchEmailLines: CalculatorBreakdownLine[] = [
+    { label: "Searches run per year", value: `${c.searches}` },
+    { label: "Average fee per search", value: money(c.retainer) },
+    { label: "Research cost per search", value: `${money(RC.deliveryPerSearch)} (${pct(RC.pctOfRetainer)} of fee)` },
+    { label: "Total research + stalled cost, per year", value: money(RC.annualDelivery + RC.stalledCost), strong: true },
+    { label: "Searches that stall or die", value: `${RC.stalled.toFixed(1)} a year — ${money(RC.stalledCost)}` },
+    { label: "Hours spent searching per year", value: `${RC.annualHours.toLocaleString()} hrs` },
+    { label: "Fee income", value: money(RC.feeIncome) },
+    {
+      label: "Extra searches possible if research were handled",
+      value: `${c.extraSearches} searches — ${money(RC.capacityValue)} in fees`,
+      accent: true,
+    },
+    { label: "Hours back in your partners' week", value: `${RC.annualHours.toLocaleString()} hrs`, accent: true },
+  ];
+  const searchEmailHref =
+    "/resources/hiring-cost-calculator/email-results#s=" +
+    packState({
+      mode: "search",
+      heading: "How much of your fee is gone before you send a name?",
+      headlineLabel: "What the work costs you, per year",
+      headlineValue: money(RC.annualDelivery + RC.stalledCost),
+      lines: searchEmailLines,
+    });
+
   return (
     <div>
       <BackButton onClick={() => setMode(null)} />
@@ -1475,7 +1529,7 @@ export default function HiringCostCalculator() {
             )}
           </Note>
 
-          <CtaRow onSave={makeShareLink} saved={copied} />
+          <CtaRow onSave={makeShareLink} saved={copied} emailHref={searchEmailHref} />
           {shareUrl && <ShareBox url={shareUrl} copied={copied} />}
 
           <p className="mt-6 text-xs leading-relaxed text-navy/60 dark:text-cream/60">Estimates for planning. Every number above is yours to change.</p>
