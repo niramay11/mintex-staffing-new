@@ -42,3 +42,36 @@ export interface CalculatorBreakdownPayload {
   headlineValue: string;
   lines: CalculatorBreakdownLine[];
 }
+
+const MAX_BREAKDOWN_LINES = 40;
+const MAX_BREAKDOWN_TEXT = 200;
+
+// Shared by the email-results and save API routes so a caller can't post an
+// oversized or malformed breakdown — trims to sane limits instead of
+// trusting whatever shape the client sends.
+export function sanitizeBreakdownPayload(body: unknown): CalculatorBreakdownPayload | null {
+  if (!body || typeof body !== "object") return null;
+  const b = body as Record<string, unknown>;
+
+  if (b.mode !== "employer" && b.mode !== "staffing" && b.mode !== "search") return null;
+  const heading = String(b.heading ?? "").trim().slice(0, MAX_BREAKDOWN_TEXT);
+  const headlineLabel = String(b.headlineLabel ?? "").trim().slice(0, MAX_BREAKDOWN_TEXT);
+  const headlineValue = String(b.headlineValue ?? "").trim().slice(0, MAX_BREAKDOWN_TEXT);
+  const rawLines = Array.isArray(b.lines) ? b.lines : [];
+
+  const lines: CalculatorBreakdownLine[] = rawLines
+    .slice(0, MAX_BREAKDOWN_LINES)
+    .map((line: unknown) => {
+      const l = (line ?? {}) as Record<string, unknown>;
+      return {
+        label: String(l.label ?? "").trim().slice(0, MAX_BREAKDOWN_TEXT),
+        value: String(l.value ?? "").trim().slice(0, MAX_BREAKDOWN_TEXT),
+        strong: l.strong === true,
+        accent: l.accent === true,
+      };
+    })
+    .filter((l) => l.label && l.value);
+
+  if (!heading || !headlineLabel || !headlineValue || lines.length === 0) return null;
+  return { mode: b.mode, heading, headlineLabel, headlineValue, lines };
+}

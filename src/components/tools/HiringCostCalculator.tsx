@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { ButtonLink } from "@/components/ui/Button";
 import Select from "@/components/ui/Select";
-import { packState, unpackState, type CalculatorBreakdownLine } from "@/lib/calculatorShare";
+import { packState, unpackState, type CalculatorBreakdownLine, type CalculatorBreakdownPayload } from "@/lib/calculatorShare";
 import {
   INDUSTRIES,
   SENIORITY,
@@ -377,26 +377,50 @@ function BackButton({ onClick }: { onClick: () => void }) {
   );
 }
 
-function CtaRow({ onSave, saved, emailHref }: { onSave: () => void; saved: boolean; emailHref: string }) {
+type SaveState = "idle" | "saving" | "saved" | "error";
+
+function CtaRow({
+  emailHref,
+  breakdown,
+  onSave,
+  saveState,
+}: {
+  emailHref: string;
+  breakdown: CalculatorBreakdownPayload;
+  onSave: (breakdown: CalculatorBreakdownPayload) => void;
+  saveState: SaveState;
+}) {
   return (
     <div className="mt-6 flex flex-wrap gap-3">
       <ButtonLink href={emailHref} variant="primary">Email me this breakdown</ButtonLink>
       <button
         type="button"
-        onClick={onSave}
-        className="inline-flex items-center justify-center rounded-full border border-navy/10 bg-white px-7 py-3.5 text-sm font-semibold text-navy transition-colors hover:bg-mist focus-visible:outline-2 focus-visible:outline-steel dark:border-white/10 dark:bg-navy-900 dark:text-cream dark:hover:bg-navy-800"
+        onClick={() => onSave(breakdown)}
+        disabled={saveState === "saving"}
+        className="inline-flex items-center justify-center rounded-full border border-navy/10 bg-white px-7 py-3.5 text-sm font-semibold text-navy transition-colors hover:bg-mist focus-visible:outline-2 focus-visible:outline-steel disabled:opacity-60 dark:border-white/10 dark:bg-navy-900 dark:text-cream dark:hover:bg-navy-800"
       >
-        {saved ? "Link copied ✓" : "Save these numbers"}
+        {saveState === "saving" ? "Saving…" : saveState === "saved" ? "Link copied ✓" : saveState === "error" ? "Try again" : "Save these numbers"}
       </button>
     </div>
   );
 }
 
-function ShareBox({ url, copied }: { url: string; copied: boolean }) {
+function SavedLinkBox({ url, error }: { url: string | null; error: string }) {
+  if (error) {
+    return (
+      <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-400/20 dark:bg-red-400/10 dark:text-red-300">
+        {error}
+      </div>
+    );
+  }
+  if (!url) return null;
   return (
     <div className="mt-4 rounded-2xl border border-navy/10 bg-white p-4 dark:border-white/10 dark:bg-navy-900">
-      <p className="text-sm font-semibold text-navy dark:text-cream">{copied ? "Copied — paste it anywhere" : "Copy this link to keep your numbers"}</p>
-      <p className="mt-1.5 text-[12.5px] leading-relaxed text-navy/70 dark:text-cream/70">Everything you&apos;ve typed is inside the link itself. Open it later, or send it to whoever signs off the budget — they&apos;ll see exactly what you see.</p>
+      <p className="text-sm font-semibold text-navy dark:text-cream">Link copied — save it somewhere safe</p>
+      <p className="mt-1.5 text-[12.5px] leading-relaxed text-navy/70 dark:text-cream/70">
+        Bookmark it, email it to yourself, whatever&apos;s easiest. Paste this link into any browser, any time, and
+        you&apos;ll see these exact numbers again — we keep them saved on our end.
+      </p>
       <input
         readOnly
         value={url}
@@ -417,8 +441,9 @@ export default function HiringCostCalculator() {
   const [delta, setDelta] = useState<number | null>(null);
   const prevTotal = useRef<number | null>(null);
   const [view, setView] = useState<"Whole year" | "One role">("Whole year");
-  const [shareUrl, setShareUrl] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [saveState, setSaveState] = useState<SaveState>("idle");
+  const [savedUrl, setSavedUrl] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState("");
 
   const [a, setA] = useState<EmployerInputs>(EMPLOYER_DEFAULTS);
   const [b, setB] = useState<StaffingInputs>(STAFFING_DEFAULTS);
@@ -443,18 +468,25 @@ export default function HiringCostCalculator() {
     if (d.v === "Whole year" || d.v === "One role") setView(d.v);
   }, []);
 
-  const makeShareLink = () => {
+  const saveResult = async (breakdown: CalculatorBreakdownPayload) => {
     if (typeof window === "undefined") return;
-    const url = window.location.origin + window.location.pathname + "#s=" + packState({ m: mode, v: view, a, b, c });
-    setShareUrl(url);
-    if (navigator.clipboard?.writeText) {
-      navigator.clipboard
-        .writeText(url)
-        .then(() => {
-          setCopied(true);
-          setTimeout(() => setCopied(false), 2500);
-        })
-        .catch(() => {});
+    setSaveState("saving");
+    setSaveError("");
+    try {
+      const res = await fetch("/api/hiring-cost-calculator/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(breakdown),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(json.error ?? "Couldn't save — please try again.");
+      const url = `${window.location.origin}/resources/hiring-cost-calculator/saved/${json.code}`;
+      setSavedUrl(url);
+      setSaveState("saved");
+      if (navigator.clipboard?.writeText) navigator.clipboard.writeText(url).catch(() => {});
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Couldn't save — please try again.");
+      setSaveState("error");
     }
   };
 
@@ -551,15 +583,14 @@ export default function HiringCostCalculator() {
       },
       { label: "Hiring cost with Mintex", value: money(R.totalToday - R.lo.total), strong: true, accent: true },
     ];
-    const employerEmailHref =
-      "/resources/hiring-cost-calculator/email-results#s=" +
-      packState({
-        mode: "employer",
-        heading: "Your hiring cost, per year",
-        headlineLabel: "What Mintex saves you",
-        headlineValue: `${money(R.lo.total)} – ${money(R.hi.total)}`,
-        lines: employerEmailLines,
-      });
+    const employerBreakdown: CalculatorBreakdownPayload = {
+      mode: "employer",
+      heading: "Your hiring cost, per year",
+      headlineLabel: "What Mintex saves you",
+      headlineValue: `${money(R.lo.total)} – ${money(R.hi.total)}`,
+      lines: employerEmailLines,
+    };
+    const employerEmailHref = "/resources/hiring-cost-calculator/email-results#s=" + packState(employerBreakdown);
 
     return (
       <div>
@@ -1115,8 +1146,8 @@ export default function HiringCostCalculator() {
               </div>
             </div>
 
-            <CtaRow onSave={makeShareLink} saved={copied} emailHref={employerEmailHref} />
-            {shareUrl && <ShareBox url={shareUrl} copied={copied} />}
+            <CtaRow emailHref={employerEmailHref} breakdown={employerBreakdown} onSave={saveResult} saveState={saveState} />
+            <SavedLinkBox url={savedUrl} error={saveError} />
 
             <p className="mt-6 text-xs leading-relaxed text-navy/60 dark:text-cream/60">Estimates for planning. Where you haven&apos;t given us a number we&apos;ve used a US industry benchmark — all editable above. Check against your own records before budgeting from this.</p>
           </div>
@@ -1143,15 +1174,14 @@ export default function HiringCostCalculator() {
       { label: "Risk if that recruiter doesn't work out", value: money(RB.hireRisk) },
       { label: "With Mintex — year one cost", value: "$0 until we place", accent: true },
     ];
-    const staffingEmailHref =
-      "/resources/hiring-cost-calculator/email-results#s=" +
-      packState({
-        mode: "staffing",
-        heading: "How many of your reqs never get worked?",
-        headlineLabel: "Reqs nobody gets to, per year",
-        headlineValue: `${Math.round(RB.uncovered)} reqs · ${money(RB.gpCreated)}`,
-        lines: staffingEmailLines,
-      });
+    const staffingBreakdown: CalculatorBreakdownPayload = {
+      mode: "staffing",
+      heading: "How many of your reqs never get worked?",
+      headlineLabel: "Reqs nobody gets to, per year",
+      headlineValue: `${Math.round(RB.uncovered)} reqs · ${money(RB.gpCreated)}`,
+      lines: staffingEmailLines,
+    };
+    const staffingEmailHref = "/resources/hiring-cost-calculator/email-results#s=" + packState(staffingBreakdown);
 
     return (
       <div>
@@ -1333,8 +1363,8 @@ export default function HiringCostCalculator() {
               </Note>
             </Disclose>
 
-            <CtaRow onSave={makeShareLink} saved={copied} emailHref={staffingEmailHref} />
-            {shareUrl && <ShareBox url={shareUrl} copied={copied} />}
+            <CtaRow emailHref={staffingEmailHref} breakdown={staffingBreakdown} onSave={saveResult} saveState={saveState} />
+            <SavedLinkBox url={savedUrl} error={saveError} />
 
             <p className="mt-6 text-xs leading-relaxed text-navy/60 dark:text-cream/60">Estimates for planning. We apply your own fill rate to uncovered reqs, not ours — change any number above and everything recalculates.</p>
           </div>
@@ -1361,15 +1391,14 @@ export default function HiringCostCalculator() {
     },
     { label: "Hours back in your partners' week", value: `${RC.annualHours.toLocaleString()} hrs`, accent: true },
   ];
-  const searchEmailHref =
-    "/resources/hiring-cost-calculator/email-results#s=" +
-    packState({
-      mode: "search",
-      heading: "How much of your fee is gone before you send a name?",
-      headlineLabel: "What the work costs you, per year",
-      headlineValue: money(RC.annualDelivery + RC.stalledCost),
-      lines: searchEmailLines,
-    });
+  const searchBreakdown: CalculatorBreakdownPayload = {
+    mode: "search",
+    heading: "How much of your fee is gone before you send a name?",
+    headlineLabel: "What the work costs you, per year",
+    headlineValue: money(RC.annualDelivery + RC.stalledCost),
+    lines: searchEmailLines,
+  };
+  const searchEmailHref = "/resources/hiring-cost-calculator/email-results#s=" + packState(searchBreakdown);
 
   return (
     <div>
@@ -1529,8 +1558,8 @@ export default function HiringCostCalculator() {
             )}
           </Note>
 
-          <CtaRow onSave={makeShareLink} saved={copied} emailHref={searchEmailHref} />
-          {shareUrl && <ShareBox url={shareUrl} copied={copied} />}
+          <CtaRow emailHref={searchEmailHref} breakdown={searchBreakdown} onSave={saveResult} saveState={saveState} />
+          <SavedLinkBox url={savedUrl} error={saveError} />
 
           <p className="mt-6 text-xs leading-relaxed text-navy/60 dark:text-cream/60">Estimates for planning. Every number above is yours to change.</p>
         </div>

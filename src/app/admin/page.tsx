@@ -3,12 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import { IMAGE_LOCATIONS, IMAGE_CATEGORY_INFO } from "@/lib/imageLocations";
 import type { InsightPost, InsightCategoryRow, CaseStudy, CaseStudyType, TeamMember, Industry } from "@/content/types";
+import type { CalculatorBreakdownLine } from "@/lib/calculatorShare";
 
 const STORAGE_KEY = "mintex_admin_pw";
-const TABS = ["jobs", "clients", "social", "stories", "images", "messages", "resumes", "inquiries", "insights", "caseStudies", "team", "industries", "curation"] as const;
+const TABS = ["jobs", "clients", "social", "stories", "images", "messages", "resumes", "inquiries", "insights", "caseStudies", "team", "industries", "curation", "calculatorSaves"] as const;
 type Tab = typeof TABS[number];
 const TAB_LABELS: Record<Tab, string> = {
-  jobs: "Jobs", clients: "Clients", social: "Social Links", stories: "Client Stories", images: "Site Images", messages: "Messages", resumes: "Resumes", inquiries: "Hiring Inquiries", insights: "Insights", caseStudies: "Case Studies", team: "Team", industries: "Industries", curation: "Interview Questions",
+  jobs: "Jobs", clients: "Clients", social: "Social Links", stories: "Client Stories", images: "Site Images", messages: "Messages", resumes: "Resumes", inquiries: "Hiring Inquiries", insights: "Insights", caseStudies: "Case Studies", team: "Team", industries: "Industries", curation: "Interview Questions", calculatorSaves: "Saved Calculators",
 };
 
 export default function AdminInsightsPage() {
@@ -103,6 +104,7 @@ export default function AdminInsightsPage() {
         {activeTab === "team" && <TeamMembersTab password={activePassword} />}
         {activeTab === "industries" && <IndustriesTab password={activePassword} />}
         {activeTab === "curation" && <CurationTab password={activePassword} />}
+        {activeTab === "calculatorSaves" && <CalculatorSavedResultsTab password={activePassword} />}
       </div>
     </div>
   );
@@ -2541,6 +2543,146 @@ function MessagesTab({ password }: { password: string }) {
                   Reply by Email
                 </a>
                 <button onClick={() => deleteMessage(selected.id)}
+                  className="px-4 py-2 rounded-full bg-red-50 hover:bg-red-100 text-red-600 text-sm font-semibold transition-colors">
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Saved Calculators Tab ─────────────────────────────────────────────────────
+type CalculatorSavedResult = {
+  id: string;
+  code: string;
+  mode: "employer" | "staffing" | "search";
+  heading: string;
+  headline_label: string;
+  headline_value: string;
+  lines: CalculatorBreakdownLine[];
+  created_at: string;
+};
+
+const CALCULATOR_MODE_LABELS: Record<CalculatorSavedResult["mode"], string> = {
+  employer: "Employer",
+  staffing: "Staffing firm",
+  search: "Executive search",
+};
+
+function CalculatorSavedResultsTab({ password }: { password: string }) {
+  const [results, setResults] = useState<CalculatorSavedResult[]>([]);
+  const [loaded, setLoaded] = useState(false);
+  const [loadError, setLoadError] = useState("");
+  const [selected, setSelected] = useState<CalculatorSavedResult | null>(null);
+
+  const fetchData = () =>
+    fetch("/api/admin/calculator-saved-results", { headers: { "x-admin-password": password } })
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) { setResults(data); setLoadError(""); }
+        else setLoadError(data.error ?? "Failed to load saved calculators");
+        setLoaded(true);
+      })
+      .catch(() => { setLoadError("Could not reach the server."); setLoaded(true); });
+
+  useEffect(() => { fetchData(); }, []);
+
+  const deleteResult = async (id: string) => {
+    if (!confirm("Delete this saved calculation? Its link will stop working.")) return;
+    setResults((prev) => prev.filter((r) => r.id !== id));
+    setSelected(null);
+    await fetch(`/api/admin/calculator-saved-results/${id}`, { method: "DELETE", headers: { "x-admin-password": password } });
+  };
+
+  if (!loaded) return (
+    <div className="flex items-center gap-3 py-10 text-navy/60">
+      <div className="w-5 h-5 border-2 border-navy/15 border-t-steel rounded-full animate-spin" />
+      Loading saved calculators…
+    </div>
+  );
+
+  return (
+    <div>
+      <div className="mb-5 flex items-center justify-between gap-4 flex-wrap">
+        <div>
+          <h2 className="text-xl font-semibold text-navy">Saved Hiring Cost Calculators</h2>
+          <p className="text-sm text-navy/60 mt-1">
+            {results.length} saved via &ldquo;Save these numbers&rdquo; on the calculator
+          </p>
+        </div>
+        <button type="button" onClick={fetchData}
+          className="px-3 py-2 rounded-full bg-white hover:bg-mist text-navy/70 text-sm border border-navy/10 transition-colors">
+          ↻ Refresh
+        </button>
+      </div>
+
+      {loadError && (
+        <div className="mb-6 px-4 py-3 rounded-lg text-sm font-medium bg-red-50 text-red-700 border border-red-200">
+          Couldn&apos;t load saved calculators: {loadError}
+          {loadError.includes("calculator_saved_results") && (
+            <> — run <code className="px-1 bg-red-100 rounded">supabase/migrations/024_calculator_saved_results.sql</code> in your Supabase SQL editor, then refresh.</>
+          )}
+        </div>
+      )}
+
+      {results.length === 0 && !loadError ? (
+        <div className="py-16 text-center text-navy/50 text-sm">No one has saved a calculation yet.</div>
+      ) : (
+        <div className="rounded-2xl border border-navy/10 bg-white divide-y divide-navy/10 overflow-hidden">
+          {results.map((r) => (
+            <div key={r.id} onClick={() => setSelected(r)}
+              className="flex items-center gap-4 px-5 py-4 cursor-pointer hover:bg-cream transition-colors">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-semibold text-navy truncate">{CALCULATOR_MODE_LABELS[r.mode]}</p>
+                  <span className="text-xs text-navy/40 font-mono flex-shrink-0">{r.code}</span>
+                </div>
+                <p className="text-xs text-navy/60 truncate mt-0.5">{r.headline_label} — {r.headline_value}</p>
+              </div>
+              <span className="text-xs text-navy/40 flex-shrink-0 whitespace-nowrap">
+                {new Date(r.created_at).toLocaleDateString([], { day: "2-digit", month: "short", year: "numeric" })}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {selected && (
+        <div className="fixed inset-0 bg-navy/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={(e) => e.target === e.currentTarget && setSelected(null)}>
+          <div className="bg-white rounded-2xl border border-navy/10 shadow-xl w-full max-w-lg max-h-[85vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-5 border-b border-navy/10 sticky top-0 bg-white z-10">
+              <div>
+                <h3 className="font-bold text-navy text-lg">{selected.heading}</h3>
+                <p className="text-xs text-navy/50 mt-0.5">
+                  {CALCULATOR_MODE_LABELS[selected.mode]} · {new Date(selected.created_at).toLocaleString()}
+                </p>
+              </div>
+              <button onClick={() => setSelected(null)} className="text-navy/50 hover:text-navy text-xl leading-none">&times;</button>
+            </div>
+            <div className="p-5 space-y-5">
+              <InfoCard label={selected.headline_label} value={selected.headline_value} />
+              <div>
+                <p className="text-[11px] font-semibold text-navy/50 uppercase tracking-wide mb-2">Breakdown</p>
+                <div className="bg-mist rounded-xl divide-y divide-navy/10 overflow-hidden">
+                  {selected.lines.map((line, i) => (
+                    <div key={i} className="flex items-center justify-between gap-3 px-4 py-2.5 text-sm">
+                      <span className={line.strong ? "font-semibold text-navy" : "text-navy/80"}>{line.label}</span>
+                      <span className={`font-semibold whitespace-nowrap ${line.accent ? "text-emerald-600" : "text-navy"}`}>{line.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <a href={`/resources/hiring-cost-calculator/saved/${selected.code}`} target="_blank" rel="noopener noreferrer"
+                  className="px-4 py-2 rounded-full bg-white border border-navy hover:bg-mist text-navy text-sm font-semibold transition-colors">
+                  Open Saved Link
+                </a>
+                <button onClick={() => deleteResult(selected.id)}
                   className="px-4 py-2 rounded-full bg-red-50 hover:bg-red-100 text-red-600 text-sm font-semibold transition-colors">
                   Delete
                 </button>
