@@ -60,7 +60,7 @@ export async function recordQuestionVote(
  *
  * A round that lost questions to suppression gets topped back up to its
  * original size via a targeted expansion call (the "stage:" axis, same
- * mechanism as the per-section "Add question" button) — the model sees the
+ * mechanism as the per-section "Generate More" button) — the model sees the
  * FULL original question list (including the ones about to be dropped) as
  * "don't repeat these," so a topped-up round doesn't just regenerate a
  * near-duplicate of what was just suppressed for being bad. If that call

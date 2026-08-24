@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import Section from "@/components/ui/Section";
 import InterviewKitView from "@/components/tools/InterviewKitView";
 import ResumeGapAnalysis from "@/components/tools/ResumeGapAnalysis";
+import EmailKitButton from "@/components/tools/EmailKitButton";
 import { loadKitBySlug, RateLimitError } from "@/lib/interviewKit/loadKit";
 import { pageMetadata } from "@/lib/pageMetadata";
 import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
@@ -75,6 +76,9 @@ export default async function InterviewKitPage({
           {kit.role.title} Interview Questions
         </h1>
         <p className="mt-4 max-w-2xl text-steel dark:text-steel-light">{kit.role.summary}</p>
+        <div className="mt-5">
+          <EmailKitButton kit={kit} slug={slug} />
+        </div>
       </Section>
 
       <Section background="cream">

@@ -350,3 +350,54 @@ export async function sendHiringCalculatorBreakdown(fields: {
     html: wrapEmail(body),
   });
 }
+
+// ─── Interview kit ─────────────────────────────────────────────────────────────
+// Unlike the calculator (client-computed, no stable URL to revisit), an
+// interview kit is deterministic from its slug — the email's job is mostly
+// to hand back a durable link, with the competency map and question counts
+// as a preview of what's behind it.
+export async function sendInterviewKitEmail(fields: {
+  to: string;
+  roleTitle: string;
+  state: string;
+  competencies: string[];
+  sections: { label: string; count: number }[];
+  kitUrl: string;
+}) {
+  const fromName  = process.env.SMTP_FROM_NAME  || 'Mintex Staffing';
+  const fromEmail = process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER;
+
+  const totalQuestions = fields.sections.reduce((sum, s) => sum + s.count, 0);
+
+  const competencyPills = fields.competencies.map((c) => `
+    <span style="display:inline-block;background:${BRAND.cream};color:${BRAND.navy};font-size:12px;font-weight:600;padding:6px 12px;border-radius:999px;margin:0 6px 6px 0;">${escapeHtml(c)}</span>
+  `).join('');
+
+  const sectionRows = fields.sections.map((s) => `
+    <div style="display:flex;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid ${BRAND.tanLight};">
+      <span style="color:${BRAND.navy};">${escapeHtml(s.label)}</span>
+      <span style="font-weight:600;color:${BRAND.navy};white-space:nowrap;">${s.count} question${s.count === 1 ? '' : 's'}</span>
+    </div>
+  `).join('');
+
+  const body = `
+    <h2 style="margin:0 0 4px;color:${BRAND.navy};">${escapeHtml(fields.roleTitle)} Interview Kit</h2>
+    <p style="margin:0 0 20px;color:${BRAND.steel};">Here's your saved link, competency map, and question breakdown — plus your rights in ${escapeHtml(fields.state)}.</p>
+    <div style="background:${BRAND.cream};border-radius:10px;padding:16px 20px;margin-bottom:20px;">
+      <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:${BRAND.steel};">Total practice questions</p>
+      <p style="margin:6px 0 0;font-size:26px;font-weight:700;color:${BRAND.navy};">${totalQuestions}</p>
+    </div>
+    <p style="margin:0 0 8px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:${BRAND.steel};">Competencies covered</p>
+    <div style="margin:0 0 20px;">${competencyPills}</div>
+    <div style="border-radius:10px;overflow:hidden;margin-bottom:20px;">${sectionRows}</div>
+    <p style="margin:24px 0 0;">${button('View your interview kit', fields.kitUrl)}</p>
+    <p style="margin:16px 0 0;font-size:12px;color:${BRAND.steel};">Bookmark this link — it stays up to date and works on any device.</p>
+  `;
+
+  await sendBrandedMail({
+    from: `"${fromName}" <${fromEmail}>`,
+    to: fields.to,
+    subject: `Your ${fields.roleTitle} Interview Kit — Mintex Staffing`,
+    html: wrapEmail(body),
+  });
+}
