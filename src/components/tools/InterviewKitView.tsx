@@ -67,10 +67,10 @@ export default function InterviewKitView({
         <h3 className="font-heading text-xl font-semibold text-navy dark:text-cream">
           {isEmployer ? `Compliance in ${kit.region.state}` : `Know your rights in ${kit.region.state}`}
         </h3>
-        <p className="mt-1 text-xs text-navy/50 dark:text-cream/50">
+        <p className="mt-1 text-xs text-navy/70 dark:text-cream/70">
           Not legal advice — verify anything specific with {kit.region.state}&apos;s labor office before relying on
           it.{" "}
-          <Link href={`/interview-rights/${stateToSlug(kit.region.state)}`} className="font-medium text-steel hover:text-navy dark:text-steel-light dark:hover:text-cream">
+          <Link href={`/interview-rights/${stateToSlug(kit.region.state)}`} className="font-semibold text-navy/80 hover:text-navy dark:text-cream/80 dark:hover:text-cream">
             Full {kit.region.state} rights guide →
           </Link>
         </p>

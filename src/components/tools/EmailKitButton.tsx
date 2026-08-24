@@ -53,7 +53,7 @@ export default function EmailKitButton({ kit, slug }: { kit: InterviewKit; slug:
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-1.5 rounded-full border border-navy/15 px-4 py-2 text-sm font-medium text-navy/70 transition-colors hover:border-steel hover:text-steel print:hidden dark:border-white/15 dark:text-cream/70 dark:hover:border-steel-light dark:hover:text-steel-light"
+        className="inline-flex items-center gap-1.5 rounded-full border border-navy bg-white px-4 py-2 text-sm font-semibold text-navy transition-colors hover:bg-mist print:hidden dark:border-cream/30 dark:bg-navy-900 dark:text-cream dark:hover:bg-navy-800"
       >
         <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4" stroke="currentColor" strokeWidth="1.8">
           <path d="M4 6.5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1Z M3.5 7.5l8.5 6 8.5-6" strokeLinecap="round" strokeLinejoin="round" />

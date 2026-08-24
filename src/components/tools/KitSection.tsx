@@ -85,7 +85,7 @@ export default function KitSection({
             onClick={handleAddMore}
             disabled={loading}
             title={`Add more ${STAGE_LABELS[section.stage] ?? section.stage} questions`}
-            className="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-navy/15 px-3 py-1.5 text-xs font-medium text-navy/60 transition-colors hover:border-steel hover:text-steel disabled:opacity-50 print:hidden dark:border-white/15 dark:text-cream/60 dark:hover:border-steel-light dark:hover:text-steel-light"
+            className="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-navy bg-white px-3 py-1.5 text-xs font-semibold text-navy transition-colors hover:bg-mist disabled:opacity-50 print:hidden dark:border-cream/30 dark:bg-navy-900 dark:text-cream dark:hover:bg-navy-800"
           >
             <PlusIcon spinning={loading} />
             {loading ? "Generating…" : "Generate More"}
