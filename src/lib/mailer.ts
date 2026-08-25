@@ -361,11 +361,11 @@ export async function sendInterviewKitEmail(fields: {
   roleTitle: string;
   state: string;
   competencies: string[];
-  sections: { label: string; count: number; questions?: string[] }[];
+  sections: { label: string; count: number }[];
   // null for the JD-paste/resume flow, which has no server-side page to
-  // link back to (the kit only ever lived in that browser tab) — in that
-  // case fields.sections carries full question text instead, and this
-  // email becomes the only copy rather than a pointer to a saved one.
+  // link back to (the kit only ever lived in that browser tab) — the email
+  // stays the same compact summary either way, just without the "view kit"
+  // button, since there's nowhere for it to point.
   kitUrl: string | null;
 }) {
   const fromName  = process.env.SMTP_FROM_NAME  || 'Mintex Staffing';
@@ -377,22 +377,12 @@ export async function sendInterviewKitEmail(fields: {
     <span style="display:inline-block;background:${BRAND.cream};color:${BRAND.navy};font-size:12px;font-weight:600;padding:6px 12px;border-radius:999px;margin:0 6px 6px 0;">${escapeHtml(c)}</span>
   `).join('');
 
-  const sectionRows = fields.sections.map((s) => {
-    const questionList = s.questions && s.questions.length > 0 ? `
-      <ol style="margin:8px 0 0;padding-left:20px;color:${BRAND.navy};">
-        ${s.questions.map((q) => `<li style="margin-bottom:6px;">${escapeHtml(q)}</li>`).join('')}
-      </ol>
-    ` : '';
-    return `
-      <div style="padding:10px 0;border-bottom:1px solid ${BRAND.tanLight};">
-        <div style="display:flex;justify-content:space-between;gap:16px;">
-          <span style="font-weight:600;color:${BRAND.navy};">${escapeHtml(s.label)}</span>
-          <span style="font-weight:600;color:${BRAND.navy};white-space:nowrap;">${s.count} question${s.count === 1 ? '' : 's'}</span>
-        </div>
-        ${questionList}
-      </div>
-    `;
-  }).join('');
+  const sectionRows = fields.sections.map((s) => `
+    <div style="display:flex;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid ${BRAND.tanLight};">
+      <span style="color:${BRAND.navy};">${escapeHtml(s.label)}</span>
+      <span style="font-weight:600;color:${BRAND.navy};white-space:nowrap;">${s.count} question${s.count === 1 ? '' : 's'}</span>
+    </div>
+  `).join('');
 
   const ctaOrNote = fields.kitUrl
     ? `

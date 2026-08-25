@@ -3054,26 +3054,54 @@ function slugify(title: string): string {
     .replace(/^-|-$/g, "");
 }
 
+type InsightSourceRow = { label: string; url: string };
+
 type InsightDraft = {
   id?: string; slug: string; category: string; title: string;
   excerpt: string; body: string; published_at: string; author: string; image_url: string | null;
   author_title: string; author_bio: string; author_photo_url: string;
+  sources: InsightSourceRow[];
 };
+
+// The body is still stored as plain paragraphs (no schema change) — sources
+// are just one more paragraph in that array, formatted as
+// "Sources: [label](url) · [label](url)". This section only exists so the
+// admin doesn't have to hand-type that markdown; it parses back out of the
+// body on load and gets serialized back into it on save.
+const SOURCES_LINE_RE = /^Sources:\s*/i;
+const SOURCE_LINK_RE = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+
+function parseSourcesLine(line: string): InsightSourceRow[] {
+  const rows: InsightSourceRow[] = [];
+  let match: RegExpExecArray | null;
+  SOURCE_LINK_RE.lastIndex = 0;
+  while ((match = SOURCE_LINK_RE.exec(line))) rows.push({ label: match[1], url: match[2] });
+  return rows;
+}
+
+function formatSourcesLine(sources: InsightSourceRow[]): string | null {
+  const valid = sources.filter((s) => s.label.trim() && s.url.trim());
+  if (valid.length === 0) return null;
+  return "Sources: " + valid.map((s) => `[${s.label.trim()}](${s.url.trim()})`).join(" · ");
+}
 
 function blankDraft(defaultCategory: string): InsightDraft {
   return {
     slug: "", category: defaultCategory, title: "", excerpt: "", body: "",
     published_at: new Date().toISOString().slice(0, 10), author: "Mintex Staffing Editorial", image_url: null,
-    author_title: "", author_bio: "", author_photo_url: "",
+    author_title: "", author_bio: "", author_photo_url: "", sources: [],
   };
 }
 
 function toDraft(post: InsightPost): InsightDraft {
+  const sourcesLine = post.body.find((p) => SOURCES_LINE_RE.test(p));
+  const otherParagraphs = post.body.filter((p) => p !== sourcesLine);
   return {
     id: post.id, slug: post.slug, category: post.category, title: post.title,
-    excerpt: post.excerpt, body: post.body.join("\n\n"), published_at: post.published_at,
+    excerpt: post.excerpt, body: otherParagraphs.join("\n\n"), published_at: post.published_at,
     author: post.author, image_url: post.image_url,
     author_title: post.author_title ?? "", author_bio: post.author_bio ?? "", author_photo_url: post.author_photo_url ?? "",
+    sources: sourcesLine ? parseSourcesLine(sourcesLine) : [],
   };
 }
 
@@ -3147,6 +3175,8 @@ function InsightsTab({ password }: { password: string }) {
     setSaveError("");
 
     const bodyParagraphs = draft.body.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+    const sourcesLine = formatSourcesLine(draft.sources);
+    if (sourcesLine) bodyParagraphs.push(sourcesLine);
     const payload = {
       slug: draft.slug.trim() || slugify(draft.title),
       category: draft.category,
@@ -3405,6 +3435,49 @@ function InsightsTab({ password }: { password: string }) {
                     </p>
                   );
                 })()}
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-navy/60 mb-1">Sources</label>
+                <p className="text-[11px] text-navy/50 mb-1.5">Shown as a linked &quot;Sources:&quot; line at the end of the article.</p>
+                <div className="space-y-2">
+                  {draft.sources.map((s, i) => (
+                    <div key={i} className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="Label, e.g. SHRM, The Real Cost of Recruitment (2022)"
+                        value={s.label}
+                        onChange={(e) =>
+                          updateDraft({ sources: draft.sources.map((row, ri) => (ri === i ? { ...row, label: e.target.value } : row)) })
+                        }
+                        className="flex-1 px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none"
+                      />
+                      <input
+                        type="url"
+                        placeholder="https://..."
+                        value={s.url}
+                        onChange={(e) =>
+                          updateDraft({ sources: draft.sources.map((row, ri) => (ri === i ? { ...row, url: e.target.value } : row)) })
+                        }
+                        className="w-64 px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => updateDraft({ sources: draft.sources.filter((_, ri) => ri !== i) })}
+                        className="px-3 rounded-lg border border-navy/10 text-navy/50 hover:border-red-200 hover:text-red-600"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => updateDraft({ sources: [...draft.sources, { label: "", url: "" }] })}
+                  className="mt-2 px-3 py-1.5 rounded-full bg-white border border-navy/15 hover:bg-mist text-navy/70 text-xs font-semibold transition-colors"
+                >
+                  + Add source
+                </button>
               </div>
 
               {saveError && <p className="text-red-600 text-sm">{saveError}</p>}

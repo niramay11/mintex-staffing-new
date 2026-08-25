@@ -34,6 +34,38 @@ function isHeadingLine(text: string): boolean {
   return !/[.!,;:]$/.test(t);
 }
 
+// The admin's "Sources" section (a repeatable label+URL list, not a rich-text
+// editor) serializes each entry as "[label](url)" into the Sources: line —
+// this turns that markdown-lite syntax back into real, clickable links.
+function renderInlineLinks(text: string) {
+  const parts: Array<string | { label: string; url: string }> = [];
+  const linkRe = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  while ((match = linkRe.exec(text))) {
+    if (match.index > lastIndex) parts.push(text.slice(lastIndex, match.index));
+    parts.push({ label: match[1], url: match[2] });
+    lastIndex = linkRe.lastIndex;
+  }
+  if (lastIndex < text.length) parts.push(text.slice(lastIndex));
+
+  return parts.map((part, i) =>
+    typeof part === "string" ? (
+      <span key={i}>{part}</span>
+    ) : (
+      <a
+        key={i}
+        href={part.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 underline decoration-blue-600/50 underline-offset-2 hover:text-blue-700 hover:decoration-blue-700 dark:text-blue-400 dark:decoration-blue-400/50 dark:hover:text-blue-300 dark:hover:decoration-blue-300"
+      >
+        {part.label}
+      </a>
+    )
+  );
+}
+
 const CTA_ROUTES: Array<{ test: RegExp; href: string }> = [
   { test: /hiring cost calculator/i, href: "/resources/hiring-cost-calculator" },
   { test: /interview (kit|question|prep)/i, href: "/resources/ai-interview-generator" },
@@ -298,12 +330,30 @@ export default async function InsightPostPage({
             })}
 
             {footnoteLines.length > 0 && (
-              <div className="!mt-10 space-y-2 border-t border-navy/10 pt-6 text-xs leading-relaxed text-navy/50 dark:border-white/10 dark:text-cream/50">
-                {footnoteLines.map((line, i) => (
-                  <p key={i} className={isDisclaimerLine(line) ? "italic" : ""}>
-                    {line}
-                  </p>
-                ))}
+              <div className="!mt-10 space-y-3 border-t border-navy/10 pt-6 text-sm leading-relaxed text-navy dark:border-white/10 dark:text-cream">
+                {footnoteLines.map((line, i) => {
+                  if (isSourcesLine(line)) {
+                    const entries = line.replace(/^Sources:\s*/i, "").split(/\s*·\s*/).filter(Boolean);
+                    return (
+                      <div key={i} className="flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
+                        <span className="font-semibold">Sources:</span>
+                        {entries.map((entry, j) => (
+                          <span key={j} className="inline-flex items-baseline">
+                            {renderInlineLinks(entry)}
+                            {j < entries.length - 1 && (
+                              <span className="ml-1.5 text-navy/40 dark:text-cream/40">·</span>
+                            )}
+                          </span>
+                        ))}
+                      </div>
+                    );
+                  }
+                  return (
+                    <p key={i} className={isDisclaimerLine(line) ? "italic" : ""}>
+                      {renderInlineLinks(line)}
+                    </p>
+                  );
+                })}
               </div>
             )}
 
