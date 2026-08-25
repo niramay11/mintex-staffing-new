@@ -117,24 +117,51 @@ function demoteDescriptionHeadings(html: string): string {
   return html.replace(/<(\/?)h1(\s|>)/gi, "<$1h2$2");
 }
 
+function raceTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
+  return Promise.race([promise, new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))]);
+}
+
+// getJobMap()/getCachedDescription() each independently fall back to a live
+// Ceipal call whenever their own cache is cold (see ceipal-job-map.ts and
+// jobDescriptionCache.ts) — measured 8-12+ seconds for a single description
+// fetch alone. That's well past what a crawler will wait for a page to
+// render (confirmed live: Semrush flagged this exact page, jpc-1535, as slow
+// at 3.59s). This page already has a perfectly good fallback on hand — the
+// plain-text description that came with the job listing itself — so there's
+// no reason to make a visitor (or crawler) wait out a cold Ceipal call for
+// the nicer, richly-formatted v2 description. Racing against a short budget
+// and falling back instantly keeps the page fast regardless of cache state;
+// `after()` lets the abandoned lookup keep running in the background so it
+// still finishes warming the cache for the next visitor.
+const DESCRIPTION_TIMEOUT_MS = 2_500;
+const TIMED_OUT = Symbol("description-lookup-timed-out");
+
 async function loadDescription(job: CeipalJob): Promise<string> {
   const fallback = job.public_job_description || job.job_description || "";
-  try {
+
+  const lookup = (async (): Promise<string | null> => {
     const jobMap = await getJobMap();
     const id = jobMap[job.job_code];
     if (!id) {
       console.warn(`[job-page] no v2 id found for job_code "${job.job_code}" — jobMap has ${Object.keys(jobMap).length} entries`);
-      return demoteDescriptionHeadings(fallback);
+      return null;
     }
     const desc = await getCachedDescription(job.job_code, id);
     if (!desc.public_job_description && !desc.job_description) {
       console.warn(`[job-page] getCachedDescription returned empty for job_code "${job.job_code}" (id ${id})`);
     }
-    return demoteDescriptionHeadings(desc.public_job_description || desc.job_description || fallback);
-  } catch (err) {
+    return desc.public_job_description || desc.job_description || null;
+  })().catch((err) => {
     console.error(`[job-page] loadDescription threw for job_code "${job.job_code}":`, err);
+    return null;
+  });
+
+  const result = await raceTimeout(lookup, DESCRIPTION_TIMEOUT_MS, TIMED_OUT as unknown as string | null);
+  if ((result as unknown) === TIMED_OUT) {
+    after(() => lookup.catch(() => {}));
     return demoteDescriptionHeadings(fallback);
   }
+  return demoteDescriptionHeadings(result || fallback);
 }
 
 export async function generateMetadata({

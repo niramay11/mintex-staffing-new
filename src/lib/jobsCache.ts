@@ -1,4 +1,5 @@
 import { unstable_cache, revalidateTag } from 'next/cache';
+import { after } from 'next/server';
 import { ceipalFetch, CEIPAL_JOBS_URL } from '@/lib/ceipal';
 import { supabaseAdmin } from '@/lib/supabase';
 
@@ -382,6 +383,20 @@ function getCachedAllJobsSingleFlight(): Promise<JobRecord[]> {
 // tripwire for that specific case, not the primary defense it used to be.
 const MIN_PLAUSIBLE_JPC_JOBS = 1300;
 
+// A cold/expired cache makes getCachedAllJobsSingleFlight() run the live
+// Ceipal pull inline (measured up to ~40s on Vercel — see TIME_BUDGET_MS
+// above), which is well past what a crawler (Semrush/Googlebot both time out
+// around 5s) will wait for — confirmed live via Semrush flagging sitemap.xml
+// and several /get-hired/jobs/* pages as "not crawled" for exactly this
+// reason. Racing the live call against a short budget and, on timeout,
+// answering from whatever's already durably in Supabase keeps every response
+// fast regardless of cache state; `after()` keeps the abandoned live pull
+// running in the background (on Vercel a function normally tears down once
+// its response is sent) so it still finishes populating the cache for
+// whoever's next.
+const READ_TIMEOUT_MS = 3_500;
+const TIMED_OUT = Symbol('timed-out');
+
 // Shared by /api/jobs (client-side refetches, force-refresh) and any Server
 // Component that wants to prefetch jobs before first paint (see
 // src/app/get-hired/page.tsx).
@@ -392,7 +407,17 @@ export async function getCachedJobs(opts?: { forceRefresh?: boolean }): Promise<
 }> {
   try {
     if (opts?.forceRefresh) revalidateTag(CACHE_TAG, 'max');
-    const jobs = await getCachedAllJobsSingleFlight();
+    const pending = getCachedAllJobsSingleFlight();
+    // forceRefresh is only ever triggered by an explicit user action (admin
+    // "Sync Now", a client-side force-refetch) that wants confirmed-fresh
+    // data back — never by an ordinary page render — so it always waits out
+    // the real result instead of racing the timeout below.
+    const result = opts?.forceRefresh
+      ? await pending
+      : await raceTimeout(pending, READ_TIMEOUT_MS, TIMED_OUT as unknown as JobRecord[]);
+    const timedOut = (result as unknown) === TIMED_OUT;
+    const jobs = timedOut ? await readAllJobsFromSupabase() : result;
+    if (timedOut) after(() => pending.catch(() => {}));
     // This check (and the revalidateTag it triggers) has to live out here,
     // not inside fetchAllJobs — Next.js does not allow revalidateTag to be
     // called from inside a function that's itself wrapped by unstable_cache
@@ -406,7 +431,7 @@ export async function getCachedJobs(opts?: { forceRefresh?: boolean }): Promise<
       );
       revalidateTag(CACHE_TAG, 'max');
     }
-    return { jobs, cachedAt: Date.now(), stale: false };
+    return { jobs, cachedAt: Date.now(), stale: timedOut };
   } catch (err) {
     console.error('[jobs] getCachedJobs error:', err);
     return { jobs: [], cachedAt: Date.now(), stale: true };
