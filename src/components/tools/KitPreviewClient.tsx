@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import InterviewKitView from "@/components/tools/InterviewKitView";
 import ResumeGapAnalysis from "@/components/tools/ResumeGapAnalysis";
+import EmailKitButton from "@/components/tools/EmailKitButton";
 import type { InterviewKit } from "@/lib/interviewKit/schema";
 
 export const JD_KIT_STORAGE_KEY = "mintex-jd-kit-preview";
@@ -63,7 +64,7 @@ export default function KitPreviewClient() {
             This preview isn&apos;t available — it only lives in this browser tab and doesn&apos;t survive being
             reopened elsewhere.
           </p>
-          <Link href="/resources/ai-interview-generator" className="mt-3 inline-block font-medium text-steel hover:text-navy dark:text-steel-light dark:hover:text-cream">
+          <Link href="/resources/ai-interview-generator" className="mt-3 inline-block font-semibold text-navy/80 hover:text-navy dark:text-cream/80 dark:hover:text-cream">
             Generate a new kit →
           </Link>
         </div>
@@ -76,13 +77,16 @@ export default function KitPreviewClient() {
   return (
     <>
       <PreviewSection className="!py-12 sm:!py-14 lg:!py-16">
-        <Link href="/resources/ai-interview-generator" className="text-sm font-medium text-steel hover:text-navy dark:text-steel-light dark:hover:text-cream">
+        <Link href="/resources/ai-interview-generator" className="text-sm font-medium text-navy/80 hover:text-navy dark:text-cream/80 dark:hover:text-cream">
           ← Generate another kit
         </Link>
         <h1 className="mt-3 font-heading text-4xl font-bold text-navy sm:text-5xl dark:text-cream">
           {kit.role.title} Interview Questions
         </h1>
-        <p className="mt-4 max-w-2xl text-steel dark:text-steel-light">{kit.role.summary}</p>
+        <p className="mt-4 max-w-2xl text-navy/70 dark:text-cream/70">{kit.role.summary}</p>
+        <div className="mt-5">
+          <EmailKitButton kit={kit} />
+        </div>
       </PreviewSection>
 
       <PreviewSection>

@@ -143,7 +143,7 @@ export default function AiInterviewGenerator({ industries }: { industries: Indus
               {navigating ? "Loading your kit…" : "Generate Interview Kit"}
             </Button>
             {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
-            <p className="text-xs text-navy/40 dark:text-cream/40">
+            <p className="text-xs text-navy/70 dark:text-cream/70">
               AI-generated to help you prepare — not legal advice. Employment law varies by state; verify anything
               specific with your state&apos;s labor office before relying on it.
             </p>

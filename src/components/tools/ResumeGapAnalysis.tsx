@@ -84,11 +84,11 @@ export default function ResumeGapAnalysis({
   return (
     <section className="rounded-2xl border border-navy/10 bg-white p-6 dark:border-white/10 dark:bg-navy-900">
       <h3 className="font-heading text-xl font-semibold text-navy dark:text-cream">See how your background stacks up</h3>
-      <p className="mt-1 text-sm text-navy/60 dark:text-cream/60">
+      <p className="mt-1 text-sm text-navy/70 dark:text-cream/70">
         Share your resume to see your strengths for this specific role, gaps an interviewer will likely probe, and
         which of the questions above are most likely for you.
       </p>
-      <p className="mt-2 text-xs text-navy/40 dark:text-cream/40">
+      <p className="mt-2 text-xs text-navy/70 dark:text-cream/70">
         {GEMINI_PAID_TIER_CONFIRMED
           ? "Your resume is processed in memory to generate this analysis and is never stored. It is sent to our AI provider for analysis under terms that prohibit using it for model training. Nothing is saved after this page closes."
           : "Processed in memory to generate this analysis and never stored — an uploaded file is read for its text and discarded, never saved to disk. We have not yet independently confirmed whether our AI provider's terms exclude this from model training, so avoid uploading anything you would not want a third party to see."}

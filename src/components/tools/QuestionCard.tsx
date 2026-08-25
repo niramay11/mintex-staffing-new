@@ -27,7 +27,7 @@ export default function QuestionCard({
         </span>
       </summary>
       <div className="mt-4 space-y-3 border-t border-navy/10 pt-4 text-sm text-navy/75 dark:border-white/10 dark:text-cream/75">
-        <p className="italic text-navy/60 dark:text-cream/60">{q.subtext}</p>
+        <p className="italic text-navy/80 dark:text-cream/80">{q.subtext}</p>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <p className="font-semibold text-navy dark:text-cream">Strong answer includes</p>

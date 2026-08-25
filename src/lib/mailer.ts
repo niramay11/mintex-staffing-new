@@ -361,8 +361,12 @@ export async function sendInterviewKitEmail(fields: {
   roleTitle: string;
   state: string;
   competencies: string[];
-  sections: { label: string; count: number }[];
-  kitUrl: string;
+  sections: { label: string; count: number; questions?: string[] }[];
+  // null for the JD-paste/resume flow, which has no server-side page to
+  // link back to (the kit only ever lived in that browser tab) — in that
+  // case fields.sections carries full question text instead, and this
+  // email becomes the only copy rather than a pointer to a saved one.
+  kitUrl: string | null;
 }) {
   const fromName  = process.env.SMTP_FROM_NAME  || 'Mintex Staffing';
   const fromEmail = process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER;
@@ -373,16 +377,35 @@ export async function sendInterviewKitEmail(fields: {
     <span style="display:inline-block;background:${BRAND.cream};color:${BRAND.navy};font-size:12px;font-weight:600;padding:6px 12px;border-radius:999px;margin:0 6px 6px 0;">${escapeHtml(c)}</span>
   `).join('');
 
-  const sectionRows = fields.sections.map((s) => `
-    <div style="display:flex;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid ${BRAND.tanLight};">
-      <span style="color:${BRAND.navy};">${escapeHtml(s.label)}</span>
-      <span style="font-weight:600;color:${BRAND.navy};white-space:nowrap;">${s.count} question${s.count === 1 ? '' : 's'}</span>
-    </div>
-  `).join('');
+  const sectionRows = fields.sections.map((s) => {
+    const questionList = s.questions && s.questions.length > 0 ? `
+      <ol style="margin:8px 0 0;padding-left:20px;color:${BRAND.navy};">
+        ${s.questions.map((q) => `<li style="margin-bottom:6px;">${escapeHtml(q)}</li>`).join('')}
+      </ol>
+    ` : '';
+    return `
+      <div style="padding:10px 0;border-bottom:1px solid ${BRAND.tanLight};">
+        <div style="display:flex;justify-content:space-between;gap:16px;">
+          <span style="font-weight:600;color:${BRAND.navy};">${escapeHtml(s.label)}</span>
+          <span style="font-weight:600;color:${BRAND.navy};white-space:nowrap;">${s.count} question${s.count === 1 ? '' : 's'}</span>
+        </div>
+        ${questionList}
+      </div>
+    `;
+  }).join('');
+
+  const ctaOrNote = fields.kitUrl
+    ? `
+      <p style="margin:24px 0 0;">${button('View your interview kit', fields.kitUrl)}</p>
+      <p style="margin:16px 0 0;font-size:12px;color:${BRAND.steel};">Bookmark this link — it stays up to date and works on any device.</p>
+    `
+    : `
+      <p style="margin:24px 0 0;font-size:12px;color:${BRAND.steel};">This kit was generated from a pasted job posting and isn't saved anywhere on our end — this email is the only copy, so hang onto it.</p>
+    `;
 
   const body = `
     <h2 style="margin:0 0 4px;color:${BRAND.navy};">${escapeHtml(fields.roleTitle)} Interview Kit</h2>
-    <p style="margin:0 0 20px;color:${BRAND.steel};">Here's your saved link, competency map, and question breakdown — plus your rights in ${escapeHtml(fields.state)}.</p>
+    <p style="margin:0 0 20px;color:${BRAND.steel};">Here's your competency map and question breakdown — plus your rights in ${escapeHtml(fields.state)}.</p>
     <div style="background:${BRAND.cream};border-radius:10px;padding:16px 20px;margin-bottom:20px;">
       <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:${BRAND.steel};">Total practice questions</p>
       <p style="margin:6px 0 0;font-size:26px;font-weight:700;color:${BRAND.navy};">${totalQuestions}</p>
@@ -390,8 +413,7 @@ export async function sendInterviewKitEmail(fields: {
     <p style="margin:0 0 8px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:${BRAND.steel};">Competencies covered</p>
     <div style="margin:0 0 20px;">${competencyPills}</div>
     <div style="border-radius:10px;overflow:hidden;margin-bottom:20px;">${sectionRows}</div>
-    <p style="margin:24px 0 0;">${button('View your interview kit', fields.kitUrl)}</p>
-    <p style="margin:16px 0 0;font-size:12px;color:${BRAND.steel};">Bookmark this link — it stays up to date and works on any device.</p>
+    ${ctaOrNote}
   `;
 
   await sendBrandedMail({

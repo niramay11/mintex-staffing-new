@@ -6,7 +6,13 @@ import { STAGE_LABELS } from "@/components/tools/KitSection";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export default function EmailKitButton({ kit, slug }: { kit: InterviewKit; slug: string }) {
+// `slug` is only set for the by-title flow (/interview-questions/[slug]),
+// which has a stable, revisitable URL — the email links back to it. The
+// JD-paste/resume flow has no server-side page at all (kit lives only in
+// this browser tab's sessionStorage, by design — see KitPreviewClient), so
+// there's nothing to link to; instead we send the full question text per
+// section so the email itself is the only copy the person needs.
+export default function EmailKitButton({ kit, slug }: { kit: InterviewKit; slug?: string }) {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
@@ -36,6 +42,7 @@ export default function EmailKitButton({ kit, slug }: { kit: InterviewKit; slug:
           sections: kit.sections.map((s) => ({
             label: STAGE_LABELS[s.stage] ?? s.stage,
             count: s.questions.length,
+            ...(slug ? {} : { questions: s.questions.map((q) => q.question) }),
           })),
         }),
       });
@@ -66,7 +73,7 @@ export default function EmailKitButton({ kit, slug }: { kit: InterviewKit; slug:
   if (state === "sent") {
     return (
       <p className="text-sm text-navy/70 dark:text-cream/70">
-        Sent to <b>{email}</b> — check your inbox for the link.
+        Sent to <b>{email}</b> — check your inbox{slug ? " for the link" : " for the full kit"}.
       </p>
     );
   }
