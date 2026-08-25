@@ -45,13 +45,14 @@ function BackToTopButton() {
       type="button"
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       aria-label="Back to top"
-      className={`fixed bottom-24 right-6 z-50 flex h-11 w-11 items-center justify-center rounded-full bg-white border border-navy text-navy shadow-lg transition-all duration-300 hover:bg-mist dark:border-white/15 dark:bg-navy-900 dark:text-cream dark:hover:bg-navy-800 ${
+      className={`fixed bottom-[260px] right-6 z-50 flex h-20 w-20 flex-col items-center justify-center gap-1 rounded-full bg-white shadow-[0_4px_16px_rgba(0,0,0,0.1),0_8px_26px_rgba(0,0,0,0.04),0_2px_35px_rgba(0,0,0,0.02)] transition-[opacity,transform] duration-300 hover:bg-steel/10 dark:border dark:border-white/10 dark:bg-navy-900 dark:hover:bg-navy-800 ${
         visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"
       }`}
     >
-      <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
-        <path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <svg viewBox="0 0 24 24" fill="none" className="h-8 w-8 text-steel dark:text-steel-light" aria-hidden="true">
+        <path d="M5 15l7-7 7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
+      <span className="text-lg font-medium text-steel dark:text-steel-light">Top</span>
     </button>
   );
 }

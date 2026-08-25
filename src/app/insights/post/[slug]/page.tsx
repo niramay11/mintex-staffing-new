@@ -432,17 +432,6 @@ export default async function InsightPostPage({
           <ShareIcons postUrl={postUrl} title={post.title} />
         </div>
       </Section>
-
-      <a
-        href="#top"
-        aria-label="Back to top"
-        className="fixed bottom-6 right-6 z-40 flex h-14 w-14 flex-col items-center justify-center gap-0.5 rounded-full border border-navy/10 bg-white text-navy shadow-lg transition-transform hover:-translate-y-0.5 dark:border-white/10 dark:bg-navy-900 dark:text-cream"
-      >
-        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4">
-          <path d="M5 15l7-7 7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-        <span className="text-[10px] font-semibold">Top</span>
-      </a>
     </>
   );
 }
