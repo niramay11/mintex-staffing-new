@@ -88,7 +88,7 @@ export default function KitSection({
             className="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-navy bg-white px-3 py-1.5 text-xs font-semibold text-navy transition-colors hover:bg-mist disabled:opacity-50 print:hidden dark:border-cream/30 dark:bg-navy-900 dark:text-cream dark:hover:bg-navy-800"
           >
             <PlusIcon spinning={loading} />
-            {loading ? "Generating…" : "Generate More"}
+            {loading ? "Generating…" : "Generate more Questions"}
           </button>
         )}
       </h3>

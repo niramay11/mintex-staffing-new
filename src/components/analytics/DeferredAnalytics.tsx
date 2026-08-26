@@ -23,8 +23,18 @@ export default function DeferredAnalytics() {
       document.head.appendChild(script);
 
       window.dataLayer = window.dataLayer || [];
-      window.gtag = function gtag(...args: unknown[]) {
-        window.dataLayer.push(args);
+      // Must push the `arguments` object itself, NOT `[...arguments]`/rest-param
+      // spread — gtag.js's own dataLayer.push override only recognizes a real
+      // Arguments object as a command; a plain array is silently dropped, so
+      // this exact form (Google's own boilerplate) is required, not a style
+      // choice. Confirmed live: rest-param spread never sent a single hit to
+      // google-analytics.com no matter how long we waited; switching to
+      // `arguments` fixed it instantly (GA Realtime showed 0 active users
+      // despite `dataLayer` filling up with "js"/"config" entries and the
+      // patched dataLayer.push being present — the hit itself never fired).
+      window.gtag = function gtag() {
+        // eslint-disable-next-line prefer-rest-params -- see comment above, this must stay `arguments`
+        window.dataLayer.push(arguments);
       };
       window.gtag("js", new Date());
       window.gtag("config", GA_ID);

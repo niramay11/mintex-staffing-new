@@ -1,14 +1,18 @@
 import type { CeipalJob } from "@/components/jobs/types";
 import { BUSINESS, SITE_URL } from "@/lib/site";
 
-function toEmploymentType(raw?: string): string {
+// Google accepts employmentType as a single enum string or an array of them —
+// returning an array covers dual-classified listings (e.g. "Full-Time or
+// Contract") instead of only ever matching the first substring found.
+function toEmploymentType(raw?: string): string[] {
   const s = (raw || "").toLowerCase();
-  if (s.includes("full")) return "FULL_TIME";
-  if (s.includes("part")) return "PART_TIME";
-  if (s.includes("intern")) return "INTERN";
-  if (s.includes("temp")) return "TEMPORARY";
-  if (s.includes("contract") || s.includes("c2h") || s.includes("1099") || s.includes("corp")) return "CONTRACTOR";
-  return "OTHER";
+  const types: string[] = [];
+  if (s.includes("full")) types.push("FULL_TIME");
+  if (s.includes("part")) types.push("PART_TIME");
+  if (s.includes("intern")) types.push("INTERN");
+  if (s.includes("temp")) types.push("TEMPORARY");
+  if (s.includes("contract") || s.includes("c2h") || s.includes("1099") || s.includes("corp")) types.push("CONTRACTOR");
+  return types.length ? types : ["OTHER"];
 }
 
 function toIsoDate(raw?: string): string | undefined {
@@ -90,24 +94,27 @@ export function buildJobPostingSchema(job: CeipalJob, description: string) {
     hiringOrganization: {
       "@type": "Organization",
       name: BUSINESS.name,
-      sameAs: SITE_URL,
+      url: SITE_URL,
       logo: `${SITE_URL}/icon.png`,
     },
     jobLocationType: isRemote ? "TELECOMMUTE" : undefined,
     applicantLocationRequirements: isRemote ? { "@type": "Country", name: "USA" } : undefined,
-    jobLocation:
-      city || region
-        ? {
-            "@type": "Place",
-            address: {
-              "@type": "PostalAddress",
-              ...(city ? { addressLocality: city } : {}),
-              ...(region ? { addressRegion: region } : {}),
-              ...(job.zip_code ? { postalCode: job.zip_code } : {}),
-              addressCountry: toCountryCode(job.country),
-            },
-          }
-        : undefined,
+    // Google requires jobLocation.address to exist (addressCountry at minimum)
+    // for every non-remote posting — Ceipal's free-text location field doesn't
+    // always parse into a city/state, so this must never come back empty for
+    // an on-site job, unlike city/region which are included only when known.
+    jobLocation: isRemote
+      ? undefined
+      : {
+          "@type": "Place",
+          address: {
+            "@type": "PostalAddress",
+            ...(city ? { addressLocality: city } : {}),
+            ...(region ? { addressRegion: region } : {}),
+            ...(job.zip_code ? { postalCode: job.zip_code } : {}),
+            addressCountry: toCountryCode(job.country),
+          },
+        },
     baseSalary: salary
       ? {
           "@type": "MonetaryAmount",

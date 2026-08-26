@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import Header from "./Header";
 import Footer from "./Footer";
-import WhatsAppButton from "./WhatsAppButton";
+import ContactButton from "./ContactButton";
 import type { Industry } from "@/content/types";
 
 // Routes that render their own full-screen chrome (dark standalone tools).
@@ -28,7 +28,7 @@ export default function SiteChrome({
       <Header siteImages={siteImages} industries={industries} />
       <main className="flex-1 pb-6">{children}</main>
       <Footer siteImages={siteImages} industries={industries} />
-      <WhatsAppButton />
+      <ContactButton />
     </>
   );
 }

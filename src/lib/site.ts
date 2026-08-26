@@ -1,5 +1,6 @@
-// TODO: confirm the real production domain and set NEXT_PUBLIC_SITE_URL in
-// production env vars — this fallback is a placeholder, not a confirmed domain.
+// NEXT_PUBLIC_SITE_URL is "http://localhost:3000" in .env.local for dev — the
+// fallback below is the real production domain, used whenever the env var
+// isn't set (e.g. if a Vercel environment omits it).
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.mintexstaffing.com";
 
 export const BUSINESS = {
