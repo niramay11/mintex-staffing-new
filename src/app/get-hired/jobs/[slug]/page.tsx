@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { after } from "next/server";
+import { revalidatePath } from "next/cache";
 import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import Section from "@/components/ui/Section";
@@ -158,7 +159,31 @@ async function loadDescription(job: CeipalJob): Promise<string> {
 
   const result = await raceTimeout(lookup, DESCRIPTION_TIMEOUT_MS, TIMED_OUT as unknown as string | null);
   if ((result as unknown) === TIMED_OUT) {
-    after(() => lookup.catch(() => {}));
+    // A slow-but-successful lookup here warms jobDescriptionCache.ts's own 24h
+    // cache — but THIS page's ISR snapshot was just rendered with the empty
+    // `fallback` below, and would otherwise keep serving that for the rest of
+    // its 20-minute revalidate window (see `export const revalidate` above).
+    // On a low-traffic job page, the next real visit might not come until long
+    // after that window too, and if IT also races the 2.5s timeout, the page
+    // re-poisons itself with another empty render — confirmed live: jpc-1506
+    // sat with an empty description for weeks this way. Revalidating this
+    // exact path as soon as the real description lands means the very next
+    // visitor sees it, instead of whoever happens to reload after the window
+    // lapses AND gets lucky with Ceipal's response time.
+    after(async () => {
+      const late = await lookup.catch(() => null);
+      if (!late) return;
+      // ceipal-job-map.ts's markStaleIfPossible() found revalidateTag/
+      // revalidatePath can throw when called outside a route handler's
+      // request scope — guarding the same way here since `after()` runs
+      // post-response, a context Next's own docs don't explicitly cover for
+      // this call.
+      try {
+        revalidatePath(`/get-hired/jobs/${jobUrlSlug(job)}`);
+      } catch (err) {
+        console.error(`[job-page] revalidatePath failed for job_code "${job.job_code}":`, err);
+      }
+    });
     return demoteDescriptionHeadings(fallback);
   }
   return demoteDescriptionHeadings(result || fallback);
