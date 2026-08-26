@@ -2,19 +2,33 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase";
 import { verifyAdminPassword } from "@/lib/portal-auth";
+import { sanitizeInsightBodyHtml } from "@/lib/sanitizeInsightHtml";
 
 function adminGuard(req: NextRequest): boolean {
   return verifyAdminPassword(req.headers.get("x-admin-password") ?? "");
 }
 
+// Keep in sync with the client-side preview in src/app/admin/page.tsx —
+// this only runs when the admin leaves the Slug field untouched.
+const SLUG_STOPWORDS = new Set([
+  "a", "an", "the", "and", "or", "but", "of", "for", "to", "in", "on", "at",
+  "by", "with", "is", "are", "was", "were", "be", "been", "being", "this",
+  "that", "these", "those", "you", "your", "should", "have", "has", "had",
+  "will", "would", "can", "could", "it", "as", "from", "into", "than",
+  "then", "so", "if", "not", "no", "do", "does", "did",
+]);
+const SLUG_MAX_WORDS = 6;
+
 function slugify(title: string): string {
-  return title
+  const words = title
     .toLowerCase()
     .trim()
     .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
+    .split(/[\s-]+/)
+    .filter(Boolean);
+
+  const meaningful = words.filter((w) => !SLUG_STOPWORDS.has(w));
+  return (meaningful.length > 0 ? meaningful : words).slice(0, SLUG_MAX_WORDS).join("-");
 }
 
 // GET /api/admin/insights — admin-guarded, lists every insight post (published or not).
@@ -49,6 +63,7 @@ export async function POST(req: NextRequest) {
   const bodyParagraphs = Array.isArray(body.body)
     ? body.body.map((p: unknown) => String(p).trim()).filter(Boolean)
     : [];
+  const body_html = body.body_html ? sanitizeInsightBodyHtml(String(body.body_html)) : null;
   const slug = String(body.slug ?? "").trim() || slugify(title);
 
   if (!title || !category || !excerpt || !author || !published_at || bodyParagraphs.length === 0 || !slug) {
@@ -57,7 +72,7 @@ export async function POST(req: NextRequest) {
 
   const { data, error } = await supabaseAdmin
     .from("insights")
-    .insert({ slug, category, title, excerpt, body: bodyParagraphs, published_at, author, image_url, author_title, author_bio, author_photo_url })
+    .insert({ slug, category, title, excerpt, body: bodyParagraphs, body_html, published_at, author, image_url, author_title, author_bio, author_photo_url })
     .select()
     .single();
 

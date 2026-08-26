@@ -50,6 +50,7 @@ export interface InsightPost {
   title: string;
   excerpt: string;
   body: string[];
+  body_html: string | null;
   published_at: string;
   author: string;
   image_url: string | null;

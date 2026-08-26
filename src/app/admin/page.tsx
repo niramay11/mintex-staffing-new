@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { IMAGE_LOCATIONS, IMAGE_CATEGORY_INFO } from "@/lib/imageLocations";
 import type { InsightPost, InsightCategoryRow, CaseStudy, CaseStudyType, TeamMember, Industry } from "@/content/types";
 import type { CalculatorBreakdownLine } from "@/lib/calculatorShare";
+import InsightBodyEditor from "@/components/admin/InsightBodyEditor";
 
 const STORAGE_KEY = "mintex_admin_pw";
 const TABS = ["jobs", "clients", "social", "stories", "images", "messages", "resumes", "inquiries", "insights", "caseStudies", "team", "industries", "curation", "calculatorSaves"] as const;
@@ -913,6 +914,7 @@ function SubmissionDetailModal({ sub, applicant, onClose }: { sub: Submission; a
 // ─── Enhanced Job Detail Modal ────────────────────────────────────────────────
 function JobDetailModal({ job, onClose }: { job: CeipalJob; onClose: () => void }) {
   const [activeTab, setActiveTab] = useState<'snapshot' | 'details' | 'submissions'>('snapshot');
+  const [usersMap, setUsersMap]   = useState<Record<string, string>>({});
   const [detail, setDetail]         = useState<JobDetail | null>(null);
   const [detailLoading, setDL]      = useState(false);
   const [detailError, setDE]        = useState('');
@@ -935,6 +937,15 @@ function JobDetailModal({ job, onClose }: { job: CeipalJob; onClose: () => void 
   const forceNextRefreshRef = useRef(false);
 
   const jobCode = String(job.job_code ?? '').trim();
+
+  // Ceipal's job list only gives us an encoded recruiter/manager ID, not a
+  // display name — same lookup SubmissionsTab already does for submitted_by.
+  useEffect(() => {
+    fetch('/api/admin/users-map')
+      .then(r => (r.ok ? r.json() : {}))
+      .then(setUsersMap)
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (!jobCode) return;
@@ -1028,7 +1039,19 @@ function JobDetailModal({ job, onClose }: { job: CeipalJob; onClose: () => void 
 
             {/* Quick stats */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-5 pt-5 border-t border-navy/10">
-              <QuickStat label="Recruiter"  value={String(job.sales_manager ?? job.client_manager ?? detail?.recruitment_manager ?? '—')} />
+              <QuickStat
+                label="Recruiter"
+                value={(() => {
+                  // assigned_recruiter (from getJobPostingDetails) is the field that actually
+                  // matches an ID in usersMap — sales_manager/client_manager off the job list
+                  // are encoded differently and never resolve, so they're a last-resort fallback
+                  // only for the moment before `detail` has loaded.
+                  const id = String(
+                    detail?.assigned_recruiter ?? job.sales_manager ?? job.client_manager ?? detail?.recruitment_manager ?? ''
+                  ).trim();
+                  return id ? (usersMap[id] || id) : '—';
+                })()}
+              />
               <QuickStat label="Pay Rate"   value={String(job.pay_rate___salary ?? '')} />
               <QuickStat label="Positions"  value={String(job.number_of_positions ?? detail?.number_of_positions ?? '')} />
               <QuickStat label="Industry"   value={String(detail?.industry ?? job.industry ?? '')} />
@@ -3044,24 +3067,84 @@ function InquiriesTab({ password }: { password: string }) {
 }
 
 // ─── Insights Tab ─────────────────────────────────────────────────────────────
+// Keep in sync with the server-side fallback in src/app/api/admin/insights/route.ts —
+// this is the live preview as the admin types the title; that route is what
+// actually runs if the Slug field is left untouched.
+const SLUG_STOPWORDS = new Set([
+  "a", "an", "the", "and", "or", "but", "of", "for", "to", "in", "on", "at",
+  "by", "with", "is", "are", "was", "were", "be", "been", "being", "this",
+  "that", "these", "those", "you", "your", "should", "have", "has", "had",
+  "will", "would", "can", "could", "it", "as", "from", "into", "than",
+  "then", "so", "if", "not", "no", "do", "does", "did",
+]);
+const SLUG_MAX_WORDS = 6;
+
 function slugify(title: string): string {
-  return title
+  const words = title
     .toLowerCase()
     .trim()
     .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
+    .split(/[\s-]+/)
+    .filter(Boolean);
+
+  const meaningful = words.filter((w) => !SLUG_STOPWORDS.has(w));
+  return (meaningful.length > 0 ? meaningful : words).slice(0, SLUG_MAX_WORDS).join("-");
 }
 
 type InsightSourceRow = { label: string; url: string };
 
 type InsightDraft = {
   id?: string; slug: string; category: string; title: string;
-  excerpt: string; body: string; published_at: string; author: string; image_url: string | null;
+  excerpt: string; bodyHtml: string; published_at: string; author: string; image_url: string | null;
   author_title: string; author_bio: string; author_photo_url: string;
   sources: InsightSourceRow[];
 };
+
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+// One-time upgrade path: a post saved before the rich-text editor existed has
+// no body_html, just the old plain-paragraph array with its guessed
+// conventions (short unpunctuated line = heading, "-> "/"→ " = CTA). This
+// reconstructs a reasonable starting point for the editor so opening an old
+// post for edit doesn't show a blank box — the CTA's real destination is
+// lost (the old system inferred it from keywords at render time rather than
+// storing it), so it defaults to /insights and needs a manual re-point via
+// the Link toolbar.
+function legacyBodyToHtml(paragraphs: string[]): string {
+  return paragraphs
+    .map((p) => {
+      const t = p.trim();
+      if (!t) return "";
+      if (/^(→|->)\s*/.test(t)) {
+        const label = t.replace(/^(→|->)\s*/, "");
+        return `<p><a href="/insights" class="cta-button">${escapeHtml(label)}</a></p>`;
+      }
+      const isHeading = t.length <= 70 && !/[.!,;:]$/.test(t);
+      return isHeading ? `<h2>${escapeHtml(t)}</h2>` : `<p>${escapeHtml(t)}</p>`;
+    })
+    .join("");
+}
+
+// The `body` TEXT[] column stays NOT NULL and unused by the rich-text render
+// path, but a plain-text fallback is still stored: search/excerpt tooling
+// that predates body_html reads it, and it's what the "Sources:" line has
+// always lived in. Doesn't need to be a perfect inverse of the HTML.
+function htmlToPlainParagraphs(html: string): string[] {
+  return html
+    .split(/<\/(?:p|h2|h3|li|blockquote)>/gi)
+    .map((chunk) =>
+      chunk
+        .replace(/<[^>]+>/g, "")
+        .replace(/&nbsp;/g, " ")
+        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .trim()
+    )
+    .filter(Boolean);
+}
 
 // The body is still stored as plain paragraphs (no schema change) — sources
 // are just one more paragraph in that array, formatted as
@@ -3087,7 +3170,7 @@ function formatSourcesLine(sources: InsightSourceRow[]): string | null {
 
 function blankDraft(defaultCategory: string): InsightDraft {
   return {
-    slug: "", category: defaultCategory, title: "", excerpt: "", body: "",
+    slug: "", category: defaultCategory, title: "", excerpt: "", bodyHtml: "",
     published_at: new Date().toISOString().slice(0, 10), author: "Mintex Staffing Editorial", image_url: null,
     author_title: "", author_bio: "", author_photo_url: "", sources: [],
   };
@@ -3096,9 +3179,10 @@ function blankDraft(defaultCategory: string): InsightDraft {
 function toDraft(post: InsightPost): InsightDraft {
   const sourcesLine = post.body.find((p) => SOURCES_LINE_RE.test(p));
   const otherParagraphs = post.body.filter((p) => p !== sourcesLine);
+  const bodyHtml = post.body_html && post.body_html.trim() ? post.body_html : legacyBodyToHtml(otherParagraphs);
   return {
     id: post.id, slug: post.slug, category: post.category, title: post.title,
-    excerpt: post.excerpt, body: otherParagraphs.join("\n\n"), published_at: post.published_at,
+    excerpt: post.excerpt, bodyHtml, published_at: post.published_at,
     author: post.author, image_url: post.image_url,
     author_title: post.author_title ?? "", author_bio: post.author_bio ?? "", author_photo_url: post.author_photo_url ?? "",
     sources: sourcesLine ? parseSourcesLine(sourcesLine) : [],
@@ -3174,7 +3258,7 @@ function InsightsTab({ password }: { password: string }) {
     setSaving(true);
     setSaveError("");
 
-    const bodyParagraphs = draft.body.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+    const bodyParagraphs = htmlToPlainParagraphs(draft.bodyHtml);
     const sourcesLine = formatSourcesLine(draft.sources);
     if (sourcesLine) bodyParagraphs.push(sourcesLine);
     const payload = {
@@ -3183,6 +3267,7 @@ function InsightsTab({ password }: { password: string }) {
       title: draft.title.trim(),
       excerpt: draft.excerpt.trim(),
       body: bodyParagraphs,
+      body_html: draft.bodyHtml,
       published_at: draft.published_at,
       author: draft.author.trim(),
       image_url: draft.image_url,
@@ -3423,11 +3508,13 @@ function InsightsTab({ password }: { password: string }) {
 
               <div>
                 <label className="block text-xs font-semibold text-navy/60 mb-1">Body</label>
-                <p className="text-[11px] text-navy/50 mb-1.5">Separate paragraphs with a blank line.</p>
-                <textarea required rows={10} value={draft.body} onChange={(e) => updateDraft({ body: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none font-mono" />
+                <p className="text-[11px] text-navy/50 mb-1.5">
+                  Select text and use the toolbar for headings, bold, links, lists, and CTA buttons.
+                </p>
+                <InsightBodyEditor value={draft.bodyHtml} onChange={(html) => updateDraft({ bodyHtml: html })} />
                 {(() => {
-                  const wordCount = draft.body.trim() ? draft.body.trim().split(/\s+/).length : 0;
+                  const plainText = draft.bodyHtml.replace(/<[^>]+>/g, " ").trim();
+                  const wordCount = plainText ? plainText.split(/\s+/).length : 0;
                   const meetsTarget = wordCount >= 1500;
                   return (
                     <p className={`mt-1.5 text-[11px] font-medium ${meetsTarget ? "text-green-600" : "text-amber-600"}`}>

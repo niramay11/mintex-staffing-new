@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase";
 import { verifyAdminPassword } from "@/lib/portal-auth";
+import { sanitizeInsightBodyHtml } from "@/lib/sanitizeInsightHtml";
 
 function adminGuard(req: NextRequest): boolean {
   return verifyAdminPassword(req.headers.get("x-admin-password") ?? "");
@@ -37,6 +38,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   if (body.author_bio !== undefined)       updates.author_bio = body.author_bio ? String(body.author_bio).trim() : null;
   if (body.author_photo_url !== undefined) updates.author_photo_url = body.author_photo_url ? String(body.author_photo_url).trim() : null;
   if (Array.isArray(body.body))        updates.body = body.body.map((p: unknown) => String(p).trim()).filter(Boolean);
+  if (body.body_html !== undefined)    updates.body_html = body.body_html ? sanitizeInsightBodyHtml(String(body.body_html)) : null;
 
   const { data, error } = await supabaseAdmin
     .from("insights")

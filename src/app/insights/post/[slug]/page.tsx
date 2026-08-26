@@ -20,7 +20,7 @@ export const revalidate = 60;
 // Short simple posts contain none of these, so they render as plain prose —
 // this only upgrades posts that already carry that structure.
 function isCtaLine(text: string): boolean {
-  return /^→\s*/.test(text.trim());
+  return /^(→|->)\s*/.test(text.trim());
 }
 function isSourcesLine(text: string): boolean {
   return /^Sources:/i.test(text.trim());
@@ -73,6 +73,34 @@ const CTA_ROUTES: Array<{ test: RegExp; href: string }> = [
 function resolveCtaHref(text: string): string {
   return CTA_ROUTES.find((r) => r.test.test(text))?.href ?? "/insights";
 }
+
+// Posts written with the rich-text editor store real sanitized HTML in
+// body_html instead of the plain-paragraph convention array. The h2 tags it
+// contains have no ids (Tiptap doesn't add them) — this stamps sequential
+// ids onto them for anchor scrolling and pulls out the same list to build
+// the table of contents, mirroring what the legacy path derives from
+// isHeadingLine.
+function prepareRichBody(html: string): { html: string; tocItems: { id: string; text: string }[] } {
+  let i = 0;
+  const tocItems: { id: string; text: string }[] = [];
+  const withIds = html.replace(/<h2>([\s\S]*?)<\/h2>/g, (_match, inner: string) => {
+    const id = `section-${i++}`;
+    tocItems.push({ id, text: inner.replace(/<[^>]+>/g, "").trim() });
+    return `<h2 id="${id}">${inner}</h2>`;
+  });
+  return { html: withIds, tocItems };
+}
+
+const RICH_BODY_CLASSNAME =
+  "[&_h2]:!mt-10 [&_h2]:scroll-mt-28 [&_h2]:font-heading [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-navy dark:[&_h2]:text-cream [&_h2]:sm:text-[28px] " +
+  "[&_h3]:!mt-8 [&_h3]:font-heading [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-navy dark:[&_h3]:text-cream " +
+  "[&_p]:!mt-5 [&_ul]:!mt-5 [&_ol]:!mt-5 [&_blockquote]:!mt-5 " +
+  "[&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:space-y-2 " +
+  "[&_blockquote]:border-l-4 [&_blockquote]:border-steel/40 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-navy/70 dark:[&_blockquote]:text-cream/70 " +
+  "[&_hr]:!my-8 [&_hr]:border-navy/10 dark:[&_hr]:border-white/10 " +
+  "[&_strong]:font-semibold [&_strong]:text-navy dark:[&_strong]:text-cream " +
+  "[&_a]:text-blue-600 [&_a]:underline [&_a]:decoration-blue-600/50 [&_a]:underline-offset-2 hover:[&_a]:text-blue-700 dark:[&_a]:text-blue-400 " +
+  "[&_a.cta-button]:!mt-8 [&_a.cta-button]:inline-flex [&_a.cta-button]:items-center [&_a.cta-button]:rounded-full [&_a.cta-button]:bg-navy [&_a.cta-button]:px-8 [&_a.cta-button]:py-4 [&_a.cta-button]:text-base [&_a.cta-button]:font-semibold [&_a.cta-button]:text-white [&_a.cta-button]:no-underline hover:[&_a.cta-button]:bg-navy-secondary dark:[&_a.cta-button]:bg-steel dark:[&_a.cta-button]:text-navy-950";
 
 const SHARE_ICON_DEFS = [
   {
@@ -181,7 +209,12 @@ export default async function InsightPostPage({
   ]);
   const categoryLabel = categories.find((c) => c.slug === post.category)?.label ?? post.category;
 
-  const wordCount = post.body.join(" ").trim().split(/\s+/).filter(Boolean).length;
+  const hasRichBody = Boolean(post.body_html && post.body_html.trim());
+  const richBody = hasRichBody ? prepareRichBody(post.body_html as string) : null;
+
+  const wordCount = hasRichBody
+    ? (post.body_html as string).replace(/<[^>]+>/g, " ").trim().split(/\s+/).filter(Boolean).length
+    : post.body.join(" ").trim().split(/\s+/).filter(Boolean).length;
   const readingMinutes = Math.max(1, Math.round(wordCount / 200));
   const postUrl = `${SITE_URL}/insights/post/${post.slug}`;
   const publishedLabel = new Date(post.published_at).toLocaleDateString("en-US", {
@@ -281,53 +314,76 @@ export default async function InsightPostPage({
 
         <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-[1fr_320px] lg:gap-16">
           <div className="min-w-0 space-y-5 text-[16px] leading-[1.8] text-navy/80 dark:text-cream/80">
-            {mainLines.map((paragraph, i) => {
-              if (isCtaLine(paragraph)) {
-                return (
-                  <div key={i} className="!mt-8">
-                    <Link
-                      href={resolveCtaHref(paragraph)}
-                      className="inline-flex items-center rounded-full bg-navy px-8 py-4 text-base font-semibold text-white transition-colors hover:bg-navy-secondary dark:bg-steel dark:text-navy-950 dark:hover:bg-steel-light"
+            {hasRichBody ? (
+              <>
+                {richBody!.tocItems.length >= 2 && (
+                  <nav className="rounded-[32px] bg-steel/[0.08] p-8 dark:bg-steel/[0.12] sm:p-10">
+                    <p className="font-heading text-lg font-bold text-navy dark:text-cream">{post.title}</p>
+                    <ol className="mt-4 space-y-2.5">
+                      {richBody!.tocItems.map((item) => (
+                        <li key={item.id}>
+                          <a
+                            href={`#${item.id}`}
+                            className="text-steel underline decoration-steel/40 underline-offset-2 transition-colors hover:text-navy hover:decoration-navy/50 dark:text-steel-light dark:decoration-steel-light/40 dark:hover:text-cream"
+                          >
+                            {item.text}
+                          </a>
+                        </li>
+                      ))}
+                    </ol>
+                  </nav>
+                )}
+                <div className={RICH_BODY_CLASSNAME} dangerouslySetInnerHTML={{ __html: richBody!.html }} />
+              </>
+            ) : (
+              mainLines.map((paragraph, i) => {
+                if (isCtaLine(paragraph)) {
+                  return (
+                    <div key={i} className="!mt-8">
+                      <Link
+                        href={resolveCtaHref(paragraph)}
+                        className="inline-flex items-center rounded-full bg-navy px-8 py-4 text-base font-semibold text-white transition-colors hover:bg-navy-secondary dark:bg-steel dark:text-navy-950 dark:hover:bg-steel-light"
+                      >
+                        {paragraph.replace(/^(→|->)\s*/, "")}
+                      </Link>
+                    </div>
+                  );
+                }
+                if (isHeadingLine(paragraph)) {
+                  const heading = (
+                    <h2
+                      key={i}
+                      id={`section-${i}`}
+                      className="!mt-10 scroll-mt-28 font-heading text-2xl font-bold text-navy dark:text-cream sm:text-[28px]"
                     >
-                      {paragraph.replace(/^→\s*/, "")}
-                    </Link>
-                  </div>
-                );
-              }
-              if (isHeadingLine(paragraph)) {
-                const heading = (
-                  <h2
-                    key={i}
-                    id={`section-${i}`}
-                    className="!mt-10 scroll-mt-28 font-heading text-2xl font-bold text-navy dark:text-cream sm:text-[28px]"
-                  >
-                    {paragraph}
-                  </h2>
-                );
-                if (i !== firstHeadingIndex || tocItems.length < 2) return heading;
-                return (
-                  <div key={`toc-wrap-${i}`}>
-                    <nav className="!mt-8 rounded-[32px] bg-steel/[0.08] p-8 dark:bg-steel/[0.12] sm:p-10">
-                      <p className="font-heading text-lg font-bold text-navy dark:text-cream">{post.title}</p>
-                      <ol className="mt-4 space-y-2.5">
-                        {tocItems.map((item) => (
-                          <li key={item.i}>
-                            <a
-                              href={`#section-${item.i}`}
-                              className="text-steel underline decoration-steel/40 underline-offset-2 transition-colors hover:text-navy hover:decoration-navy/50 dark:text-steel-light dark:decoration-steel-light/40 dark:hover:text-cream"
-                            >
-                              {item.text}
-                            </a>
-                          </li>
-                        ))}
-                      </ol>
-                    </nav>
-                    {heading}
-                  </div>
-                );
-              }
-              return <p key={i}>{paragraph}</p>;
-            })}
+                      {paragraph}
+                    </h2>
+                  );
+                  if (i !== firstHeadingIndex || tocItems.length < 2) return heading;
+                  return (
+                    <div key={`toc-wrap-${i}`}>
+                      <nav className="!mt-8 rounded-[32px] bg-steel/[0.08] p-8 dark:bg-steel/[0.12] sm:p-10">
+                        <p className="font-heading text-lg font-bold text-navy dark:text-cream">{post.title}</p>
+                        <ol className="mt-4 space-y-2.5">
+                          {tocItems.map((item) => (
+                            <li key={item.i}>
+                              <a
+                                href={`#section-${item.i}`}
+                                className="text-steel underline decoration-steel/40 underline-offset-2 transition-colors hover:text-navy hover:decoration-navy/50 dark:text-steel-light dark:decoration-steel-light/40 dark:hover:text-cream"
+                              >
+                                {item.text}
+                              </a>
+                            </li>
+                          ))}
+                        </ol>
+                      </nav>
+                      {heading}
+                    </div>
+                  );
+                }
+                return <p key={i}>{paragraph}</p>;
+              })
+            )}
 
             {footnoteLines.length > 0 && (
               <div className="!mt-10 space-y-3 border-t border-navy/10 pt-6 text-sm leading-relaxed text-navy dark:border-white/10 dark:text-cream">
