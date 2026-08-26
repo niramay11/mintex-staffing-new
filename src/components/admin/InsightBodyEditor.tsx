@@ -2,8 +2,10 @@
 
 import { useEffect } from "react";
 import { useEditor, useEditorState, EditorContent } from "@tiptap/react";
+import { DOMParser as PMDOMParser } from "@tiptap/pm/model";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
+import { resolveCtaHref } from "@/lib/insightCtaRoutes";
 
 // Real WYSIWYG replacement for the old plain-text-convention Body textarea
 // (short unpunctuated line = heading, "-> " = CTA button, etc). The admin
@@ -14,6 +16,39 @@ const CTA_PRESETS = [
   { label: "Interview Kit / Questions", href: "/resources/ai-interview-generator" },
   { label: "Insights Home", href: "/insights" },
 ];
+
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+// A paste is still recognized as "plain convention text" even when the
+// clipboard also carries simple auto-generated HTML (a lone <p>/<div>/<span>
+// wrapper, no real formatting) — only a paste that already carries actual
+// rich markup skips this and falls through to Tiptap's normal paste handling,
+// so pasting from another richly formatted source isn't flattened.
+function clipboardHtmlIsPlain(html: string): boolean {
+  return !/<(strong|b|em|i|a\s|a>|ul|ol|table|h1|h2|h3|blockquote)[\s>]/i.test(html);
+}
+
+// Upgrades pasted plain text written in the old convention (a short
+// unpunctuated line is a heading, "-> "/"→ " starts a CTA button) into real
+// nodes, so admins can keep pasting drafts from ChatGPT/docs in that shape
+// instead of only being able to build structure via the toolbar.
+function convertConventionTextToHtml(text: string): string {
+  return text
+    .split(/\r\n|\r|\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      if (/^(→|->)\s*/.test(line)) {
+        const label = line.replace(/^(→|->)\s*/, "");
+        return `<p><a href="${resolveCtaHref(label)}" class="cta-button">${escapeHtml(label)}</a></p>`;
+      }
+      const isHeading = line.length <= 70 && !/[.!,;:]$/.test(line);
+      return isHeading ? `<h2>${escapeHtml(line)}</h2>` : `<p>${escapeHtml(line)}</p>`;
+    })
+    .join("");
+}
 
 function ToolbarButton({
   active, onClick, title, children,
@@ -56,6 +91,17 @@ export default function InsightBodyEditor({
           "[&_hr]:my-4 [&_hr]:border-navy/15 " +
           "[&_a]:text-blue-600 [&_a]:underline " +
           "[&_a.cta-button]:inline-block [&_a.cta-button]:no-underline [&_a.cta-button]:rounded-full [&_a.cta-button]:bg-navy [&_a.cta-button]:px-4 [&_a.cta-button]:py-1.5 [&_a.cta-button]:text-white [&_a.cta-button]:font-semibold",
+      },
+      handlePaste(view, event) {
+        const text = event.clipboardData?.getData("text/plain") ?? "";
+        const html = event.clipboardData?.getData("text/html") ?? "";
+        if (!text.trim() || !clipboardHtmlIsPlain(html)) return false;
+
+        const dom = document.createElement("div");
+        dom.innerHTML = convertConventionTextToHtml(text);
+        const slice = PMDOMParser.fromSchema(view.state.schema).parseSlice(dom, { preserveWhitespace: true });
+        view.dispatch(view.state.tr.replaceSelection(slice));
+        return true;
       },
     },
   });

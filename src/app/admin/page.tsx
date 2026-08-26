@@ -5,6 +5,7 @@ import { IMAGE_LOCATIONS, IMAGE_CATEGORY_INFO } from "@/lib/imageLocations";
 import type { InsightPost, InsightCategoryRow, CaseStudy, CaseStudyType, TeamMember, Industry } from "@/content/types";
 import type { CalculatorBreakdownLine } from "@/lib/calculatorShare";
 import InsightBodyEditor from "@/components/admin/InsightBodyEditor";
+import { resolveCtaHref } from "@/lib/insightCtaRoutes";
 
 const STORAGE_KEY = "mintex_admin_pw";
 const TABS = ["jobs", "clients", "social", "stories", "images", "messages", "resumes", "inquiries", "insights", "caseStudies", "team", "industries", "curation", "calculatorSaves"] as const;
@@ -3119,7 +3120,7 @@ function legacyBodyToHtml(paragraphs: string[]): string {
       if (!t) return "";
       if (/^(→|->)\s*/.test(t)) {
         const label = t.replace(/^(→|->)\s*/, "");
-        return `<p><a href="/insights" class="cta-button">${escapeHtml(label)}</a></p>`;
+        return `<p><a href="${resolveCtaHref(label)}" class="cta-button">${escapeHtml(label)}</a></p>`;
       }
       const isHeading = t.length <= 70 && !/[.!,;:]$/.test(t);
       return isHeading ? `<h2>${escapeHtml(t)}</h2>` : `<p>${escapeHtml(t)}</p>`;

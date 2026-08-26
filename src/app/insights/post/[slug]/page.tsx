@@ -9,6 +9,7 @@ import { supabase } from "@/lib/supabase";
 import type { InsightPost } from "@/content/types";
 import { pageMetadata } from "@/lib/pageMetadata";
 import { SITE_URL } from "@/lib/site";
+import { resolveCtaHref } from "@/lib/insightCtaRoutes";
 
 export const revalidate = 60;
 
@@ -64,14 +65,6 @@ function renderInlineLinks(text: string) {
       </a>
     )
   );
-}
-
-const CTA_ROUTES: Array<{ test: RegExp; href: string }> = [
-  { test: /hiring cost calculator/i, href: "/resources/hiring-cost-calculator" },
-  { test: /interview (kit|question|prep)/i, href: "/resources/ai-interview-generator" },
-];
-function resolveCtaHref(text: string): string {
-  return CTA_ROUTES.find((r) => r.test.test(text))?.href ?? "/insights";
 }
 
 // Posts written with the rich-text editor store real sanitized HTML in
