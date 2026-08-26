@@ -9,7 +9,7 @@
 // after you lands on an already-warm cache instead.
 import { readFileSync } from "node:fs";
 
-const SITE_URL = process.env.WARM_CACHE_URL || "https://mintex-staffing-new.vercel.app";
+const SITE_URL = process.env.WARM_CACHE_URL || "https://www.mintexstaffing.com";
 
 function readEnvLocal(key) {
   try {
