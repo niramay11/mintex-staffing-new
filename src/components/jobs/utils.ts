@@ -115,6 +115,33 @@ export function jobUrlSlug(job: CeipalJob): string {
   return [slugifyPart(job.job_code), slugifyPart(job.job_title)].filter(Boolean).join("-");
 }
 
+// Ceipal job descriptions are recruiter-pasted rich text (often straight out
+// of Word/Outlook), which sometimes carries a literal <h1> for a section
+// title. The job page itself already has the real <h1> (the job title), so
+// any <h1> surviving inside the description would give the page two —
+// bumping it to <h2> keeps the heading hierarchy valid no matter what a
+// given job's source HTML contains. Shared between the server-rendered page
+// and JobDescriptionLoader's client-side fetch fallback so both apply the
+// same treatment.
+export function demoteDescriptionHeadings(html: string): string {
+  return html.replace(/<(\/?)h1(\s|>)/gi, "<$1h2$2");
+}
+
+// Shared by the job page's server-rendered description and
+// JobDescriptionLoader's client-fetched one, so a description that arrives
+// late (see JobDescriptionLoader) renders identically to one available at
+// first render.
+export const JOB_DESCRIPTION_PROSE_CLASS =
+  "text-[15px] leading-relaxed text-navy/80 dark:text-cream/80 " +
+  "[&_p]:mb-3 [&_p:last-child]:mb-0 " +
+  "[&_strong]:font-semibold [&_strong]:text-navy dark:[&_strong]:text-cream " +
+  "[&_ul]:my-3 [&_ul]:list-disc [&_ul]:space-y-1.5 [&_ul]:pl-5 " +
+  "[&_ol]:my-3 [&_ol]:list-decimal [&_ol]:space-y-1.5 [&_ol]:pl-5 " +
+  "[&_h1]:mb-2 [&_h1]:mt-6 [&_h1]:text-lg [&_h1]:font-bold [&_h1]:text-navy [&_h1:first-child]:mt-0 dark:[&_h1]:text-cream " +
+  "[&_h2]:mb-2 [&_h2]:mt-6 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:text-navy [&_h2:first-child]:mt-0 dark:[&_h2]:text-cream " +
+  "[&_h3]:mb-2 [&_h3]:mt-5 [&_h3]:text-base [&_h3]:font-bold [&_h3]:text-navy [&_h3:first-child]:mt-0 dark:[&_h3]:text-cream " +
+  "[&_a]:font-medium [&_a]:text-steel [&_a]:no-underline [&_a:hover]:underline dark:[&_a]:text-steel-light";
+
 export function fmtPosted(s?: string): string | null {
   if (!s) return null;
   const d = new Date(s);

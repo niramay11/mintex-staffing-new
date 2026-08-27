@@ -5,12 +5,22 @@ import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import Section from "@/components/ui/Section";
 import JobPageApply from "@/components/jobs/JobPageApply";
+import JobDescriptionLoader from "@/components/jobs/JobDescriptionLoader";
 import { IconBars, IconBriefcase, IconPeople, IconPin } from "@/components/jobs/icons";
 import { getCachedJobs } from "@/lib/jobsCache";
 import { getJobMap } from "@/lib/ceipal-job-map";
 import { getCachedDescription } from "@/lib/jobDescriptionCache";
 import { warmIfNearExpiry } from "@/lib/warmCaches";
-import { isActiveJob, jobLocation, jobUrlSlug, fmtPay, fmtPosted, workType } from "@/components/jobs/utils";
+import {
+  isActiveJob,
+  jobLocation,
+  jobUrlSlug,
+  fmtPay,
+  fmtPosted,
+  workType,
+  demoteDescriptionHeadings,
+  JOB_DESCRIPTION_PROSE_CLASS,
+} from "@/components/jobs/utils";
 import { buildJobPostingSchema } from "@/lib/jobPostingSchema";
 import { SITE_URL } from "@/lib/site";
 import type { CeipalJob } from "@/components/jobs/types";
@@ -106,16 +116,6 @@ async function findJobByLegacyCode(code: string): Promise<CeipalJob | null> {
   const { jobs } = await getCachedJobs();
   const job = (jobs as CeipalJob[]).find((j) => isActiveJob(j) && j.job_code === code);
   return job ?? null;
-}
-
-// Ceipal job descriptions are recruiter-pasted rich text (often straight out
-// of Word/Outlook), which sometimes carries a literal <h1> for a section
-// title. The page itself already has the real <h1> (the job title), so any
-// <h1> surviving inside the description would give the page two — bumping
-// it to <h2> keeps the heading hierarchy valid no matter what a given job's
-// source HTML contains.
-function demoteDescriptionHeadings(html: string): string {
-  return html.replace(/<(\/?)h1(\s|>)/gi, "<$1h2$2");
 }
 
 function raceTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
@@ -354,24 +354,21 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
               </div>
             )}
 
-            {description && (
-              <div className={skills.length > 0 ? "mt-8" : ""}>
-                <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">Job Description</p>
-                <div
-                  className="text-[15px] leading-relaxed text-navy/80
-                    dark:text-cream/80
-                    [&_p]:mb-3 [&_p:last-child]:mb-0
-                    [&_strong]:font-semibold [&_strong]:text-navy dark:[&_strong]:text-cream
-                    [&_ul]:my-3 [&_ul]:list-disc [&_ul]:space-y-1.5 [&_ul]:pl-5
-                    [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:space-y-1.5 [&_ol]:pl-5
-                    [&_h1]:mb-2 [&_h1]:mt-6 [&_h1]:text-lg [&_h1]:font-bold [&_h1]:text-navy [&_h1:first-child]:mt-0 dark:[&_h1]:text-cream
-                    [&_h2]:mb-2 [&_h2]:mt-6 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:text-navy [&_h2:first-child]:mt-0 dark:[&_h2]:text-cream
-                    [&_h3]:mb-2 [&_h3]:mt-5 [&_h3]:text-base [&_h3]:font-bold [&_h3]:text-navy [&_h3:first-child]:mt-0 dark:[&_h3]:text-cream
-                    [&_a]:font-medium [&_a]:text-steel [&_a]:no-underline [&_a:hover]:underline dark:[&_a]:text-steel-light"
-                  dangerouslySetInnerHTML={{ __html: description }}
-                />
-              </div>
-            )}
+            <div className={skills.length > 0 ? "mt-8" : ""}>
+              <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">Job Description</p>
+              {description ? (
+                <div className={JOB_DESCRIPTION_PROSE_CLASS} dangerouslySetInnerHTML={{ __html: description }} />
+              ) : (
+                // The server-side lookup (loadDescription above) raced a 2.5s
+                // budget against Ceipal and lost — usually only on an older,
+                // rarely-visited job whose 24h description cache had days to
+                // go cold between visitors. Rather than show nothing, this
+                // fetches the same description client-side with no fixed
+                // timeout, so this one visitor still sees it within a few
+                // seconds instead of an empty section.
+                <JobDescriptionLoader jobCode={job.job_code} />
+              )}
+            </div>
           </div>
 
           {/* Sidebar */}
