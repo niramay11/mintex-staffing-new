@@ -950,6 +950,7 @@ function JobDetailModal({ job, onClose }: { job: CeipalJob; onClose: () => void 
 
   useEffect(() => {
     if (!jobCode) return;
+    let cancelled = false;
 
     const forceRefresh = forceNextRefreshRef.current;
     forceNextRefreshRef.current = false;
@@ -982,11 +983,34 @@ function JobDetailModal({ job, onClose }: { job: CeipalJob; onClose: () => void 
       }
 
       setDE(''); setSE('');
-      setDL(true);
-      fetch(`/api/admin/job-details?id=${encodeURIComponent(v2Id)}`)
-        .then(r => r.json())
-        .then(d => { setDetail(d); setDL(false); })
-        .catch(() => { setDE('Failed to load details'); setDL(false); });
+
+      // fetch(...).then(r => r.json()) used to treat a route-level failure
+      // (e.g. the job-details route's own 502 when Ceipal keeps returning a
+      // degraded empty body) as a successful `{error: "..."}` object — never
+      // surfacing detailError or the Refresh & Retry button, and silently
+      // showing "No job description available" as if that were confirmed
+      // truth instead of an unresolved failure. Checking r.ok routes a real
+      // failure to the catch below; one silent auto-retry after 2.5s then
+      // resolves most of these before the admin even notices, same as the
+      // route's own retry protects the cache from being poisoned by one.
+      const fetchDetails = (isAutoRetry = false) => {
+        setDL(true);
+        fetch(`/api/admin/job-details?id=${encodeURIComponent(v2Id)}`)
+          .then(r => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+          .then(d => {
+            if (cancelled) return;
+            setDetail(d as JobDetail);
+            setDE('');
+            setDL(false);
+          })
+          .catch(() => {
+            if (cancelled) return;
+            if (!isAutoRetry) { setTimeout(() => fetchDetails(true), 2500); return; }
+            setDE('Failed to load details');
+            setDL(false);
+          });
+      };
+      fetchDetails();
 
       setSL(true);
       fetch(`/api/admin/job-submissions?job_id=${encodeURIComponent(v2Id)}`)
@@ -998,6 +1022,7 @@ function JobDetailModal({ job, onClose }: { job: CeipalJob; onClose: () => void 
     };
 
     resolveAndFetch();
+    return () => { cancelled = true; };
   }, [jobCode, refreshNonce]);
 
   const retryResolve = () => {

@@ -170,6 +170,8 @@ type Submission = { id: string; submission_id: number; submission_status: string
 function JobDetailModal({ job, permissions, onClose }: { job: Job; permissions: Record<string, boolean>; onClose: () => void }) {
     const [activeTab, setActiveTab] = useState<'snapshot' | 'description' | 'skills' | 'submissions'>('snapshot');
     const [detail, setDetail]       = useState<Record<string, unknown> | null>(null);
+    const [detailLoading, setDetailLoading] = useState(false);
+    const [detailFailed, setDetailFailed]   = useState(false);
     const [submissions, setSubs]    = useState<Submission[]>([]);
     const [subsLoading, setSL]      = useState(false);
     const [stageFilter, setStageFilter] = useState('all');
@@ -177,19 +179,45 @@ function JobDetailModal({ job, permissions, onClose }: { job: Job; permissions: 
     useEffect(() => {
         const code = job.job_code;
         if (!code) return;
-        // Fetch full job details
-        fetch(`/api/portal/job-details?job_code=${encodeURIComponent(code)}`)
-            .then(r => r.ok ? r.json() : null).then(d => setDetail(d));
+
+        let cancelled = false;
+        // Fetch full job details. One retry before showing failure — the
+        // route itself already retries once against Ceipal's own flakiness
+        // (see /api/portal/job-details), so a failure reaching here means
+        // that already failed twice; a further client-side retry after a
+        // short delay still catches most of what's left before asking the
+        // client to notice and act.
+        const fetchDetails = (isRetry = false) => {
+            setDetailLoading(true);
+            fetch(`/api/portal/job-details?job_code=${encodeURIComponent(code)}`)
+                .then(r => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+                .then(d => {
+                    if (cancelled) return;
+                    setDetail(d);
+                    setDetailFailed(false);
+                    setDetailLoading(false);
+                })
+                .catch(() => {
+                    if (cancelled) return;
+                    if (!isRetry) { setTimeout(() => fetchDetails(true), 2500); return; }
+                    setDetailFailed(true);
+                    setDetailLoading(false);
+                });
+        };
+        fetchDetails();
+
         // Fetch submissions
         setSL(true);
         fetch(`/api/portal/job-submissions?job_code=${encodeURIComponent(code)}`)
             .then(r => r.ok ? r.json() : []).then(d => { setSubs(Array.isArray(d) ? d : []); setSL(false); })
             .catch(() => setSL(false));
+
+        return () => { cancelled = true; };
     }, [job.job_code]);
 
     const desc   = String(detail?.requisition_description ?? detail?.public_job_desc ?? job.job_description ?? '');
     const skills = String(detail?.skills ?? job.primary_skills ?? '');
-    const hasDesc   = !!desc && permissions.show_job_description !== false;
+    const showDescTab = permissions.show_job_description !== false;
     const hasSkills = !!skills && permissions.show_required_skills !== false;
 
     const stageCounts = PIPELINE_STAGES.reduce<Record<string, number>>((acc, s) => {
@@ -202,7 +230,7 @@ function JobDetailModal({ job, permissions, onClose }: { job: Job; permissions: 
         : submissions.filter(sub => PIPELINE_STAGES[mapStageIdx(sub.submission_status || sub.pipeline_status)] === stageFilter);
 
     const s = STATUS_BADGE[job.job_status] ?? STATUS_BADGE_FALLBACK;
-    const tabKeys = ['snapshot', ...(hasDesc ? ['description'] : []), ...(hasSkills ? ['skills'] : []), 'submissions'] as const;
+    const tabKeys = ['snapshot', ...(showDescTab ? ['description'] : []), ...(hasSkills ? ['skills'] : []), 'submissions'] as const;
     const tabLabels: Record<string, string> = { snapshot: 'Snapshot', description: 'Description', skills: 'Skills', submissions: `Submissions (${submissions.length})` };
 
     const fmt = (d: string) => { try { return new Date(d).toLocaleDateString('en-AU', { day:'2-digit', month:'short', year:'numeric' }); } catch { return d; } };
@@ -288,8 +316,23 @@ function JobDetailModal({ job, permissions, onClose }: { job: Job; permissions: 
 
                     {/* Description */}
                     {activeTab === 'description' && (
-                        <div className="text-sm leading-relaxed max-h-[55vh] overflow-y-auto pr-2 text-navy/80 dark:text-cream/80"
-                            dangerouslySetInnerHTML={{ __html: desc }} />
+                        desc ? (
+                            <div className="text-sm leading-relaxed max-h-[55vh] overflow-y-auto pr-2 text-navy/80 dark:text-cream/80"
+                                dangerouslySetInnerHTML={{ __html: desc }} />
+                        ) : detailLoading ? (
+                            <div className="space-y-2.5 animate-pulse" aria-live="polite" aria-busy="true">
+                                <span className="sr-only">Loading job description…</span>
+                                <div className="h-3.5 w-full rounded bg-navy/10 dark:bg-cream/10" />
+                                <div className="h-3.5 w-11/12 rounded bg-navy/10 dark:bg-cream/10" />
+                                <div className="h-3.5 w-4/5 rounded bg-navy/10 dark:bg-cream/10" />
+                            </div>
+                        ) : detailFailed ? (
+                            <p className="text-sm text-navy/50 dark:text-cream/50">
+                                Couldn&apos;t load the description right now — try reopening this job in a moment.
+                            </p>
+                        ) : (
+                            <p className="text-sm italic text-navy/50 dark:text-cream/50">No job description available.</p>
+                        )
                     )}
 
                     {/* Skills */}

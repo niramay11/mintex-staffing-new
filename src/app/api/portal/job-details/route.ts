@@ -12,6 +12,42 @@ const PRIVATE_FIELDS = [
   'secondary_cities','secondary_postal_codes','secondary_states',
 ];
 
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function hasDescription(data: Record<string, unknown>): boolean {
+  return !!(data?.requisition_description || data?.public_job_desc);
+}
+
+async function fetchJobDetails(v2Id: string): Promise<Record<string, unknown>> {
+  const res = await ceipalFetch(`https://api.ceipal.com/v2/getJobPostingDetails/${encodeURIComponent(v2Id)}/`);
+  if (!res.ok) throw new Error(`CEIPAL ${res.status}`);
+  return await res.json() as Record<string, unknown>;
+}
+
+// Confirmed live (see the admin job-details route and jobDescriptionCache.ts
+// for the same fix): Ceipal sometimes answers 200 OK with a degraded body —
+// no description at all even though the job genuinely has one. This route
+// has no caching layer of its own (a client's own detail view is rare
+// enough not to need one), so unlike those two, every single view was
+// exposed to that flakiness with zero protection. Retrying once
+// specifically when the description came back empty catches most of these;
+// if the retry ALSO comes back without one, this still returns the first
+// response's other fields (pay, dates, etc.) instead of failing the whole
+// modal over one flaky field.
+async function fetchJobDetailsWithRetry(v2Id: string): Promise<Record<string, unknown>> {
+  const first = await fetchJobDetails(v2Id);
+  if (hasDescription(first)) return first;
+  await sleep(800);
+  try {
+    const retry = await fetchJobDetails(v2Id);
+    return hasDescription(retry) ? retry : first;
+  } catch {
+    return first;
+  }
+}
+
 export async function GET(req: NextRequest) {
   const token = req.cookies.get('portal_token')?.value;
   const client = await verifySession(token ?? '') as Record<string, unknown> | null;
@@ -26,10 +62,7 @@ export async function GET(req: NextRequest) {
 
     if (!v2Id) return NextResponse.json({ error: 'Job not found' }, { status: 404 });
 
-    const res = await ceipalFetch(`https://api.ceipal.com/v2/getJobPostingDetails/${encodeURIComponent(v2Id)}/`);
-    if (!res.ok) return NextResponse.json({ error: `CEIPAL ${res.status}` }, { status: res.status });
-
-    const data = await res.json() as Record<string, unknown>;
+    const data = await fetchJobDetailsWithRetry(v2Id);
     const permissions = (client.permissions as Record<string, boolean>) ?? {};
 
     // Strip private fields
