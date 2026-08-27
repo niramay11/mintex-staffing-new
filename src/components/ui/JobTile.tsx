@@ -10,7 +10,11 @@ export default function JobTile({ job }: { job: CeipalJob }) {
   return (
     <div className="flex flex-col rounded-lg border border-navy/10 bg-white p-6 dark:border-white/10 dark:bg-navy-900">
       <div className="flex flex-wrap items-start justify-between gap-2">
-        <h3 className="text-base font-semibold text-navy dark:text-cream">{job.job_title}</h3>
+        <h3 className="text-base font-semibold text-navy dark:text-cream">
+          <Link href={`/get-hired/jobs/${jobUrlSlug(job)}`} className="hover:text-steel hover:underline dark:hover:text-steel-light">
+            {job.job_title}
+          </Link>
+        </h3>
         {job.job_type && (
           <span className="rounded-full bg-cream px-3 py-1 text-xs font-medium text-navy dark:bg-navy-800 dark:text-cream">
             {job.job_type}

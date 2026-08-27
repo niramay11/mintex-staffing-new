@@ -1,5 +1,6 @@
 import type { CeipalJob } from "@/components/jobs/types";
 import { BUSINESS, SITE_URL } from "@/lib/site";
+import { hasSubstantiveDescription } from "@/components/jobs/utils";
 
 // Google accepts employmentType as a single enum string or an array of them —
 // returning an array covers dual-classified listings (e.g. "Full-Time or
@@ -82,7 +83,13 @@ export function buildJobPostingSchema(job: CeipalJob, description: string) {
     "@context": "https://schema.org",
     "@type": "JobPosting",
     title: job.job_title,
-    description: description.trim() || `${job.job_title} — apply now with ${BUSINESS.name}.`,
+    // Confirmed live (JPC-1553): some Ceipal postings' description is just
+    // the job title pasted in as a heading, nothing else — technically
+    // non-empty, but not something worth telling Google is this job's
+    // description (Google flags overly short/generic JobPosting
+    // descriptions as a quality issue). Falls to the same generated summary
+    // used when there's no description at all.
+    description: hasSubstantiveDescription(description) ? description.trim() : `${job.job_title} — apply now with ${BUSINESS.name}.`,
     identifier: {
       "@type": "PropertyValue",
       name: BUSINESS.name,

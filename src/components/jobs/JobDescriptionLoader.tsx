@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { demoteDescriptionHeadings, JOB_DESCRIPTION_PROSE_CLASS } from "@/components/jobs/utils";
+import { demoteDescriptionHeadings, hasSubstantiveDescription, JOB_DESCRIPTION_PROSE_CLASS } from "@/components/jobs/utils";
 
 // Server-side rendering already has a 2.5s budget for the live Ceipal
 // description pull (see [slug]/page.tsx's loadDescription) — long enough to
@@ -18,6 +18,11 @@ import { demoteDescriptionHeadings, JOB_DESCRIPTION_PROSE_CLASS } from "@/compon
 export default function JobDescriptionLoader({ jobCode }: { jobCode: string }) {
   const [html, setHtml] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
+  // Set when Ceipal genuinely has content, but it's just a title pasted in
+  // as a heading with nothing after it (see hasSubstantiveDescription) —
+  // distinct from `failed` since retrying/reloading would return the exact
+  // same thin content, not fix anything.
+  const [thin, setThin] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -27,7 +32,9 @@ export default function JobDescriptionLoader({ jobCode }: { jobCode: string }) {
       .then((data: { public_job_description?: string; job_description?: string; error?: string }) => {
         if (cancelled) return;
         const desc = data.public_job_description || data.job_description || "";
-        if (desc) setHtml(demoteDescriptionHeadings(desc));
+        const demoted = desc ? demoteDescriptionHeadings(desc) : "";
+        if (demoted && hasSubstantiveDescription(demoted)) setHtml(demoted);
+        else if (demoted) setThin(true);
         else setFailed(true);
       })
       .catch(() => {
@@ -41,6 +48,14 @@ export default function JobDescriptionLoader({ jobCode }: { jobCode: string }) {
 
   if (html) {
     return <div className={JOB_DESCRIPTION_PROSE_CLASS} dangerouslySetInnerHTML={{ __html: html }} />;
+  }
+
+  if (thin) {
+    return (
+      <p className="text-sm text-navy/60 dark:text-cream/60">
+        A detailed description isn&apos;t available for this role yet — reach out to us or apply directly and we&apos;ll walk you through it.
+      </p>
+    );
   }
 
   if (failed) {

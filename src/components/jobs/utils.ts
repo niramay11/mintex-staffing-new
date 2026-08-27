@@ -127,6 +127,26 @@ export function demoteDescriptionHeadings(html: string): string {
   return html.replace(/<(\/?)h1(\s|>)/gi, "<$1h2$2");
 }
 
+// Confirmed live: some Ceipal postings carry a "description" that's really
+// just the job title pasted in as a heading with nothing after it (looks
+// like an AI-writing-tool paste that got cut short before the real content
+// came through) — technically non-empty HTML, but rendering it looks like a
+// broken/incomplete page to an applicant, not an honest "nothing here yet."
+// Stripping tags and requiring a minimum length catches that case without
+// needing to know anything about what a given job's real content should be
+// — any genuine description (responsibilities, qualifications, etc.) clears
+// this by a wide margin; a bare title heading doesn't.
+const MIN_SUBSTANTIVE_DESCRIPTION_LENGTH = 60;
+
+export function hasSubstantiveDescription(html: string): boolean {
+  const text = html
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  return text.length >= MIN_SUBSTANTIVE_DESCRIPTION_LENGTH;
+}
+
 // Shared by the job page's server-rendered description and
 // JobDescriptionLoader's client-fetched one, so a description that arrives
 // late (see JobDescriptionLoader) renders identically to one available at

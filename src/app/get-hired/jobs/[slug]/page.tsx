@@ -19,6 +19,7 @@ import {
   fmtPosted,
   workType,
   demoteDescriptionHeadings,
+  hasSubstantiveDescription,
   JOB_DESCRIPTION_PROSE_CLASS,
 } from "@/components/jobs/utils";
 import { buildJobPostingSchema } from "@/lib/jobPostingSchema";
@@ -356,8 +357,17 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
 
             <div className={skills.length > 0 ? "mt-8" : ""}>
               <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">Job Description</p>
-              {description ? (
+              {hasSubstantiveDescription(description) ? (
                 <div className={JOB_DESCRIPTION_PROSE_CLASS} dangerouslySetInnerHTML={{ __html: description }} />
+              ) : description ? (
+                // Confirmed live (JPC-1553): Ceipal has real, non-empty HTML
+                // here, but it's just the job title pasted in as a heading —
+                // a genuine content gap on Ceipal's end, not something a
+                // retry would ever fix. Say so plainly instead of rendering
+                // one lone bolded line that looks like the page broke.
+                <p className="text-sm text-navy/60 dark:text-cream/60">
+                  A detailed description isn&apos;t available for this role yet — reach out to us or apply directly and we&apos;ll walk you through it.
+                </p>
               ) : (
                 // The server-side lookup (loadDescription above) raced a 2.5s
                 // budget against Ceipal and lost — usually only on an older,
