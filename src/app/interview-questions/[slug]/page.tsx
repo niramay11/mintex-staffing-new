@@ -8,6 +8,12 @@ import EmailKitButton from "@/components/tools/EmailKitButton";
 import { loadKitBySlug, RateLimitError } from "@/lib/interviewKit/loadKit";
 import { pageMetadata } from "@/lib/pageMetadata";
 import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
+import { getCachedJobs } from "@/lib/jobsCache";
+import { isActiveJob, matchesRoleTitle } from "@/components/jobs/utils";
+import { withTimeout } from "@/lib/withTimeout";
+import type { CeipalJob } from "@/components/jobs/types";
+
+const MAX_RELATED_JOBS = 3;
 
 // The public, candidate-facing, INDEXED kit page — see implementation
 // notes: this is what unlocks SEO for the tool at all. Server-rendered so
@@ -55,6 +61,18 @@ export default async function InterviewKitPage({
   }
   if (!kit) notFound();
 
+  // Best-effort — a slow or failed jobs fetch should never break the kit
+  // page itself, so this just falls back to hiding the section (see
+  // InterviewKitView's relatedJobs prop) rather than surfacing an error.
+  const { jobs } = await withTimeout(getCachedJobs(), 3000, {
+    jobs: [] as unknown[],
+    cachedAt: Date.now(),
+    stale: true,
+  });
+  const relatedJobs = (jobs as CeipalJob[])
+    .filter((job) => isActiveJob(job) && matchesRoleTitle(job, kit.role.title))
+    .slice(0, MAX_RELATED_JOBS);
+
   const breadcrumbSchema = buildBreadcrumbSchema([
     { name: "Home", path: "/" },
     { name: "AI Interview Question Generator", path: "/resources/ai-interview-generator" },
@@ -82,7 +100,7 @@ export default async function InterviewKitPage({
       </Section>
 
       <Section background="cream">
-        <InterviewKitView kit={kit} roleSlug={slug} />
+        <InterviewKitView kit={kit} roleSlug={slug} relatedJobs={relatedJobs} />
         <div className="mt-8">
           <ResumeGapAnalysis kit={kit} />
         </div>

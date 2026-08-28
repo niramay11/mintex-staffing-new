@@ -44,6 +44,20 @@ export type ImageLocation = {
   category: ImageCategory;
 };
 
+// Industries are admin-managed DB rows (see lib/industries.ts), not static
+// content — their slugs aren't known at build time, so they can't be listed
+// in IMAGE_LOCATIONS like the entries below. Instead their card images live
+// in the same site_images table under a key computed from the slug; the
+// site-images API route generates one dynamic location per industry row at
+// request time using this same key, so the Site Images tab and the
+// Industries tab both read/write the exact same row — editing one updates
+// the other because there's only one row to begin with.
+export const INDUSTRY_CARD_IMAGE_CATEGORY: ImageCategory = "photo-square";
+export const INDUSTRY_CARD_IMAGE_PAGE_NAME = "Industries We Serve (Homepage Cards)";
+export function industryCardImageKey(slug: string): string {
+  return `industry:${slug}:card-visual`;
+}
+
 export const IMAGE_LOCATIONS: ImageLocation[] = [
   // Global — shared chrome, intentionally one instance site-wide
   { locationKey: "global:header-logo-mark",  pageName: "Global", sectionName: "Header Logo (mobile mark)", defaultSrc: "/logo-mark-navy.png", category: "logo-mark" },
@@ -105,4 +119,9 @@ export const IMAGE_LOCATIONS: ImageLocation[] = [
   { locationKey: "ai-interview-generator:handshake-visual", pageName: "AI Interview Generator", sectionName: "Handshake Visual", defaultSrc: "/interview-handshake.jpg", category: "photo-square" },
   { locationKey: "ai-interview-generator:confident-visual", pageName: "AI Interview Generator", sectionName: "Confident Visual", defaultSrc: "/interview-confident.jpg", category: "photo-square" },
   { locationKey: "ai-interview-generator:meeting-visual",   pageName: "AI Interview Generator", sectionName: "Meeting Visual",   defaultSrc: "/interview-meeting.jpg",   category: "photo-square" },
+
+  // Hiring Cost Calculator — mode picker cards
+  { locationKey: "hiring-cost-calculator:mode-employer-visual", pageName: "Hiring Cost Calculator", sectionName: "“We Hire For Ourselves” Card",           defaultSrc: "/interview-confident.jpg",  category: "photo-portrait" },
+  { locationKey: "hiring-cost-calculator:mode-staffing-visual", pageName: "Hiring Cost Calculator", sectionName: "“We're A Staffing Firm” Card",           defaultSrc: "/interview-handshake.jpg",  category: "photo-portrait" },
+  { locationKey: "hiring-cost-calculator:mode-search-visual",   pageName: "Hiring Cost Calculator", sectionName: "“We're An Executive Search Firm” Card", defaultSrc: "/interview-meeting.jpg",    category: "photo-portrait" },
 ];

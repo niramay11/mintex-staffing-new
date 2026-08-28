@@ -3,6 +3,7 @@ import Section from "@/components/ui/Section";
 import HiringCostCalculator from "@/components/tools/HiringCostCalculator";
 import { pageMetadata } from "@/lib/pageMetadata";
 import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
+import { getSiteImages } from "@/lib/siteImages";
 import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = pageMetadata({
@@ -33,7 +34,8 @@ const softwareApplicationSchema = {
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
 };
 
-export default function HiringCostCalculatorPage() {
+export default async function HiringCostCalculatorPage() {
+  const siteImages = await getSiteImages();
   return (
     <>
       <script
@@ -55,7 +57,7 @@ export default function HiringCostCalculatorPage() {
       </Section>
 
       <Section background="cream">
-        <HiringCostCalculator />
+        <HiringCostCalculator siteImages={siteImages} />
       </Section>
     </>
   );

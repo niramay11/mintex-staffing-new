@@ -3,13 +3,29 @@ import Image from "next/image";
 import { ButtonLink } from "@/components/ui/Button";
 import ClientStories from "@/components/home/ClientStories";
 import Testimonials from "@/components/home/Testimonials";
+import IndustriesCarousel from "@/components/home/IndustriesCarousel";
+import HeroBubbleCluster from "@/components/home/HeroBubbleCluster";
 import { getIndustries } from "@/lib/industries";
 import { getSiteImages } from "@/lib/siteImages";
+import { industryCardImageKey } from "@/lib/imageLocations";
 import { getHomepageTestimonials } from "@/lib/caseStudies";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
+
+// Placeholders until an admin uploads a real photo per industry (Industries
+// tab or Site Images tab — both write the same site_images row, see
+// industryCardImageKey). Cycled by index just for visual variety in that
+// dummy state.
+const INDUSTRY_CARD_FALLBACK_IMAGES = [
+  "/interview-confident.jpg",
+  "/interview-handshake.jpg",
+  "/interview-meeting.jpg",
+  "/hero-office.webp",
+  "/collage-2.webp",
+  "/collage-1.webp",
+];
 
 export default async function HomePage() {
   const siteImages = await getSiteImages();
@@ -85,16 +101,8 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="relative mx-6 mb-2 aspect-[4/3] overflow-hidden rounded-2xl shadow-[0_20px_45px_-20px_rgba(0,48,96,0.25)] sm:mx-10 sm:aspect-[16/10] lg:-mt-[62px] lg:mx-0 lg:mb-0 lg:aspect-auto lg:min-h-[480px] lg:overflow-visible lg:rounded-none lg:shadow-none xl:min-h-[560px]">
-            <Image
-              src={siteImages["home:hero-banner"]}
-              alt=""
-              fill
-              preload
-              fetchPriority="high"
-              sizes="(min-width: 1024px) 60vw, 100vw"
-              className="object-cover object-center lg:[mask-image:linear-gradient(to_right,transparent_0%,black_22%)] lg:[-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_22%)]"
-            />
+          <div className="mx-6 mb-2 flex items-center justify-center px-4 py-6 sm:mx-10 lg:mx-0 lg:mb-0 lg:min-h-[480px] xl:min-h-[560px]">
+            <HeroBubbleCluster />
           </div>
         </div>
       </section>
@@ -321,15 +329,21 @@ on paper.
       </section>
 
       {/* Sec 4 — Industries we served */}
-      <section id="industries" className="relative overflow-hidden border-t border-navy/[0.06] bg-white dark:bg-navy-900 dark:border-white/10">
-        <span className="pointer-events-none absolute left-1/2 top-1/2 hidden h-[320px] w-auto -translate-x-1/2 -translate-y-1/2 md:block lg:h-[400px]">
+      <section id="industries" className="group relative overflow-hidden border-t border-navy/[0.06] bg-white dark:bg-navy-900 dark:border-white/10">
+        {/* Big, centered behind the whole section, including the card row —
+            mostly hidden behind the opaque cards at rest. `group` on the
+            section means hovering any card (a descendant) still counts as
+            hovering the section, so the mark brightens/grows right when the
+            user is interacting with a card, instead of needing to see
+            through the card itself (which the photo fills anyway). */}
+        <span className="pointer-events-none absolute left-1/2 top-1/2 hidden h-[320px] w-auto -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ease-out md:block lg:h-[400px] group-hover:scale-[1.06]">
           <Image
             src={siteImages["home:industries-mark"]}
             alt=""
             aria-hidden="true"
             width={784}
             height={395}
-            className="h-full w-auto select-none object-contain opacity-[0.14] dark:hidden"
+            className="h-full w-auto select-none object-contain opacity-[0.14] transition-opacity duration-500 group-hover:opacity-[0.26] dark:hidden"
           />
           <Image
             src={siteImages["global:navy-section-mark"]}
@@ -337,7 +351,7 @@ on paper.
             aria-hidden="true"
             width={784}
             height={395}
-            className="hidden h-full w-auto select-none object-contain dark:block"
+            className="hidden h-full w-auto select-none object-contain opacity-70 transition-opacity duration-500 group-hover:opacity-100 dark:block"
           />
         </span>
         <div className="relative mx-auto max-w-[1920px] px-6 py-20 sm:px-10 lg:px-16 lg:py-24">
@@ -354,30 +368,14 @@ on paper.
             </p>
           </div>
 
-          <div className="mt-11 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {industries.map((industry) => {
-              const label = industry.name;
-              const achievement = industry.stats[0];
-              return (
-                <a
-                  key={industry.slug}
-                  href={`/industries/${industry.slug}`}
-                  className="group relative rounded-2xl border-2 border-navy/15 bg-white p-6 transition-all duration-300 hover:-translate-y-1.5 hover:border-steel/40 hover:bg-steel/5 hover:shadow-[0_20px_45px_-20px_rgba(1,35,64,0.3)] dark:bg-navy-800 dark:border-white/15"
-                >
-                  <div className="mb-5 flex items-center justify-between">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-[11px] bg-steel/[0.16] font-heading text-[15px] font-semibold text-steel transition-colors duration-300 group-hover:bg-steel group-hover:text-white dark:text-steel-light">
-                      {label.slice(0, 2).toUpperCase()}
-                    </div>
-                    <div className="font-heading text-[22px] font-semibold text-navy dark:text-cream">
-                      {achievement?.value}
-                    </div>
-                  </div>
-                  <h3 className="text-[15.5px] font-semibold text-navy dark:text-cream">{label}</h3>
-                  <p className="mt-1 text-[12.5px] text-steel dark:text-steel-light">placements made</p>
-                </a>
-              );
-            })}
-          </div>
+          <IndustriesCarousel
+            items={industries.map((industry, index) => ({
+              industry,
+              imageSrc:
+                siteImages[industryCardImageKey(industry.slug)] ??
+                INDUSTRY_CARD_FALLBACK_IMAGES[index % INDUSTRY_CARD_FALLBACK_IMAGES.length],
+            }))}
+          />
         </div>
       </section>
 

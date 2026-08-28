@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { IMAGE_LOCATIONS, IMAGE_CATEGORY_INFO } from "@/lib/imageLocations";
+import { IMAGE_LOCATIONS, IMAGE_CATEGORY_INFO, industryCardImageKey } from "@/lib/imageLocations";
 import type { InsightPost, InsightCategoryRow, CaseStudy, CaseStudyType, TeamMember, Industry } from "@/content/types";
 import type { CalculatorBreakdownLine } from "@/lib/calculatorShare";
 import InsightBodyEditor from "@/components/admin/InsightBodyEditor";
@@ -4307,6 +4307,13 @@ function IndustriesTab({ password }: { password: string }) {
   const [saving, setSaving]       = useState(false);
   const [saveError, setSaveError] = useState("");
   const [deleteError, setDeleteError] = useState("");
+  // The card photo shown on the homepage "Industries We Serve" section lives
+  // in the same site_images table the Site Images tab edits (keyed by
+  // industryCardImageKey), not on the industry row itself — so uploading it
+  // here updates the exact same record that tab would show, and vice versa.
+  const [cardImages, setCardImages] = useState<Record<string, string>>({});
+  const [cardImageUploading, setCardImageUploading] = useState(false);
+  const [cardImageError, setCardImageError] = useState("");
 
   const fetchData = () =>
     fetch("/api/admin/industries", { headers: { "x-admin-password": password } })
@@ -4318,12 +4325,58 @@ function IndustriesTab({ password }: { password: string }) {
       })
       .catch(() => { setLoadError("Could not reach the server."); setLoaded(true); });
 
-  useEffect(() => { fetchData(); }, []);
+  const fetchCardImages = () =>
+    fetch("/api/site-images", { headers: { "x-admin-password": password } })
+      .then((r) => r.json())
+      .then((data: { locations?: { location_key: string; file_path: string }[] }) => {
+        const next: Record<string, string> = {};
+        for (const loc of data.locations ?? []) {
+          const m = /^industry:(.+):card-visual$/.exec(loc.location_key);
+          if (m) next[m[1]] = loc.file_path;
+        }
+        setCardImages(next);
+      })
+      .catch(() => {});
+
+  useEffect(() => { fetchData(); fetchCardImages(); }, []);
 
   const openNew = () => { setSaveError(""); setDraft({ ...BLANK_INDUSTRY }); };
-  const openEdit = (ind: Industry) => { setSaveError(""); setDraft(toIndustryDraft(ind)); };
+  const openEdit = (ind: Industry) => { setSaveError(""); setCardImageError(""); setDraft(toIndustryDraft(ind)); };
   const closeEditor = () => setDraft(null);
   const updateDraft = (patch: Partial<IndustryDraft>) => setDraft((d) => (d ? { ...d, ...patch } : d));
+
+  const uploadCardImage = async (slug: string, file: File) => {
+    setCardImageError("");
+    setCardImageUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("password", password);
+      const res = await fetch("/api/site-images/upload", { method: "POST", body: formData });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.url) {
+        setCardImageError(json.error || "Upload failed. Try a smaller image.");
+        return;
+      }
+      const putRes = await fetch("/api/site-images", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          password,
+          locations: [{ location_key: industryCardImageKey(slug), file_path: json.url, alt_text: null }],
+        }),
+      });
+      if (!putRes.ok) {
+        setCardImageError("Uploaded, but couldn't save it to this industry. Try again.");
+        return;
+      }
+      setCardImages((prev) => ({ ...prev, [slug]: json.url }));
+    } catch {
+      setCardImageError("Could not reach the server.");
+    } finally {
+      setCardImageUploading(false);
+    }
+  };
 
   const addFaq = () => updateDraft({ faqs: [...(draft?.faqs ?? []), { question: "", answer: "" }] });
   const removeFaq = (index: number) => updateDraft({ faqs: (draft?.faqs ?? []).filter((_, i) => i !== index) });
@@ -4462,6 +4515,38 @@ function IndustriesTab({ password }: { password: string }) {
                   Page URL: /industries/{draft.id ? draft.slug : (slugPreview(draft.name) || "…")}
                   {draft.id && " (can't change once created)"}
                 </p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-navy/60 mb-1">Homepage Card Image</label>
+                {draft.id ? (
+                  <div className="flex items-center gap-3">
+                    <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-cream border border-navy/10">
+                      {cardImages[draft.slug] && (
+                        // eslint-disable-next-line @next/next/no-img-element -- admin-supplied preview, arbitrary URL
+                        <img src={cardImages[draft.slug]} alt="" className="h-full w-full object-cover" />
+                      )}
+                    </div>
+                    <label className="relative inline-flex items-center justify-center px-3 py-1.5 rounded-full bg-cream hover:bg-mist text-navy/70 text-xs font-medium cursor-pointer transition-colors">
+                      {cardImageUploading ? "Uploading…" : "Upload from computer"}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        disabled={cardImageUploading}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) uploadCardImage(draft.slug, file);
+                          e.target.value = "";
+                        }}
+                        className="absolute inset-0 opacity-0 cursor-pointer"
+                      />
+                    </label>
+                  </div>
+                ) : (
+                  <p className="text-xs text-navy/40">Save the industry first, then reopen it here to add its card image.</p>
+                )}
+                {cardImageError && <p className="text-xs text-red-600 mt-1">{cardImageError}</p>}
+                <p className="text-xs text-navy/40 mt-1">Also editable from the Site Images tab — both edit the same image.</p>
               </div>
 
               <div className="grid grid-cols-2 gap-3">

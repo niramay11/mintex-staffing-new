@@ -6,8 +6,12 @@ import InterviewKitView from "@/components/tools/InterviewKitView";
 import ResumeGapAnalysis from "@/components/tools/ResumeGapAnalysis";
 import EmailKitButton from "@/components/tools/EmailKitButton";
 import type { InterviewKit } from "@/lib/interviewKit/schema";
+import type { CeipalJob } from "@/components/jobs/types";
+import { isActiveJob, matchesRoleTitle } from "@/components/jobs/utils";
 
 export const JD_KIT_STORAGE_KEY = "mintex-jd-kit-preview";
+
+const MAX_RELATED_JOBS = 3;
 
 type JdContext = { mustHaveSkills?: string[]; namedTools?: string[] };
 type StoredKit = { kit: InterviewKit; jdContext?: JdContext };
@@ -38,6 +42,10 @@ function PreviewSection({ className = "", children }: { className?: string; chil
 // an expiry timer someone has to remember to enforce.
 export default function KitPreviewClient() {
   const [stored, setStored] = useState<StoredKit | null | undefined>(undefined);
+  // undefined (not []) until the fetch below resolves, so the section stays
+  // hidden while loading instead of flashing a "no roles" message that then
+  // flips to real matches a moment later.
+  const [relatedJobs, setRelatedJobs] = useState<CeipalJob[] | undefined>(undefined);
 
   useEffect(() => {
     // sessionStorage is only reachable client-side, so this has to run
@@ -53,6 +61,28 @@ export default function KitPreviewClient() {
       setStored(null);
     }
   }, []);
+
+  // No server round-trip backs this page (see the file comment), so unlike
+  // the indexed /interview-questions/[slug] page this can't fetch jobs
+  // server-side — falls back to the same public jobs list JobBoard already
+  // fetches client-side, filtered down to this kit's role.
+  useEffect(() => {
+    if (!stored) return;
+    let cancelled = false;
+    fetch("/api/jobs")
+      .then((r) => r.json())
+      .then((data: { results?: CeipalJob[] }) => {
+        if (cancelled) return;
+        const matched = (data.results ?? [])
+          .filter((job) => isActiveJob(job) && matchesRoleTitle(job, stored.kit.role.title))
+          .slice(0, MAX_RELATED_JOBS);
+        setRelatedJobs(matched);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [stored]);
 
   if (stored === undefined) return null;
 
@@ -94,7 +124,7 @@ export default function KitPreviewClient() {
           Generated from your pasted job posting — grounded in the tools and requirements it actually named, not
           guessed. This isn&apos;t saved on our servers; it disappears once you close this tab.
         </p>
-        <InterviewKitView kit={kit} path="jd" />
+        <InterviewKitView kit={kit} path="jd" relatedJobs={relatedJobs} />
         <div className="mt-8">
           <ResumeGapAnalysis kit={kit} jdContext={jdContext} />
         </div>

@@ -1,7 +1,9 @@
 import Link from "next/link";
 import type { InterviewKit } from "@/lib/interviewKit/schema";
+import type { CeipalJob } from "@/components/jobs/types";
 import KitSection from "@/components/tools/KitSection";
 import ExpandKit from "@/components/tools/ExpandKit";
+import JobTile from "@/components/ui/JobTile";
 import { stateToSlug } from "@/lib/interviewKit/legalRights";
 
 // Pure display component — no client state, no hooks. Used by the indexed
@@ -29,6 +31,7 @@ export default function InterviewKitView({
   view = "candidate",
   roleSlug,
   path = "public",
+  relatedJobs,
 }: {
   kit: InterviewKit;
   view?: View;
@@ -37,11 +40,47 @@ export default function InterviewKitView({
    * feature allows employer-possessive language (jd path) or bans it
    * entirely (public path), same rule as the base generation. */
   path?: "public" | "jd";
+  /** Live openings matched to kit.role.title (see matchesRoleTitle) — passed
+   * in already-filtered rather than fetched here, since this stays a pure
+   * display component with no data fetching of its own. Candidate view only.
+   * `undefined` (the caller never attempted a search, e.g. the employer page)
+   * hides the section entirely; an empty array (searched, found nothing)
+   * still renders the section with a "none right now" message, so it's
+   * clear the tool worked rather than looking broken or missing. */
+  relatedJobs?: CeipalJob[];
 }) {
   const isEmployer = view === "employer";
 
   return (
     <div className="space-y-8">
+      {!isEmployer && relatedJobs && (
+        <section className="rounded-2xl border border-navy/10 bg-white p-6 dark:border-white/10 dark:bg-navy-900">
+          <h3 className="font-heading text-xl font-semibold text-navy dark:text-cream">
+            Live {kit.role.title} openings
+          </h3>
+          {relatedJobs.length > 0 ? (
+            <>
+              <p className="mt-1 text-sm text-navy/70 dark:text-cream/70">
+                Actually hiring for this right now, matched from our open roles.
+              </p>
+              <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {relatedJobs.map((job) => (
+                  <JobTile key={job.job_code} job={job} />
+                ))}
+              </div>
+            </>
+          ) : (
+            <p className="mt-1 text-sm text-navy/70 dark:text-cream/70">
+              No open {kit.role.title} roles right now — check{" "}
+              <Link href="/get-hired" className="font-semibold text-navy/80 hover:text-navy dark:text-cream/80 dark:hover:text-cream">
+                all open roles →
+              </Link>{" "}
+              or check back soon, new roles open regularly.
+            </p>
+          )}
+        </section>
+      )}
+
       <section>
         <h3 className="font-heading text-xl font-semibold text-navy dark:text-cream">Competency map</h3>
         <div className="mt-3 flex flex-wrap gap-2">
@@ -62,6 +101,40 @@ export default function InterviewKitView({
       ))}
 
       {!isEmployer && <ExpandKit kit={kit} path={path} />}
+
+      {!isEmployer && (
+        <section className="rounded-2xl border border-navy/10 bg-white p-6 dark:border-white/10 dark:bg-navy-900">
+          <h3 className="font-heading text-xl font-semibold text-navy dark:text-cream">Prep before you go in</h3>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <div>
+              <p className="text-sm font-semibold text-navy dark:text-cream">Think through these before the interview</p>
+              <ul className="mt-1.5 list-disc space-y-1 pl-4 text-sm text-navy/70 dark:text-cream/70">
+                {kit.prep.star_prompts.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-navy dark:text-cream">Questions to ask them</p>
+              <ul className="mt-1.5 list-disc space-y-1 pl-4 text-sm text-navy/70 dark:text-cream/70">
+                {kit.prep.questions_to_ask_them.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          {kit.prep.likely_skills_tests.length > 0 && (
+            <div className="mt-4">
+              <p className="text-sm font-semibold text-navy dark:text-cream">You may also be tested on</p>
+              <ul className="mt-1.5 list-disc space-y-1 pl-4 text-sm text-navy/70 dark:text-cream/70">
+                {kit.prep.likely_skills_tests.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </section>
+      )}
 
       <section className="rounded-2xl border border-steel/40 bg-steel/[0.08] p-6 dark:border-steel/30 dark:bg-steel/10">
         <h3 className="font-heading text-xl font-semibold text-navy dark:text-cream">
@@ -117,39 +190,6 @@ export default function InterviewKitView({
         )}
       </section>
 
-      {!isEmployer && (
-        <section className="rounded-2xl border border-navy/10 bg-white p-6 dark:border-white/10 dark:bg-navy-900">
-          <h3 className="font-heading text-xl font-semibold text-navy dark:text-cream">Prep before you go in</h3>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            <div>
-              <p className="text-sm font-semibold text-navy dark:text-cream">Think through these before the interview</p>
-              <ul className="mt-1.5 list-disc space-y-1 pl-4 text-sm text-navy/70 dark:text-cream/70">
-                {kit.prep.star_prompts.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-navy dark:text-cream">Questions to ask them</p>
-              <ul className="mt-1.5 list-disc space-y-1 pl-4 text-sm text-navy/70 dark:text-cream/70">
-                {kit.prep.questions_to_ask_them.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-          {kit.prep.likely_skills_tests.length > 0 && (
-            <div className="mt-4">
-              <p className="text-sm font-semibold text-navy dark:text-cream">You may also be tested on</p>
-              <ul className="mt-1.5 list-disc space-y-1 pl-4 text-sm text-navy/70 dark:text-cream/70">
-                {kit.prep.likely_skills_tests.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </section>
-      )}
     </div>
   );
 }

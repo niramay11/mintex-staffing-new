@@ -172,3 +172,37 @@ export function fmtPosted(s?: string): string | null {
   if (diff < 30) return `${diff} days ago`;
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
+
+// Seniority/level words stripped before comparing an interview kit's role
+// title (free text — typed by a candidate or lifted from a pasted job
+// description) against a live job's title. Without this, "Senior Software
+// Engineer" (job) would never match a kit titled just "Software Engineer".
+const TITLE_MODIFIER_WORDS = new Set([
+  "senior", "sr", "junior", "jr", "lead", "principal", "staff", "entry",
+  "level", "i", "ii", "iii", "iv", "1", "2", "3", "4", "associate",
+  "intern", "internship", "mid", "the", "a", "an",
+]);
+
+function coreTitlePhrase(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter((w) => w && !TITLE_MODIFIER_WORDS.has(w))
+    .join(" ")
+    .trim();
+}
+
+// Deliberately stricter than the per-industry keyword matching in
+// matchesIndustry (industries/[slug]/page.tsx): that list is a handful of
+// hand-picked, human-vetted keywords, so "any keyword matches" is safe.
+// A kit's role title is arbitrary free text with no human review, so this
+// requires the full (modifier-stripped) phrase to appear as a substring
+// rather than matching on any single word — "Developer" alone would
+// otherwise match almost every engineering job on the board.
+export function matchesRoleTitle(job: CeipalJob, roleTitle: string): boolean {
+  const core = coreTitlePhrase(roleTitle);
+  const jobTitle = coreTitlePhrase(job.job_title || "");
+  if (core.length < 3 || jobTitle.length < 3) return false;
+  return jobTitle.includes(core) || core.includes(jobTitle);
+}

@@ -39,6 +39,12 @@ const interviewPrepPoints = [
   "Best of all, it’s completely free and available anytime, no sign-up, no waiting. Start preparing smarter today and walk into your next interview ready to make a lasting impression on any hiring team, in any industry.",
 ];
 
+// Points 1 and 3 sit in the left stack, 2 and 4 in the right stack (below the
+// photo collage), each stack sized to its own content so neither column
+// inherits dead space from the other.
+const LEFT_STACK = [0, 2];
+const RIGHT_STACK = [1, 3];
+
 export default async function AiInterviewGeneratorPage() {
   const siteImages = await getSiteImages();
   const industries = await getIndustries();
@@ -62,8 +68,8 @@ export default async function AiInterviewGeneratorPage() {
       </Section>
 
       <Section background="white">
-        <div className="mx-auto grid w-full items-start gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-24">
-          <div>
+        <div className="mx-auto grid w-full gap-x-12 gap-y-8 lg:grid-cols-[1fr_1.1fr] lg:gap-x-24">
+          <div className="lg:col-span-2">
             <div className="inline-flex items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[13px] font-medium text-navy/70 dark:border-white/10 dark:bg-navy-800 dark:text-cream/70">
               <span className="h-[7px] w-[7px] rounded-full bg-steel" />
               AI-Powered Prep
@@ -71,70 +77,82 @@ export default async function AiInterviewGeneratorPage() {
             <h2 className="mt-5 font-heading text-[32px] font-semibold leading-tight text-navy dark:text-cream sm:text-[40px]">
               Walk into your next interview ready for anything
             </h2>
-            <div className="mt-6 space-y-5">
-              {interviewPrepPoints.map((point, index) => (
-                <div key={index} className="flex gap-3">
-                  <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-navy text-xs font-semibold text-white dark:bg-steel dark:text-navy-950">
-                    {index + 1}
-                  </span>
-                  <p className="text-base leading-relaxed text-steel dark:text-steel-light">{point}</p>
-                </div>
-              ))}
-            </div>
           </div>
 
-          <div className="relative mx-auto aspect-[6/5] w-full max-w-2xl">
-            <div
-              aria-hidden="true"
-              className="absolute left-[4%] top-[2%] h-[76%] w-[76%] rounded-[45%_55%_60%_40%/50%_45%_55%_50%] bg-navy/[0.05]"
-            />
-            <div
-              aria-hidden="true"
-              className="absolute left-0 top-[12%] h-[68%] w-[68%] rounded-[55%_45%_40%_60%/45%_55%_45%_55%] bg-steel-lighter/40"
-            />
+          <div className="flex flex-col gap-8 lg:gap-10">
+            {LEFT_STACK.map((index) => (
+              <div key={index} className="flex gap-3">
+                <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-navy text-xs font-semibold text-white dark:bg-steel dark:text-navy-950">
+                  {index + 1}
+                </span>
+                <p className="text-base leading-relaxed text-steel dark:text-steel-light">{interviewPrepPoints[index]}</p>
+              </div>
+            ))}
+          </div>
 
-            <div className="absolute left-0 top-0 h-[64%] w-[64%] overflow-hidden rounded-[2rem] shadow-[0_25px_60px_-20px_rgba(0,48,96,0.35)]">
-              <Image
-                src={siteImages["ai-interview-generator:handshake-visual"]}
-                alt="Candidate shaking hands with a hiring manager after a job interview prepared with Mintex Staffing's AI interview question generator"
-                fill
-                className="object-cover"
+          <div className="flex flex-col gap-8 lg:gap-10">
+            <div className="relative mx-auto aspect-[6/5] w-full max-w-2xl">
+              <div
+                aria-hidden="true"
+                className="absolute left-[4%] top-[2%] h-[76%] w-[76%] rounded-[45%_55%_60%_40%/50%_45%_55%_50%] bg-navy/[0.05]"
               />
-            </div>
-
-            <div className="absolute right-0 top-[6%] h-[38%] w-[44%] overflow-hidden rounded-[1.5rem] shadow-[0_20px_45px_-18px_rgba(0,48,96,0.35)]">
-              <Image
-                src={siteImages["ai-interview-generator:confident-visual"]}
-                alt="Confident candidate smiling during a job interview, prepared using Mintex Staffing's interview resources"
-                fill
-                className="object-cover"
+              <div
+                aria-hidden="true"
+                className="absolute left-0 top-[12%] h-[68%] w-[68%] rounded-[55%_45%_40%_60%/45%_55%_45%_55%] bg-steel-lighter/40"
               />
-            </div>
 
-            <div className="absolute bottom-0 right-[8%] h-[40%] w-[42%] overflow-hidden rounded-[1.5rem] shadow-[0_20px_45px_-18px_rgba(0,48,96,0.35)]">
-              <Image
-                src={siteImages["ai-interview-generator:meeting-visual"]}
-                alt="Job interview taking place in an office setting, supported by Mintex Staffing's staffing and recruitment services"
-                fill
-                className="object-cover"
-              />
-            </div>
+              <div className="absolute left-0 top-0 h-[64%] w-[64%] overflow-hidden rounded-[2rem] shadow-[0_25px_60px_-20px_rgba(0,48,96,0.35)]">
+                <Image
+                  src={siteImages["ai-interview-generator:handshake-visual"]}
+                  alt="Candidate shaking hands with a hiring manager after a job interview prepared with Mintex Staffing's AI interview question generator"
+                  fill
+                  className="object-cover"
+                />
+              </div>
 
-            <div
-              className="absolute left-0 flex items-center gap-3 rounded-2xl border border-navy/10 bg-white px-5 py-4 text-navy shadow-[0_20px_45px_-18px_rgba(0,48,96,0.3)] dark:border-white/10 dark:bg-navy-900 dark:text-cream"
-              style={{ top: "70%" }}
-            >
-              <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel dark:text-steel-light">
-                <svg viewBox="0 0 24 24" fill="none" strokeWidth={1.8} stroke="currentColor" className="h-5 w-5">
-                  <path d="M11.5 3 13 8l5 1.5-5 1.5-1.5 5L10 11 5 9.5 10 8z" strokeLinejoin="round" />
-                  <path d="M18.5 15.5 19.5 18l2.5 1-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1z" strokeLinejoin="round" />
-                </svg>
-              </span>
-              <div>
-                <p className="text-sm font-semibold leading-none">Full interview kits</p>
-                <p className="mt-1 text-xs text-navy/50 dark:text-cream/50">competencies, three rounds, scoring rubric</p>
+              <div className="absolute right-0 top-[6%] h-[38%] w-[44%] overflow-hidden rounded-[1.5rem] shadow-[0_20px_45px_-18px_rgba(0,48,96,0.35)]">
+                <Image
+                  src={siteImages["ai-interview-generator:confident-visual"]}
+                  alt="Confident candidate smiling during a job interview, prepared using Mintex Staffing's interview resources"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+
+              <div className="absolute bottom-0 right-[8%] h-[40%] w-[42%] overflow-hidden rounded-[1.5rem] shadow-[0_20px_45px_-18px_rgba(0,48,96,0.35)]">
+                <Image
+                  src={siteImages["ai-interview-generator:meeting-visual"]}
+                  alt="Job interview taking place in an office setting, supported by Mintex Staffing's staffing and recruitment services"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+
+              <div
+                className="absolute left-0 flex items-center gap-3 rounded-2xl border border-navy/10 bg-white px-5 py-4 text-navy shadow-[0_20px_45px_-18px_rgba(0,48,96,0.3)] dark:border-white/10 dark:bg-navy-900 dark:text-cream"
+                style={{ top: "70%" }}
+              >
+                <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel dark:text-steel-light">
+                  <svg viewBox="0 0 24 24" fill="none" strokeWidth={1.8} stroke="currentColor" className="h-5 w-5">
+                    <path d="M11.5 3 13 8l5 1.5-5 1.5-1.5 5L10 11 5 9.5 10 8z" strokeLinejoin="round" />
+                    <path d="M18.5 15.5 19.5 18l2.5 1-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1z" strokeLinejoin="round" />
+                  </svg>
+                </span>
+                <div>
+                  <p className="text-sm font-semibold leading-none">Full interview kits</p>
+                  <p className="mt-1 text-xs text-navy/50 dark:text-cream/50">competencies, three rounds, scoring rubric</p>
+                </div>
               </div>
             </div>
+
+            {RIGHT_STACK.map((index) => (
+              <div key={index} className="flex gap-3">
+                <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-navy text-xs font-semibold text-white dark:bg-steel dark:text-navy-950">
+                  {index + 1}
+                </span>
+                <p className="text-base leading-relaxed text-steel dark:text-steel-light">{interviewPrepPoints[index]}</p>
+              </div>
+            ))}
           </div>
         </div>
       </Section>

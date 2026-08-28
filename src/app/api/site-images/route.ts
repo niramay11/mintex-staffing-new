@@ -3,7 +3,22 @@ import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase";
 import { verifyAdminPassword } from "@/lib/portal-auth";
 import { IMAGE_LOCATIONS, invalidateSiteImagesCache } from "@/lib/siteImages";
+import { INDUSTRY_CARD_IMAGE_PAGE_NAME, industryCardImageKey } from "@/lib/imageLocations";
 import { scanForOrphans } from "@/lib/imageScanner";
+
+// Industries are admin-managed DB rows, not static IMAGE_LOCATIONS entries
+// (see the comment on industryCardImageKey) — so their one image slot each
+// has to be built here, per request, from the current industries table
+// instead of the fixed IMAGE_LOCATIONS array.
+async function industryLocations() {
+  const { data } = await supabaseAdmin.from("industries").select("slug, name").order("sort_order", { ascending: true });
+  return (data ?? []).map((row) => ({
+    locationKey: industryCardImageKey(row.slug as string),
+    pageName: INDUSTRY_CARD_IMAGE_PAGE_NAME,
+    sectionName: `${row.name} Card`,
+    defaultSrc: "/hero-office.webp",
+  }));
+}
 
 // GET /api/site-images — admin-guarded (rescans /public as a side effect).
 // Returns every known location merged with its DB override, plus any
@@ -20,7 +35,8 @@ export async function GET(req: NextRequest) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   const overrides = new Map((data ?? []).filter((r) => r.location_key).map((r) => [r.location_key, r]));
-  const locations = IMAGE_LOCATIONS.map((loc) => {
+  const allLocations = [...IMAGE_LOCATIONS, ...(await industryLocations())];
+  const locations = allLocations.map((loc) => {
     const override = overrides.get(loc.locationKey);
     return {
       location_key: loc.locationKey,
@@ -50,8 +66,9 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: "locations must be an array" }, { status: 400 });
   }
 
-  const validKeys = new Set(IMAGE_LOCATIONS.map((loc) => loc.locationKey));
-  const byKey = new Map(IMAGE_LOCATIONS.map((loc) => [loc.locationKey, loc]));
+  const allLocations = [...IMAGE_LOCATIONS, ...(await industryLocations())];
+  const validKeys = new Set(allLocations.map((loc) => loc.locationKey));
+  const byKey = new Map(allLocations.map((loc) => [loc.locationKey, loc]));
 
   const clean = locations
     .map((loc) => ({

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import Image from "next/image";
 import { ButtonLink } from "@/components/ui/Button";
 import Select from "@/components/ui/Select";
 import { packState, unpackState, type CalculatorBreakdownLine, type CalculatorBreakdownPayload } from "@/lib/calculatorShare";
@@ -34,10 +35,28 @@ const ROLE_TYPE_OPTIONS = Object.keys(ROLE_TYPES).map((k) => ({ value: k, label:
 const SENIORITY_OPTIONS = Object.keys(SENIORITY).map((k) => ({ value: k, label: k }));
 const STAFFING_OPTIONS = Object.keys(STAFFING_MODES).map((k) => ({ value: k, label: k }));
 
-const MODE_CARDS: { key: Exclude<Mode, null>; title: string; desc: string }[] = [
-  { key: "employer", title: "We hire for ourselves", desc: "You have an in-house HR or talent team filling your own roles." },
-  { key: "staffing", title: "We're a staffing firm", desc: "You place candidates with clients and want more coverage." },
-  { key: "search", title: "We're an executive search firm", desc: "You run retained searches and carry the research load." },
+const MODE_CARDS: { key: Exclude<Mode, null>; title: string; desc: string; imageKey: string; alt: string }[] = [
+  {
+    key: "employer",
+    title: "We hire for ourselves",
+    desc: "You have an in-house HR or talent team filling your own roles.",
+    imageKey: "hiring-cost-calculator:mode-employer-visual",
+    alt: "In-house HR or talent team filling their own company's roles",
+  },
+  {
+    key: "staffing",
+    title: "We're a staffing firm",
+    desc: "You place candidates with clients and want more coverage.",
+    imageKey: "hiring-cost-calculator:mode-staffing-visual",
+    alt: "Staffing firm recruiter placing candidates with clients",
+  },
+  {
+    key: "search",
+    title: "We're an executive search firm",
+    desc: "You run retained searches and carry the research load.",
+    imageKey: "hiring-cost-calculator:mode-search-visual",
+    alt: "Executive search consultant running a retained search",
+  },
 ];
 
 const EMPLOYER_DEFAULTS: EmployerInputs = {
@@ -432,7 +451,7 @@ function SavedLinkBox({ url, error }: { url: string | null; error: string }) {
 }
 
 /* =========================================================== MAIN =========== */
-export default function HiringCostCalculator() {
+export default function HiringCostCalculator({ siteImages }: { siteImages: Record<string, string> }) {
   const [mode, setMode] = useState<Mode>(null);
   const [showWork, setShowWork] = useState(false);
   const [showAssump, setShowAssump] = useState(false);
@@ -517,21 +536,48 @@ export default function HiringCostCalculator() {
   /* ---------------------------------------------------------- mode picker */
   if (!mode) {
     return (
-      <div className="mx-auto max-w-4xl">
+      <div className="mx-auto max-w-6xl">
         <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Mintex Staffing</div>
         <h1 className="mt-2 font-heading text-3xl font-bold tracking-tight text-navy dark:text-cream sm:text-4xl">What is your hiring actually costing you?</h1>
         <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-navy/75 dark:text-cream/75">A few questions. We&apos;ll add up what you spend in a year — including the costs that never reach a spreadsheet — and show you what changes with Mintex. Every number comes with a plain-English explanation.</p>
-        <div className="mt-7 grid gap-4 sm:grid-cols-3">
+        <div className="mt-7 grid gap-6 sm:grid-cols-3 lg:gap-8">
           {MODE_CARDS.map((m) => (
             <button
               key={m.key}
               type="button"
               onClick={() => setMode(m.key)}
-              className="group flex flex-col rounded-2xl border border-l-[3px] border-navy/10 border-l-transparent bg-white p-6 text-left transition-colors hover:-translate-y-0.5 hover:border-l-steel dark:border-white/10 dark:bg-navy-900"
+              className="group flex h-full flex-col rounded-[22px] border border-navy/10 bg-white p-3 text-left shadow-[0_10px_30px_-18px_rgba(0,48,96,0.35)] transition-all duration-300 hover:-translate-y-1.5 hover:border-steel/50 hover:shadow-[0_24px_44px_-16px_rgba(0,48,96,0.4)] dark:border-white/10 dark:bg-navy-900 dark:hover:border-steel/40"
             >
-              <h3 className="font-heading text-base font-semibold text-navy dark:text-cream">{m.title}</h3>
-              <p className="mt-1.5 flex-1 text-sm text-navy/80 dark:text-cream/80">{m.desc}</p>
-              <span className="mt-3 text-sm font-semibold text-navy transition-colors group-hover:text-navy-secondary dark:text-cream dark:group-hover:text-steel-light">Start →</span>
+              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-mist dark:bg-navy-800">
+                <Image
+                  src={siteImages[m.imageKey]}
+                  alt={m.alt}
+                  fill
+                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+                  sizes="(min-width: 640px) 33vw, 100vw"
+                />
+              </div>
+
+              <div className="flex flex-1 flex-col px-2 pb-1 pt-3">
+                <div className="flex items-center gap-1.5">
+                  <h3 className="font-heading text-[15px] font-semibold text-navy dark:text-cream">{m.title}</h3>
+                  <span className="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-steel text-white">
+                    <svg viewBox="0 0 24 24" fill="none" strokeWidth={3} stroke="currentColor" className="h-2.5 w-2.5">
+                      <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </span>
+                </div>
+                <p className="mt-1 line-clamp-2 flex-1 text-[13px] leading-relaxed text-navy/60 dark:text-cream/60">{m.desc}</p>
+
+                <div className="mt-3 flex items-center justify-end">
+                  <span className="inline-flex items-center gap-1 rounded-full border border-navy/15 px-3 py-1.5 text-xs font-semibold text-navy transition-colors group-hover:bg-navy group-hover:text-white dark:border-white/15 dark:text-cream dark:group-hover:bg-steel dark:group-hover:text-navy-950">
+                    Start
+                    <svg viewBox="0 0 24 24" fill="none" strokeWidth={2} stroke="currentColor" className="h-3 w-3">
+                      <path d="M5 12h14M13 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </span>
+                </div>
+              </div>
             </button>
           ))}
         </div>
