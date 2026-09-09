@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -20,6 +21,7 @@ export default function SiteChrome({
 }) {
   const pathname = usePathname();
   const bare = BARE_ROUTES.some((r) => pathname === r || pathname.startsWith(`${r}/`));
+  const [contactOpen, setContactOpen] = useState(false);
 
   if (bare) return <>{children}</>;
 
@@ -27,8 +29,8 @@ export default function SiteChrome({
     <>
       <Header siteImages={siteImages} industries={industries} />
       <main className="flex-1 pb-6">{children}</main>
-      <Footer siteImages={siteImages} industries={industries} />
-      <ContactButton />
+      <Footer siteImages={siteImages} industries={industries} liftBackToTop={contactOpen} />
+      <ContactButton open={contactOpen} onOpenChange={setContactOpen} />
     </>
   );
 }

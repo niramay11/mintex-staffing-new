@@ -1,28 +1,30 @@
 "use client";
 
-import { useState } from "react";
-
 const PHONE_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "";
 const WHATSAPP_MESSAGE =
   process.env.NEXT_PUBLIC_WHATSAPP_MESSAGE ??
   "Hi, I'm interested in job opportunities at Mintex Staffing.";
 const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "info@mintexstaffing.com";
 
-export default function ContactButton() {
-  const [open, setOpen] = useState(false);
-
+export default function ContactButton({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   const whatsappHref = PHONE_NUMBER
     ? `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`
     : null;
   const emailHref = `mailto:${CONTACT_EMAIL}`;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-3">
+    <div className="pointer-events-none fixed bottom-6 right-6 z-50 flex flex-col items-center gap-3">
       <a
         href={emailHref}
         aria-label="Email us"
         className={`flex h-12 w-12 items-center justify-center rounded-full bg-navy text-white shadow-lg transition-all duration-200 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy dark:bg-cream dark:text-navy ${
-          open ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"
+          open ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"
         }`}
       >
         <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
@@ -38,7 +40,7 @@ export default function ContactButton() {
           rel="noopener noreferrer"
           aria-label="Chat with us on WhatsApp"
           className={`flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition-all duration-200 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#25D366] ${
-            open ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"
+            open ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"
           }`}
         >
           <svg viewBox="0 0 32 32" className="h-6 w-6" fill="currentColor" aria-hidden="true">
@@ -49,10 +51,10 @@ export default function ContactButton() {
 
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => onOpenChange(!open)}
         aria-label={open ? "Close contact options" : "Contact us"}
         aria-expanded={open}
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-navy text-white shadow-lg transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy dark:bg-cream dark:text-navy"
+        className="pointer-events-auto flex h-14 w-14 items-center justify-center rounded-full bg-navy text-white shadow-lg transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy dark:bg-cream dark:text-navy"
       >
         {open ? (
           <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
