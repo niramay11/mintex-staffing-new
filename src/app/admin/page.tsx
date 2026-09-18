@@ -2125,6 +2125,7 @@ function SiteImagesTab({ password }: { password: string }) {
   const [orphans, setOrphans]     = useState<OrphanRow[]>([]);
   const [loaded, setLoaded]       = useState(false);
   const [syncing, setSyncing]     = useState(false);
+  const [synced, setSynced]       = useState(false);
   const [saving, setSaving]       = useState(false);
   const [saved, setSaved]         = useState(false);
   const [error, setError]         = useState("");
@@ -2151,6 +2152,10 @@ function SiteImagesTab({ password }: { password: string }) {
         setLoadError(!data.locations && data.error ? data.error : "");
         setLoaded(true);
         setSyncing(false);
+        if (!opts?.silent) {
+          setSynced(true);
+          setTimeout(() => setSynced(false), 2000);
+        }
       })
       .catch(() => {
         setLoadError("Could not reach the server.");
@@ -2283,7 +2288,7 @@ function SiteImagesTab({ password }: { password: string }) {
         <button type="button" onClick={() => fetchData()} disabled={syncing}
           className="flex items-center gap-2 px-4 py-2 rounded-full bg-white hover:bg-mist text-navy/70 text-sm border border-navy/10 transition-colors disabled:opacity-50">
           <span className={syncing ? "animate-spin" : ""}>↻</span>
-          {syncing ? "Syncing…" : "Sync Now"}
+          {syncing ? "Syncing…" : synced ? "Synced ✓" : "Sync Now"}
         </button>
       </div>
 

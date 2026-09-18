@@ -138,7 +138,7 @@ export default function EmailResultsClient() {
           </form>
         )}
 
-        <p className="mt-4 text-xs leading-relaxed text-navy/60 dark:text-cream/60">
+        <p className="mt-4 text-[13.5px] leading-relaxed text-navy/60 dark:text-cream/60">
           We&apos;ll only use this to send your breakdown. No spam.
         </p>
         <Link href="/resources/hiring-cost-calculator" className="mt-4 block text-sm text-steel hover:text-navy dark:text-steel-light dark:hover:text-cream">

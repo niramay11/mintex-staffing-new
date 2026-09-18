@@ -39,12 +39,6 @@ const interviewPrepPoints = [
   "Best of all, it’s completely free and available anytime, no sign-up, no waiting. Start preparing smarter today and walk into your next interview ready to make a lasting impression on any hiring team, in any industry.",
 ];
 
-// Points 1 and 3 sit in the left stack, 2 and 4 in the right stack (below the
-// photo collage), each stack sized to its own content so neither column
-// inherits dead space from the other.
-const LEFT_STACK = [0, 2];
-const RIGHT_STACK = [1, 3];
-
 export default async function AiInterviewGeneratorPage() {
   const siteImages = await getSiteImages();
   const industries = await getIndustries();
@@ -70,7 +64,7 @@ export default async function AiInterviewGeneratorPage() {
       <Section background="white">
         <div className="mx-auto grid w-full gap-x-12 gap-y-8 lg:grid-cols-[1fr_1.1fr] lg:gap-x-24">
           <div className="lg:col-span-2">
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[13px] font-medium text-navy/70 dark:border-white/10 dark:bg-navy-800 dark:text-cream/70">
+            <div className="inline-flex items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[14.5px] font-medium text-navy/70 dark:border-white/10 dark:bg-navy-800 dark:text-cream/70">
               <span className="h-[7px] w-[7px] rounded-full bg-steel" />
               AI-Powered Prep
             </div>
@@ -80,12 +74,12 @@ export default async function AiInterviewGeneratorPage() {
           </div>
 
           <div className="flex flex-col gap-8 lg:gap-10">
-            {LEFT_STACK.map((index) => (
+            {interviewPrepPoints.map((point, index) => (
               <div key={index} className="flex gap-3">
                 <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-navy text-xs font-semibold text-white dark:bg-steel dark:text-navy-950">
                   {index + 1}
                 </span>
-                <p className="text-base leading-relaxed text-steel dark:text-steel-light">{interviewPrepPoints[index]}</p>
+                <p className="text-[18px] leading-relaxed text-steel dark:text-steel-light">{point}</p>
               </div>
             ))}
           </div>
@@ -140,19 +134,10 @@ export default async function AiInterviewGeneratorPage() {
                 </span>
                 <div>
                   <p className="text-sm font-semibold leading-none">Full interview kits</p>
-                  <p className="mt-1 text-xs text-navy/50 dark:text-cream/50">competencies, three rounds, scoring rubric</p>
+                  <p className="mt-1 text-[13.5px] text-navy/50 dark:text-cream/50">competencies, three rounds, scoring rubric</p>
                 </div>
               </div>
             </div>
-
-            {RIGHT_STACK.map((index) => (
-              <div key={index} className="flex gap-3">
-                <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-navy text-xs font-semibold text-white dark:bg-steel dark:text-navy-950">
-                  {index + 1}
-                </span>
-                <p className="text-base leading-relaxed text-steel dark:text-steel-light">{interviewPrepPoints[index]}</p>
-              </div>
-            ))}
           </div>
         </div>
       </Section>

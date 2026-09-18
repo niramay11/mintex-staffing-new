@@ -106,7 +106,7 @@ export default async function ShareResumePage() {
       <Section background="mist" className="relative !py-12 sm:!py-14 lg:!py-16">
         <div className="relative mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
           <div>
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[13px] font-medium text-navy/70 dark:border-white/10 dark:bg-navy-900 dark:text-cream/70">
+            <div className="inline-flex items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[14.5px] font-medium text-navy/70 dark:border-white/10 dark:bg-navy-900 dark:text-cream/70">
               <span className="h-[7px] w-[7px] rounded-full bg-steel shadow-[0_0_0_4px_rgba(74,115,140,0.25)]" />
               For job seekers
             </div>
@@ -133,7 +133,7 @@ export default async function ShareResumePage() {
       <Section background="white">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
           <div>
-            <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Why share it</p>
+            <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Why share it</p>
             <h2 className="mt-2.5 font-heading text-2xl font-bold text-navy sm:text-3xl dark:text-cream">What happens next</h2>
             <div className="mt-7 space-y-4">
               {benefits.map(({ title, description, icon: Icon }) => (
@@ -168,7 +168,7 @@ export default async function ShareResumePage() {
 
       <Section background="cream">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Good to know</p>
+          <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Good to know</p>
           <h2 className="mt-2.5 font-heading text-3xl font-bold text-navy sm:text-4xl dark:text-cream">What to expect after you submit</h2>
           <p className="mt-3 text-steel dark:text-steel-light">
             No surprises, here&apos;s exactly what happens to your resume once it&apos;s in our hands.

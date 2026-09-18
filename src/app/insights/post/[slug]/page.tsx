@@ -276,7 +276,7 @@ export default async function InsightPostPage({
           {post.title}
         </h1>
 
-        <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-semibold uppercase tracking-wide text-navy/60 dark:text-cream/60">
+        <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13.5px] font-semibold uppercase tracking-wide text-navy/60 dark:text-cream/60">
           <span>{publishedLabel}</span>
           <span aria-hidden="true">&middot;</span>
           <span>By {post.author}</span>
@@ -306,7 +306,7 @@ export default async function InsightPostPage({
         )}
 
         <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-[1fr_320px] lg:gap-16">
-          <div className="min-w-0 space-y-5 text-[16px] leading-[1.8] text-navy/80 dark:text-cream/80">
+          <div className="min-w-0 space-y-5 text-[17.5px] leading-[1.8] text-navy/80 dark:text-cream/80">
             {hasRichBody ? (
               <>
                 {richBody!.tocItems.length >= 2 && (
@@ -418,7 +418,7 @@ export default async function InsightPostPage({
                   )}
                 </div>
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">About the author</p>
+                  <p className="text-[13.5px] font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">About the author</p>
                   <p className="mt-1 font-semibold text-navy dark:text-cream">
                     {post.author}
                     {post.author_title && <span className="font-normal text-navy/60 dark:text-cream/60"> · {post.author_title}</span>}
@@ -435,7 +435,7 @@ export default async function InsightPostPage({
 
           {related.length > 0 && (
             <aside>
-              <p className="text-xs font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">Related articles</p>
+              <p className="text-[13.5px] font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">Related articles</p>
               <ul className="mt-4 space-y-4">
                 {related.map((item) => (
                   <li key={item.slug}>
@@ -446,7 +446,7 @@ export default async function InsightPostPage({
                           <img src={item.image_url} alt="" className="h-full w-full object-cover" />
                         ) : (
                           <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-steel to-navy-secondary">
-                            <span className="font-heading text-[10px] font-semibold uppercase tracking-wide text-white/70">
+                            <span className="font-heading text-[11.5px] font-semibold uppercase tracking-wide text-white/70">
                               {categoryLabel}
                             </span>
                           </div>

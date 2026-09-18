@@ -61,7 +61,7 @@ export default function Header({ siteImages, industries }: { siteImages: Record<
                 onMouseEnter={() => item.children && setDesktopOpen(item.label)}
                 onMouseLeave={() => setDesktopOpen((current) => (current === item.label ? null : current))}
               >
-                <div className="flex items-center rounded-full text-[14.5px] font-medium text-navy hover:bg-navy/[0.06] dark:text-cream dark:hover:bg-white/10">
+                <div className="flex items-center rounded-full text-[16px] font-medium text-navy hover:bg-navy/[0.06] dark:text-cream dark:hover:bg-white/10">
                   <Link
                     href={item.href}
                     onClick={(event) => {
@@ -121,7 +121,7 @@ export default function Header({ siteImages, industries }: { siteImages: Record<
           <ThemeToggle className="p-3" />
           <Link
             href="/client-portal"
-            className="inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-navy px-6 py-2.5 text-[14.5px] font-semibold text-white transition-colors hover:bg-navy-deep dark:bg-steel dark:text-navy-950 dark:hover:bg-steel-light"
+            className="inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-navy px-6 py-2.5 text-[16px] font-semibold text-white transition-colors hover:bg-navy-deep dark:bg-steel dark:text-navy-950 dark:hover:bg-steel-light"
           >
             Client Login
           </Link>

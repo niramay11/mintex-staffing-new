@@ -100,7 +100,7 @@ export default function KitSection({
           <QuestionCard key={q.id} question={q} isEmployer={isEmployer} roleSlug={roleSlug} />
         ))}
       </div>
-      {error && <p className="mt-2 text-xs text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className="mt-2 text-[13.5px] text-red-600 dark:text-red-400">{error}</p>}
     </section>
   );
 }

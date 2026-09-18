@@ -23,9 +23,9 @@ export default function IconLinkCard({
           <path d={iconPath} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </span>
-      <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.12em] text-steel dark:text-steel-light">{tag}</p>
-      <h3 className="mt-1.5 font-heading text-[17px] font-semibold tracking-tight text-navy dark:text-cream">{title}</h3>
-      <p className="mt-2 text-[14.5px] leading-[1.7] text-steel dark:text-cream/70">{description}</p>
+      <p className="mt-4 text-[12.5px] font-semibold uppercase tracking-[0.12em] text-steel dark:text-steel-light">{tag}</p>
+      <h3 className="mt-1.5 font-heading text-[18.5px] font-semibold tracking-tight text-navy dark:text-cream">{title}</h3>
+      <p className="mt-2 text-[16px] leading-[1.7] text-steel dark:text-cream/70">{description}</p>
       <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-navy transition-colors group-hover:text-navy-secondary dark:text-cream dark:group-hover:text-steel-light">
         Read more
         <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4">

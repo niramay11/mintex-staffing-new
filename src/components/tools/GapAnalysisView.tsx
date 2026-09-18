@@ -35,7 +35,7 @@ export default function GapAnalysisView({ analysis, kit }: { analysis: GapAnalys
                 <div className="flex items-start justify-between gap-3">
                   <p className="font-medium text-navy dark:text-cream">{g.requirement}</p>
                   <span
-                    className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium ${PROBABILITY_STYLES[g.probability] ?? PROBABILITY_STYLES.low}`}
+                    className={`shrink-0 rounded-full px-2 py-0.5 text-[12.5px] font-medium ${PROBABILITY_STYLES[g.probability] ?? PROBABILITY_STYLES.low}`}
                   >
                     {g.probability} chance they ask
                   </span>

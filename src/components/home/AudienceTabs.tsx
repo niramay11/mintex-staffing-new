@@ -93,7 +93,7 @@ export default function AudienceTabs() {
               <span className="h-2.5 w-2.5 rounded-full bg-steel-lighter" />
             </div>
             <h3 className="font-heading text-[18px] font-semibold text-navy dark:text-cream">{service.title}</h3>
-            <p className="mt-2.5 text-[14.5px] leading-relaxed text-steel dark:text-steel-light">{service.description}</p>
+            <p className="mt-2.5 text-[16px] leading-relaxed text-steel dark:text-steel-light">{service.description}</p>
           </Link>
         ))}
       </div>

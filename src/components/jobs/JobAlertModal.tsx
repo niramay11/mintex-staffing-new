@@ -127,7 +127,7 @@ export default function JobAlertModal({ initialKeyword = "", initialLocation = "
               {submitting ? "Creating…" : "Create job alert"}
             </button>
 
-            <p className="pt-1 text-xs leading-relaxed text-navy/50 dark:text-cream/50">
+            <p className="pt-1 text-[13.5px] leading-relaxed text-navy/50 dark:text-cream/50">
               By providing my personal information, I agree to be contacted by Mintex Staffing
               about matching roles.
             </p>

@@ -152,7 +152,7 @@ export function hasSubstantiveDescription(html: string): boolean {
 // late (see JobDescriptionLoader) renders identically to one available at
 // first render.
 export const JOB_DESCRIPTION_PROSE_CLASS =
-  "text-[15px] leading-relaxed text-navy/80 dark:text-cream/80 " +
+  "text-[18px] leading-relaxed text-navy/80 dark:text-cream/80 " +
   "[&_p]:mb-3 [&_p:last-child]:mb-0 " +
   "[&_strong]:font-semibold [&_strong]:text-navy dark:[&_strong]:text-cream " +
   "[&_ul]:my-3 [&_ul]:list-disc [&_ul]:space-y-1.5 [&_ul]:pl-5 " +

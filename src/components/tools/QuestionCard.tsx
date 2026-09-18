@@ -20,10 +20,10 @@ export default function QuestionCard({
       <summary className="flex cursor-pointer list-none items-start justify-between gap-4">
         <span className="text-sm font-medium text-navy dark:text-cream">{q.question}</span>
         <span className="flex flex-shrink-0 items-center gap-2 print:hidden">
-          <span className="rounded-full bg-mist px-2 py-0.5 text-[11px] font-medium text-navy/60 dark:bg-navy-800 dark:text-cream/60">
+          <span className="rounded-full bg-mist px-2 py-0.5 text-[12.5px] font-medium text-navy/60 dark:bg-navy-800 dark:text-cream/60">
             {q.type.replace("_", " ")}
           </span>
-          <span className="rounded-full bg-mist px-2 py-0.5 text-[11px] font-medium text-navy/60 dark:bg-navy-800 dark:text-cream/60">Lvl {q.difficulty}</span>
+          <span className="rounded-full bg-mist px-2 py-0.5 text-[12.5px] font-medium text-navy/60 dark:bg-navy-800 dark:text-cream/60">Lvl {q.difficulty}</span>
         </span>
       </summary>
       <div className="mt-4 space-y-3 border-t border-navy/10 pt-4 text-sm text-navy/75 dark:border-white/10 dark:text-cream/75">
@@ -56,13 +56,13 @@ export default function QuestionCard({
         </div>
         {!isEmployer && (
           <div className="flex items-center justify-between border-t border-navy/10 pt-3 print:hidden dark:border-white/10">
-            <span className="text-xs text-navy/40 dark:text-cream/40">Was this question useful?</span>
+            <span className="text-[13.5px] text-navy/40 dark:text-cream/40">Was this question useful?</span>
             <QuestionVote questionText={q.question} roleSlug={roleSlug} />
           </div>
         )}
         {isEmployer && (
           <div className="grid grid-cols-5 gap-2 border-t border-navy/10 pt-3 print:mt-2 dark:border-white/10">
-            <span className="col-span-5 text-xs font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">Score</span>
+            <span className="col-span-5 text-[13.5px] font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">Score</span>
             {[1, 2, 3, 4, 5].map((n) => (
               <span
                 key={n}

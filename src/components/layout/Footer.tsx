@@ -52,7 +52,7 @@ function BackToTopButton({ lifted }: { lifted: boolean }) {
       <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 text-steel dark:text-steel-light sm:h-5 sm:w-5 lg:h-8 lg:w-8" aria-hidden="true">
         <path d="M5 15l7-7 7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
-      <span className="text-[10px] font-medium text-steel dark:text-steel-light sm:text-xs lg:text-lg">Top</span>
+      <span className="text-[11.5px] font-medium text-steel dark:text-steel-light sm:text-xs lg:text-lg">Top</span>
     </button>
   );
 }
@@ -100,7 +100,7 @@ export default function Footer({
             >
               <Image src={siteImages["global:footer-logo"]} alt="Mintex Staffing" width={183} height={25} className="h-6 w-auto object-contain" />
             </Link>
-            <p className="text-[14.5px] leading-relaxed text-steel-light">
+            <p className="text-[16px] leading-relaxed text-steel-light">
               Connecting exceptional talent with leading employers.
             </p>
 
@@ -124,7 +124,7 @@ export default function Footer({
 
           {footerColumns.map((column) => (
             <div key={column.title}>
-              <h3 className="mb-4 text-[13px] font-semibold uppercase tracking-[0.08em] text-steel-lighter">
+              <h3 className="mb-4 text-[14.5px] font-semibold uppercase tracking-[0.08em] text-steel-lighter">
                 {column.title}
               </h3>
               <div className="flex flex-col gap-[11px]">
@@ -132,7 +132,7 @@ export default function Footer({
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="text-[14.5px] text-steel-lighter hover:text-white"
+                    className="text-[16px] text-steel-lighter hover:text-white"
                   >
                     {link.label}
                   </Link>
@@ -142,7 +142,7 @@ export default function Footer({
           ))}
         </div>
 
-        <div className="mx-auto flex max-w-[1920px] flex-col items-start justify-between gap-3 pt-6 text-[13.5px] text-steel-light sm:flex-row sm:items-center">
+        <div className="mx-auto flex max-w-[1920px] flex-col items-start justify-between gap-3 pt-6 text-[15px] text-steel-light sm:flex-row sm:items-center">
           <p className="flex flex-wrap items-center gap-x-2">
             <span>&copy; {new Date().getFullYear()} Mintex Staffing. All rights reserved.</span>
             <Link href="/privacy" className="underline-offset-2 hover:text-white hover:underline">

@@ -235,9 +235,9 @@ export default async function IndustryPage({
               <span className="flex h-11 w-11 items-center justify-center rounded-full bg-steel/[0.14] text-steel dark:text-steel-light">
                 <Icon className="h-5 w-5" />
               </span>
-              <h3 className="mt-5 font-heading text-[17px] font-semibold tracking-tight text-navy dark:text-cream">{title}</h3>
+              <h3 className="mt-5 font-heading text-[18.5px] font-semibold tracking-tight text-navy dark:text-cream">{title}</h3>
               <span aria-hidden="true" className="mt-3 block h-px w-8 bg-steel/40" />
-              <p className="mt-3.5 text-[14.5px] leading-[1.85] text-steel dark:text-steel-light">{text}</p>
+              <p className="mt-3.5 text-[16px] leading-[1.85] text-steel dark:text-steel-light">{text}</p>
             </div>
           ))}
         </div>

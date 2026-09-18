@@ -66,7 +66,7 @@ function CoverCard({
           sizes="480px"
         />
         {achievement && (
-          <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-3.5 py-2 text-xs font-semibold text-navy shadow-sm backdrop-blur-sm dark:bg-navy-950/85 dark:text-cream">
+          <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-3.5 py-2 text-[13.5px] font-semibold text-navy shadow-sm backdrop-blur-sm dark:bg-navy-950/85 dark:text-cream">
             <svg viewBox="0 0 24 24" fill="none" strokeWidth={2} stroke="currentColor" className="h-3.5 w-3.5 text-steel">
               <path d="M17 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" strokeLinecap="round" strokeLinejoin="round" />
               <circle cx="10" cy="6" r="3.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -78,7 +78,7 @@ function CoverCard({
       </div>
       <div className="flex flex-1 flex-col justify-center p-6">
         <h3 className="text-3xl font-bold text-navy dark:text-cream">{industry.name}</h3>
-        <p className="mt-3 line-clamp-3 text-base leading-relaxed text-steel dark:text-steel-light">
+        <p className="mt-3 line-clamp-3 text-[18px] leading-relaxed text-steel dark:text-steel-light">
           {industry.seoSubheading}
         </p>
       </div>

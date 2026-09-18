@@ -108,13 +108,13 @@ export default function ClientStories() {
     <section className="border-t border-navy/[0.06] bg-mist dark:bg-navy-900 dark:border-white/10">
       <div className="mx-auto max-w-[1920px] px-6 py-16 sm:px-10 sm:py-20 lg:px-16 lg:py-24">
       <div className="mx-auto max-w-2xl text-center">
-        <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
+        <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
           Client stories
         </p>
         <h2 className="mt-3.5 font-heading text-[36px] font-bold leading-tight text-navy sm:text-[40px] dark:text-cream">
           You need to see it to believe it
         </h2>
-        <p className="mt-4 text-lg text-steel dark:text-steel-light">
+        <p className="mt-4 text-[20px] text-steel dark:text-steel-light">
           Let our work do the talking while we help businesses <b>lower the time to</b> fill a specific role, help beat the AI resumes and connect them with pre-qualified talents to solve their
 hiring challenges with intentional staffing solutions created for solving the hiring issues.
         </p>
@@ -138,7 +138,7 @@ hiring challenges with intentional staffing solutions created for solving the hi
                   <p className="font-heading text-lg font-semibold">&ldquo;{featured.quote}&rdquo;</p>
                 )}
                 {featured.author && (
-                  <p className="mt-1.5 text-[13.5px] text-steel-lighter">
+                  <p className="mt-1.5 text-[15px] text-steel-lighter">
                     {featured.author}
                     {featured.role ? ` · ${featured.role}` : ""}
                   </p>
@@ -163,7 +163,7 @@ hiring challenges with intentional staffing solutions created for solving the hi
               <CardVisual story={secondary} opacityClassName="opacity-60" />
               <PlayButton size="sm" />
               {secondary.quote && (
-                <p className="absolute bottom-4 left-4 right-4 text-left text-[13.5px] font-medium leading-snug text-white">
+                <p className="absolute bottom-4 left-4 right-4 text-left text-[15px] font-medium leading-snug text-white">
                   &ldquo;{secondary.quote}&rdquo;
                 </p>
               )}
@@ -175,9 +175,9 @@ hiring challenges with intentional staffing solutions created for solving the hi
           )}
           <div className="flex flex-1 flex-col justify-center rounded-3xl bg-navy p-6 text-white dark:bg-navy-800">
             <div className="font-heading text-3xl font-bold">
-              4.9<span className="text-lg font-normal text-steel-lighter">/5</span>
+              4.9<span className="text-[20px] font-normal text-steel-lighter">/5</span>
             </div>
-            <p className="mt-1 text-[13px] text-steel-lighter">
+            <p className="mt-1 text-[14.5px] text-steel-lighter">
               Average client satisfaction across every industry we serve
             </p>
           </div>

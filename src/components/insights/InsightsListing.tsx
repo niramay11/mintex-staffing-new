@@ -74,7 +74,7 @@ export default async function InsightsListing({ activeCategory }: { activeCatego
                   </span>
                 </div>
               )}
-              <span className="absolute left-3 top-3 rounded-full bg-white/95 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-navy shadow-sm dark:bg-navy-900/95 dark:text-cream">
+              <span className="absolute left-3 top-3 rounded-full bg-white/95 px-3 py-1 text-[12.5px] font-semibold uppercase tracking-wide text-navy shadow-sm dark:bg-navy-900/95 dark:text-cream">
                 {labelFor(post.category)}
               </span>
             </div>
@@ -82,7 +82,7 @@ export default async function InsightsListing({ activeCategory }: { activeCatego
             <div className="flex flex-1 flex-col p-6">
               <h2 className="font-semibold text-navy dark:text-cream">{post.title}</h2>
               <p className="mt-2 flex-1 text-sm text-navy/70 dark:text-cream/70">{post.excerpt}</p>
-              <span className="mt-4 text-xs text-navy/50 dark:text-cream/50">
+              <span className="mt-4 text-[13.5px] text-navy/50 dark:text-cream/50">
                 {new Date(post.published_at).toLocaleDateString("en-US", {
                   month: "long",
                   day: "numeric",

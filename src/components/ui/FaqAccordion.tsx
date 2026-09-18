@@ -26,7 +26,7 @@ export default function FaqAccordion({
               aria-expanded={isOpen}
               className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left"
             >
-              <span className="text-base font-bold text-navy dark:text-cream">{faq.question}</span>
+              <span className="text-[18px] font-bold text-navy dark:text-cream">{faq.question}</span>
               <span
                 className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-mist text-navy transition-transform duration-300 dark:bg-navy-800 dark:text-cream ${
                   isOpen ? "rotate-180 bg-steel/15 text-steel dark:text-steel-light" : ""

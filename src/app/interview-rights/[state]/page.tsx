@@ -65,13 +65,13 @@ export default async function InterviewRightsPage({
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
         <h1 className="font-heading text-4xl font-bold text-navy dark:text-cream sm:text-5xl">
           Your Rights in a Job Interview — {state}
-          <span className="ml-2 align-middle text-base font-normal text-navy/40 dark:text-cream/40">({rights.stateCode})</span>
+          <span className="ml-2 align-middle text-[18px] font-normal text-navy/40 dark:text-cream/40">({rights.stateCode})</span>
         </h1>
         <p className="mt-4 max-w-2xl text-steel dark:text-steel-light">
           What an employer legally cannot ask you in {state}, what to say if you&apos;re asked anyway, and — for
           hiring managers — the lawful way to ask for the same information.
         </p>
-        <p className="mt-3 text-xs text-navy/40 dark:text-cream/40">
+        <p className="mt-3 text-[13.5px] text-navy/40 dark:text-cream/40">
           {rights.lastVerified
             ? `Verified ${rights.lastVerified}`
             : "Not yet independently verified against current statutes — confirm anything specific with your state's labor office before relying on it."}
@@ -93,15 +93,15 @@ export default async function InterviewRightsPage({
               <p className="mt-2 text-sm text-navy/70 dark:text-cream/70">{item.why}</p>
               <div className="mt-3 grid gap-3 sm:grid-cols-2">
                 <div className="rounded-xl bg-mist p-3 text-sm dark:bg-navy-900">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">If you&apos;re a candidate</p>
+                  <p className="text-[13.5px] font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">If you&apos;re a candidate</p>
                   <p className="mt-1 text-navy/75 dark:text-cream/75">{item.how_to_respond}</p>
                 </div>
                 <div className="rounded-xl bg-mist p-3 text-sm dark:bg-navy-900">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">If you&apos;re hiring</p>
+                  <p className="text-[13.5px] font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">If you&apos;re hiring</p>
                   <p className="mt-1 text-navy/75 dark:text-cream/75">Ask this instead: {item.lawful_alternative}</p>
                 </div>
               </div>
-              <p className="mt-3 text-xs text-navy/40 dark:text-cream/40">Source: {item.source.label}</p>
+              <p className="mt-3 text-[13.5px] text-navy/40 dark:text-cream/40">Source: {item.source.label}</p>
             </div>
           ))}
         </div>
@@ -113,7 +113,7 @@ export default async function InterviewRightsPage({
               {rights.state_specific.map((note) => (
                 <li key={note.text} className="list-disc pl-4 marker:text-navy/30 dark:marker:text-cream/30">
                   {note.text}
-                  <span className="block text-xs text-navy/40 dark:text-cream/40">Source: {note.source.label}</span>
+                  <span className="block text-[13.5px] text-navy/40 dark:text-cream/40">Source: {note.source.label}</span>
                 </li>
               ))}
             </ul>

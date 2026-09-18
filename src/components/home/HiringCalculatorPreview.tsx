@@ -27,7 +27,7 @@ export default function HiringCalculatorPreview() {
 
   return (
     <div className="rounded-3xl bg-gradient-to-br from-navy to-navy-secondary p-8 text-white dark:from-navy-900 dark:to-navy-800">
-      <span className="inline-flex items-center rounded-full bg-steel/[0.16] px-3.5 py-1.5 text-[12.5px] font-semibold tracking-wide text-steel-lighter">
+      <span className="inline-flex items-center rounded-full bg-steel/[0.16] px-3.5 py-1.5 text-[14px] font-semibold tracking-wide text-steel-lighter">
         HIRING COST CALCULATOR
       </span>
       <h3 className="mt-5 font-heading text-2xl font-semibold text-white">
@@ -76,20 +76,20 @@ export default function HiringCalculatorPreview() {
 
       <div className="mt-8 flex gap-6 border-t border-white/10 pt-6">
         <div className="flex-1">
-          <p className="text-[12.5px] text-steel-lighter">Hiring in-house</p>
+          <p className="text-[14px] text-steel-lighter">Hiring in-house</p>
           <p className="mt-1 font-heading text-xl font-semibold text-white/60 line-through decoration-white/30">
             {formatCurrency(traditionalCost)}
           </p>
         </div>
         <div className="flex-1">
-          <p className="text-[12.5px] text-steel-lighter">You save with us</p>
+          <p className="text-[14px] text-steel-lighter">You save with us</p>
           <p className="mt-1 font-heading text-2xl font-bold text-steel-lighter">
             {formatCurrency(savings)}
           </p>
         </div>
       </div>
 
-      <p className="mt-6 text-[12px] leading-relaxed text-steel-lighter/80">
+      <p className="mt-6 text-[13.5px] leading-relaxed text-steel-lighter/80">
         Estimate based on standard cost-per-hire methodology (job posting, interview time, onboarding,
         vacancy cost) for hiring in-house vs. working with a staffing partner. For an itemized
         breakdown, use the{" "}

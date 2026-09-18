@@ -16,7 +16,7 @@ export default function JobTile({ job }: { job: CeipalJob }) {
           </Link>
         </h3>
         {job.job_type && (
-          <span className="rounded-full bg-cream px-3 py-1 text-xs font-medium text-navy dark:bg-navy-800 dark:text-cream">
+          <span className="rounded-full bg-cream px-3 py-1 text-[13.5px] font-medium text-navy dark:bg-navy-800 dark:text-cream">
             {job.job_type}
           </span>
         )}
@@ -33,7 +33,7 @@ export default function JobTile({ job }: { job: CeipalJob }) {
         </div>
         <Link
           href={`/get-hired/jobs/${jobUrlSlug(job)}`}
-          className="inline-flex items-center gap-1.5 rounded-full bg-navy px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-navy-secondary dark:bg-steel dark:text-navy-950 dark:hover:bg-steel-light"
+          className="inline-flex items-center gap-1.5 rounded-full bg-navy px-4 py-2 text-[13.5px] font-semibold text-white transition-colors hover:bg-navy-secondary dark:bg-steel dark:text-navy-950 dark:hover:bg-steel-light"
         >
           View &amp; Apply
           <IconArrowRight className="h-3.5 w-3.5" />

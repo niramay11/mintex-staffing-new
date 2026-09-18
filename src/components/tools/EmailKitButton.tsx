@@ -96,7 +96,7 @@ export default function EmailKitButton({ kit, slug }: { kit: InterviewKit; slug?
       >
         {state === "sending" ? "Sending…" : "Send"}
       </button>
-      {state === "error" && error && <p className="w-full text-xs text-red-600 dark:text-red-400">{error}</p>}
+      {state === "error" && error && <p className="w-full text-[13.5px] text-red-600 dark:text-red-400">{error}</p>}
     </form>
   );
 }

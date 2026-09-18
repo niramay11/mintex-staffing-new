@@ -122,7 +122,7 @@ function Field({ label, hint, children }: { label: ReactNode; hint?: ReactNode; 
     <label className="mb-4 block">
       <span className="mb-1.5 block text-sm font-semibold text-navy dark:text-cream">{label}</span>
       {children}
-      {hint && <span className="mt-1.5 block text-[11.5px] leading-relaxed text-navy/70 dark:text-cream/70">{hint}</span>}
+      {hint && <span className="mt-1.5 block text-[13px] leading-relaxed text-navy/70 dark:text-cream/70">{hint}</span>}
     </label>
   );
 }
@@ -180,7 +180,7 @@ function Toggle<T extends string>({ value, onChange, options }: { value: T; onCh
           key={o}
           type="button"
           onClick={() => onChange(o)}
-          className={`flex-1 px-3 py-2.5 text-[12.5px] font-semibold transition-colors ${
+          className={`flex-1 px-3 py-2.5 text-[14px] font-semibold transition-colors ${
             value === o
               ? "bg-navy text-white dark:bg-cream dark:text-navy-950"
               : "bg-white text-navy/70 hover:bg-mist dark:bg-navy-900 dark:text-cream/70 dark:hover:bg-navy-800"
@@ -198,7 +198,7 @@ function Callout({ tone = "info", children }: { tone?: "info" | "warn"; children
     tone === "warn"
       ? "bg-amber-50 text-amber-900 dark:bg-amber-400/10 dark:text-amber-200"
       : "bg-emerald-50 text-emerald-900 dark:bg-emerald-400/10 dark:text-emerald-100";
-  return <div className={`-mt-2 mb-4 rounded-xl p-3.5 text-[12.5px] leading-relaxed ${cls}`}>{children}</div>;
+  return <div className={`-mt-2 mb-4 rounded-xl p-3.5 text-[14px] leading-relaxed ${cls}`}>{children}</div>;
 }
 
 function Note({ tone = "warn", children }: { tone?: "warn" | "good"; children: ReactNode }) {
@@ -206,12 +206,12 @@ function Note({ tone = "warn", children }: { tone?: "warn" | "good"; children: R
     tone === "good"
       ? "border-emerald-600 bg-emerald-50 text-emerald-800 dark:border-emerald-400 dark:bg-emerald-400/10 dark:text-emerald-200"
       : "border-amber-500 bg-amber-50 text-amber-800 dark:border-amber-400 dark:bg-amber-400/10 dark:text-amber-200";
-  return <div className={`my-4 rounded-r-lg border-l-2 p-4 text-[13px] leading-relaxed ${cls}`}>{children}</div>;
+  return <div className={`my-4 rounded-r-lg border-l-2 p-4 text-[14.5px] leading-relaxed ${cls}`}>{children}</div>;
 }
 
 function Prompt({ children }: { children: ReactNode }) {
   return (
-    <div className="mb-4 rounded-r-lg border-l-[3px] border-emerald-600 bg-emerald-50 p-4 text-[13.5px] leading-relaxed text-emerald-900 dark:border-emerald-400 dark:bg-emerald-400/10 dark:text-emerald-100">
+    <div className="mb-4 rounded-r-lg border-l-[3px] border-emerald-600 bg-emerald-50 p-4 text-[15px] leading-relaxed text-emerald-900 dark:border-emerald-400 dark:bg-emerald-400/10 dark:text-emerald-100">
       {children}
     </div>
   );
@@ -220,7 +220,7 @@ function Prompt({ children }: { children: ReactNode }) {
 function StatCard({ label, value, sub, tone = "default" }: { label: string; value: ReactNode; sub?: string; tone?: "default" | "accent" | "warn" }) {
   return (
     <div className="rounded-2xl border border-navy/10 bg-white p-5 dark:border-white/10 dark:bg-navy-900">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-steel dark:text-steel-light">{label}</p>
+      <p className="text-[12.5px] font-semibold uppercase tracking-[0.1em] text-steel dark:text-steel-light">{label}</p>
       <p
         className={`mt-2 font-heading text-[22px] font-bold tabular-nums ${
           tone === "accent" ? "text-emerald-600 dark:text-emerald-400" : tone === "warn" ? "text-amber-600 dark:text-amber-400" : "text-navy dark:text-cream"
@@ -228,7 +228,7 @@ function StatCard({ label, value, sub, tone = "default" }: { label: string; valu
       >
         {value}
       </p>
-      {sub && <p className="mt-1.5 text-xs text-navy/70 dark:text-cream/70">{sub}</p>}
+      {sub && <p className="mt-1.5 text-[13.5px] text-navy/70 dark:text-cream/70">{sub}</p>}
     </div>
   );
 }
@@ -237,7 +237,7 @@ function Chip({ delta }: { delta: number | null }) {
   if (delta === null) return null;
   return (
     <span
-      className={`ml-2 inline-block rounded-full px-2 py-0.5 align-middle text-[11px] font-semibold tabular-nums ${
+      className={`ml-2 inline-block rounded-full px-2 py-0.5 align-middle text-[12.5px] font-semibold tabular-nums ${
         delta > 0
           ? "bg-amber-50 text-amber-600 dark:bg-amber-400/10 dark:text-amber-400"
           : "bg-emerald-50 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-400"
@@ -286,7 +286,7 @@ function Line({
         type="button"
         onClick={() => note && setOpen((o) => !o)}
         disabled={!note}
-        className={`flex w-full items-center justify-between gap-3 py-2.5 text-left text-[13.5px] ${note ? "cursor-pointer" : "cursor-default"} ${
+        className={`flex w-full items-center justify-between gap-3 py-2.5 text-left text-[15px] ${note ? "cursor-pointer" : "cursor-default"} ${
           hot ? "pl-2.5" : ""
         }`}
       >
@@ -303,7 +303,7 @@ function Line({
             {perHire}
           </span>
           <span
-            className={`w-[100px] text-right text-[13.5px] tabular-nums ${
+            className={`w-[100px] text-right text-[15px] tabular-nums ${
               accent ? "text-emerald-600 dark:text-emerald-400" : warn ? "text-amber-600 dark:text-amber-400" : "text-navy dark:text-cream"
             } ${strong ? "font-bold" : "font-semibold"}`}
           >
@@ -312,7 +312,7 @@ function Line({
         </span>
       </button>
       {show && note && (
-        <div className="mb-3 rounded-lg bg-mist p-3.5 text-[13px] leading-relaxed text-navy/90 dark:bg-navy-800 dark:text-cream/80">{note}</div>
+        <div className="mb-3 rounded-lg bg-mist p-3.5 text-[14.5px] leading-relaxed text-navy/90 dark:bg-navy-800 dark:text-cream/80">{note}</div>
       )}
     </div>
   );
@@ -320,7 +320,7 @@ function Line({
 
 function ColHead() {
   return (
-    <div className="flex items-center justify-end gap-4 border-b border-navy/10 pb-1.5 text-[10.5px] font-semibold uppercase tracking-[0.08em] text-steel dark:border-white/10 dark:text-steel-light">
+    <div className="flex items-center justify-end gap-4 border-b border-navy/10 pb-1.5 text-[12px] font-semibold uppercase tracking-[0.08em] text-steel dark:border-white/10 dark:text-steel-light">
       <span className="w-[84px] text-right">Per hire</span>
       <span className="w-[100px] text-right">Per year</span>
     </div>
@@ -436,7 +436,7 @@ function SavedLinkBox({ url, error }: { url: string | null; error: string }) {
   return (
     <div className="mt-4 rounded-2xl border border-navy/10 bg-white p-4 dark:border-white/10 dark:bg-navy-900">
       <p className="text-sm font-semibold text-navy dark:text-cream">Link copied — save it somewhere safe</p>
-      <p className="mt-1.5 text-[12.5px] leading-relaxed text-navy/70 dark:text-cream/70">
+      <p className="mt-1.5 text-[14px] leading-relaxed text-navy/70 dark:text-cream/70">
         Bookmark it, email it to yourself, whatever&apos;s easiest. Paste this link into any browser, any time, and
         you&apos;ll see these exact numbers again — we keep them saved on our end.
       </p>
@@ -444,7 +444,7 @@ function SavedLinkBox({ url, error }: { url: string | null; error: string }) {
         readOnly
         value={url}
         onFocus={(e) => e.target.select()}
-        className="mt-3 w-full rounded-lg border border-navy/10 bg-mist px-3 py-2 font-mono text-[11.5px] text-navy/80 dark:border-white/10 dark:bg-navy-800 dark:text-cream/70"
+        className="mt-3 w-full rounded-lg border border-navy/10 bg-mist px-3 py-2 font-mono text-[13px] text-navy/80 dark:border-white/10 dark:bg-navy-800 dark:text-cream/70"
       />
     </div>
   );
@@ -537,9 +537,9 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
   if (!mode) {
     return (
       <div className="mx-auto max-w-6xl">
-        <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Mintex Staffing</div>
+        <div className="text-[12.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Mintex Staffing</div>
         <h1 className="mt-2 font-heading text-3xl font-bold tracking-tight text-navy dark:text-cream sm:text-4xl">What is your hiring actually costing you?</h1>
-        <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-navy/75 dark:text-cream/75">A few questions. We&apos;ll add up what you spend in a year — including the costs that never reach a spreadsheet — and show you what changes with Mintex. Every number comes with a plain-English explanation.</p>
+        <p className="mt-3 max-w-2xl text-[18px] leading-relaxed text-navy/75 dark:text-cream/75">A few questions. We&apos;ll add up what you spend in a year — including the costs that never reach a spreadsheet — and show you what changes with Mintex. Every number comes with a plain-English explanation.</p>
         <div className="mt-7 grid gap-6 sm:grid-cols-3 lg:gap-8">
           {MODE_CARDS.map((m) => (
             <button
@@ -560,14 +560,14 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
 
               <div className="flex flex-1 flex-col px-2 pb-1 pt-3">
                 <div className="flex items-center gap-1.5">
-                  <h3 className="font-heading text-[15px] font-semibold text-navy dark:text-cream">{m.title}</h3>
+                  <h3 className="font-heading text-[18px] font-semibold text-navy dark:text-cream">{m.title}</h3>
                   <span className="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-steel text-white">
                     <svg viewBox="0 0 24 24" fill="none" strokeWidth={3} stroke="currentColor" className="h-2.5 w-2.5">
                       <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </span>
                 </div>
-                <p className="mt-1 line-clamp-2 flex-1 text-[13px] leading-relaxed text-navy/60 dark:text-cream/60">{m.desc}</p>
+                <p className="mt-1 line-clamp-2 flex-1 text-[14.5px] leading-relaxed text-navy/60 dark:text-cream/60">{m.desc}</p>
 
                 <div className="mt-3 flex items-center justify-end">
                   <span className="inline-flex items-center gap-1 rounded-full border border-navy/15 px-3 py-1.5 text-xs font-semibold text-navy transition-colors group-hover:bg-navy group-hover:text-white dark:border-white/15 dark:text-cream dark:group-hover:bg-steel dark:group-hover:text-navy-950">
@@ -581,7 +581,7 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
             </button>
           ))}
         </div>
-        <p className="mt-8 text-xs text-navy/60 dark:text-cream/60">Nothing you enter is stored or sent anywhere. Every assumption we use is shown and can be changed.</p>
+        <p className="mt-8 text-[13.5px] text-navy/60 dark:text-cream/60">Nothing you enter is stored or sent anywhere. Every assumption we use is shown and can be changed.</p>
       </div>
     );
   }
@@ -641,13 +641,13 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
     return (
       <div>
         <BackButton onClick={() => setMode(null)} />
-        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Employer &middot; in-house hiring</p>
+        <p className="text-[12.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Employer &middot; in-house hiring</p>
         <h1 className="mt-2 font-heading text-3xl font-bold text-navy dark:text-cream sm:text-4xl">Your hiring cost, per year</h1>
 
         <div className="mt-6 grid gap-8 lg:grid-cols-[380px_1fr]">
           {/* ---------------- inputs ---------------- */}
           <div className="rounded-3xl border border-navy/10 bg-white p-6 dark:border-white/10 dark:bg-navy-900">
-            <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.12em] text-steel dark:text-steel-light">Tell us about your hiring</p>
+            <p className="mb-4 text-[12.5px] font-semibold uppercase tracking-[0.12em] text-steel dark:text-steel-light">Tell us about your hiring</p>
 
             <div className="mb-4">
               <Select
@@ -751,7 +751,7 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
                   key={o}
                   type="button"
                   onClick={() => setView(o)}
-                  className={`px-4 py-2 text-[12.5px] font-semibold transition-colors ${
+                  className={`px-4 py-2 text-[14px] font-semibold transition-colors ${
                     view === o
                       ? "bg-navy text-white dark:bg-cream dark:text-navy-950"
                       : "bg-white text-navy/70 hover:bg-mist dark:bg-navy-900 dark:text-cream/70 dark:hover:bg-navy-800"
@@ -763,11 +763,11 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
             </div>
 
             <div className="rounded-3xl bg-gradient-to-br from-navy via-navy-deep to-navy-secondary p-7 text-white dark:from-navy-900 dark:via-navy-800 dark:to-navy-900">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/60">What Mintex saves you &middot; {unitLab}</p>
+              <p className="text-[12.5px] font-semibold uppercase tracking-[0.14em] text-white/60">What Mintex saves you &middot; {unitLab}</p>
               <p className="mt-3 font-heading text-4xl font-bold tabular-nums sm:text-[42px]">
                 {money(R.lo.total / div)} &ndash; {money(R.hi.total / div)}
               </p>
-              <p className="mt-3 max-w-lg text-[13.5px] text-white/75">
+              <p className="mt-3 max-w-lg text-[15px] text-white/75">
                 {oneRole ? (
                   <>One {a.seniority.toLowerCase()} role at {money(a.salary)}.</>
                 ) : (
@@ -801,7 +801,7 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
             )}
 
             <div className="mt-5 rounded-3xl border border-navy/10 bg-white p-6 dark:border-white/10 dark:bg-navy-900">
-              <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.12em] text-steel dark:text-steel-light">Your three choices, side by side</p>
+              <p className="mb-4 text-[12.5px] font-semibold uppercase tracking-[0.12em] text-steel dark:text-steel-light">Your three choices, side by side</p>
               <div className="grid gap-3 sm:grid-cols-3">
                 {(
                   [
@@ -854,7 +854,7 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
                         : "rounded-2xl border border-navy/10 bg-mist p-4 dark:border-white/10 dark:bg-navy-800"
                     }
                   >
-                    <p className={`text-[13px] font-semibold ${o.color}`}>{o.title}</p>
+                    <p className={`text-[14.5px] font-semibold ${o.color}`}>{o.title}</p>
                     <p
                       className={`mt-2 font-heading text-xl font-bold tabular-nums ${
                         o.best ? "text-emerald-700 dark:text-emerald-400" : "text-navy dark:text-cream"
@@ -864,7 +864,7 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
                     </p>
                     {o.delta !== null && (
                       <p
-                        className={`mt-1 text-xs font-semibold tabular-nums ${
+                        className={`mt-1 text-[13.5px] font-semibold tabular-nums ${
                           o.delta > 0 ? "text-amber-600 dark:text-amber-400" : "text-emerald-600 dark:text-emerald-400"
                         }`}
                       >
@@ -873,7 +873,7 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
                     )}
                     <div className="mt-3 space-y-1.5 border-t border-navy/10 pt-3 dark:border-white/10">
                       {o.rows.map(([k, v]) => (
-                        <div key={k} className="flex items-center justify-between gap-2 text-xs text-navy/70 dark:text-cream/70">
+                        <div key={k} className="flex items-center justify-between gap-2 text-[13.5px] text-navy/70 dark:text-cream/70">
                           <span>{k}</span>
                           <span className="font-semibold text-navy dark:text-cream">{v}</span>
                         </div>
@@ -883,7 +883,7 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
                 ))}
               </div>
 
-              <div className="mt-4 rounded-xl bg-mist p-3.5 text-[13px] text-navy dark:bg-navy-800 dark:text-cream">Cheapest here:{" "}<b>{cheapestOption}</b> &mdash; and a recruiter costs{" "}
+              <div className="mt-4 rounded-xl bg-mist p-3.5 text-[14.5px] text-navy dark:bg-navy-800 dark:text-cream">Cheapest here:{" "}<b>{cheapestOption}</b> &mdash; and a recruiter costs{" "}
                 {money(Math.abs(scenAdd.totalToday - (R.totalToday - R.lo.total)) / div)}{" "}more than we would, before our fee.</div>
 
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -894,7 +894,7 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
                   <Slider min={0} max={20} value={Math.round(a.addFill * 100)} onChange={(x) => upA("addFill", x / 100)} />
                 </Field>
               </div>
-              <p className="text-[11.5px] leading-relaxed text-navy/60 dark:text-cream/60">Your guess, not ours. We&apos;ve assumed four months before a new recruiter is going properly.</p>
+              <p className="text-[13px] leading-relaxed text-navy/60 dark:text-cream/60">Your guess, not ours. We&apos;ve assumed four months before a new recruiter is going properly.</p>
             </div>
 
             {R.vacancyIsNeutral && (
@@ -918,8 +918,8 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
               {showWork && (
               <DisclosePanel>
                   <div className="mb-2.5 mt-1 flex items-center justify-between">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-steel dark:text-steel-light">What you spend today</p>
-                    <button type="button" onClick={() => setExpandAll(!expandAll)} className="text-[12.5px] font-semibold text-emerald-600 dark:text-emerald-400">
+                    <p className="text-[12.5px] font-semibold uppercase tracking-[0.1em] text-steel dark:text-steel-light">What you spend today</p>
+                    <button type="button" onClick={() => setExpandAll(!expandAll)} className="text-[14px] font-semibold text-emerald-600 dark:text-emerald-400">
                       {expandAll ? "Collapse all" : "Explain every line"}
                     </button>
                   </div>
@@ -1013,7 +1013,7 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
 
                   <Line strong label="Total" perHire={money(R.perHireToday)} perYear={money(R.totalToday)} />
 
-                  <p className="mb-2.5 mt-6 text-[11px] font-semibold uppercase tracking-[0.1em] text-steel dark:text-steel-light">What Mintex removes</p>
+                  <p className="mb-2.5 mt-6 text-[12.5px] font-semibold uppercase tracking-[0.1em] text-steel dark:text-steel-light">What Mintex removes</p>
                   <ColHead />
 
                   <Line
@@ -1109,11 +1109,11 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
               <div>
               {showAssump && (
               <DisclosePanel>
-                  <p className="mb-4 mt-1 text-[12.5px] leading-relaxed text-navy/70 dark:text-cream/70">Click a box &mdash; we&apos;ll light up the lines it changes.</p>
+                  <p className="mb-4 mt-1 text-[14px] leading-relaxed text-navy/70 dark:text-cream/70">Click a box &mdash; we&apos;ll light up the lines it changes.</p>
 
                   <div onFocus={() => setLive("team")} onBlur={() => setLive(null)}>
-                    <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-steel dark:text-steel-light">Your team &amp; tools &middot; per year</p>
-                    <p className="mb-3 text-[11.5px] leading-relaxed text-navy/60 dark:text-cream/60">Changes{" "}<b className="text-emerald-600 dark:text-emerald-400">your recruiting team</b>{" "}line.</p>
+                    <p className="mb-1 text-[12.5px] font-semibold uppercase tracking-[0.1em] text-steel dark:text-steel-light">Your team &amp; tools &middot; per year</p>
+                    <p className="mb-3 text-[13px] leading-relaxed text-navy/60 dark:text-cream/60">Changes{" "}<b className="text-emerald-600 dark:text-emerald-400">your recruiting team</b>{" "}line.</p>
                     <div className="grid gap-4 sm:grid-cols-2">
                       <Field label="Recruiter salary">
                         <NumField value={a.recruiterSalary} prefix="$" step={1000} onChange={(x) => upA("recruiterSalary", x)} />
@@ -1134,8 +1134,8 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
                   </div>
 
                   <div onFocus={() => setLive("process")} onBlur={() => setLive(null)}>
-                    <p className="mb-1 mt-6 text-[11px] font-semibold uppercase tracking-[0.1em] text-steel dark:text-steel-light">Your interview process &middot; per role</p>
-                    <p className="mb-3 text-[11.5px] leading-relaxed text-navy/60 dark:text-cream/60">Changes{" "}<b className="text-emerald-600 dark:text-emerald-400">interview time</b>, <b className="text-emerald-600 dark:text-emerald-400">onboarding</b>,{" "}
+                    <p className="mb-1 mt-6 text-[12.5px] font-semibold uppercase tracking-[0.1em] text-steel dark:text-steel-light">Your interview process &middot; per role</p>
+                    <p className="mb-3 text-[13px] leading-relaxed text-navy/60 dark:text-cream/60">Changes{" "}<b className="text-emerald-600 dark:text-emerald-400">interview time</b>, <b className="text-emerald-600 dark:text-emerald-400">onboarding</b>,{" "}
                       <b className="text-emerald-600 dark:text-emerald-400">failed searches</b>, <b className="text-emerald-600 dark:text-emerald-400">early leavers</b>{" "}— and the{" "}<b className="text-emerald-600 dark:text-emerald-400">hours we give back</b>.</p>
                     <div className="grid gap-4 sm:grid-cols-2">
                       <Field label="People phone-screened">
@@ -1169,8 +1169,8 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
                   </div>
 
                   <div onFocus={() => setLive("outcomes")} onBlur={() => setLive(null)} onMouseEnter={() => setLive("outcomes")} onMouseLeave={() => setLive(null)}>
-                    <p className="mb-1 mt-6 text-[11px] font-semibold uppercase tracking-[0.1em] text-steel dark:text-steel-light">Outcomes</p>
-                    <p className="mb-3 text-[11.5px] leading-relaxed text-navy/60 dark:text-cream/60">Changes{" "}<b className="text-emerald-600 dark:text-emerald-400">failed searches</b>, <b className="text-emerald-600 dark:text-emerald-400">early leavers</b>{" "}{" "}and most of{" "}<b className="text-emerald-600 dark:text-emerald-400">what Mintex removes</b>.</p>
+                    <p className="mb-1 mt-6 text-[12.5px] font-semibold uppercase tracking-[0.1em] text-steel dark:text-steel-light">Outcomes</p>
+                    <p className="mb-3 text-[13px] leading-relaxed text-navy/60 dark:text-cream/60">Changes{" "}<b className="text-emerald-600 dark:text-emerald-400">failed searches</b>, <b className="text-emerald-600 dark:text-emerald-400">early leavers</b>{" "}{" "}and most of{" "}<b className="text-emerald-600 dark:text-emerald-400">what Mintex removes</b>.</p>
                     <Field label={`Roles you fill without outside help: ${pct(a.fillInhouse)}`}>
                       <Slider min={40} max={100} value={Math.round(a.fillInhouse * 100)} onChange={(x) => upA("fillInhouse", x / 100)} />
                     </Field>
@@ -1182,7 +1182,7 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
                     </Field>
                     <label className="mt-3 flex items-start gap-2.5 text-sm text-navy dark:text-cream">
                       <input type="checkbox" checked={a.cutTooling} onChange={(e) => upA("cutTooling", e.target.checked)} className="mt-0.5 accent-steel" />
-                      <span>Count sourcing tools you&apos;d no longer need{" "}<span className="mt-1 block text-[11.5px] text-navy/70 dark:text-cream/70">Off by default — only realistic if we handle most of your hiring.</span>
+                      <span>Count sourcing tools you&apos;d no longer need{" "}<span className="mt-1 block text-[13px] text-navy/70 dark:text-cream/70">Off by default — only realistic if we handle most of your hiring.</span>
                       </span>
                     </label>
                   </div>
@@ -1195,7 +1195,7 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
             <CtaRow emailHref={employerEmailHref} breakdown={employerBreakdown} onSave={saveResult} saveState={saveState} />
             <SavedLinkBox url={savedUrl} error={saveError} />
 
-            <p className="mt-6 text-xs leading-relaxed text-navy/60 dark:text-cream/60">Estimates for planning. Where you haven&apos;t given us a number we&apos;ve used a US industry benchmark — all editable above. Check against your own records before budgeting from this.</p>
+            <p className="mt-6 text-[13.5px] leading-relaxed text-navy/60 dark:text-cream/60">Estimates for planning. Where you haven&apos;t given us a number we&apos;ve used a US industry benchmark — all editable above. Check against your own records before budgeting from this.</p>
           </div>
         </div>
       </div>
@@ -1232,12 +1232,12 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
     return (
       <div>
         <BackButton onClick={() => setMode(null)} />
-        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Staffing firm &middot; MSP &middot; tier-1 vendor</p>
+        <p className="text-[12.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Staffing firm &middot; MSP &middot; tier-1 vendor</p>
         <h1 className="mt-2 font-heading text-3xl font-bold text-navy dark:text-cream sm:text-4xl">How many of your reqs never get worked?</h1>
 
         <div className="mt-6 grid gap-8 lg:grid-cols-[380px_1fr]">
           <div className="rounded-3xl border border-navy/10 bg-white p-6 dark:border-white/10 dark:bg-navy-900">
-            <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.12em] text-steel dark:text-steel-light">Your desk, per year</p>
+            <p className="mb-4 text-[12.5px] font-semibold uppercase tracking-[0.12em] text-steel dark:text-steel-light">Your desk, per year</p>
             <Field label="Reqs that come in">
               <NumField value={b.reqs} onChange={(x) => upB("reqs", x)} />
             </Field>
@@ -1271,16 +1271,16 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
 
           <div>
             <div className="rounded-3xl bg-gradient-to-br from-navy via-navy-deep to-navy-secondary p-7 text-white dark:from-navy-900 dark:via-navy-800 dark:to-navy-900">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/60">Reqs nobody gets to &middot; per year</p>
+              <p className="text-[12.5px] font-semibold uppercase tracking-[0.14em] text-white/60">Reqs nobody gets to &middot; per year</p>
               <p className="mt-3 font-heading text-4xl font-bold tabular-nums sm:text-[42px]">
                 {Math.round(RB.uncovered)} reqs &middot; {money(RB.gpCreated)}
               </p>
-              <p className="mt-3 max-w-lg text-[13.5px] text-white/75">That&apos;s about{" "}<b>{RB.droppedPerMonth.toFixed(0)} a month</b>{" "}nobody can pick up. Not because you&apos;d lose them — at your own fill rate of{" "}{pct(RB.ownFillRate)} you&apos;d close around {Math.round(RB.newPlacements)}{" "}of them. There simply aren&apos;t enough hours.</p>
+              <p className="mt-3 max-w-lg text-[15px] text-white/75">That&apos;s about{" "}<b>{RB.droppedPerMonth.toFixed(0)} a month</b>{" "}nobody can pick up. Not because you&apos;d lose them — at your own fill rate of{" "}{pct(RB.ownFillRate)} you&apos;d close around {Math.round(RB.newPlacements)}{" "}of them. There simply aren&apos;t enough hours.</p>
             </div>
 
             <div className="mt-5 grid gap-4 sm:grid-cols-3">
               <div className="rounded-2xl border border-navy/10 bg-white p-5 dark:border-white/10 dark:bg-navy-900">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-steel dark:text-steel-light">You cover</p>
+                <p className="text-[12.5px] font-semibold uppercase tracking-[0.1em] text-steel dark:text-steel-light">You cover</p>
                 <p className={`mt-2 font-heading text-[22px] font-bold tabular-nums ${RB.coverage < 0.7 ? "text-amber-600 dark:text-amber-400" : "text-emerald-600 dark:text-emerald-400"}`}>
                   {pct(RB.coverage)}
                 </p>
@@ -1290,7 +1290,7 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
                     style={{ width: `${Math.min(100, RB.coverage * 100)}%` }}
                   />
                 </div>
-                <p className="mt-1.5 text-xs text-navy/70 dark:text-cream/70">
+                <p className="mt-1.5 text-[13.5px] text-navy/70 dark:text-cream/70">
                   {Math.round(RB.worked)} of {b.reqs}{" "}reqs get worked</p>
               </div>
               <StatCard label="Every placement carries" value={money(RB.costPerPlacement)} sub="just to keep the desk running" />
@@ -1302,8 +1302,8 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
 
             <Disclose title="Show me how we got there" sub="every number, in plain English" open={showWork} onToggle={() => setShowWork(!showWork)}>
               <div className="mb-2.5 mt-1 flex items-center justify-between">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-steel dark:text-steel-light">What your desk costs today</p>
-                <button type="button" onClick={() => setExpandAll(!expandAll)} className="text-[12.5px] font-semibold text-emerald-600 dark:text-emerald-400">
+                <p className="text-[12.5px] font-semibold uppercase tracking-[0.1em] text-steel dark:text-steel-light">What your desk costs today</p>
+                <button type="button" onClick={() => setExpandAll(!expandAll)} className="text-[14px] font-semibold text-emerald-600 dark:text-emerald-400">
                   {expandAll ? "Collapse all" : "Explain every line"}
                 </button>
               </div>
@@ -1357,10 +1357,10 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
               <Note>
                 <b>It isn&apos;t only about the reqs you miss.</b>{" "}On an MSP or a tier-1 panel, a req you don&apos;t submit on is a req somebody else fills. Miss enough and your ranking slips, and once the ranking slips the reqs stop coming. It happens quietly on direct accounts too — send a client five roles, get candidates back on two, and they start calling someone else.</Note>
 
-              <p className="mb-2.5 mt-6 text-[11px] font-semibold uppercase tracking-[0.1em] text-steel dark:text-steel-light">Your two ways out of it</p>
+              <p className="mb-2.5 mt-6 text-[12.5px] font-semibold uppercase tracking-[0.1em] text-steel dark:text-steel-light">Your two ways out of it</p>
               <div className="grid gap-6 sm:grid-cols-2">
                 <div>
-                  <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-steel dark:text-steel-light">Hire another recruiter</p>
+                  <p className="mb-1 text-[12.5px] font-semibold uppercase tracking-[0.1em] text-steel dark:text-steel-light">Hire another recruiter</p>
                   <Line
                     openAll={expandAll}
                     label="Year one, all in"
@@ -1391,7 +1391,7 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
                   />
                 </div>
                 <div>
-                  <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-emerald-600 dark:text-emerald-400">Split with Mintex</p>
+                  <p className="mb-1 text-[12.5px] font-semibold uppercase tracking-[0.1em] text-emerald-600 dark:text-emerald-400">Split with Mintex</p>
                   <Line accent label="Year one, all in" perYear="$0 until we place" />
                   <Line accent label="Actually productive from" perYear="Day one" />
                   <Line accent label="Cost if the quarter goes quiet" perYear="$0" />
@@ -1412,7 +1412,7 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
             <CtaRow emailHref={staffingEmailHref} breakdown={staffingBreakdown} onSave={saveResult} saveState={saveState} />
             <SavedLinkBox url={savedUrl} error={saveError} />
 
-            <p className="mt-6 text-xs leading-relaxed text-navy/60 dark:text-cream/60">Estimates for planning. We apply your own fill rate to uncovered reqs, not ours — change any number above and everything recalculates.</p>
+            <p className="mt-6 text-[13.5px] leading-relaxed text-navy/60 dark:text-cream/60">Estimates for planning. We apply your own fill rate to uncovered reqs, not ours — change any number above and everything recalculates.</p>
           </div>
         </div>
       </div>
@@ -1449,12 +1449,12 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
   return (
     <div>
       <BackButton onClick={() => setMode(null)} />
-      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Executive search</p>
+      <p className="text-[12.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Executive search</p>
       <h1 className="mt-2 font-heading text-3xl font-bold text-navy dark:text-cream sm:text-4xl">How much of your fee is gone before you send a name?</h1>
 
       <div className="mt-6 grid gap-8 lg:grid-cols-[380px_1fr]">
         <div className="rounded-3xl border border-navy/10 bg-white p-6 dark:border-white/10 dark:bg-navy-900">
-          <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.12em] text-steel dark:text-steel-light">Your search practice</p>
+          <p className="mb-4 text-[12.5px] font-semibold uppercase tracking-[0.12em] text-steel dark:text-steel-light">Your search practice</p>
           <Field label="Searches you run a year">
             <NumField value={c.searches} onChange={(x) => upC("searches", x)} />
           </Field>
@@ -1491,9 +1491,9 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
 
         <div>
           <div className="rounded-3xl bg-gradient-to-br from-navy via-navy-deep to-navy-secondary p-7 text-white dark:from-navy-900 dark:via-navy-800 dark:to-navy-900">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/60">What the work costs you &middot; per year</p>
+            <p className="text-[12.5px] font-semibold uppercase tracking-[0.14em] text-white/60">What the work costs you &middot; per year</p>
             <p className="mt-3 font-heading text-4xl font-bold tabular-nums sm:text-[42px]">{money(RC.annualDelivery + RC.stalledCost)}</p>
-            <p className="mt-3 max-w-lg text-[13.5px] text-white/75">
+            <p className="mt-3 max-w-lg text-[15px] text-white/75">
               {money(RC.deliveryPerSearch)} of research goes into every search before a name reaches the client —{" "}
               <b>{pct(RC.pctOfRetainer)} of your fee</b>. Add the searches that die and you&apos;re at {money(RC.annualDelivery + RC.stalledCost)} against{" "}
               {money(RC.feeIncome)}{" "}of fee income.</p>
@@ -1510,8 +1510,8 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
 
           <Disclose title="Show me how we got there" sub="every number, in plain English" open={showWork} onToggle={() => setShowWork(!showWork)}>
             <div className="mb-2.5 mt-1 flex items-center justify-between">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-steel dark:text-steel-light">What each search costs you to run</p>
-              <button type="button" onClick={() => setExpandAll(!expandAll)} className="text-[12.5px] font-semibold text-emerald-600 dark:text-emerald-400">
+              <p className="text-[12.5px] font-semibold uppercase tracking-[0.1em] text-steel dark:text-steel-light">What each search costs you to run</p>
+              <button type="button" onClick={() => setExpandAll(!expandAll)} className="text-[14px] font-semibold text-emerald-600 dark:text-emerald-400">
                 {expandAll ? "Collapse all" : "Explain every line"}
               </button>
             </div>
@@ -1563,7 +1563,7 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
 
             <Line strong label="The work, plus the ones that die" perYear={money(RC.annualDelivery + RC.stalledCost)} />
 
-            <p className="mb-2.5 mt-6 text-[11px] font-semibold uppercase tracking-[0.1em] text-steel dark:text-steel-light">What changes with Mintex</p>
+            <p className="mb-2.5 mt-6 text-[12.5px] font-semibold uppercase tracking-[0.1em] text-steel dark:text-steel-light">What changes with Mintex</p>
             <ColHead />
 
             <Line
@@ -1607,7 +1607,7 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
           <CtaRow emailHref={searchEmailHref} breakdown={searchBreakdown} onSave={saveResult} saveState={saveState} />
           <SavedLinkBox url={savedUrl} error={saveError} />
 
-          <p className="mt-6 text-xs leading-relaxed text-navy/60 dark:text-cream/60">Estimates for planning. Every number above is yours to change.</p>
+          <p className="mt-6 text-[13.5px] leading-relaxed text-navy/60 dark:text-cream/60">Estimates for planning. Every number above is yours to change.</p>
         </div>
       </div>
     </div>

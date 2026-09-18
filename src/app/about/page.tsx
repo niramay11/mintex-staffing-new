@@ -168,7 +168,7 @@ export default async function AboutPage() {
               About Us
             </h1>
             <span aria-hidden="true" className="mt-4 block h-1.5 w-20 rounded-full bg-steel" />
-            <p className="mt-5 max-w-md text-lg leading-relaxed text-steel dark:text-steel-light">
+            <p className="mt-5 max-w-md text-[20px] leading-relaxed text-steel dark:text-steel-light">
               Mintex Staffing is a professional recruitment firm dedicated to connecting the
               right talent with the right opportunities. Since our founding, we have built our
               reputation on trust, precision, and a genuine commitment to the success of both
@@ -204,7 +204,7 @@ export default async function AboutPage() {
           {highlights.map((item) => (
             <span
               key={item.label}
-              className="inline-flex items-center gap-2 rounded-full border border-navy/10 bg-mist px-4 py-2 text-[13.5px] text-navy/70 dark:border-white/10 dark:bg-navy-800 dark:text-cream/70"
+              className="inline-flex items-center gap-2 rounded-full border border-navy/10 bg-mist px-4 py-2 text-[15px] text-navy/70 dark:border-white/10 dark:bg-navy-800 dark:text-cream/70"
             >
               <span className="font-heading font-semibold text-navy dark:text-cream">{item.value}</span>
               {item.label}
@@ -218,7 +218,7 @@ export default async function AboutPage() {
         <div className="mx-auto max-w-6xl px-6 py-20 sm:px-10 lg:px-16 lg:py-24">
           <div className="grid items-center gap-14 lg:grid-cols-[1fr_0.9fr] lg:gap-16">
             <div>
-              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
+              <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
                 Our Story
               </p>
               <h2 className="mt-2.5 font-heading text-3xl font-bold leading-tight text-navy sm:text-4xl dark:text-cream">
@@ -230,7 +230,7 @@ export default async function AboutPage() {
                     <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel dark:text-steel-light">
                       <IconCheck className="h-3.5 w-3.5" />
                     </span>
-                    <p className="text-[15.5px] leading-relaxed text-steel dark:text-steel-light">
+                    <p className="text-[18px] leading-relaxed text-steel dark:text-steel-light">
                       <span className="font-semibold text-navy dark:text-cream">{point.title}:</span>{" "}
                       {point.description}
                     </p>
@@ -274,13 +274,13 @@ export default async function AboutPage() {
             </div>
 
             <div className="lg:order-2">
-              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
+              <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
                 Our Approach
               </p>
               <h2 className="mt-2.5 font-heading text-3xl font-bold leading-tight text-navy sm:text-4xl dark:text-cream">
                 The Mintex Approach
               </h2>
-              <p className="mt-5 text-[15.5px] leading-relaxed text-steel dark:text-steel-light">
+              <p className="mt-5 text-[18px] leading-relaxed text-steel dark:text-steel-light">
                 We believe in quality over quantity. Rather than trying to mass-produce
                 placements or take over your entire hiring process, we take a focused and
                 thoughtful approach.
@@ -291,7 +291,7 @@ export default async function AboutPage() {
                     <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel dark:text-steel-light">
                       <IconCheck className="h-3.5 w-3.5" />
                     </span>
-                    <p className="text-[15.5px] leading-relaxed text-steel dark:text-steel-light">
+                    <p className="text-[18px] leading-relaxed text-steel dark:text-steel-light">
                       <span className="font-semibold text-navy dark:text-cream">{point.title}:</span>{" "}
                       {point.description}
                     </p>
@@ -308,7 +308,7 @@ export default async function AboutPage() {
         <div className="mx-auto max-w-6xl px-6 py-20 sm:px-10 lg:px-16 lg:py-24">
           <div className="flex items-center justify-center gap-4">
             <span aria-hidden="true" className="h-px flex-1 bg-navy/10 dark:bg-white/10" />
-            <p className="flex-shrink-0 text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
+            <p className="flex-shrink-0 text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
               Our Values
             </p>
             <span aria-hidden="true" className="h-px flex-1 bg-navy/10 dark:bg-white/10" />
@@ -332,7 +332,7 @@ export default async function AboutPage() {
           <div className="mx-auto max-w-7xl px-6 py-20 sm:px-10 lg:px-16 lg:py-24">
             <div className="flex items-center justify-center gap-4">
               <span aria-hidden="true" className="h-px flex-1 bg-navy/10 dark:bg-white/10" />
-              <p className="flex-shrink-0 text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
+              <p className="flex-shrink-0 text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
                 Leadership
               </p>
               <span aria-hidden="true" className="h-px flex-1 bg-navy/10 dark:bg-white/10" />
@@ -368,16 +368,16 @@ export default async function AboutPage() {
                     {member.bio && (
                       <details className="group mt-3">
                         <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                          <span className="line-clamp-4 text-[13.5px] leading-relaxed text-steel group-open:hidden dark:text-steel-light">
+                          <span className="line-clamp-4 text-[15px] leading-relaxed text-steel group-open:hidden dark:text-steel-light">
                             {member.bio}
                           </span>
-                          <span className="hidden text-[13.5px] leading-relaxed text-steel group-open:inline dark:text-steel-light">
+                          <span className="hidden text-[15px] leading-relaxed text-steel group-open:inline dark:text-steel-light">
                             {member.bio}
                           </span>
-                          <span className="mt-1.5 block text-xs font-semibold text-navy-secondary group-open:hidden">
+                          <span className="mt-1.5 block text-[13.5px] font-semibold text-navy-secondary group-open:hidden">
                             Read more
                           </span>
-                          <span className="mt-1.5 hidden text-xs font-semibold text-navy-secondary group-open:block">
+                          <span className="mt-1.5 hidden text-[13.5px] font-semibold text-navy-secondary group-open:block">
                             Read less
                           </span>
                         </summary>
@@ -390,7 +390,7 @@ export default async function AboutPage() {
                           href={member.linkedin_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-xs font-semibold text-navy hover:text-navy-secondary dark:text-cream"
+                          className="inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-navy hover:text-navy-secondary dark:text-cream"
                         >
                           LinkedIn
                           <IconLinkedIn className="h-4 w-4" />

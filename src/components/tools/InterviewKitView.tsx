@@ -88,7 +88,7 @@ export default function InterviewKitView({
             <span
               key={c.competency}
               title={c.why_it_matters}
-              className={`rounded-full px-3 py-1.5 text-xs font-medium ${WEIGHT_STYLES[c.weight] ?? WEIGHT_STYLES["nice-to-have"]}`}
+              className={`rounded-full px-3 py-1.5 text-[13.5px] font-medium ${WEIGHT_STYLES[c.weight] ?? WEIGHT_STYLES["nice-to-have"]}`}
             >
               {c.competency}
             </span>
@@ -140,7 +140,7 @@ export default function InterviewKitView({
         <h3 className="font-heading text-xl font-semibold text-navy dark:text-cream">
           {isEmployer ? `Compliance in ${kit.region.state}` : `Know your rights in ${kit.region.state}`}
         </h3>
-        <p className="mt-1 text-xs text-navy/70 dark:text-cream/70">
+        <p className="mt-1 text-[13.5px] text-navy/70 dark:text-cream/70">
           Not legal advice — verify anything specific with {kit.region.state}&apos;s labor office before relying on
           it.{" "}
           <Link href={`/interview-rights/${stateToSlug(kit.region.state)}`} className="font-semibold text-navy/80 hover:text-navy dark:text-cream/80 dark:hover:text-cream">
@@ -160,7 +160,7 @@ export default function InterviewKitView({
               ) : (
                 <p className="mt-1 font-medium text-navy dark:text-cream">If you&apos;re asked this: {item.how_to_respond}</p>
               )}
-              <p className="mt-2 text-xs text-navy/40 dark:text-cream/40">Source: {item.source.label}</p>
+              <p className="mt-2 text-[13.5px] text-navy/40 dark:text-cream/40">Source: {item.source.label}</p>
             </div>
           ))}
         </div>
@@ -169,14 +169,14 @@ export default function InterviewKitView({
             {kit.your_rights.state_specific.map((note) => (
               <li key={note.text} className="list-disc pl-4 marker:text-navy/30 dark:marker:text-cream/30">
                 {note.text}
-                <span className="block text-xs text-navy/40 dark:text-cream/40">Source: {note.source.label}</span>
+                <span className="block text-[13.5px] text-navy/40 dark:text-cream/40">Source: {note.source.label}</span>
               </li>
             ))}
           </ul>
         )}
         {kit.your_rights.legally_confused.length > 0 && (
           <div className="mt-5 border-t border-navy/10 pt-4 dark:border-white/10">
-            <p className="text-xs font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">Often assumed illegal — but isn&apos;t</p>
+            <p className="text-[13.5px] font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">Often assumed illegal — but isn&apos;t</p>
             <div className="mt-3 space-y-3">
               {kit.your_rights.legally_confused.map((item) => (
                 <div key={item.question} className="rounded-xl bg-white p-4 text-sm dark:bg-navy-800">

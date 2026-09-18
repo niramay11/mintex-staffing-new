@@ -58,7 +58,7 @@ function fieldBorder(hasError?: string) {
 
 function FieldError({ msg }: { msg?: string }) {
   if (!msg) return null;
-  return <p className="mt-1 text-xs text-red-500">{msg}</p>;
+  return <p className="mt-1 text-[13.5px] text-red-500">{msg}</p>;
 }
 
 interface ApplyModalProps {
@@ -166,7 +166,7 @@ export default function ApplyModal({ jobs, onClose, onSuccess }: ApplyModalProps
             <h3 className="text-lg font-bold text-navy dark:text-cream">Apply for {jobLabel}</h3>
             <div className="mt-2 flex flex-wrap gap-1.5">
               {jobs.map((job) => (
-                <span key={job.job_code} className="rounded-full bg-cream px-3 py-1 text-xs font-medium text-navy dark:bg-navy-800 dark:text-cream">
+                <span key={job.job_code} className="rounded-full bg-cream px-3 py-1 text-[13.5px] font-medium text-navy dark:bg-navy-800 dark:text-cream">
                   {job.job_title}
                 </span>
               ))}
@@ -343,14 +343,14 @@ export default function ApplyModal({ jobs, onClose, onSuccess }: ApplyModalProps
                   {form.resume ? (
                     <>
                       <p className="text-sm font-semibold text-navy dark:text-cream">{form.resume.name}</p>
-                      <p className="mt-1 text-xs text-navy/50 dark:text-cream/50">Click to change</p>
+                      <p className="mt-1 text-[13.5px] text-navy/50 dark:text-cream/50">Click to change</p>
                     </>
                   ) : (
                     <>
                       <p className="text-sm text-navy/70 dark:text-cream/70">
                         <span className="font-semibold text-navy dark:text-cream">Click to upload</span> or drag and drop
                       </p>
-                      <p className="mt-1 text-xs text-navy/40 dark:text-cream/40">PDF, DOC, DOCX — max 5MB</p>
+                      <p className="mt-1 text-[13.5px] text-navy/40 dark:text-cream/40">PDF, DOC, DOCX — max 5MB</p>
                     </>
                   )}
                   <input
@@ -565,7 +565,7 @@ function SignatureCanvas({
         )}
       </div>
       <div className="mt-2 flex items-center justify-between">
-        <p className="text-xs text-navy/50 dark:text-cream/50">Use your mouse or finger to draw your signature</p>
+        <p className="text-[13.5px] text-navy/50 dark:text-cream/50">Use your mouse or finger to draw your signature</p>
         <button
           type="button"
           onClick={clear}

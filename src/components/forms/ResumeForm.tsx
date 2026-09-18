@@ -89,7 +89,7 @@ export default function ResumeForm() {
             </svg>
             {fileName || "Choose a file to upload"}
           </span>
-          <span className="flex-shrink-0 rounded-full bg-navy/[0.06] px-3 py-1 text-xs font-semibold text-navy dark:bg-navy-800 dark:text-cream">
+          <span className="flex-shrink-0 rounded-full bg-navy/[0.06] px-3 py-1 text-[13.5px] font-semibold text-navy dark:bg-navy-800 dark:text-cream">
             Browse
           </span>
         </label>

@@ -104,7 +104,7 @@ export default async function ResourcesPage() {
 
       <Section background="white" className="!py-12 sm:!py-14 lg:!py-16">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Why it helps</p>
+          <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Why it helps</p>
           <h2 className="mt-2.5 text-3xl font-bold text-navy dark:text-cream sm:text-4xl">Built for hiring teams and candidates</h2>
         </div>
 
@@ -164,10 +164,10 @@ export default async function ResourcesPage() {
                   style={{ objectPosition: tool.position }}
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <span className="absolute right-3 top-3 rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold text-navy shadow-sm backdrop-blur-sm">
+                <span className="absolute right-3 top-3 rounded-full bg-white/90 px-3 py-1.5 text-[13.5px] font-semibold text-navy shadow-sm backdrop-blur-sm">
                   {tool.time}
                 </span>
-                <div className="absolute inset-x-0 bottom-0 bg-navy/85 px-4 py-2 text-center text-xs font-medium text-white backdrop-blur-sm">
+                <div className="absolute inset-x-0 bottom-0 bg-navy/85 px-4 py-2 text-center text-[13.5px] font-medium text-white backdrop-blur-sm">
                   Free — no sign-up required
                 </div>
               </div>
@@ -185,7 +185,7 @@ export default async function ResourcesPage() {
                 <p className="text-sm leading-relaxed text-navy/70 dark:text-cream/70">{tool.description}</p>
                 <div className="mt-auto flex flex-wrap gap-2 pt-1">
                   {tool.tags.map((tag) => (
-                    <span key={tag} className="rounded-full bg-mist px-3 py-1 text-xs font-medium text-navy/70 dark:bg-navy-800 dark:text-cream/70">
+                    <span key={tag} className="rounded-full bg-mist px-3 py-1 text-[13.5px] font-medium text-navy/70 dark:bg-navy-800 dark:text-cream/70">
                       {tag}
                     </span>
                   ))}

@@ -54,10 +54,10 @@ export default function ResourceRows() {
             </svg>
           </span>
           <span className="flex-1">
-            <span className="block font-heading text-[15.5px] font-semibold text-navy dark:text-cream">
+            <span className="block font-heading text-[18px] font-semibold text-navy dark:text-cream">
               {row.title}
             </span>
-            <span className="block text-[13px] text-steel dark:text-steel-light">{row.description}</span>
+            <span className="block text-[14.5px] text-steel dark:text-steel-light">{row.description}</span>
           </span>
           <svg
             aria-hidden="true"

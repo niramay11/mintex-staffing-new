@@ -125,7 +125,7 @@ export default async function HiringServicePage({
           Seek Talent
         </Link>
 
-        <div className="mt-6 flex w-fit items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[13px] font-medium text-navy/70 dark:border-white/10 dark:bg-navy-900 dark:text-cream/70">
+        <div className="mt-6 flex w-fit items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[14.5px] font-medium text-navy/70 dark:border-white/10 dark:bg-navy-900 dark:text-cream/70">
           <Icon className="h-4 w-4 flex-shrink-0" />
           {service.badge}
         </div>
@@ -149,7 +149,7 @@ export default async function HiringServicePage({
 
       <Section background="white" className="!py-12 sm:!py-14 lg:!py-16">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Why choose us</p>
+          <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Why choose us</p>
           <h2 className="mt-2.5 text-3xl font-bold text-navy sm:text-4xl dark:text-cream">What&apos;s included</h2>
         </div>
 

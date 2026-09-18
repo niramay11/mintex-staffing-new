@@ -93,7 +93,7 @@ function FilterSection({
         onClick={() => setOpen((o) => !o)}
         className="flex w-full items-center justify-between text-left"
       >
-        <span className="text-xs font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">
+        <span className="text-[13.5px] font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">
           {title}
           {typeof count === "number" && count > 0 && <span className="ml-1 text-navy/35 dark:text-cream/35">({count})</span>}
         </span>
@@ -164,7 +164,7 @@ function OptionCard({
       </span>
       <span className="min-w-0 flex-1">
         <span className={`block truncate text-sm font-medium ${active ? "text-navy dark:text-cream" : "text-navy/80 dark:text-cream/80"}`}>{label}</span>
-        {subtitle && <span className="block text-xs text-navy/45 dark:text-cream/45">{subtitle}</span>}
+        {subtitle && <span className="block text-[13.5px] text-navy/45 dark:text-cream/45">{subtitle}</span>}
       </span>
       <span
         className={`h-4 w-4 flex-shrink-0 border ${indicatorShape === "circle" ? "rounded-full" : "rounded-[4px]"} ${
@@ -583,7 +583,7 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
               <div className="h-10 w-10 animate-spin rounded-full border-2 border-navy/15 border-t-steel dark:border-white/15 dark:border-t-steel-light" />
               <p className="mt-4 text-sm font-medium uppercase tracking-wide text-navy/40 dark:text-cream/40">Loading positions…</p>
               {slowLoad && (
-                <p className="mt-2 max-w-xs text-xs text-navy/40 dark:text-cream/40">
+                <p className="mt-2 max-w-xs text-[13.5px] text-navy/40 dark:text-cream/40">
                   Still working — this can take up to a minute right after things update. Thanks for your patience.
                 </p>
               )}
@@ -600,7 +600,7 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
           {/* Empty state */}
           {!loading && !error && filteredJobs.length === 0 && (
             <div className="mt-6 rounded-lg border border-navy/10 bg-white p-8 text-center dark:border-white/10 dark:bg-navy-900">
-              <p className="text-base font-semibold text-navy dark:text-cream">No roles match your filters</p>
+              <p className="text-[18px] font-semibold text-navy dark:text-cream">No roles match your filters</p>
               <p className="mt-1 text-sm text-navy/60 dark:text-cream/60">Try adjusting your search or clearing filters.</p>
               {activeFilterCount > 0 && (
                 <button
@@ -643,28 +643,28 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
                             </Link>
                           </h3>
                           {isNew && (
-                            <span className="inline-flex items-center rounded-full bg-steel px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white">
+                            <span className="inline-flex items-center rounded-full bg-steel px-2.5 py-0.5 text-[12.5px] font-bold uppercase tracking-wide text-white">
                               New
                             </span>
                           )}
                         </div>
 
                         <div className="mt-2.5 flex flex-wrap items-center gap-2">
-                          <span className="inline-flex items-center gap-1 rounded-full bg-mist px-3 py-1 text-xs font-medium text-navy/70 dark:bg-navy-800 dark:text-cream/70">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-mist px-3 py-1 text-[13.5px] font-medium text-navy/70 dark:bg-navy-800 dark:text-cream/70">
                             <IconPin className="h-3 w-3 flex-shrink-0" />
                             <span className="truncate">{jobLocation(job)}</span>
                           </span>
                           {job.number_of_positions && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-mist px-3 py-1 text-xs font-medium text-navy/70 dark:bg-navy-800 dark:text-cream/70">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-mist px-3 py-1 text-[13.5px] font-medium text-navy/70 dark:bg-navy-800 dark:text-cream/70">
                               <IconPeople className="h-3 w-3" />
                               {job.number_of_positions}
                             </span>
                           )}
                           {remote && (
-                            <span className={`rounded-full px-3 py-1 text-xs font-medium ${remote.cls}`}>{remote.label}</span>
+                            <span className={`rounded-full px-3 py-1 text-[13.5px] font-medium ${remote.cls}`}>{remote.label}</span>
                           )}
                           {job.job_type && (
-                            <span className="rounded-full bg-mist px-3 py-1 text-xs font-medium text-navy dark:bg-navy-800 dark:text-cream">{job.job_type}</span>
+                            <span className="rounded-full bg-mist px-3 py-1 text-[13.5px] font-medium text-navy dark:bg-navy-800 dark:text-cream">{job.job_type}</span>
                           )}
                         </div>
 
@@ -687,7 +687,7 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
                       </div>
 
                       <div className="flex flex-shrink-0 items-center gap-2.5 sm:flex-col sm:items-stretch">
-                        <label className="flex cursor-pointer items-center justify-end gap-1.5 text-xs font-medium text-navy/50 hover:text-navy/70 dark:text-cream/50 dark:hover:text-cream/70">
+                        <label className="flex cursor-pointer items-center justify-end gap-1.5 text-[13.5px] font-medium text-navy/50 hover:text-navy/70 dark:text-cream/50 dark:hover:text-cream/70">
                           <input
                             type="checkbox"
                             checked={isSelected}

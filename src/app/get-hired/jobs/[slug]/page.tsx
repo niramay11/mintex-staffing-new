@@ -299,11 +299,11 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
         </Link>
 
         <div className="mt-6 flex flex-wrap items-center gap-3">
-          <span className="rounded-full border border-navy/10 bg-white px-3 py-1 font-mono text-[11px] font-medium text-navy/70 dark:border-white/10 dark:bg-navy-900 dark:text-cream/70">
+          <span className="rounded-full border border-navy/10 bg-white px-3 py-1 font-mono text-[12.5px] font-medium text-navy/70 dark:border-white/10 dark:bg-navy-900 dark:text-cream/70">
             {job.job_code}
           </span>
           {posted && (
-            <time dateTime={postedIso ?? undefined} className="text-xs text-navy/50 dark:text-cream/50">
+            <time dateTime={postedIso ?? undefined} className="text-[13.5px] text-navy/50 dark:text-cream/50">
               Posted {posted}
             </time>
           )}
@@ -317,15 +317,15 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
         </p>
 
         <div className="mt-6 flex flex-wrap items-center gap-2.5">
-          {pay && <span className="rounded-full bg-navy px-4 py-2 text-base font-semibold text-white dark:bg-steel dark:text-navy-950">{pay}</span>}
+          {pay && <span className="rounded-full bg-navy px-4 py-2 text-[18px] font-semibold text-white dark:bg-steel dark:text-navy-950">{pay}</span>}
           {job.job_type && (
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-navy/15 bg-white px-3.5 py-1.5 text-xs font-medium text-navy/70 dark:border-white/10 dark:bg-navy-900 dark:text-cream/70">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-navy/15 bg-white px-3.5 py-1.5 text-[13.5px] font-medium text-navy/70 dark:border-white/10 dark:bg-navy-900 dark:text-cream/70">
               <IconBriefcase className="h-3.5 w-3.5" />
               {job.job_type}
             </span>
           )}
           {remoteLabel && (
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-navy/15 bg-white px-3.5 py-1.5 text-xs font-medium text-navy/70 dark:border-white/10 dark:bg-navy-900 dark:text-cream/70">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-navy/15 bg-white px-3.5 py-1.5 text-[13.5px] font-medium text-navy/70 dark:border-white/10 dark:bg-navy-900 dark:text-cream/70">
               <IconGlobe className="h-3.5 w-3.5" />
               {remoteLabel}
             </span>
@@ -344,10 +344,10 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
           <div className="rounded-2xl border border-navy/[0.08] bg-white p-6 sm:p-8 dark:border-white/10 dark:bg-navy-900">
             {skills.length > 0 && (
               <div>
-                <p className="mb-2.5 text-xs font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">Skills</p>
+                <p className="mb-2.5 text-[13.5px] font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">Skills</p>
                 <div className="flex flex-wrap gap-1.5">
                   {skills.map((skill) => (
-                    <span key={skill} className="rounded-full bg-mist px-3 py-1 text-xs font-medium text-navy dark:bg-navy-800 dark:text-cream">
+                    <span key={skill} className="rounded-full bg-mist px-3 py-1 text-[13.5px] font-medium text-navy dark:bg-navy-800 dark:text-cream">
                       {skill}
                     </span>
                   ))}
@@ -356,7 +356,7 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
             )}
 
             <div className={skills.length > 0 ? "mt-8" : ""}>
-              <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">Job Description</p>
+              <p className="mb-3 text-[13.5px] font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">Job Description</p>
               {hasSubstantiveDescription(description) ? (
                 <div className={JOB_DESCRIPTION_PROSE_CLASS} dangerouslySetInnerHTML={{ __html: description }} />
               ) : description ? (
@@ -394,7 +394,7 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
                         <Icon className="h-4 w-4" />
                       </span>
                       <div className="min-w-0">
-                        <p className="text-[10px] font-semibold uppercase tracking-wide text-navy/45 dark:text-cream/45">{label}</p>
+                        <p className="text-[11.5px] font-semibold uppercase tracking-wide text-navy/45 dark:text-cream/45">{label}</p>
                         <p className="mt-0.5 text-sm font-medium text-navy dark:text-cream">{String(value)}</p>
                       </div>
                     </div>

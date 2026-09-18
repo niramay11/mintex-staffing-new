@@ -143,14 +143,14 @@ export default function AiInterviewGenerator({ industries }: { industries: Indus
               {navigating ? "Loading your kit…" : "Generate Interview Kit"}
             </Button>
             {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
-            <p className="text-xs text-navy/70 dark:text-cream/70">
+            <p className="text-[13.5px] text-navy/70 dark:text-cream/70">
               AI-generated to help you prepare — not legal advice. Employment law varies by state; verify anything
               specific with your state&apos;s labor office before relying on it.
             </p>
           </form>
 
           <div className="rounded-3xl bg-navy p-7 text-white shadow-[0_20px_50px_-24px_rgba(0,48,96,0.5)] dark:bg-navy-800 dark:shadow-[0_20px_50px_-24px_rgba(0,0,0,0.5)]">
-            <h3 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel-lighter">Your Interview Kit</h3>
+            <h3 className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel-lighter">Your Interview Kit</h3>
             <p className="mt-5 text-sm text-steel-lighter">
               Enter a job title, pick your state, industry, and seniority, then generate a full kit — competency
               map, scored questions, your rights in your state, and prep tips, not just a flat question list.

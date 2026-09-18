@@ -62,7 +62,7 @@ export default async function HowWeHelpClientsPage() {
   return (
     <>
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
-        <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
+        <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
           For clients
         </p>
         <h1 className="mt-2.5 font-heading text-4xl font-bold text-navy sm:text-5xl dark:text-cream">How We Help Our Clients</h1>
@@ -117,7 +117,7 @@ export default async function HowWeHelpClientsPage() {
           </div>
 
           <div className="mt-20">
-            <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
+            <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
               Helpful for hiring teams
             </p>
             <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl dark:text-cream">
@@ -140,7 +140,7 @@ export default async function HowWeHelpClientsPage() {
 
           {insights.length > 0 && (
             <div className="mt-16">
-              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
+              <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
                 Job market insights
               </p>
               <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl dark:text-cream">

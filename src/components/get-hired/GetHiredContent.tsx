@@ -149,7 +149,7 @@ export default async function GetHiredContent() {
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
         <div className="relative mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-14">
           <div>
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[13px] font-medium text-navy/70 dark:border-white/10 dark:bg-navy-900 dark:text-cream/70">
+            <div className="inline-flex items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[14.5px] font-medium text-navy/70 dark:border-white/10 dark:bg-navy-900 dark:text-cream/70">
               <span className="h-[7px] w-[7px] rounded-full bg-steel shadow-[0_0_0_4px_rgba(74,115,140,0.25)]" />
               For Job Seekers
             </div>
@@ -177,7 +177,7 @@ roles as they go live.
               </span>
               <div>
                 <p className="font-heading text-xl font-bold leading-none text-navy dark:text-cream">14k+</p>
-                <p className="mt-1 text-xs leading-none text-navy/50 dark:text-cream/50">Placements made</p>
+                <p className="mt-1 text-[13.5px] leading-none text-navy/50 dark:text-cream/50">Placements made</p>
               </div>
             </div>
 
@@ -196,7 +196,7 @@ roles as they go live.
               </span>
               <div>
                 <p className="font-heading text-xl font-bold leading-none text-navy dark:text-cream">9 days</p>
-                <p className="mt-1 text-xs leading-none text-navy/50 dark:text-cream/50">Avg. time to fill</p>
+                <p className="mt-1 text-[13.5px] leading-none text-navy/50 dark:text-cream/50">Avg. time to fill</p>
               </div>
             </div>
           </div>
@@ -224,7 +224,7 @@ roles as they go live.
         <ButtonLink
           href="/resources/ai-interview-generator"
           variant="secondary"
-          className="group inline-flex items-center gap-3 !px-8 !py-4 text-base !transition-all shadow-[0_10px_30px_-14px_rgba(0,48,96,0.22)] hover:-translate-y-0.5 hover:border-steel/40 hover:shadow-[0_16px_40px_-14px_rgba(0,48,96,0.3)]"
+          className="group inline-flex items-center gap-3 !px-8 !py-4 text-[18px] !transition-all shadow-[0_10px_30px_-14px_rgba(0,48,96,0.22)] hover:-translate-y-0.5 hover:border-steel/40 hover:shadow-[0_16px_40px_-14px_rgba(0,48,96,0.3)]"
         >
           <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel dark:text-steel-light">
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4">

@@ -31,7 +31,7 @@ export default function QuestionVote({ questionText, roleSlug }: { questionText:
   }
 
   if (state === "voted") {
-    return <span className="text-xs text-navy/40 dark:text-cream/40">Thanks for the feedback</span>;
+    return <span className="text-[13.5px] text-navy/40 dark:text-cream/40">Thanks for the feedback</span>;
   }
 
   return (

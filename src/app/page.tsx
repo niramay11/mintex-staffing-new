@@ -4,7 +4,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import ClientStories from "@/components/home/ClientStories";
 import Testimonials from "@/components/home/Testimonials";
 import IndustriesCarousel from "@/components/home/IndustriesCarousel";
-import HeroBubbleCluster from "@/components/home/HeroBubbleCluster";
+import HeroPhotoCollage from "@/components/home/HeroPhotoCollage";
 import { getIndustries } from "@/lib/industries";
 import { getSiteImages } from "@/lib/siteImages";
 import { industryCardImageKey } from "@/lib/imageLocations";
@@ -41,68 +41,58 @@ export default async function HomePage() {
             treatment further down, just for the side with no image to do it. */}
         <div aria-hidden="true" className="absolute inset-x-0 -top-[62px] hidden h-[62px] bg-mist lg:block dark:bg-navy-900" />
         <div className="grid lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:items-stretch">
-          <div className="flex flex-col justify-center px-6 py-16 sm:px-10 sm:py-20 lg:px-16 lg:py-24 xl:px-24">
+          <div className="flex flex-col justify-center px-6 py-16 sm:px-10 sm:py-20 lg:px-16 lg:py-24 xl:px-20">
             <div className="flex max-w-xl flex-col items-start">
-              <div className="inline-flex items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[13px] font-medium text-navy/70 dark:bg-navy-800 dark:border-white/10 dark:text-cream/70">
-                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4 flex-shrink-0">
-                  <path
-                    d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinejoin="round"
-                  />
-                  <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                Trusted staffing partner across USA
-              </div>
-              <h1 className="mt-5 font-heading text-[44px] font-bold leading-[1.08] text-navy sm:text-[56px] lg:text-[52px] xl:text-[60px] dark:text-cream">
+              <h1 className="font-heading text-[38px] font-bold leading-[1.12] text-navy sm:text-[46px] lg:text-[38px] xl:text-[44px] dark:text-cream">
                 Staffing and Recruitment solutions across{" "}
-                <span className="bg-gradient-to-r from-steel via-navy to-steel bg-clip-text text-transparent dark:from-steel-light dark:via-cream dark:to-steel-light">
+                <span className="relative inline-block text-steel dark:text-steel-light">
                   IT, healthcare, legal and more
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 320 14"
+                    preserveAspectRatio="none"
+                    className="absolute -bottom-1.5 left-0 h-3 w-full text-steel dark:text-steel-light"
+                  >
+                    <path
+                      d="M2 9c40-8 80-8 120 0s80 8 120 0 60-6 76-2"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      fill="none"
+                      strokeLinecap="round"
+                    />
+                  </svg>
                 </span>
               </h1>
-              <p className="mt-3 max-w-xl text-lg text-steel sm:text-xl dark:text-steel-light">
+              <p className="mt-5 max-w-xl text-[20px] text-steel sm:text-xl dark:text-steel-light">
                 Connecting exceptional talent with leading employers
               </p>
               <div className="mt-7 flex flex-wrap items-center gap-3.5">
                 <ButtonLink
                   href="/seek-talent"
                   variant="primary"
-                  className="gap-2 shadow-[0_14px_36px_-10px_rgba(0,48,96,0.35)] transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_44px_-8px_rgba(0,48,96,0.45)]"
+                  className="!border-navy !bg-navy !text-white shadow-[0_14px_36px_-10px_rgba(0,48,96,0.35)] transition-all hover:-translate-y-0.5 hover:!bg-navy-secondary hover:shadow-[0_18px_44px_-8px_rgba(0,48,96,0.45)] dark:!bg-steel dark:!border-steel dark:!text-navy-950 dark:hover:!bg-steel-light"
                 >
-                  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4 flex-shrink-0">
-                    <path
-                      d="M17 20h5v-2a4 4 0 0 0-3-3.87M9 20H4v-2a4 4 0 0 1 3-3.87m5-3.13a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7 3a4 4 0 0 0-3-3.87"
-                      stroke="currentColor"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
                   Hire Talent
                 </ButtonLink>
                 <ButtonLink
                   href="/get-hired"
                   variant="outline"
-                  className="!border-navy !text-navy gap-2 transition-all hover:-translate-y-0.5 hover:!bg-navy hover:!text-white dark:!border-white/15 dark:!text-cream"
+                  className="!border-navy !text-navy transition-all hover:-translate-y-0.5 hover:!bg-navy hover:!text-white dark:!border-white/15 dark:!text-cream"
                 >
-                  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4 flex-shrink-0">
-                    <circle cx="12" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.6" />
-                    <path
-                      d="M5 20c0-3.5 3.13-6 7-6s7 2.5 7 6"
-                      stroke="currentColor"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                    />
-                  </svg>
                   Get Hired
                 </ButtonLink>
               </div>
             </div>
           </div>
 
-          <div className="mx-6 mb-2 flex items-center justify-center px-4 py-6 sm:mx-10 lg:mx-0 lg:mb-0 lg:min-h-[480px] xl:min-h-[560px]">
-            <HeroBubbleCluster />
+          {/* Hidden below lg — this collage only earns its place once the
+              grid actually has room to run it beside the text; stacked below
+              the heading on narrower screens it was just dead scroll length. */}
+          <div className="hidden lg:mx-0 lg:mb-0 lg:flex lg:min-h-[560px] lg:items-center lg:justify-end lg:pr-8 xl:min-h-[640px] xl:pr-16">
+            <HeroPhotoCollage
+              photo1Src={siteImages["home:hero-photo-1"]}
+              photo2Src={siteImages["home:hero-banner"]}
+            />
           </div>
         </div>
       </section>
@@ -112,19 +102,19 @@ export default async function HomePage() {
         <div className="mx-auto max-w-[1920px] px-6 py-16 sm:px-10 sm:py-20 lg:px-16 lg:py-24">
           <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
             <div>
-              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
+              <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
                 What we do
               </p>
               <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
                 Staffing that starts with a real understanding of your team
               </h2>
-              <p className="mt-5 text-[15.5px] leading-[1.85] text-steel dark:text-steel-light">
+              <p className="mt-5 text-[18px] leading-[1.85] text-steel dark:text-steel-light">
                 Mintex Staffing connects employers with vetted, ready-to-work talent across IT,
                 healthcare, engineering, manufacturing, finance, and six more specialized industries.
                 We source candidates who match your team&apos;s actual skill and culture needs, and
                 screen them for a real delivery track record rather than just a polished resume.
               </p>
-              <p className="mt-4 text-[15.5px] leading-[1.85] text-steel dark:text-steel-light">
+              <p className="mt-4 text-[18px] leading-[1.85] text-steel dark:text-steel-light">
                 We place candidates as contract, contract-to-hire, or permanent hires, whichever
                 model fits the work, backed by an active talent network that&apos;s already screened
                 long before your search begins. That approach has produced 14,000+ placements to
@@ -163,13 +153,13 @@ export default async function HomePage() {
       <section className="border-t border-navy/[0.06] bg-white dark:bg-navy-900 dark:border-white/10">
         <div className="mx-auto max-w-[1920px] px-6 py-20 sm:px-10 lg:px-16 lg:py-24">
           <div className="mx-auto max-w-2xl text-center">
-            <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
+            <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
               Why us
             </p>
             <h2 className="mt-3.5 font-heading text-[36px] font-bold leading-tight text-navy sm:text-[40px] dark:text-cream">
               A decade of staffing expertise, backed by process
             </h2>
-            <p className="mt-4 text-lg text-steel dark:text-steel-light">
+            <p className="mt-4 text-[20px] text-steel dark:text-steel-light">
               Candidates screened for skills and company fit, not based on a resume that looks good
 on paper.
             </p>
@@ -238,7 +228,7 @@ on paper.
                 </svg>
               </span>
               <h3 className="mt-4 font-heading font-semibold text-navy dark:text-cream">Proven achievements</h3>
-              <p className="mt-2 text-[14.5px] text-steel dark:text-steel-light">
+              <p className="mt-2 text-[16px] text-steel dark:text-steel-light">
                 A track record of fast, durable placements across nine industries.
               </p>
             </div>
@@ -255,7 +245,7 @@ on paper.
                 </svg>
               </span>
               <h3 className="mt-4 font-heading font-semibold text-navy dark:text-cream">Sector insights</h3>
-              <p className="mt-2 text-[14.5px] text-steel dark:text-steel-light">
+              <p className="mt-2 text-[16px] text-steel dark:text-steel-light">
                 Ongoing research on hiring trends, so you&apos;re never staffing blind.
               </p>
             </div>
@@ -272,7 +262,7 @@ on paper.
                 </svg>
               </span>
               <h3 className="mt-4 font-heading font-semibold text-navy dark:text-cream">Practical guides</h3>
-              <p className="mt-2 text-[14.5px] text-steel dark:text-steel-light">
+              <p className="mt-2 text-[16px] text-steel dark:text-steel-light">
                 Calculators, checklists, and interview tools for hiring teams and candidates.
               </p>
             </div>
@@ -284,7 +274,7 @@ on paper.
       <section className="border-t border-navy/[0.06] bg-mist dark:bg-navy-900 dark:border-white/10">
         <div className="mx-auto max-w-[1920px] px-6 py-20 sm:px-10 lg:px-16 lg:py-24">
           <div className="mx-auto max-w-2xl text-center">
-            <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
+            <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
               How we&apos;re different
             </p>
             <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
@@ -319,9 +309,9 @@ on paper.
                     <path d={item.path} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </span>
-                <h3 className="mt-5 font-heading text-[17px] font-semibold tracking-tight text-navy dark:text-cream">{item.title}</h3>
+                <h3 className="mt-5 font-heading text-[18.5px] font-semibold tracking-tight text-navy dark:text-cream">{item.title}</h3>
                 <span aria-hidden="true" className="mt-3 block h-px w-8 bg-steel/40" />
-                <p className="mt-3.5 text-[14.5px] leading-[1.85] text-steel dark:text-steel-light">{item.text}</p>
+                <p className="mt-3.5 text-[16px] leading-[1.85] text-steel dark:text-steel-light">{item.text}</p>
               </div>
             ))}
           </div>
@@ -356,13 +346,13 @@ on paper.
         </span>
         <div className="relative mx-auto max-w-[1920px] px-6 py-20 sm:px-10 lg:px-16 lg:py-24">
           <div className="mx-auto max-w-2xl text-center">
-            <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
+            <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
               Industries we serve
             </p>
             <h2 className="mt-3 font-heading text-[30px] font-bold leading-tight text-navy sm:text-[34px] dark:text-cream">
               Deep talent pools across all specialized sectors
             </h2>
-            <p className="mt-3 text-base text-steel dark:text-steel-light">
+            <p className="mt-3 text-[18px] text-steel dark:text-steel-light">
               Our expertise lies in specialized sectors — deeper market insights and qualified talent
               pools that match your standards and speed up hiring.
             </p>
@@ -414,7 +404,7 @@ on paper.
             <h2 className="font-heading text-[38px] font-bold leading-tight text-navy sm:text-[46px] dark:text-cream">
               Let&apos;s build your team, together
             </h2>
-            <p className="mt-4 max-w-md text-lg leading-relaxed text-steel dark:text-steel-light">
+            <p className="mt-4 max-w-md text-[20px] leading-relaxed text-steel dark:text-steel-light">
               Whether you&apos;re hiring or looking to be hired, we&apos;ll get you there faster.
             </p>
             <div className="mt-8 flex flex-wrap gap-3.5">

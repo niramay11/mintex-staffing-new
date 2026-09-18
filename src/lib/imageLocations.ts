@@ -68,8 +68,13 @@ export const IMAGE_LOCATIONS: ImageLocation[] = [
 
   { locationKey: "client-portal:header-logo", pageName: "Client Portal", sectionName: "Header Logo", defaultSrc: "/logo-navy.png", category: "logo-wide" },
 
-  // Home
-  { locationKey: "home:hero-banner",        pageName: "Home", sectionName: "Hero Banner",                defaultSrc: "/hero-office-3.png", category: "photo-landscape" },
+  // Home — the hero renders two overlapping photo cards (see
+  // HeroPhotoCollage). "home:hero-banner" keeps its original locationKey so
+  // any image an admin already uploaded to it keeps applying, but it's now
+  // wired to the wider of the two cards, matching this photo's usual
+  // landscape crop.
+  { locationKey: "home:hero-banner",        pageName: "Home", sectionName: "Hero Photo — Right Card",     defaultSrc: "/interview-handshake.jpg", category: "photo-square" },
+  { locationKey: "home:hero-photo-1",       pageName: "Home", sectionName: "Hero Photo — Left Card",      defaultSrc: "/interview-confident.jpg", category: "photo-portrait" },
   { locationKey: "home:industries-mark",    pageName: "Home", sectionName: "Industries Decorative Mark", defaultSrc: "/mintex-m-navy.svg", category: "logo-decorative" },
   { locationKey: "home:industries-collage", pageName: "Home", sectionName: "Industries Collage",         defaultSrc: "/collage-2.webp",    category: "photo-square" },
   { locationKey: "home:what-we-do-visual",  pageName: "Home", sectionName: "What We Do Visual",          defaultSrc: "/interview-confident.jpg", category: "photo-square" },

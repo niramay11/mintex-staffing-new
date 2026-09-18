@@ -51,7 +51,7 @@ export default async function SeekTalentPage() {
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
         <div className="relative mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-14">
           <div>
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[13px] font-medium text-navy/70 dark:border-white/10 dark:bg-navy-900 dark:text-cream/70">
+            <div className="inline-flex items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[14.5px] font-medium text-navy/70 dark:border-white/10 dark:bg-navy-900 dark:text-cream/70">
               <IconBriefcase className="h-4 w-4 flex-shrink-0" />
               For Employers
             </div>
@@ -94,7 +94,7 @@ export default async function SeekTalentPage() {
               </span>
               <div>
                 <p className="font-heading text-xl font-bold leading-none text-navy dark:text-cream">14k+</p>
-                <p className="mt-1 text-xs leading-none text-navy/50 dark:text-cream/50">Placements made</p>
+                <p className="mt-1 text-[13.5px] leading-none text-navy/50 dark:text-cream/50">Placements made</p>
               </div>
             </div>
 
@@ -104,7 +104,7 @@ export default async function SeekTalentPage() {
               </span>
               <div>
                 <p className="font-heading text-xl font-bold leading-none text-navy dark:text-cream">9 days</p>
-                <p className="mt-1 text-xs leading-none text-navy/50 dark:text-cream/50">Avg. time to fill</p>
+                <p className="mt-1 text-[13.5px] leading-none text-navy/50 dark:text-cream/50">Avg. time to fill</p>
               </div>
             </div>
           </div>
@@ -125,7 +125,7 @@ export default async function SeekTalentPage() {
                   <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-navy text-xs font-semibold text-white">
                     {index + 1}
                   </span>
-                  <p className="text-base leading-relaxed text-navy/70 dark:text-cream/70">{point}</p>
+                  <p className="text-[18px] leading-relaxed text-navy/70 dark:text-cream/70">{point}</p>
                 </div>
               ))}
             </div>

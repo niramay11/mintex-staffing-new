@@ -162,7 +162,7 @@ export default async function HowWeWorkPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
-        <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
+        <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
           Our process
         </p>
         <h1 className="mt-2.5 font-heading text-4xl font-bold text-navy sm:text-5xl dark:text-cream">How Our Staffing Process Works</h1>
@@ -178,14 +178,14 @@ export default async function HowWeWorkPage() {
         <div className="mx-auto max-w-6xl">
           <div className="grid items-center gap-14 lg:grid-cols-[1fr_0.8fr] lg:gap-20">
             <div>
-              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
+              <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
                 For clients
               </p>
               <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl dark:text-cream">
                 How We Help Our Clients
               </h2>
 
-              <p className="mt-6 text-[15px] leading-relaxed text-navy/70 dark:text-cream/70">
+              <p className="mt-6 text-[18px] leading-relaxed text-navy/70 dark:text-cream/70">
                 {clientSteps[0].description}
               </p>
               <Link
@@ -238,14 +238,14 @@ export default async function HowWeWorkPage() {
             </div>
 
             <div>
-              <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
+              <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
                 For job seekers
               </p>
               <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl dark:text-cream">
                 How We Help Job Seekers
               </h2>
 
-              <p className="mt-6 text-[15px] leading-relaxed text-navy/70 dark:text-cream/70">
+              <p className="mt-6 text-[18px] leading-relaxed text-navy/70 dark:text-cream/70">
                 {steps[0].description}
               </p>
               <Link
@@ -280,7 +280,7 @@ export default async function HowWeWorkPage() {
           </div>
 
           <div className="mt-16">
-            <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
+            <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
               Common questions
             </p>
             <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl dark:text-cream">

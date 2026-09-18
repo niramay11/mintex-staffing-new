@@ -136,7 +136,7 @@ export default function PasteJobDescriptionKit() {
               rows={8}
               className="mt-2 w-full rounded-xl border border-navy/15 bg-white px-4 py-3 text-sm font-normal text-navy placeholder:text-navy/35 focus:border-steel focus:outline-none dark:border-white/15 dark:bg-navy-900 dark:text-cream dark:placeholder:text-cream/35"
             />
-            <span className={`mt-1 block text-right text-xs ${overLimit ? "text-red-600" : "text-navy/40 dark:text-cream/40"}`}>
+            <span className={`mt-1 block text-right text-[13.5px] ${overLimit ? "text-red-600" : "text-navy/40 dark:text-cream/40"}`}>
               {jobDescription.length.toLocaleString()} / {JD_MAX_CHARS.toLocaleString()}
             </span>
           </label>
@@ -148,7 +148,7 @@ export default function PasteJobDescriptionKit() {
               onChange={(event) => setFile(event.target.files?.[0] ?? null)}
               className="block w-full text-sm text-navy/70 file:mr-3 file:rounded-full file:border-0 file:bg-navy file:px-4 file:py-2 file:text-xs file:font-semibold file:text-white file:hover:bg-navy/90 dark:text-cream/70 dark:file:bg-steel dark:file:text-navy-950 dark:file:hover:bg-steel-light"
             />
-            <p className="mt-2 text-xs text-navy/40 dark:text-cream/40">PDF or Word (.docx) job posting, up to 5MB.</p>
+            <p className="mt-2 text-[13.5px] text-navy/40 dark:text-cream/40">PDF or Word (.docx) job posting, up to 5MB.</p>
           </div>
         )}
 
@@ -172,7 +172,7 @@ export default function PasteJobDescriptionKit() {
           {loading ? "Reading the posting and generating…" : "Generate Interview Kit From This Posting"}
         </Button>
         {error && <p className="text-sm text-red-600">{error}</p>}
-        <p className="text-xs text-navy/40 dark:text-cream/40">
+        <p className="text-[13.5px] text-navy/40 dark:text-cream/40">
           This kit is generated fresh and is never saved on our servers or indexed — an uploaded file is read for
           its text and discarded, never saved to disk. Not legal advice; verify anything specific with your
           state&apos;s labor office.
