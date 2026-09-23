@@ -27,7 +27,8 @@
   --color-navy-800: #24303d;
 
   --font-sans: var(--font-inter);
-  --font-heading: var(--font-poppins);
+  --font-heading: var(--font-barlow-condensed);
+  --font-mono: var(--font-ibm-plex-mono);
 }
 
 body {

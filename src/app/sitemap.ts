@@ -6,6 +6,8 @@ import { SITE_URL } from "@/lib/site";
 import { getCachedJobs } from "@/lib/jobsCache";
 import { isActiveJob, jobUrlSlug } from "@/components/jobs/utils";
 import type { CeipalJob } from "@/components/jobs/types";
+import { US_STATES } from "@/lib/interviewKit/schema";
+import { stateToSlug } from "@/lib/interviewKit/legalRights";
 
 // Without this, Next tries to statically prerender the sitemap at build
 // time — same problem /get-hired's own page.tsx already forces dynamic to
@@ -19,9 +21,14 @@ const staticRoutes = [
   "",
   "/get-hired",
   "/get-hired/share-resume",
+  "/get-hired/interview-prep",
+  "/get-hired/apply-to-jobs",
+  "/get-hired/how-we-work/for-job-seekers",
+  "/interview-rights",
   "/industries",
   "/seek-talent",
   "/seek-talent/how-we-work",
+  "/seek-talent/how-we-work/for-clients",
   "/seek-talent/get-started",
   "/resources",
   "/resources/hiring-cost-calculator",
@@ -67,6 +74,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       : {}),
   }));
 
+  const interviewRightsEntries = US_STATES.map((state) => ({
+    url: `${baseUrl}/interview-rights/${stateToSlug(state)}`,
+  }));
+
   return [
     ...staticEntries,
     ...industryEntries,
@@ -74,5 +85,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...insightEntries,
     ...insightCategoryEntries,
     ...jobEntries,
+    ...interviewRightsEntries,
   ];
 }

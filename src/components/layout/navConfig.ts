@@ -45,6 +45,7 @@ export function getNavItems(industries: Industry[]): NavItem[] {
       children: [
         { label: "Hiring Cost Calculator", href: "/resources/hiring-cost-calculator" },
         { label: "AI Interview Question Generator", href: "/resources/ai-interview-generator" },
+        { label: "Interview Rights by State", href: "/interview-rights" },
       ],
     },
     {

@@ -74,9 +74,14 @@ function renderInlineLinks(text: string) {
 // the table of contents, mirroring what the legacy path derives from
 // isHeadingLine.
 function prepareRichBody(html: string): { html: string; tocItems: { id: string; text: string }[] } {
+  // Some post bodies (pasted from Word/Docs) carry a literal <h1> — the page
+  // already renders the real <h1> (the post title) above, so a surviving
+  // <h1> in the body would give the page two. Same fix already applied to
+  // job descriptions in components/jobs/utils.ts (demoteDescriptionHeadings).
+  const demoted = html.replace(/<(\/?)h1(\s|>)/gi, "<$1h2$2");
   let i = 0;
   const tocItems: { id: string; text: string }[] = [];
-  const withIds = html.replace(/<h2>([\s\S]*?)<\/h2>/g, (_match, inner: string) => {
+  const withIds = demoted.replace(/<h2>([\s\S]*?)<\/h2>/g, (_match, inner: string) => {
     const id = `section-${i++}`;
     tocItems.push({ id, text: inner.replace(/<[^>]+>/g, "").trim() });
     return `<h2 id="${id}">${inner}</h2>`;

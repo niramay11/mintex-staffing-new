@@ -26,7 +26,20 @@ function TestimonialCard({ story }: { story: CaseStudy }) {
   );
 }
 
-export default function Testimonials({ stories }: { stories: CaseStudy[] }) {
+export default function Testimonials({
+  stories,
+  backgroundClassName = "bg-mist",
+  edgeFadeFromClassName = "from-mist",
+}: {
+  stories: CaseStudy[];
+  // Lets one caller (the homepage) opt into a different section background
+  // without changing the default this component also renders with on
+  // /industries/[slug] and /seek-talent, where it should stay unchanged.
+  // edgeFadeFromClassName keeps the scroll-edge fade matched to whichever
+  // background is actually in use.
+  backgroundClassName?: string;
+  edgeFadeFromClassName?: string;
+}) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -58,7 +71,7 @@ export default function Testimonials({ stories }: { stories: CaseStudy[] }) {
   };
 
   return (
-    <section className="border-t border-navy/[0.06] bg-mist px-4 py-20 sm:px-6 sm:py-24 lg:px-8 dark:bg-navy-900 dark:border-white/10">
+    <section className={`border-t border-navy/[0.06] px-4 py-20 sm:px-6 sm:py-24 lg:px-8 dark:bg-navy-900 dark:border-white/10 ${backgroundClassName}`}>
       <h2 className="text-center font-heading text-[42px] font-bold text-navy sm:text-[52px] dark:text-cream">
         Testimonials
       </h2>
@@ -76,11 +89,11 @@ export default function Testimonials({ stories }: { stories: CaseStudy[] }) {
         {/* Edge fades hint that more cards are scrollable off-screen */}
         <div
           aria-hidden="true"
-          className={`pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-mist to-transparent transition-opacity duration-300 dark:from-navy-900 ${canScrollLeft ? "opacity-100" : "opacity-0"}`}
+          className={`pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r to-transparent transition-opacity duration-300 dark:from-navy-900 ${edgeFadeFromClassName} ${canScrollLeft ? "opacity-100" : "opacity-0"}`}
         />
         <div
           aria-hidden="true"
-          className={`pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-mist to-transparent transition-opacity duration-300 dark:from-navy-900 ${canScrollRight ? "opacity-100" : "opacity-0"}`}
+          className={`pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l to-transparent transition-opacity duration-300 dark:from-navy-900 ${edgeFadeFromClassName} ${canScrollRight ? "opacity-100" : "opacity-0"}`}
         />
 
         {stories.length > 1 && (

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import ReactDOM from "react-dom";
-import { Inter, Poppins } from "next/font/google";
+import { Inter, Barlow_Condensed, IBM_Plex_Mono } from "next/font/google";
 import DeferredAnalytics from "@/components/analytics/DeferredAnalytics";
 import SiteChrome from "@/components/layout/SiteChrome";
 import { getSiteImages } from "@/lib/siteImages";
@@ -14,10 +14,16 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const poppins = Poppins({
-  variable: "--font-poppins",
+const barlowCondensed = Barlow_Condensed({
+  variable: "--font-barlow-condensed",
   subsets: ["latin"],
   weight: ["500", "600", "700"],
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  variable: "--font-ibm-plex-mono",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -33,14 +39,14 @@ export const metadata: Metadata = {
     description:
       "Mintex Staffing connects exceptional talent with leading employers across IT, healthcare, engineering, manufacturing, finance, and more.",
     type: "website",
-    images: [{ url: "/og-image.png", width: 1200, height: 630 }],
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Staffing & Recruitment | Mintex Staffing",
     description:
       "Mintex Staffing connects exceptional talent with leading employers across IT, healthcare, engineering, manufacturing, finance, and more.",
-    images: ["/og-image.png"],
+    images: ["/og-image.jpg"],
   },
   // Next's file-based icon convention (src/app/favicon.ico, icon.png,
   // apple-icon.png) already emits modern rel="icon"/rel="apple-touch-icon"
@@ -90,7 +96,7 @@ export default async function RootLayout({
       lang="en-US"
       data-theme="light"
       suppressHydrationWarning
-      className={`${inter.variable} ${poppins.variable} h-full antialiased`}
+      className={`${inter.variable} ${barlowCondensed.variable} ${ibmPlexMono.variable} h-full antialiased`}
     >
       <head>
         <script

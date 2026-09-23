@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import type { Industry } from "@/content/types";
 
@@ -62,6 +62,7 @@ function CoverCard({
           src={imageSrc}
           alt={`${industry.name} professionals placed by Mintex Staffing`}
           fill
+          draggable={false}
           className={`object-cover transition-transform duration-500 ease-out ${rel === 0 ? "group-hover:scale-110" : ""}`}
           sizes="480px"
         />
@@ -104,6 +105,7 @@ function CoverCard({
   return (
     <a
       href={`/industries/${industry.slug}`}
+      draggable={false}
       onClick={(e) => {
         if (rel !== 0) {
           e.preventDefault();
@@ -124,19 +126,66 @@ function CoverCard({
 
 export default function IndustriesCarousel({ items }: { items: IndustryCardData[] }) {
   const [active, setActive] = useState(0);
+  // Swipe-to-advance for touch/pen/mouse drag — the card stack is a set of
+  // absolutely-positioned, transform-animated cards (coverflow style), not a
+  // native scrollable element, so there's nothing for the browser's own
+  // touch-scroll to grab. A release-based drag threshold on top of the same
+  // setActive the arrow buttons already use gets real swipe navigation
+  // without touching the transform/animation model at all.
+  const dragStartX = useRef<number | null>(null);
+  // After a real swipe, touch browsers still synthesize a click on release —
+  // without suppressing it, a swipe on the front card would both advance the
+  // carousel AND follow that card's link. Set once a swipe crosses the
+  // threshold, consumed (and cleared) by the very next click.
+  const suppressNextClick = useRef(false);
+  const SWIPE_THRESHOLD_PX = 40;
 
   if (items.length === 0) return null;
 
   const canGoBack = active > 0;
   const canGoForward = active < items.length - 1;
+  const goBack = () => setActive((i) => Math.max(0, i - 1));
+  const goForward = () => setActive((i) => Math.min(items.length - 1, i + 1));
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    dragStartX.current = e.clientX;
+  };
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (dragStartX.current === null) return;
+    const delta = e.clientX - dragStartX.current;
+    dragStartX.current = null;
+    if (delta > SWIPE_THRESHOLD_PX) {
+      suppressNextClick.current = true;
+      goBack();
+    } else if (delta < -SWIPE_THRESHOLD_PX) {
+      suppressNextClick.current = true;
+      goForward();
+    }
+  };
+  const handleClickCapture = (e: React.MouseEvent) => {
+    if (suppressNextClick.current) {
+      suppressNextClick.current = false;
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
 
   return (
     <div className="mt-11 flex flex-col items-center">
       {/* Aspect ratio tuned per breakpoint to actually match this content's
           height (image at 4:3 + title + 3-line description + padding) —
           one fixed ratio for every width left a big dead gap of empty white
-          space below the text on the larger breakpoints. */}
-      <div className="relative aspect-[320/400] w-full max-w-[320px] sm:aspect-[420/475] sm:max-w-[420px] lg:aspect-[480/520] lg:max-w-[480px]">
+          space below the text on the larger breakpoints. touch-action:
+          pan-y lets the page still scroll vertically through this element
+          while letting us read the horizontal gesture ourselves instead of
+          the browser treating it as a failed scroll attempt. */}
+      <div
+        className="relative aspect-[320/400] w-full max-w-[320px] cursor-grab touch-pan-y select-none active:cursor-grabbing sm:aspect-[420/475] sm:max-w-[420px] lg:aspect-[480/520] lg:max-w-[480px]"
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={() => { dragStartX.current = null; }}
+        onClickCapture={handleClickCapture}
+      >
         {items.map(({ industry, imageSrc }, index) => (
           <CoverCard
             key={industry.slug}

@@ -16,6 +16,7 @@ const OTHER_FOOTER_COLUMNS = [
     links: [
       { label: "Hiring Cost Calculator", href: "/resources/hiring-cost-calculator" },
       { label: "AI Interview Generator", href: "/resources/ai-interview-generator" },
+      { label: "Interview Rights by State", href: "/interview-rights" },
     ],
   },
   {

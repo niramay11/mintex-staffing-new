@@ -137,7 +137,7 @@ export default async function AiInterviewGeneratorPage() {
                   <p className="mt-1 text-[13.5px] text-navy/50 dark:text-cream/50">competencies, three rounds, scoring rubric</p>
                 </div>
               </div>
-            </div>
+            </div> 
           </div>
         </div>
       </Section>

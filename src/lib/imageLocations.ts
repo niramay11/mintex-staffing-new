@@ -58,6 +58,19 @@ export function industryCardImageKey(slug: string): string {
   return `industry:${slug}:card-visual`;
 }
 
+// Shared with the homepage carousel (src/app/page.tsx) and the /industries
+// listing page — the same placeholder set so an industry without an
+// admin-uploaded photo yet still looks intentional in both places, cycled
+// by index for visual variety.
+export const INDUSTRY_CARD_FALLBACK_IMAGES = [
+  "/interview-confident.jpg",
+  "/interview-handshake.jpg",
+  "/interview-meeting.jpg",
+  "/hero-office.webp",
+  "/collage-2.webp",
+  "/collage-1.webp",
+];
+
 export const IMAGE_LOCATIONS: ImageLocation[] = [
   // Global — shared chrome, intentionally one instance site-wide
   { locationKey: "global:header-logo-mark",  pageName: "Global", sectionName: "Header Logo (mobile mark)", defaultSrc: "/logo-mark-navy.png", category: "logo-mark" },
@@ -80,7 +93,7 @@ export const IMAGE_LOCATIONS: ImageLocation[] = [
   { locationKey: "home:what-we-do-visual",  pageName: "Home", sectionName: "What We Do Visual",          defaultSrc: "/interview-confident.jpg", category: "photo-square" },
 
   // About
-  { locationKey: "about:hero-visual",  pageName: "About", sectionName: "Hero Visual",       defaultSrc: "/about.png",              category: "photo-landscape" },
+  { locationKey: "about:hero-visual",  pageName: "About", sectionName: "Hero Visual",       defaultSrc: "/about.webp",              category: "photo-landscape" },
   { locationKey: "about:story-visual",    pageName: "About", sectionName: "Our Story Visual",       defaultSrc: "/interview-handshake.jpg", category: "photo-square" },
   { locationKey: "about:approach-visual", pageName: "About", sectionName: "The Mintex Approach Visual", defaultSrc: "/interview-meeting.jpg", category: "photo-square" },
 
@@ -92,7 +105,7 @@ export const IMAGE_LOCATIONS: ImageLocation[] = [
 
   // Seek Talent (index)
   { locationKey: "seek-talent:hero-visual",         pageName: "Seek Talent", sectionName: "Hero Visual",              defaultSrc: "/interview-handshake.jpg", category: "photo-portrait" },
-  { locationKey: "seek-talent:cta-visual",          pageName: "Seek Talent", sectionName: "“How can we help” Visual", defaultSrc: "/hero-office-3.png",       category: "photo-square" },
+  { locationKey: "seek-talent:cta-visual",          pageName: "Seek Talent", sectionName: "“How can we help” Visual", defaultSrc: "/hero-office-3.webp",       category: "photo-square" },
 
   // Seek Talent — How We Work
   { locationKey: "seek-talent:how-we-work-visual", pageName: "Seek Talent", sectionName: "How We Work Visual", defaultSrc: "/collage-2.webp", category: "photo-portrait" },

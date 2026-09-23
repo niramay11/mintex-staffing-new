@@ -208,15 +208,30 @@ export async function generateMetadata({
   const location = jobLocation(job);
   const titleWithLocation = location === "Location not specified" ? title : `${title} – ${location}`;
   const fullTitle = `${titleWithLocation} | Mintex Staffing`;
-  const description = `${job.job_title} in ${jobLocation(job)}${job.job_type ? ` — ${job.job_type}` : ""}. Apply now with Mintex Staffing.`;
+  // Ahrefs flagged the short version ("{title} in {location}. Apply now with
+  // Mintex Staffing.") as "meta description too short" on most job pages —
+  // the longer, fixed tail below pushes the total length into Google's
+  // ~120-155 char sweet spot regardless of how short the title/location is.
+  const description = `${job.job_title} in ${jobLocation(job)}${job.job_type ? ` — ${job.job_type}` : ""}. Apply now with Mintex Staffing and take the next step in your career.`;
   const path = `/get-hired/jobs/${jobUrlSlug(job)}`;
 
   return {
     title: titleWithLocation,
     description,
     alternates: { canonical: path },
-    openGraph: { title: fullTitle, description, url: path, type: "website" },
-    twitter: { card: "summary", title: fullTitle, description },
+    openGraph: {
+      title: fullTitle,
+      description,
+      url: path,
+      type: "website",
+      images: [{ url: "/og-image.jpg", width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: fullTitle,
+      description,
+      images: ["/og-image.jpg"],
+    },
   };
 }
 

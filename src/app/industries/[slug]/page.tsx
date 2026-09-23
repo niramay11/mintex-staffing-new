@@ -209,12 +209,6 @@ export default async function IndustryPage({
           >
             Related: 2026 Hiring Trends: What Employers Need to Watch &rarr;
           </Link>
-          <Link
-            href="/insights/post/cost-of-a-bad-hire"
-            className="text-sm font-semibold text-steel hover:text-navy hover:underline dark:text-steel-light dark:hover:text-cream"
-          >
-            Related: The Real Cost of a Bad Hire &rarr;
-          </Link>
         </div>
       </Section>
 

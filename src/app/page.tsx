@@ -7,25 +7,12 @@ import IndustriesCarousel from "@/components/home/IndustriesCarousel";
 import HeroPhotoCollage from "@/components/home/HeroPhotoCollage";
 import { getIndustries } from "@/lib/industries";
 import { getSiteImages } from "@/lib/siteImages";
-import { industryCardImageKey } from "@/lib/imageLocations";
+import { industryCardImageKey, INDUSTRY_CARD_FALLBACK_IMAGES } from "@/lib/imageLocations";
 import { getHomepageTestimonials } from "@/lib/caseStudies";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
-
-// Placeholders until an admin uploads a real photo per industry (Industries
-// tab or Site Images tab — both write the same site_images row, see
-// industryCardImageKey). Cycled by index just for visual variety in that
-// dummy state.
-const INDUSTRY_CARD_FALLBACK_IMAGES = [
-  "/interview-confident.jpg",
-  "/interview-handshake.jpg",
-  "/interview-meeting.jpg",
-  "/hero-office.webp",
-  "/collage-2.webp",
-  "/collage-1.webp",
-];
 
 export default async function HomePage() {
   const siteImages = await getSiteImages();
@@ -33,17 +20,20 @@ export default async function HomePage() {
   const industries = await getIndustries();
   return (
     <>
-      {/* Sec 1 — Hero */}
-      <section className="relative bg-mist dark:bg-navy-900">
+      {/* Sec 1 — Hero. min-h fills the viewport minus the sticky header's
+          own flow height (~6rem incl. its top-4 gap), so the hero is the
+          only thing on screen at load — the next section isn't visible
+          until the user actually scrolls, on any device. */}
+      <section className="relative flex min-h-[calc(100vh-6rem)] flex-col justify-center bg-[#f9f6f1] dark:bg-navy-900">
         {/* Fills the strip behind the floating header with the section's own
             background, so the page's plain bg-cream doesn't show through
             above the header — matches the hero image's own bleed-to-top
             treatment further down, just for the side with no image to do it. */}
-        <div aria-hidden="true" className="absolute inset-x-0 -top-[62px] hidden h-[62px] bg-mist lg:block dark:bg-navy-900" />
-        <div className="grid lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:items-stretch">
-          <div className="flex flex-col justify-center px-6 py-16 sm:px-10 sm:py-20 lg:px-16 lg:py-24 xl:px-20">
-            <div className="flex max-w-xl flex-col items-start">
-              <h1 className="font-heading text-[38px] font-bold leading-[1.12] text-navy sm:text-[46px] lg:text-[38px] xl:text-[44px] dark:text-cream">
+        <div aria-hidden="true" className="absolute inset-x-0 -top-[62px] hidden h-[62px] bg-[#f9f6f1] lg:block dark:bg-navy-900" />
+        <div className="grid lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:items-stretch xl:grid-cols-[minmax(0,0.96fr)_minmax(0,1.04fr)]">
+          <div className="flex flex-col justify-center px-6 py-16 sm:px-10 sm:py-20 lg:px-14 lg:py-24 xl:px-16 2xl:px-20">
+            <div className="flex max-w-xl flex-col items-start lg:max-w-2xl xl:max-w-3xl 2xl:max-w-4xl">
+              <h1 className="font-heading text-[38px] font-bold leading-[1.12] text-navy sm:text-[46px] lg:text-[50px] xl:text-[58px] 2xl:text-[66px] dark:text-cream">
                 Staffing and Recruitment solutions across{" "}
                 <span className="relative inline-block text-steel dark:text-steel-light">
                   IT, healthcare, legal and more
@@ -63,21 +53,21 @@ export default async function HomePage() {
                   </svg>
                 </span>
               </h1>
-              <p className="mt-5 max-w-xl text-[20px] text-steel sm:text-xl dark:text-steel-light">
+              <p className="mt-5 max-w-xl text-[20px] text-steel sm:text-xl lg:text-[22px] xl:mt-6 xl:max-w-2xl xl:text-[26px] dark:text-steel-light">
                 Connecting exceptional talent with leading employers
               </p>
-              <div className="mt-7 flex flex-wrap items-center gap-3.5">
+              <div className="mt-7 flex flex-wrap items-center gap-3.5 xl:mt-10 xl:gap-5">
                 <ButtonLink
                   href="/seek-talent"
                   variant="primary"
-                  className="!border-navy !bg-navy !text-white shadow-[0_14px_36px_-10px_rgba(0,48,96,0.35)] transition-all hover:-translate-y-0.5 hover:!bg-navy-secondary hover:shadow-[0_18px_44px_-8px_rgba(0,48,96,0.45)] dark:!bg-steel dark:!border-steel dark:!text-navy-950 dark:hover:!bg-steel-light"
+                  className="!border-navy !bg-navy !text-white shadow-[0_14px_36px_-10px_rgba(0,48,96,0.35)] transition-all hover:-translate-y-0.5 hover:!bg-navy-secondary hover:shadow-[0_18px_44px_-8px_rgba(0,48,96,0.45)] xl:!px-9 xl:!py-4.5 xl:!text-lg dark:!bg-steel dark:!border-steel dark:!text-navy-950 dark:hover:!bg-steel-light"
                 >
                   Hire Talent
                 </ButtonLink>
                 <ButtonLink
                   href="/get-hired"
                   variant="outline"
-                  className="!border-navy !text-navy transition-all hover:-translate-y-0.5 hover:!bg-navy hover:!text-white dark:!border-white/15 dark:!text-cream"
+                  className="!border-navy !text-navy transition-all hover:-translate-y-0.5 hover:!bg-navy hover:!text-white xl:!px-9 xl:!py-4.5 xl:!text-lg dark:!border-white/15 dark:!text-cream"
                 >
                   Get Hired
                 </ButtonLink>
@@ -88,7 +78,7 @@ export default async function HomePage() {
           {/* Hidden below lg — this collage only earns its place once the
               grid actually has room to run it beside the text; stacked below
               the heading on narrower screens it was just dead scroll length. */}
-          <div className="hidden lg:mx-0 lg:mb-0 lg:flex lg:min-h-[560px] lg:items-center lg:justify-end lg:pr-8 xl:min-h-[640px] xl:pr-16">
+          <div className="hidden lg:mx-0 lg:mb-0 lg:flex lg:min-h-[560px] lg:items-center lg:justify-end lg:pr-8 xl:min-h-[680px] xl:pr-16 2xl:min-h-[760px]">
             <HeroPhotoCollage
               photo1Src={siteImages["home:hero-photo-1"]}
               photo2Src={siteImages["home:hero-banner"]}
@@ -98,7 +88,7 @@ export default async function HomePage() {
       </section>
 
       {/* Sec 1.5 — What We Do */}
-      <section className="border-t border-navy/[0.06] bg-white dark:bg-navy-900 dark:border-white/10">
+      <section className="border-t border-navy/[0.06] bg-[#f9f6f1] dark:bg-navy-900 dark:border-white/10">
         <div className="mx-auto max-w-[1920px] px-6 py-16 sm:px-10 sm:py-20 lg:px-16 lg:py-24">
           <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
             <div>
@@ -150,7 +140,7 @@ export default async function HomePage() {
       <ClientStories />
 
       {/* Sec 3 — Why Us? */}
-      <section className="border-t border-navy/[0.06] bg-white dark:bg-navy-900 dark:border-white/10">
+      <section className="border-t border-navy/[0.06] bg-[#f9f6f1] dark:bg-navy-900 dark:border-white/10">
         <div className="mx-auto max-w-[1920px] px-6 py-20 sm:px-10 lg:px-16 lg:py-24">
           <div className="mx-auto max-w-2xl text-center">
             <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
@@ -271,7 +261,7 @@ on paper.
       </section>
 
       {/* Sec 3.5 — How We're Different */}
-      <section className="border-t border-navy/[0.06] bg-mist dark:bg-navy-900 dark:border-white/10">
+      <section className="border-t border-navy/[0.06] bg-[#f9f6f1] dark:bg-navy-900 dark:border-white/10">
         <div className="mx-auto max-w-[1920px] px-6 py-20 sm:px-10 lg:px-16 lg:py-24">
           <div className="mx-auto max-w-2xl text-center">
             <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
@@ -319,7 +309,7 @@ on paper.
       </section>
 
       {/* Sec 4 — Industries we served */}
-      <section id="industries" className="group relative overflow-hidden border-t border-navy/[0.06] bg-white dark:bg-navy-900 dark:border-white/10">
+      <section id="industries" className="group relative overflow-hidden border-t border-navy/[0.06] bg-[#f9f6f1] dark:bg-navy-900 dark:border-white/10">
         {/* Big, centered behind the whole section, including the card row —
             mostly hidden behind the opaque cards at rest. `group` on the
             section means hovering any card (a descendant) still counts as
@@ -372,10 +362,10 @@ on paper.
       {/* Sec 5 — Testimonials, sourced from the same case_studies "client"
           entries shown on /case-studies — a homepage teaser row, not a
           separate content source to manage. */}
-      <Testimonials stories={homepageTestimonials} />
+      <Testimonials stories={homepageTestimonials} backgroundClassName="bg-[#f9f6f1]" edgeFadeFromClassName="from-[#f9f6f1]" />
 
       {/* Sec — Final CTA */}
-      <section className="border-t border-navy/[0.06] bg-white dark:bg-navy-900 dark:border-white/10">
+      <section className="border-t border-navy/[0.06] bg-[#f9f6f1] dark:bg-navy-900 dark:border-white/10">
         <div className="relative mx-auto grid max-w-5xl items-center gap-12 px-6 py-14 sm:px-10 sm:py-16 lg:grid-cols-[0.85fr_1fr] lg:gap-16 lg:px-16 lg:py-20">
           <div className="relative mx-auto aspect-square w-full max-w-[360px] lg:mx-0 lg:-ml-6">
             <div

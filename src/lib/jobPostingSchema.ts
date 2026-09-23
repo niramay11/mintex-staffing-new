@@ -69,12 +69,19 @@ export function buildJobPostingSchema(job: CeipalJob, description: string) {
     toIsoDate(job.career_portal_published_date) ?? toIsoDate(job.Modified) ?? toIsoDate(job.modified) ?? new Date().toISOString();
   // Ceipal's job_end_date is blank for most listings, and Google requires
   // validThrough eventually (an empty one just means Google keeps showing a
-  // stale posting forever). Falling back to 6 months past datePosted mirrors
-  // the site's own staleness window (isActiveJob in components/jobs/utils.ts,
-  // "mirror the admin panel's Active definition"), so Google's own automatic
-  // expiry lines up with the point this site would already stop listing it —
-  // no separate cron/expiry job needed, and no new business rule invented.
-  const validThrough = toIsoDate(job.job_end_date) ?? sixMonthsAfter(datePosted);
+  // stale posting forever). Falling back to 6 months past datePosted was
+  // meant to mirror isActiveJob's own staleness window, but isActiveJob
+  // actually checks 6 months from job.Modified, not the original post date
+  // — a job re-touched by a recruiter 8 months after it was first posted
+  // stays "Active" and live on the site, but its validThrough would already
+  // read as expired to Google (a confirmed source of rich-results validation
+  // errors). Basing the fallback on the same modified-date signal keeps the
+  // two in lockstep: any job isActiveJob still allows through always gets a
+  // validThrough in the future.
+  const modifiedDate = toIsoDate(job.Modified) ?? toIsoDate(job.modified);
+  const validThroughBasis =
+    modifiedDate && new Date(modifiedDate) > new Date(datePosted) ? modifiedDate : datePosted;
+  const validThrough = toIsoDate(job.job_end_date) ?? sixMonthsAfter(validThroughBasis);
   const isRemote = ["yes", "remote"].includes((job.remote_job || "").trim().toLowerCase());
   const salary = parseSalaryForSchema(job.pay_rate___salary);
   const { city, region } = resolveCityState(job);

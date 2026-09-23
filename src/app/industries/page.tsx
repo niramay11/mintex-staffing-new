@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import Section from "@/components/ui/Section";
 import { getIndustries } from "@/lib/industries";
+import { getSiteImages } from "@/lib/siteImages";
+import { industryCardImageKey, INDUSTRY_CARD_FALLBACK_IMAGES } from "@/lib/imageLocations";
 import { pageMetadata } from "@/lib/pageMetadata";
 import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
 
@@ -18,7 +21,7 @@ const breadcrumbSchema = buildBreadcrumbSchema([
 ]);
 
 export default async function IndustriesPage() {
-  const industries = await getIndustries();
+  const [industries, siteImages] = await Promise.all([getIndustries(), getSiteImages()]);
 
   return (
     <>
@@ -36,18 +39,32 @@ export default async function IndustriesPage() {
       </Section>
 
       <Section background="white">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {industries.map((industry) => (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {industries.map((industry, index) => (
             <Link
               key={industry.slug}
               href={`/industries/${industry.slug}`}
-              className="group rounded-2xl border border-navy/[0.08] bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-20px_rgba(0,48,96,0.3)] dark:border-white/10 dark:bg-navy-900"
+              className="group overflow-hidden rounded-2xl border border-navy/[0.08] bg-white transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-20px_rgba(0,48,96,0.3)] dark:border-white/10 dark:bg-navy-900"
             >
-              <h2 className="font-heading text-lg font-semibold text-navy dark:text-cream">{industry.name}</h2>
-              <p className="mt-2 text-sm text-steel dark:text-steel-light">{industry.seoSubheading}</p>
-              <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-steel group-hover:text-navy dark:text-steel-light dark:group-hover:text-cream">
-                Learn more →
-              </span>
+              <div className="relative aspect-[16/10] w-full overflow-hidden bg-mist dark:bg-navy-950">
+                <Image
+                  src={
+                    siteImages[industryCardImageKey(industry.slug)] ??
+                    INDUSTRY_CARD_FALLBACK_IMAGES[index % INDUSTRY_CARD_FALLBACK_IMAGES.length]
+                  }
+                  alt={`${industry.name} professionals placed by Mintex Staffing`}
+                  fill
+                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+                  sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                />
+              </div>
+              <div className="p-5">
+                <h2 className="font-heading text-base font-semibold text-navy dark:text-cream">{industry.name}</h2>
+                <p className="mt-1.5 line-clamp-2 text-sm text-steel dark:text-steel-light">{industry.seoSubheading}</p>
+                <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-steel group-hover:text-navy dark:text-steel-light dark:group-hover:text-cream">
+                  Learn more →
+                </span>
+              </div>
             </Link>
           ))}
         </div>

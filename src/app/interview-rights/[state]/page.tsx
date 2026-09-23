@@ -30,7 +30,12 @@ export async function generateMetadata({
   const mentionsSalaryHistory = rights.cannot_be_asked.some((item) => item.question.toLowerCase().includes("salary"));
 
   return pageMetadata({
-    title: `Illegal Interview Questions in ${state} — Know Your Rights`,
+    // Shorter than the original "Illegal Interview Questions in {state} —
+    // Know Your Rights" template — with the " | Mintex Staffing" suffix
+    // that every page's <title> gets, that version ran 72-88 characters for
+    // every single state, well past Google's ~60-char display limit. This
+    // form keeps every state at or under 60 except DC (66).
+    title: `${state} Illegal Interview Questions`,
     description: `What questions can't employers ask in a job interview in ${state}${mentionsSalaryHistory ? ", including salary history" : ""}? What to say if you're asked anyway, and the lawful way for hiring managers to ask instead.`,
     path: `/interview-rights/${slug}`,
   });
@@ -47,12 +52,10 @@ export default async function InterviewRightsPage({
 
   const rights = getVerifiedRights(state);
 
-  // No /interview-rights index page exists (only this dynamic [state] route),
-  // so a middle "Interview Rights" crumb would point BreadcrumbList at a
-  // real page a page never renders — straight to state instead.
   const breadcrumbSchema = buildBreadcrumbSchema([
     { name: "Home", path: "/" },
-    { name: `Interview Rights — ${state}`, path: `/interview-rights/${slug}` },
+    { name: "Interview Rights by State", path: "/interview-rights" },
+    { name: state, path: `/interview-rights/${slug}` },
   ]);
 
   return (
