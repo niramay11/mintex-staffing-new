@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Section from "@/components/ui/Section";
 import ContactForm from "@/components/forms/ContactForm";
+import CalendlyButton from "@/components/contact/CalendlyButton";
 import { pageMetadata } from "@/lib/pageMetadata";
 import { BUSINESS } from "@/lib/site";
 import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
@@ -117,6 +118,9 @@ export default function ContactPage() {
           <br className="hidden sm:block" />
           We&apos;re here to help and will get back to you as soon as possible.
         </p>
+        <div className="mt-6">
+          <CalendlyButton />
+        </div>
       </Section>
 
       <Section background="white">

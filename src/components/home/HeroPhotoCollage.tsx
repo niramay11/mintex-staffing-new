@@ -91,10 +91,14 @@ export default function HeroPhotoCollage({
               look like it pierced through it. Rerouted to stay left of
               x85 (metric 1's left edge) for its entire middle stretch,
               only crossing that card's row well below it (y430+) or above
-              it (y300ish), never through it. Start point (250,480) stays
-              deep inside badge 2's card — hidden at every tested width. */}
+              it (y300ish), never through it. Start point moved from
+              (250,480) to (250,457) — badge 2 ("93% Client retention")
+              moved up (bottom-[3.43%] to bottom-[11%]) to stop overlapping
+              metric-two below it, so the start point had to move up by the
+              same amount to stay hidden inside badge 2's card instead of
+              dangling in the gap that move opened up. */}
           <path
-            d="M250 480 C170 470 100 460 60 430 C30 400 30 360 45 330 C60 305 100 295 150 300"
+            d="M250 457 C170 455 100 450 60 425 C30 400 30 360 45 330 C60 305 100 295 150 300"
             stroke="#527895"
             strokeOpacity="0.85"
             strokeWidth="1.5"
@@ -143,7 +147,7 @@ export default function HeroPhotoCollage({
               Shadow: exact 0 15px 40px rgba(21,54,79,0.13) from the
               reference code (was a much darker/heavier 0.4 before). */}
           <div className="absolute right-[-37.14%] top-[5.51%] flex w-[73%] items-center gap-3 rounded-2xl bg-white p-3.5 shadow-[0_15px_40px_rgba(21,54,79,0.13)] dark:bg-navy-800">
-            <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-[#b3e2f3] text-navy dark:bg-cream/10 dark:text-cream">
+            <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-[#b3e2f3] text-navy dark:bg-[#2f8fc0]/50 dark:text-white">
               <IconCheck className="h-5 w-5" />
             </span>
             <div className="min-w-0">
@@ -178,7 +182,7 @@ export default function HeroPhotoCollage({
 
           {/* badge-two: bottom12 left-130, relative to person-card-two
               (360x350) — exact percentages of that box: 3.43% / -36.11%. */}
-          <div className="absolute bottom-[3.43%] left-[-36.11%] flex w-[71%] items-center gap-3 rounded-2xl bg-white p-3.5 shadow-[0_15px_40px_rgba(21,54,79,0.13)] dark:bg-navy-800">
+          <div className="absolute bottom-[11%] left-[-36.11%] flex w-[71%] items-center gap-3 rounded-2xl bg-white p-3.5 shadow-[0_15px_40px_rgba(21,54,79,0.13)] dark:bg-navy-800">
             {/* The real connector-touch-point dot, anchored to this card's
                 own box via CSS so it's correct at every viewport width
                 (verified 1024/1440/1920) — unlike a fixed SVG coordinate,
@@ -186,9 +190,9 @@ export default function HeroPhotoCollage({
                 viewBox scales independently of this card's fixed padding. */}
             <span
               aria-hidden="true"
-              className="absolute -left-[7px] -top-[7px] h-3.5 w-3.5 rounded-full bg-[#2f6688]"
+              className="absolute -left-[7px] top-1.5 h-3.5 w-3.5 rounded-full bg-[#2f6688]"
             />
-            <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-[#c6ade7] text-navy dark:bg-cream/10 dark:text-cream">
+            <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-[#c6ade7] text-navy dark:bg-[#8b6bc7]/50 dark:text-white">
               <IconShield className="h-5 w-5" />
             </span>
             <div className="min-w-0">
@@ -202,7 +206,7 @@ export default function HeroPhotoCollage({
             nested in a photo) — exact percentages: 12.5% / 63.39%. Shadow:
             exact 0 16px 35px rgba(7,56,102,0.2) from the reference code. */}
         <div className="absolute left-[12.5%] top-[63.39%] flex min-w-[19.4%] items-center gap-3 rounded-2xl bg-white p-3.5 shadow-[0_16px_35px_rgba(7,56,102,0.2)] dark:bg-navy-800">
-          <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-[#b8e6c1] text-navy dark:bg-cream/10 dark:text-cream">
+          <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-[#b8e6c1] text-navy dark:bg-[#4fae68]/50 dark:text-white">
             <IconClock className="h-5 w-5" />
           </span>
           <div className="min-w-0">
@@ -216,8 +220,8 @@ export default function HeroPhotoCollage({
             only — right-[14.4%] instead of 46.32% — clearing badge-two's
             right edge (65.4%) while keeping the same top position. Shadow:
             exact 0 15px 40px rgba(29,58,80,0.11) from the reference code. */}
-        <div className="absolute right-[14.4%] top-[86.61%] flex min-w-[19.4%] items-center gap-3 rounded-2xl border border-navy/10 bg-white p-3.5 shadow-[0_15px_40px_rgba(29,58,80,0.11)] dark:border-white/10 dark:bg-navy-800">
-          <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-[#d4d3e5] text-navy dark:bg-cream/10 dark:text-cream">
+        <div className="absolute right-[4%] top-[93%] flex min-w-[19.4%] items-center gap-3 rounded-2xl border border-navy/10 bg-white p-3.5 shadow-[0_15px_40px_rgba(29,58,80,0.11)] dark:border-white/10 dark:bg-navy-800">
+          <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-[#d4d3e5] text-navy dark:bg-[#8785ad]/50 dark:text-white">
             <IconGrid className="h-5 w-5" />
           </span>
           <div className="min-w-0">

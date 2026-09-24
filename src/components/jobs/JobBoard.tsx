@@ -16,7 +16,7 @@ import {
   jobUrlSlug,
   type ExperienceBucketKey,
 } from "./utils";
-import { IconArrowRight, IconBars, IconBell, IconBriefcase, IconChevron, IconPeople, IconPin, IconSearch } from "./icons";
+import { IconArrowRight, IconBars, IconBell, IconBriefcase, IconCalendar, IconChevron, IconFlag, IconInfo, IconSearch } from "./icons";
 
 const PAGE_SIZE = 8;
 
@@ -59,10 +59,15 @@ function pageWindow(current: number, total: number): (number | "…")[] {
 function remoteBadge(remote?: string) {
   if (!remote) return null;
   const v = remote.toLowerCase();
-  if (v === "yes" || v === "remote") return { label: "Remote", cls: "bg-green-100 text-green-800" };
-  if (v === "no") return { label: "On-site", cls: "bg-red-100 text-red-700" };
+  if (v === "yes" || v === "remote") return { label: "Remote", cls: "bg-[#b8e6c1]/60 text-navy dark:bg-[#4fae68]/30 dark:text-white" };
+  if (v === "no") return { label: "On-site", cls: "bg-[#f1b7ac]/60 text-navy dark:bg-[#d9765f]/30 dark:text-white" };
   return { label: remote, cls: "bg-navy/10 text-navy dark:bg-navy-800 dark:text-cream" };
 }
+
+// One consistent accent color everywhere instead of a per-card rotating
+// palette — same icon-avatar/colored-tag treatment, just toned down to a
+// single brand color rather than reading as a rainbow list.
+const CARD_ACCENT_COLOR = "#0d98ba";
 
 const NEW_JOB_WINDOW_DAYS = 7;
 
@@ -104,6 +109,18 @@ function FilterSection({
   );
 }
 
+function IconTag({ className }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={className}>
+      <path d="M3 3h8l10 10-8 8L3 11V3Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+      <circle cx="7.5" cy="7.5" r="1.3" fill="currentColor" />
+    </svg>
+  );
+}
+
+// Restyled as the same icon-row card used by Job Type/Experience Level
+// below (OptionCard) instead of a plain checkbox list, so all three filter
+// sections in the sidebar read as one consistent widget.
 function CheckboxList({
   options,
   selected,
@@ -115,17 +132,32 @@ function CheckboxList({
 }) {
   return (
     <div className="space-y-2">
-      {options.map((opt) => (
-        <label key={opt} className="flex cursor-pointer items-center gap-2.5 text-sm text-navy/75 hover:text-navy dark:text-cream/75 dark:hover:text-cream">
-          <input
-            type="checkbox"
-            checked={selected.has(opt)}
-            onChange={() => onToggle(opt)}
-            className="h-4 w-4 rounded border-navy/30 accent-steel dark:border-white/15"
-          />
-          {opt}
-        </label>
-      ))}
+      {options.map((opt) => {
+        const accentColor = CARD_ACCENT_COLOR;
+        const active = selected.has(opt);
+        return (
+          <label
+            key={opt}
+            style={{ boxShadow: active ? `0 10px 22px -12px ${accentColor}88` : undefined }}
+            className="flex cursor-pointer items-center gap-3 rounded-xl border border-navy/10 px-3 py-2.5 transition-colors hover:border-navy/25 dark:border-white/10 dark:hover:border-white/25"
+          >
+            <span
+              style={{ backgroundColor: active ? accentColor : `${accentColor}33`, color: active ? "#fff" : accentColor }}
+              className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg"
+            >
+              <IconTag className="h-4 w-4" />
+            </span>
+            <span className="min-w-0 flex-1 truncate text-sm font-medium text-navy/80 dark:text-cream/80">{opt}</span>
+            <input
+              type="checkbox"
+              checked={active}
+              onChange={() => onToggle(opt)}
+              style={{ accentColor }}
+              className="h-4 w-4 flex-shrink-0 rounded border-navy/30 dark:border-white/15"
+            />
+          </label>
+        );
+      })}
     </div>
   );
 }
@@ -139,6 +171,7 @@ function OptionCard({
   active,
   onClick,
   indicatorShape = "circle",
+  accentColor,
 }: {
   icon: ReactNode;
   label: string;
@@ -146,18 +179,32 @@ function OptionCard({
   active: boolean;
   onClick: () => void;
   indicatorShape?: "circle" | "square";
+  // Optional per-option color (cycled from the same palette as the job
+  // cards) — falls back to plain navy when omitted, so this stays
+  // backwards-compatible with any caller that doesn't pass one.
+  accentColor?: string;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`flex w-full items-center gap-3 rounded-lg border px-3 py-2.5 text-left transition-colors ${
-        active ? "border-navy bg-mist dark:border-steel dark:bg-navy-800" : "border-navy/10 hover:border-navy/30 dark:border-white/10 dark:hover:border-white/25"
+      style={active && accentColor ? { boxShadow: `0 8px 18px -12px ${accentColor}50` } : undefined}
+      className={`flex w-full items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-colors ${
+        active
+          ? accentColor
+            ? "border-navy/10 bg-mist dark:border-white/10 dark:bg-navy-800"
+            : "border-navy bg-mist dark:border-steel dark:bg-navy-800"
+          : "border-navy/10 hover:border-navy/30 dark:border-white/10 dark:hover:border-white/25"
       }`}
     >
       <span
-        className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-md ${
-          active ? "bg-navy text-white dark:bg-steel dark:text-navy-950" : "bg-mist text-navy/45 dark:bg-navy-800 dark:text-cream/45"
+        style={
+          accentColor
+            ? { backgroundColor: active ? `${accentColor}26` : `${accentColor}1A`, color: accentColor }
+            : undefined
+        }
+        className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg ${
+          accentColor ? "" : active ? "bg-navy text-white dark:bg-steel dark:text-navy-950" : "bg-mist text-navy/45 dark:bg-navy-800 dark:text-cream/45"
         }`}
       >
         {icon}
@@ -167,8 +214,9 @@ function OptionCard({
         {subtitle && <span className="block text-[13.5px] text-navy/45 dark:text-cream/45">{subtitle}</span>}
       </span>
       <span
+        style={active && accentColor ? { borderColor: accentColor, backgroundColor: accentColor } : undefined}
         className={`h-4 w-4 flex-shrink-0 border ${indicatorShape === "circle" ? "rounded-full" : "rounded-[4px]"} ${
-          active ? "border-navy bg-navy dark:border-steel dark:bg-steel" : "border-navy/25 dark:border-white/20"
+          active ? (accentColor ? "" : "border-navy bg-navy dark:border-steel dark:bg-steel") : "border-navy/25 dark:border-white/20"
         }`}
       />
     </button>
@@ -470,7 +518,7 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
           placeholder="Zip code"
           className="w-full rounded-md border border-navy/20 bg-white px-3 py-2.5 text-sm text-navy focus:border-steel focus:outline-none sm:max-w-[160px] dark:border-white/15 dark:bg-navy-900 dark:text-cream"
         />
-        <button type="submit" className="rounded-full bg-white border border-navy px-6 py-2.5 text-sm font-semibold text-navy hover:bg-mist sm:flex-shrink-0 dark:bg-navy-900 dark:border-steel dark:text-cream dark:hover:bg-navy-800">
+        <button type="submit" className="rounded-full bg-navy border border-navy px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-navy-secondary sm:flex-shrink-0 dark:bg-steel dark:border-steel dark:text-navy-950 dark:hover:bg-steel-light">
           Search
         </button>
       </form>
@@ -479,9 +527,11 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
         <button
           type="button"
           onClick={() => setAlertOpen(true)}
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-steel hover:text-navy dark:text-steel-light dark:hover:text-cream"
+          className="inline-flex items-center gap-2 rounded-full border border-navy/10 bg-white py-1.5 pl-1.5 pr-3.5 text-sm font-semibold text-navy transition-colors hover:border-[#0d98ba]/40 dark:border-white/10 dark:bg-navy-900 dark:text-cream"
         >
-          <IconBell className="h-4 w-4" />
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0d98ba]/15 text-[#0d98ba] dark:bg-[#0d98ba]/25 dark:text-[#6bc7db]">
+            <IconBell className="h-3.5 w-3.5" />
+          </span>
           Create job alert
         </button>
       </div>
@@ -519,6 +569,7 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
                           active={active}
                           onClick={() => toggleInSet(setTypeFilter, type)}
                           indicatorShape="square"
+                          accentColor={CARD_ACCENT_COLOR}
                         />
                       );
                     })}
@@ -554,6 +605,7 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
                           active={active}
                           onClick={() => toggleInSet(setExperienceFilter, bucket.key)}
                           indicatorShape="circle"
+                          accentColor={CARD_ACCENT_COLOR}
                         />
                       );
                     })}
@@ -617,7 +669,7 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
           {/* Job grid */}
           {!loading && !error && filteredJobs.length > 0 && (
             <>
-              <div className="mt-6 grid gap-4">
+              <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {pageJobs.map((job) => {
                   const isSelected = selected.has(job.job_code);
                   const pay = fmtPay(job.pay_rate___salary);
@@ -628,13 +680,56 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
                   return (
                     <div
                       key={job.job_code}
-                      className={`relative flex flex-col gap-4 rounded-2xl border border-l-[3px] bg-white p-6 shadow-[0_1px_3px_rgba(0,48,96,0.05)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_36px_-16px_rgba(0,48,96,0.2)] sm:flex-row sm:items-center sm:justify-between dark:bg-navy-900 ${
-                        isSelected ? "border-navy/10 border-l-steel bg-mist/40 ring-1 ring-steel/30 dark:border-white/10 dark:bg-navy-800" : "border-navy/10 border-l-steel dark:border-white/10"
+                      className={`relative flex flex-col gap-4 rounded-2xl bg-gradient-to-b from-white to-[#f2f6f8] p-5 shadow-[7px_7px_18px_rgba(0,48,96,0.12),-6px_-6px_16px_rgba(255,255,255,0.85),inset_0_1px_0_rgba(255,255,255,0.6)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[9px_9px_22px_rgba(0,48,96,0.16),-6px_-6px_16px_rgba(255,255,255,0.9),inset_0_1px_0_rgba(255,255,255,0.6)] dark:bg-gradient-to-b dark:from-navy-800 dark:to-navy-900 dark:shadow-[7px_7px_18px_rgba(0,0,0,0.45),-5px_-5px_14px_rgba(255,255,255,0.04)] ${
+                        isSelected ? "ring-1 ring-steel/40 bg-mist/40 dark:bg-navy-800" : ""
                       }`}
                     >
-                      <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2.5">
-                          <h3 className="text-lg font-bold text-navy dark:text-cream">
+                      {/* Header row — icon + location on the left, a status
+                          pill on the right, mirroring the reference card's
+                          "brand + priority badge" header. */}
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex min-w-0 items-center gap-2.5">
+                          <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-white to-[#e9eef1] text-[#0d98ba] shadow-[3px_3px_7px_rgba(0,48,96,0.14),-2px_-2px_6px_rgba(255,255,255,0.9)] dark:from-navy-800 dark:to-navy-950 dark:text-[#6bc7db] dark:shadow-[3px_3px_7px_rgba(0,0,0,0.45),-2px_-2px_6px_rgba(255,255,255,0.03)]">
+                            <IconBriefcase className="h-4 w-4" />
+                          </span>
+                          <span className="truncate text-sm font-medium text-navy/70 dark:text-cream/70">{jobLocation(job)}</span>
+                        </div>
+                        {remote && (
+                          <span className={`inline-flex flex-shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[12px] font-semibold ${remote.cls}`}>
+                            <IconFlag className="h-3 w-3" />
+                            {remote.label}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Two-column meta row — Type / Posted, same layout
+                          as the reference's "Type / Extracted date" pair. */}
+                      <div className="grid grid-cols-2 gap-3">
+                        {job.job_type && (
+                          <div className="flex items-center gap-2 rounded-xl bg-[#eef2f4] px-3 py-2 shadow-[inset_2px_2px_5px_rgba(0,48,96,0.09),inset_-2px_-2px_5px_rgba(255,255,255,0.7)] dark:bg-navy-950 dark:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.4),inset_-2px_-2px_5px_rgba(255,255,255,0.03)]">
+                            <IconTag className="h-3.5 w-3.5 flex-shrink-0 text-navy/40 dark:text-cream/40" />
+                            <div className="min-w-0">
+                              <p className="text-[11px] text-navy/45 dark:text-cream/45">Type</p>
+                              <p className="truncate text-[13px] font-medium text-navy dark:text-cream">{job.job_type}</p>
+                            </div>
+                          </div>
+                        )}
+                        {posted && (
+                          <div className="flex items-center gap-2 rounded-xl bg-[#eef2f4] px-3 py-2 shadow-[inset_2px_2px_5px_rgba(0,48,96,0.09),inset_-2px_-2px_5px_rgba(255,255,255,0.7)] dark:bg-navy-950 dark:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.4),inset_-2px_-2px_5px_rgba(255,255,255,0.03)]">
+                            <IconCalendar className="h-3.5 w-3.5 flex-shrink-0 text-navy/40 dark:text-cream/40" />
+                            <div className="min-w-0">
+                              <p className="text-[11px] text-navy/45 dark:text-cream/45">Posted</p>
+                              <p className="truncate text-[13px] font-medium text-navy dark:text-cream">{posted}</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Title + description, same slot as the reference's
+                          bold offer title + two-line summary. */}
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h3 className="text-base font-bold leading-snug text-navy dark:text-cream">
                             <Link
                               href={`/get-hired/jobs/${jobUrlSlug(job)}`}
                               className="hover:text-steel hover:underline dark:hover:text-steel-light"
@@ -643,74 +738,50 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
                             </Link>
                           </h3>
                           {isNew && (
-                            <span className="inline-flex items-center rounded-full bg-steel px-2.5 py-0.5 text-[12.5px] font-bold uppercase tracking-wide text-white">
+                            <span className="inline-flex items-center rounded-full bg-[#0d98ba]/12 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-[#0d98ba] dark:bg-[#0d98ba]/20 dark:text-[#6bc7db]">
                               New
                             </span>
                           )}
                         </div>
-
-                        <div className="mt-2.5 flex flex-wrap items-center gap-2">
-                          <span className="inline-flex items-center gap-1 rounded-full bg-mist px-3 py-1 text-[13.5px] font-medium text-navy/70 dark:bg-navy-800 dark:text-cream/70">
-                            <IconPin className="h-3 w-3 flex-shrink-0" />
-                            <span className="truncate">{jobLocation(job)}</span>
-                          </span>
-                          {job.number_of_positions && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-mist px-3 py-1 text-[13.5px] font-medium text-navy/70 dark:bg-navy-800 dark:text-cream/70">
-                              <IconPeople className="h-3 w-3" />
-                              {job.number_of_positions}
-                            </span>
-                          )}
-                          {remote && (
-                            <span className={`rounded-full px-3 py-1 text-[13.5px] font-medium ${remote.cls}`}>{remote.label}</span>
-                          )}
-                          {job.job_type && (
-                            <span className="rounded-full bg-mist px-3 py-1 text-[13.5px] font-medium text-navy dark:bg-navy-800 dark:text-cream">{job.job_type}</span>
-                          )}
-                        </div>
-
-                        <p className="mt-2.5 flex flex-wrap items-center gap-1.5 text-sm text-navy/60 dark:text-cream/60">
-                          {pay && (
-                            <span className="inline-flex items-center gap-1 font-semibold text-navy dark:text-cream">
-                              <IconBriefcase className="h-3.5 w-3.5 flex-shrink-0 text-navy/40 dark:text-cream/40" />
-                              {pay}
-                            </span>
-                          )}
-                          {pay && <span aria-hidden="true">&middot;</span>}
-                          <span>Job Order #{job.job_code}</span>
-                          {posted && (
-                            <>
-                              <span aria-hidden="true">&middot;</span>
-                              <span>Posted {posted}</span>
-                            </>
-                          )}
+                        <p className="mt-1.5 line-clamp-2 text-[13.5px] leading-relaxed text-navy/55 dark:text-cream/55">
+                          {pay ? `${pay} · ` : ""}Job Order #{job.job_code}
+                          {job.number_of_positions ? ` · ${job.number_of_positions} opening${job.number_of_positions === 1 ? "" : "s"}` : ""}
                         </p>
                       </div>
 
-                      <div className="flex flex-shrink-0 items-center gap-2.5 sm:flex-col sm:items-stretch">
-                        <label className="flex cursor-pointer items-center justify-end gap-1.5 text-[13.5px] font-medium text-navy/50 hover:text-navy/70 dark:text-cream/50 dark:hover:text-cream/70">
-                          <input
-                            type="checkbox"
-                            checked={isSelected}
-                            onChange={() => toggleInSet(setSelected, job.job_code)}
-                            className="h-3.5 w-3.5 rounded border-navy/30 accent-steel dark:border-white/15"
-                          />
-                          Select to bulk apply
-                        </label>
+                      {/* Buttons — same two actions as the reference's
+                          "View details" / "Mark resolved" pair. */}
+                      <div className="mt-auto flex items-center gap-2.5 pt-1">
                         <Link
                           href={`/get-hired/jobs/${jobUrlSlug(job)}`}
-                          className="inline-flex items-center justify-center gap-1.5 rounded-full border border-navy/20 bg-white px-5 py-2.5 text-sm font-semibold text-navy transition-colors hover:border-navy/40 hover:bg-mist dark:border-white/15 dark:bg-navy-900 dark:text-cream dark:hover:border-white/25 dark:hover:bg-navy-800"
+                          className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-navy/15 bg-white px-4 py-2.5 text-[13.5px] font-semibold text-navy transition-colors hover:border-navy/30 hover:bg-mist dark:border-white/15 dark:bg-navy-900 dark:text-cream dark:hover:border-white/25 dark:hover:bg-navy-800"
                         >
+                          <IconInfo className="h-3.5 w-3.5" />
                           View details
                         </Link>
                         <button
                           type="button"
                           onClick={() => openApplyForJob(job)}
-                          className="inline-flex items-center justify-center gap-1.5 rounded-full bg-navy px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-navy-secondary dark:bg-steel dark:text-navy-950 dark:hover:bg-steel-light"
+                          className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full bg-navy px-4 py-2.5 text-[13.5px] font-semibold text-white transition-colors hover:bg-navy-secondary dark:bg-steel dark:text-navy-950 dark:hover:bg-steel-light"
                         >
-                          Apply now
                           <IconArrowRight className="h-3.5 w-3.5" />
+                          Apply now
                         </button>
                       </div>
+
+                      {/* Bulk-apply checkbox — not part of the reference
+                          design (it has no equivalent concept), kept as a
+                          small unobtrusive line since removing it would
+                          drop existing site functionality. */}
+                      <label className="flex cursor-pointer items-center gap-1.5 text-[12px] font-medium text-navy/45 hover:text-navy/70 dark:text-cream/45 dark:hover:text-cream/70">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleInSet(setSelected, job.job_code)}
+                          className="h-3 w-3 rounded border-navy/30 accent-steel dark:border-white/15"
+                        />
+                        Select to bulk apply
+                      </label>
                     </div>
                   );
                 })}
