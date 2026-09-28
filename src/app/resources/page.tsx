@@ -69,6 +69,7 @@ const tools = [
     description: "Estimate your true cost-per-hire across ad spend, agency fees, and internal time.",
     tags: ["Ad spend", "Agency fees", "Internal time"],
     time: "2 min",
+    audience: "For employers",
   },
   {
     href: "/resources/ai-interview-generator",
@@ -78,6 +79,7 @@ const tools = [
     description: "Generate tailored interview questions by industry and role level.",
     tags: ["IT", "Healthcare", "Engineering"],
     time: "1 min",
+    audience: "For job seekers",
   },
 ] as const;
 
@@ -148,47 +150,53 @@ export default async function ResourcesPage() {
       </Section>
 
       <Section background="cream" className="!border-t-0 before:absolute before:inset-x-0 before:top-0 before:h-px before:content-[''] before:bg-gradient-to-r before:from-transparent before:via-navy/10 before:to-transparent dark:before:via-white/10">
-        <div className="mx-auto grid max-w-4xl gap-6 sm:grid-cols-2">
+        {/* Same card language as the /industries grid (white 28px-radius
+            card, small uppercase labels, big light title, outlined pill
+            arrow), plus the tool's photo. */}
+        <div className="mx-auto grid max-w-5xl grid-cols-[minmax(0,1fr)] gap-2.5 sm:grid-cols-[repeat(2,minmax(0,1fr))]">
           {tools.map((tool) => (
             <Link
               key={tool.href}
               href={tool.href}
-              className="group flex flex-col overflow-hidden rounded-[28px] bg-white shadow-[0_1px_3px_rgba(0,48,96,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_48px_-16px_rgba(0,48,96,0.35)] dark:bg-navy-900"
+              className="group flex min-w-0 flex-col rounded-[28px] bg-white p-3 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-28px_rgba(0,48,96,0.35)] dark:bg-navy-800"
             >
-              <div className="relative aspect-[4/3] w-full overflow-hidden">
+              <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[20px] bg-mist dark:bg-navy-900">
                 <Image
                   src={siteImages[tool.image]}
                   alt=""
                   fill
-                  sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                  sizes="(min-width: 1024px) 40vw, (min-width: 640px) 50vw, 100vw"
                   style={{ objectPosition: tool.position }}
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 />
-                <span className="absolute right-3 top-3 rounded-full bg-white/90 px-3 py-1.5 text-[13.5px] font-semibold text-navy shadow-sm backdrop-blur-sm">
-                  {tool.time}
-                </span>
-                <div className="absolute inset-x-0 bottom-0 bg-navy/85 px-4 py-2 text-center text-[13.5px] font-medium text-white backdrop-blur-sm">
-                  Free — no sign-up required
-                </div>
               </div>
 
-              <div className="flex flex-1 flex-col gap-3 p-5">
-                <div className="flex items-start justify-between gap-3">
-                  <h2 className="font-heading text-lg font-semibold leading-snug text-navy dark:text-cream">{tool.title}</h2>
-                  <span className="flex flex-shrink-0 items-center gap-1 text-sm font-semibold text-steel transition-colors group-hover:text-navy dark:text-steel-light dark:group-hover:text-cream">
-                    Open tool
-                    <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-0.5">
-                      &rarr;
-                    </span>
+              <div className="flex flex-1 flex-col px-4 pb-4 pt-6 sm:px-5 sm:pb-5">
+                <div className="flex items-start justify-between gap-4 text-[11px] uppercase tracking-[0.12em]">
+                  <span className="font-medium text-navy/45 dark:text-cream/45">{tool.time} · Free, no sign-up</span>
+                  <span className="flex-shrink-0 text-right">
+                    <span className="block font-bold text-navy dark:text-cream">Mintex</span>
+                    <span className="mt-1 block font-semibold text-steel dark:text-steel-light">{tool.audience}</span>
                   </span>
                 </div>
-                <p className="text-sm leading-relaxed text-navy/70 dark:text-cream/70">{tool.description}</p>
-                <div className="mt-auto flex flex-wrap gap-2 pt-1">
-                  {tool.tags.map((tag) => (
-                    <span key={tag} className="rounded-full bg-mist px-3 py-1 text-[13.5px] font-medium text-navy/70 dark:bg-navy-800 dark:text-cream/70">
-                      {tag}
-                    </span>
-                  ))}
+
+                <h2
+                  style={{ fontFamily: "var(--font-sans), Arial, Helvetica, sans-serif" }}
+                  className="mt-8 text-[26px] font-normal leading-[1.15] tracking-[-0.025em] text-navy sm:text-[30px] dark:text-cream"
+                >
+                  {tool.title}
+                </h2>
+                <p className="mt-3 max-w-[340px] text-[13.5px] leading-relaxed text-navy/65 dark:text-cream/65">{tool.description}</p>
+
+                <div className="mt-auto pt-7">
+                <span
+                  aria-hidden="true"
+                  className="inline-flex h-9 w-14 items-center justify-center rounded-full border border-navy/80 text-navy transition-all duration-300 group-hover:w-[72px] group-hover:bg-navy group-hover:text-white dark:border-cream/60 dark:text-cream dark:group-hover:bg-cream dark:group-hover:text-navy-950"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-4 w-4">
+                    <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
                 </div>
               </div>
             </Link>

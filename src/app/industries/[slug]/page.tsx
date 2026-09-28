@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import Section from "@/components/ui/Section";
 import StatBlock from "@/components/ui/StatBlock";
-import JobTile from "@/components/ui/JobTile";
+import JobCard from "@/components/jobs/JobCard";
 import FaqAccordion from "@/components/ui/FaqAccordion";
-import { ButtonLink } from "@/components/ui/Button";
 import { getIndustries, getIndustryBySlug } from "@/lib/industries";
 import { pageMetadata } from "@/lib/pageMetadata";
+import { getSiteImages } from "@/lib/siteImages";
+import { industryCardImageKey, INDUSTRY_CARD_FALLBACK_IMAGES } from "@/lib/imageLocations";
 import { getCachedJobs } from "@/lib/jobsCache";
 import { isActiveJob } from "@/components/jobs/utils";
 import { withTimeout } from "@/lib/withTimeout";
@@ -119,7 +121,18 @@ export default async function IndustryPage({
     .slice(0, MAX_ROLES_SHOWN);
 
   const achievements = industry.stats;
-  const testimonials = await getHomepageTestimonials();
+  const [testimonials, siteImages, allIndustries] = await Promise.all([
+    getHomepageTestimonials(),
+    getSiteImages(),
+    getIndustries(),
+  ]);
+  // Same photo (and same fallback-by-index) this industry uses on the home
+  // page and the /industries banner, so it's one image to manage in admin.
+  const industryIndex = Math.max(0, allIndustries.findIndex((i) => i.slug === industry.slug));
+  const heroImage =
+    siteImages[industryCardImageKey(industry.slug)] ??
+    INDUSTRY_CARD_FALLBACK_IMAGES[industryIndex % INDUSTRY_CARD_FALLBACK_IMAGES.length];
+  const heroStat = industry.stats[0];
 
   const serviceSchema = {
     "@context": "https://schema.org",
@@ -167,14 +180,45 @@ export default async function IndustryPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-      {/* Sec 1 — Hero */}
-      <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
-        <h1 className="font-heading text-4xl font-bold text-navy dark:text-cream sm:text-5xl">{industry.heroTitle}</h1>
-        <p className="mt-4 max-w-2xl text-steel dark:text-steel-light">{industry.seoSubheading}</p>
-        <div className="mt-8">
-          <ButtonLink href="/seek-talent/get-started" variant="primary">
-            Hire {industry.name} Talent
-          </ButtonLink>
+      {/* Sec 1 — Hero: rounded photo banner, same look as /industries */}
+      <Section background="white" className="!border-t-0 !pb-0 !pt-6 sm:!pt-8">
+        <div className="relative overflow-hidden rounded-[28px] bg-navy-950">
+          <Image src={heroImage} alt="" fill priority sizes="100vw" className="object-cover" />
+          <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-r from-navy-950/85 via-navy-950/55 to-navy-950/10" />
+          <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-navy-950/50 via-transparent to-transparent" />
+
+          <div className="relative flex min-h-[420px] flex-col justify-center px-7 py-12 sm:min-h-[440px] sm:px-12 lg:min-h-[480px] lg:px-16">
+            <nav aria-label="Breadcrumb" className="absolute left-7 top-7 text-[12px] font-semibold uppercase tracking-[0.16em] text-white/75 sm:left-12 sm:top-9 lg:left-16">
+              <Link href="/industries" className="transition-colors hover:text-white">
+                Industries
+              </Link>
+              <span aria-hidden="true" className="mx-2 text-white/40">/</span>
+              <span className="text-white/90">{industry.name}</span>
+            </nav>
+
+            <div className="mt-10 max-w-[620px]">
+              {heroStat && (
+                <p className="text-[11.5px] font-semibold uppercase tracking-[0.14em] text-white/70">
+                  {heroStat.value} {heroStat.label}
+                </p>
+              )}
+              <h1 className="mt-3 font-heading text-[40px] font-bold leading-[1.05] text-white sm:text-5xl lg:text-6xl">
+                {industry.heroTitle}
+              </h1>
+              <p className="mt-5 max-w-[460px] text-[15px] leading-relaxed text-white/80">{industry.seoSubheading}</p>
+              <Link
+                href="/seek-talent/get-started"
+                className="group mt-8 inline-flex items-center gap-3 rounded-full bg-white py-2 pl-6 pr-2 text-[14.5px] font-semibold text-navy transition-colors hover:bg-cream"
+              >
+                Hire {industry.name} Talent
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-navy text-white transition-transform duration-300 group-hover:translate-x-0.5">
+                  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
+                    <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
+              </Link>
+            </div>
+          </div>
         </div>
       </Section>
 
@@ -185,7 +229,7 @@ export default async function IndustryPage({
         {openRoles.length > 0 ? (
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {openRoles.map((job) => (
-              <JobTile key={job.job_code} job={job} />
+              <JobCard key={job.job_code} job={job} />
             ))}
           </div>
         ) : (

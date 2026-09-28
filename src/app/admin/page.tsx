@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { IMAGE_LOCATIONS, IMAGE_CATEGORY_INFO, industryCardImageKey } from "@/lib/imageLocations";
+import { IMAGE_LOCATIONS, IMAGE_CATEGORY_INFO, INDUSTRY_CARD_IMAGE_CATEGORY, industryCardImageKey } from "@/lib/imageLocations";
 import type { InsightPost, InsightCategoryRow, CaseStudy, CaseStudyType, TeamMember, Industry } from "@/content/types";
 import type { CalculatorBreakdownLine } from "@/lib/calculatorShare";
 import InsightBodyEditor from "@/components/admin/InsightBodyEditor";
@@ -2029,7 +2029,7 @@ type LocationRow = {
 const USAGE_BADGE: Record<NonNullable<LocationRow["usage"]>, { label: string; cls: string }> = {
   featured: { label: "In use · Featured", cls: "bg-green-100 text-green-800" },
   thumbnail: { label: "In use · Small photo", cls: "bg-blue-50 text-blue-700" },
-  unused: { label: "Not shown on site", cls: "bg-navy/5 text-navy/50" },
+  unused: { label: "In use · Own page header", cls: "bg-navy/5 text-navy/60" },
 };
 type OrphanRow = { id: string; file_path: string };
 
@@ -2191,7 +2191,11 @@ function SiteImagesTab({ password }: { password: string }) {
     // deliberate choice (e.g. a simple icon). This can only catch images
     // that are too SMALL; it can't fix one that's already blurry — that
     // needs a sharper source photo, not a setting.
-    const category = IMAGE_LOCATIONS.find((l) => l.locationKey === key)?.category;
+    // Industry photo slots are generated per industry row, not listed in
+    // IMAGE_LOCATIONS — they all share one category.
+    const category =
+      IMAGE_LOCATIONS.find((l) => l.locationKey === key)?.category ??
+      (key.startsWith("industry:") ? INDUSTRY_CARD_IMAGE_CATEGORY : undefined);
     if (category) {
       try {
         const { width, height } = await getImageDimensions(file);
@@ -2341,13 +2345,15 @@ function SiteImagesTab({ password }: { password: string }) {
             {isOpen && (
             <div className="grid gap-4 border-t border-navy/10 px-5 pb-5 pt-4 sm:grid-cols-2 lg:grid-cols-3">
               {locations.filter((l) => l.page_name === page).map((loc) => {
-                const category = IMAGE_LOCATIONS.find((l) => l.locationKey === loc.location_key)?.category;
+                const category =
+                  IMAGE_LOCATIONS.find((l) => l.locationKey === loc.location_key)?.category ??
+                  (loc.usage ? INDUSTRY_CARD_IMAGE_CATEGORY : undefined);
                 const info = category ? IMAGE_CATEGORY_INFO[category] : null;
                 const warning = sizeWarnings[loc.location_key];
                 return (
                 <div
                   key={loc.location_key}
-                  className={`bg-cream/50 rounded-2xl border border-navy/10 p-4 ${loc.usage === "unused" ? "opacity-60 hover:opacity-100 transition-opacity" : ""}`}
+                  className="bg-cream/50 rounded-2xl border border-navy/10 p-4"
                 >
                   {loc.usage && (
                     <span className={`mb-2 inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${USAGE_BADGE[loc.usage].cls}`}>
@@ -3247,7 +3253,6 @@ function InsightsTab({ password }: { password: string }) {
   const [slugTouched, setSlugTouched] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadError, setUploadError] = useState("");
-  const [managingCategories, setManagingCategories] = useState(false);
   const [uploadingAuthorPhoto, setUploadingAuthorPhoto] = useState(false);
 
   const fetchData = () =>
@@ -3265,8 +3270,11 @@ function InsightsTab({ password }: { password: string }) {
 
   const labelFor = (slug: string) => categories.find((c) => c.slug === slug)?.label ?? slug;
 
-  const openNew = () => { setSlugTouched(false); setSaveError(""); setDraft(blankDraft(categories[0]?.slug ?? "")); };
-  const openEdit = (post: InsightPost) => { setSlugTouched(true); setSaveError(""); setDraft(toDraft(post)); };
+  // The category is typed as free text in the editor; null means "not
+  // edited yet — show the post's current category label".
+  const [categoryText, setCategoryText] = useState<string | null>(null);
+  const openNew = () => { setSlugTouched(false); setSaveError(""); setCategoryText(""); setDraft(blankDraft("")); };
+  const openEdit = (post: InsightPost) => { setSlugTouched(true); setSaveError(""); setCategoryText(null); setDraft(toDraft(post)); };
   const closeEditor = () => setDraft(null);
 
   const updateDraft = (patch: Partial<InsightDraft>) => setDraft((d) => (d ? { ...d, ...patch } : d));
@@ -3305,12 +3313,29 @@ function InsightsTab({ password }: { password: string }) {
     setSaving(true);
     setSaveError("");
 
+    // Resolve the typed category: reuse an existing one (matched by name,
+    // case-insensitive), otherwise create it on the fly.
+    const categoryLabel = (categoryText ?? labelFor(draft.category)).trim();
+    if (!categoryLabel) { setSaveError("Please enter a category (e.g. Career)"); setSaving(false); return; }
+    let categorySlug = categories.find((c) => c.label.toLowerCase() === categoryLabel.toLowerCase())?.slug;
+    if (!categorySlug) {
+      const catRes = await fetch("/api/insight-categories", {
+        method: "POST",
+        headers: { "x-admin-password": password, "Content-Type": "application/json" },
+        body: JSON.stringify({ label: categoryLabel }),
+      });
+      const catJson = await catRes.json();
+      if (!catRes.ok) { setSaveError(catJson.error ?? "Failed to create category"); setSaving(false); return; }
+      categorySlug = catJson.slug as string;
+      setCategories((prev) => [...prev, catJson as InsightCategoryRow]);
+    }
+
     const bodyParagraphs = htmlToPlainParagraphs(draft.bodyHtml);
     const sourcesLine = formatSourcesLine(draft.sources);
     if (sourcesLine) bodyParagraphs.push(sourcesLine);
     const payload = {
       slug: draft.slug.trim() || slugify(draft.title),
-      category: draft.category,
+      category: categorySlug,
       title: draft.title.trim(),
       excerpt: draft.excerpt.trim(),
       body: bodyParagraphs,
@@ -3358,10 +3383,6 @@ function InsightsTab({ password }: { password: string }) {
           <p className="text-sm text-navy/60 mt-1">{posts.length} published articles on /insights</p>
         </div>
         <div className="flex items-center gap-2">
-          <button type="button" onClick={() => setManagingCategories(true)}
-            className="px-4 py-2 rounded-full bg-white hover:bg-mist text-navy/70 text-sm font-medium border border-navy/10 transition-colors">
-            Manage Categories
-          </button>
           <button type="button" onClick={openNew}
             className="px-4 py-2 rounded-full bg-white border border-navy hover:bg-mist text-navy text-sm font-semibold transition-colors">
             + New Insight
@@ -3416,14 +3437,6 @@ function InsightsTab({ password }: { password: string }) {
         </div>
       )}
 
-      {managingCategories && (
-        <InsightCategoriesModal
-          password={password}
-          categories={categories}
-          onClose={() => setManagingCategories(false)}
-          onChange={(next) => setCategories(next)}
-        />
-      )}
 
       {draft && (
         <div className="fixed inset-0 bg-navy/40 backdrop-blur-sm z-50 flex items-start justify-center overflow-y-auto py-6 px-4"
@@ -3485,14 +3498,17 @@ function InsightsTab({ password }: { password: string }) {
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-navy/60 mb-1">Category</label>
-                  {categories.length > 0 ? (
-                    <select value={draft.category} onChange={(e) => updateDraft({ category: e.target.value })}
-                      className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none">
-                      {categories.map((c) => <option key={c.id} value={c.slug}>{c.label}</option>)}
-                    </select>
-                  ) : (
-                    <p className="text-xs text-navy/50 mt-2">No categories yet — add one via &ldquo;Manage Categories&rdquo;.</p>
-                  )}
+                  {/* Plain free text — whatever is typed here becomes the post's
+                      category and its filter on /insights. Same name on two
+                      posts (any capitalisation) = same filter. */}
+                  <input
+                    required
+                    autoComplete="off"
+                    value={categoryText ?? labelFor(draft.category)}
+                    onChange={(e) => setCategoryText(e.target.value)}
+                    placeholder="e.g. Career"
+                    className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none"
+                  />
                 </div>
               </div>
 
@@ -3630,97 +3646,6 @@ function InsightsTab({ password }: { password: string }) {
           </form>
         </div>
       )}
-    </div>
-  );
-}
-
-// ─── Insight Categories management modal ──────────────────────────────────────
-function InsightCategoriesModal({ password, categories, onClose, onChange }: {
-  password: string; categories: InsightCategoryRow[];
-  onClose: () => void; onChange: (next: InsightCategoryRow[]) => void;
-}) {
-  const [newLabel, setNewLabel] = useState("");
-  const [adding, setAdding]     = useState(false);
-  const [error, setError]       = useState("");
-  const [renaming, setRenaming] = useState<Record<string, string>>({});
-
-  const refresh = () => fetch("/api/insight-categories").then((r) => r.json()).then((data) => onChange(Array.isArray(data) ? data : []));
-
-  const addCategory = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const label = newLabel.trim();
-    if (!label) return;
-    setAdding(true);
-    setError("");
-    const res = await fetch("/api/insight-categories", {
-      method: "POST",
-      headers: { "x-admin-password": password, "Content-Type": "application/json" },
-      body: JSON.stringify({ label }),
-    });
-    const json = await res.json();
-    if (!res.ok) { setError(json.error ?? "Failed to add category"); setAdding(false); return; }
-    setNewLabel("");
-    setAdding(false);
-    refresh();
-  };
-
-  const renameCategory = async (cat: InsightCategoryRow) => {
-    const label = (renaming[cat.id] ?? "").trim();
-    if (!label || label === cat.label) return;
-    await fetch(`/api/insight-categories/${cat.id}`, {
-      method: "PUT",
-      headers: { "x-admin-password": password, "Content-Type": "application/json" },
-      body: JSON.stringify({ label }),
-    });
-    setRenaming((prev) => { const next = { ...prev }; delete next[cat.id]; return next; });
-    refresh();
-  };
-
-  const deleteCategory = async (cat: InsightCategoryRow) => {
-    if (!confirm(`Delete category "${cat.label}"? Insights already using it will keep their value, but it will no longer appear as a filter or choice.`)) return;
-    onChange(categories.filter((c) => c.id !== cat.id));
-    await fetch(`/api/insight-categories/${cat.id}`, { method: "DELETE", headers: { "x-admin-password": password } });
-  };
-
-  return (
-    <div className="fixed inset-0 bg-navy/40 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
-      onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="bg-white rounded-2xl border border-navy/10 shadow-xl w-full max-w-md max-h-[85vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-5 border-b border-navy/10 sticky top-0 bg-white z-10">
-          <h3 className="font-bold text-navy text-lg">Insight Categories</h3>
-          <button onClick={onClose} className="text-navy/50 hover:text-navy text-xl leading-none">&times;</button>
-        </div>
-
-        <div className="p-5 space-y-3">
-          {categories.length === 0 && <p className="text-sm text-navy/50">No categories yet — add one below.</p>}
-          {categories.map((cat) => (
-            <div key={cat.id} className="flex items-center gap-2">
-              <input
-                value={renaming[cat.id] ?? cat.label}
-                onChange={(e) => setRenaming((prev) => ({ ...prev, [cat.id]: e.target.value }))}
-                onBlur={() => renameCategory(cat)}
-                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); renameCategory(cat); } }}
-                className="flex-1 px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none"
-              />
-              <span className="text-[10px] font-mono text-navy/40 whitespace-nowrap">{cat.slug}</span>
-              <button type="button" onClick={() => deleteCategory(cat)}
-                className="w-7 h-7 rounded-full bg-red-50 hover:bg-red-100 text-red-500 hover:text-red-600 flex items-center justify-center text-sm transition-colors flex-shrink-0">
-                &times;
-              </button>
-            </div>
-          ))}
-
-          <form onSubmit={addCategory} className="flex items-center gap-2 pt-2 border-t border-navy/10">
-            <input value={newLabel} onChange={(e) => setNewLabel(e.target.value)} placeholder="New category name"
-              className="flex-1 px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
-            <button type="submit" disabled={adding || !newLabel.trim()}
-              className="px-4 py-2 rounded-full bg-white border border-navy hover:bg-mist text-navy text-sm font-semibold transition-colors disabled:opacity-50">
-              Add
-            </button>
-          </form>
-          {error && <p className="text-red-600 text-sm">{error}</p>}
-        </div>
-      </div>
     </div>
   );
 }

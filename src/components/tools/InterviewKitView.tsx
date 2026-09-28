@@ -3,7 +3,7 @@ import type { InterviewKit } from "@/lib/interviewKit/schema";
 import type { CeipalJob } from "@/components/jobs/types";
 import KitSection from "@/components/tools/KitSection";
 import ExpandKit from "@/components/tools/ExpandKit";
-import JobTile from "@/components/ui/JobTile";
+import JobCard from "@/components/jobs/JobCard";
 import { stateToSlug } from "@/lib/interviewKit/legalRights";
 
 // Pure display component — no client state, no hooks. Used by the indexed
@@ -65,7 +65,7 @@ export default function InterviewKitView({
               </p>
               <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {relatedJobs.map((job) => (
-                  <JobTile key={job.job_code} job={job} />
+                  <JobCard key={job.job_code} job={job} />
                 ))}
               </div>
             </>

@@ -48,15 +48,8 @@ export function getNavItems(industries: Industry[]): NavItem[] {
         { label: "Interview Rights by State", href: "/interview-rights" },
       ],
     },
-    {
-      label: "Insights",
-      href: "/insights",
-      children: [
-        { label: "Career Insights", href: "/insights/category/career" },
-        { label: "Job Market Insights", href: "/insights/category/market" },
-        { label: "Ongoing Hiring Trends", href: "/insights/category/trends" },
-        { label: "All Blog Posts", href: "/insights" },
-      ],
-    },
+    // Plain link, no dropdown: every post lives on the one /insights page,
+    // each card showing its (admin-typed) category.
+    { label: "Insights", href: "/insights" },
   ];
 }

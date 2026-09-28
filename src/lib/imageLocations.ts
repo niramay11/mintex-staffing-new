@@ -17,7 +17,7 @@ import { hiringServices } from "@/content/hiringServices";
 // outside the box's shape gets cropped). minWidth/minHeight are the
 // resolution below which an image will look visibly soft once stretched up
 // to fill its real display size on the page.
-export type ImageCategory = "logo-wide" | "logo-mark" | "logo-decorative" | "photo-landscape" | "photo-portrait" | "photo-square";
+export type ImageCategory = "logo-wide" | "logo-mark" | "logo-decorative" | "photo-landscape" | "photo-portrait" | "photo-square" | "photo-banner" | "social-share";
 
 export const IMAGE_CATEGORY_INFO: Record<
   ImageCategory,
@@ -34,6 +34,13 @@ export const IMAGE_CATEGORY_INFO: Record<
   "photo-landscape": { label: "Wide photo",            aspect: "16 / 9", minWidth: 1600, minHeight: 900,  fit: "cover" },
   "photo-portrait":  { label: "Tall photo",            aspect: "4 / 5",  minWidth: 1000, minHeight: 1250, fit: "cover" },
   "photo-square":    { label: "Square-ish photo",      aspect: "4 / 3",  minWidth: 1000, minHeight: 750,  fit: "cover" },
+  // Industry photos: now the wide rounded header banner on each industry
+  // page and the /industries featured banner (about 1310x480 on a laptop,
+  // up to ~1800x480 on wide screens), also cropped into the smaller home
+  // cards. Text sits on the left, so keep the subject center/right.
+  "photo-banner":    { label: "Wide banner photo (keep subject center/right — text covers the left)", aspect: "5 / 2", minWidth: 2000, minHeight: 800, fit: "cover" },
+  // Link-preview image for WhatsApp / LinkedIn / Facebook / X.
+  "social-share":    { label: "Share-link preview (exactly 1200×630 is best)", aspect: "1200 / 630", minWidth: 1200, minHeight: 630, fit: "cover" },
 };
 
 export type ImageLocation = {
@@ -52,8 +59,8 @@ export type ImageLocation = {
 // request time using this same key, so the Site Images tab and the
 // Industries tab both read/write the exact same row — editing one updates
 // the other because there's only one row to begin with.
-export const INDUSTRY_CARD_IMAGE_CATEGORY: ImageCategory = "photo-square";
-export const INDUSTRY_CARD_IMAGE_PAGE_NAME = "Industry Photos (Home + Industries Banner)";
+export const INDUSTRY_CARD_IMAGE_CATEGORY: ImageCategory = "photo-banner";
+export const INDUSTRY_CARD_IMAGE_PAGE_NAME = "Industry Photos (Industry Pages + Home)";
 
 // How many industry photos the site actually shows, by admin sort order.
 // Shared by the pages that render them and by the admin Site Images tab's
@@ -61,8 +68,8 @@ export const INDUSTRY_CARD_IMAGE_PAGE_NAME = "Industry Photos (Home + Industries
 //  - first FEATURED_INDUSTRY_COUNT: homepage glass cards + /industries banner
 //  - next EXPLORE_THUMB_INDUSTRY_COUNT: small round photos in the homepage
 //    "Explore all industries" bar
-//  - the rest: not shown anywhere right now (slot kept so the upload isn't
-//    lost, and so a re-order in admin can promote it)
+//  - the rest: only on their own industry page's header
+//  (every industry's photo is its own page's header banner too)
 export const FEATURED_INDUSTRY_COUNT = 3;
 export const EXPLORE_THUMB_INDUSTRY_COUNT = 4;
 
@@ -74,10 +81,12 @@ export function industryImageUsage(sortIndex: number): IndustryImageUsage {
   return "unused";
 }
 
+// Every industry photo is also the header banner on that industry's own
+// page (/industries/[slug]); the labels add where else it appears.
 export const INDUSTRY_IMAGE_USAGE_LABEL: Record<IndustryImageUsage, string> = {
-  featured: "Featured — Home glass card + Industries page banner",
-  thumbnail: "Small round photo — Home “Explore all industries” bar",
-  unused: "Not shown on the site right now",
+  featured: "Own page header + Home glass card + Industries banner",
+  thumbnail: "Own page header + small photo in Home “Explore all industries” bar",
+  unused: "Own industry page header",
 };
 export function industryCardImageKey(slug: string): string {
   return `industry:${slug}:card-visual`;
@@ -103,6 +112,7 @@ export const IMAGE_LOCATIONS: ImageLocation[] = [
   { locationKey: "global:footer-logo",       pageName: "Global", sectionName: "Footer Logo",               defaultSrc: "/logo-white.png",     category: "logo-wide" },
   { locationKey: "global:navy-section-mark", pageName: "Global", sectionName: "Decorative Navy Mark",      defaultSrc: "/mintex-m.svg",       category: "logo-decorative" },
   { locationKey: "global:light-section-mark", pageName: "Global", sectionName: "Decorative Mark (Light Backgrounds)", defaultSrc: "/mintex-m-navy.svg", category: "logo-decorative" },
+  { locationKey: "global:share-image",       pageName: "Global", sectionName: "Share Link Preview Image (WhatsApp / LinkedIn / Facebook)", defaultSrc: "/og-image.jpg", category: "social-share" },
 
   { locationKey: "client-portal:header-logo", pageName: "Client Portal", sectionName: "Header Logo", defaultSrc: "/logo-navy.png", category: "logo-wide" },
 
@@ -123,13 +133,13 @@ export const IMAGE_LOCATIONS: ImageLocation[] = [
   { locationKey: "about:approach-visual", pageName: "About", sectionName: "The Mintex Approach Visual", defaultSrc: "/interview-meeting.jpg", category: "photo-square" },
 
   // Get Hired
-  { locationKey: "get-hired:hero-visual", pageName: "Get Hired", sectionName: "Hero Visual", defaultSrc: "/collage-1.webp", category: "photo-portrait" },
+  { locationKey: "get-hired:hero-visual", pageName: "Get Hired", sectionName: "Hero Visual", defaultSrc: "/collage-1.webp", category: "photo-square" },
 
   // Share Resume
   { locationKey: "share-resume:hero-visual", pageName: "Share Resume", sectionName: "Hero Visual", defaultSrc: "/collage-3.webp", category: "photo-portrait" },
 
   // Seek Talent (index)
-  { locationKey: "seek-talent:hero-visual",         pageName: "Seek Talent", sectionName: "Hero Visual",              defaultSrc: "/interview-handshake.jpg", category: "photo-portrait" },
+  { locationKey: "seek-talent:hero-visual",         pageName: "Seek Talent", sectionName: "Hero Visual",              defaultSrc: "/interview-handshake.jpg", category: "photo-square" },
   { locationKey: "seek-talent:cta-visual",          pageName: "Seek Talent", sectionName: "“How can we help” Visual", defaultSrc: "/hero-office-3.webp",       category: "photo-square" },
 
   // Seek Talent — How We Work
@@ -164,7 +174,7 @@ export const IMAGE_LOCATIONS: ImageLocation[] = [
   { locationKey: "ai-interview-generator:meeting-visual",   pageName: "AI Interview Generator", sectionName: "Meeting Visual",   defaultSrc: "/interview-meeting.jpg",   category: "photo-square" },
 
   // Hiring Cost Calculator — mode picker cards
-  { locationKey: "hiring-cost-calculator:mode-employer-visual", pageName: "Hiring Cost Calculator", sectionName: "“We Hire For Ourselves” Card",           defaultSrc: "/interview-confident.jpg",  category: "photo-portrait" },
-  { locationKey: "hiring-cost-calculator:mode-staffing-visual", pageName: "Hiring Cost Calculator", sectionName: "“We're A Staffing Firm” Card",           defaultSrc: "/interview-handshake.jpg",  category: "photo-portrait" },
-  { locationKey: "hiring-cost-calculator:mode-search-visual",   pageName: "Hiring Cost Calculator", sectionName: "“We're An Executive Search Firm” Card", defaultSrc: "/interview-meeting.jpg",    category: "photo-portrait" },
+  { locationKey: "hiring-cost-calculator:mode-employer-visual", pageName: "Hiring Cost Calculator", sectionName: "“We Hire For Ourselves” Card",           defaultSrc: "/interview-confident.jpg",  category: "photo-square" },
+  { locationKey: "hiring-cost-calculator:mode-staffing-visual", pageName: "Hiring Cost Calculator", sectionName: "“We're A Staffing Firm” Card",           defaultSrc: "/interview-handshake.jpg",  category: "photo-square" },
+  { locationKey: "hiring-cost-calculator:mode-search-visual",   pageName: "Hiring Cost Calculator", sectionName: "“We're An Executive Search Firm” Card", defaultSrc: "/interview-meeting.jpg",    category: "photo-square" },
 ];

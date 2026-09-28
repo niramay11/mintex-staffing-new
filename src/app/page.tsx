@@ -27,7 +27,7 @@ export const metadata: Metadata = {
       "Mintex Staffing connects exceptional talent with leading employers across IT, healthcare, engineering, manufacturing, finance, and more.",
     url: "/",
     type: "website",
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630 }],
+    images: [{ url: "/share-image?v=3", width: 1200, height: 630 }],
   },
 };
 

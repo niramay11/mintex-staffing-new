@@ -413,8 +413,11 @@ export default async function InsightPostPage({
         )}
 
         {hasIntro && (
-          <div className="mb-16 lg:mb-24 lg:grid lg:grid-cols-12 lg:gap-10">
-            <div className="min-w-0 lg:col-span-8 lg:col-start-4">
+          <div className="mb-16 lg:mb-24">
+            {/* Intro spans the full section width, aligned with the cover
+                image above (the numbered sections below keep their own
+                left-number / right-text grid). */}
+            <div className="min-w-0">
               {introHtml ? (
                 <div
                   className={`text-[19px] leading-[1.7] text-navy/80 sm:text-[21px] dark:text-cream/80 ${RICH_BODY_CLASSNAME}`}

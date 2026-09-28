@@ -35,11 +35,12 @@ const ROLE_TYPE_OPTIONS = Object.keys(ROLE_TYPES).map((k) => ({ value: k, label:
 const SENIORITY_OPTIONS = Object.keys(SENIORITY).map((k) => ({ value: k, label: k }));
 const STAFFING_OPTIONS = Object.keys(STAFFING_MODES).map((k) => ({ value: k, label: k }));
 
-const MODE_CARDS: { key: Exclude<Mode, null>; title: string; desc: string; imageKey: string; alt: string }[] = [
+const MODE_CARDS: { key: Exclude<Mode, null>; title: string; desc: string; audience: string; imageKey: string; alt: string }[] = [
   {
     key: "employer",
     title: "We hire for ourselves",
     desc: "You have an in-house HR or talent team filling your own roles.",
+    audience: "For in-house teams",
     imageKey: "hiring-cost-calculator:mode-employer-visual",
     alt: "In-house HR or talent team filling their own company's roles",
   },
@@ -47,6 +48,7 @@ const MODE_CARDS: { key: Exclude<Mode, null>; title: string; desc: string; image
     key: "staffing",
     title: "We're a staffing firm",
     desc: "You place candidates with clients and want more coverage.",
+    audience: "For staffing firms",
     imageKey: "hiring-cost-calculator:mode-staffing-visual",
     alt: "Staffing firm recruiter placing candidates with clients",
   },
@@ -54,6 +56,7 @@ const MODE_CARDS: { key: Exclude<Mode, null>; title: string; desc: string; image
     key: "search",
     title: "We're an executive search firm",
     desc: "You run retained searches and carry the research load.",
+    audience: "For search firms",
     imageKey: "hiring-cost-calculator:mode-search-visual",
     alt: "Executive search consultant running a retained search",
   },
@@ -540,40 +543,51 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
         <div className="text-[12.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Mintex Staffing</div>
         <h2 className="mt-2 font-heading text-3xl font-bold tracking-tight text-navy dark:text-cream sm:text-4xl">What is your hiring actually costing you?</h2>
         <p className="mt-3 max-w-2xl text-[18px] leading-relaxed text-navy/75 dark:text-cream/75">A few questions. We&apos;ll add up what you spend in a year — including the costs that never reach a spreadsheet — and show you what changes with Mintex. Every number comes with a plain-English explanation.</p>
-        <div className="mt-7 grid gap-6 sm:grid-cols-3 lg:gap-8">
+        <div className="mt-7 grid grid-cols-[minmax(0,1fr)] gap-2.5 sm:grid-cols-[repeat(3,minmax(0,1fr))]">
           {MODE_CARDS.map((m) => (
+            // Same card language as the /resources tool cards: white
+            // 28px-radius card, photo in its own rounded frame, small
+            // uppercase labels, big light title, outlined pill arrow.
             <button
               key={m.key}
               type="button"
               onClick={() => setMode(m.key)}
-              className="group flex h-full flex-col rounded-[22px] border border-navy/10 bg-white p-3 text-left shadow-[0_10px_30px_-18px_rgba(0,48,96,0.35)] transition-all duration-300 hover:-translate-y-1.5 hover:border-steel/50 hover:shadow-[0_24px_44px_-16px_rgba(0,48,96,0.4)] dark:border-white/10 dark:bg-navy-900 dark:hover:border-steel/40"
+              className="group flex h-full min-w-0 flex-col rounded-[28px] bg-white p-3 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-28px_rgba(0,48,96,0.35)] dark:bg-navy-800"
             >
-              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-mist dark:bg-navy-800">
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[20px] bg-mist dark:bg-navy-900">
                 <Image
                   src={siteImages[m.imageKey]}
                   alt={m.alt}
                   fill
-                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                   sizes="(min-width: 640px) 33vw, 100vw"
                 />
               </div>
 
-              <div className="flex flex-1 flex-col px-2 pb-1 pt-3">
-                <div className="flex items-center gap-1.5">
-                  <h3 className="font-heading text-[18px] font-semibold text-navy dark:text-cream">{m.title}</h3>
-                  <span className="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-steel text-white">
-                    <svg viewBox="0 0 24 24" fill="none" strokeWidth={3} stroke="currentColor" className="h-2.5 w-2.5">
-                      <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
+              <div className="flex flex-1 flex-col px-4 pb-4 pt-6 sm:px-5 sm:pb-5">
+                <div className="flex items-start justify-between gap-4 text-[11px] uppercase tracking-[0.12em]">
+                  <span className="font-medium text-navy/45 dark:text-cream/45">2 min · Free</span>
+                  <span className="flex-shrink-0 text-right">
+                    <span className="block font-bold text-navy dark:text-cream">Mintex</span>
+                    <span className="mt-1 block font-semibold text-steel dark:text-steel-light">{m.audience}</span>
                   </span>
                 </div>
-                <p className="mt-1 line-clamp-2 flex-1 text-[14.5px] leading-relaxed text-navy/60 dark:text-cream/60">{m.desc}</p>
 
-                <div className="mt-3 flex items-center justify-end">
-                  <span className="inline-flex items-center gap-1 rounded-full border border-navy/15 px-3 py-1.5 text-xs font-semibold text-navy transition-colors group-hover:bg-navy group-hover:text-white dark:border-white/15 dark:text-cream dark:group-hover:bg-steel dark:group-hover:text-navy-950">
-                    Start
-                    <svg viewBox="0 0 24 24" fill="none" strokeWidth={2} stroke="currentColor" className="h-3 w-3">
-                      <path d="M5 12h14M13 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
+                <h3
+                  style={{ fontFamily: "var(--font-sans), Arial, Helvetica, sans-serif" }}
+                  className="mt-8 text-[24px] font-normal leading-[1.15] tracking-[-0.025em] text-navy sm:text-[26px] dark:text-cream"
+                >
+                  {m.title}
+                </h3>
+                <p className="mt-3 text-[13.5px] leading-relaxed text-navy/65 dark:text-cream/65">{m.desc}</p>
+
+                <div className="mt-auto pt-7">
+                  <span
+                    aria-hidden="true"
+                    className="inline-flex h-9 w-14 items-center justify-center rounded-full border border-navy/80 text-navy transition-all duration-300 group-hover:w-[72px] group-hover:bg-navy group-hover:text-white dark:border-cream/60 dark:text-cream dark:group-hover:bg-cream dark:group-hover:text-navy-950"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-4 w-4">
+                      <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </span>
                 </div>

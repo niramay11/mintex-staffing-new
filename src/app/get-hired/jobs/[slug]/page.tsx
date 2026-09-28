@@ -290,13 +290,13 @@ export async function generateMetadata({
       description,
       url: path,
       type: "website",
-      images: [{ url: "/og-image.jpg", width: 1200, height: 630 }],
+      images: [{ url: "/share-image?v=3", width: 1200, height: 630 }],
     },
     twitter: {
       card: "summary_large_image",
       title: fullTitle,
       description,
-      images: ["/og-image.jpg"],
+      images: ["/share-image?v=3"],
     },
   };
 }
