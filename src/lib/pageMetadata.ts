@@ -15,6 +15,22 @@ function truncateDescription(text: string, maxLength = META_DESCRIPTION_MAX_LENG
   return `${(lastSpace > 0 ? cut.slice(0, lastSpace) : cut).trimEnd()}…`;
 }
 
+const TITLE_MAX_LENGTH = 60;
+const BRAND_SUFFIX = " | Mintex Staffing";
+
+// Google cuts <title> off at ~60 chars and Ahrefs flags anything longer.
+// Keep the layout's "%s | Mintex Staffing" template when it fits; otherwise
+// drop the brand suffix, and if the bare title is still too long, cut it at
+// the last full word inside the limit. Returns undefined when the normal
+// template already fits.
+function fitTitle(title: string): string | undefined {
+  if (title.length + BRAND_SUFFIX.length <= TITLE_MAX_LENGTH) return undefined;
+  if (title.length <= TITLE_MAX_LENGTH) return title;
+  const cut = title.slice(0, TITLE_MAX_LENGTH);
+  const lastSpace = cut.lastIndexOf(" ");
+  return (lastSpace > 0 ? cut.slice(0, lastSpace) : cut).replace(/[\s,:;–-]+$/, "");
+}
+
 export function pageMetadata({
   title,
   description,
@@ -26,9 +42,10 @@ export function pageMetadata({
 }): Metadata {
   const fullTitle = `${title} | Mintex Staffing`;
   const metaDescription = truncateDescription(description);
+  const fittedTitle = fitTitle(title);
 
   return {
-    title,
+    title: fittedTitle ? { absolute: fittedTitle } : title,
     description: metaDescription,
     alternates: { canonical: path },
     openGraph: {

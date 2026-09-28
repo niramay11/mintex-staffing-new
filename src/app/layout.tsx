@@ -106,7 +106,7 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body className="flex min-h-full flex-col bg-cream text-navy dark:bg-navy-950 dark:text-cream" suppressHydrationWarning>
+      <body className="flex min-h-full flex-col bg-page text-navy dark:bg-navy-900 dark:text-cream" suppressHydrationWarning>
         <script
           id="local-business-schema"
           type="application/ld+json"

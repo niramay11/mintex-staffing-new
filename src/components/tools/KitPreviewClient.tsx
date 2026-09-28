@@ -24,7 +24,7 @@ type StoredKit = { kit: InterviewKit; jdContext?: JdContext };
 function PreviewSection({ className = "", children }: { className?: string; children: React.ReactNode }) {
   return (
     <section
-      className={`relative mx-auto max-w-[1920px] overflow-hidden border-t border-navy/[0.06] bg-mist px-6 py-16 dark:border-white/[0.08] dark:bg-navy-900 sm:px-10 sm:py-20 lg:px-16 lg:py-24 ${className}`}
+      className={`relative mx-auto max-w-[1920px] overflow-hidden border-t border-navy/[0.06] bg-page px-6 py-16 dark:border-white/[0.08] dark:bg-navy-900 sm:px-10 sm:py-20 lg:px-16 lg:py-24 ${className}`}
     >
       <div className="relative">{children}</div>
     </section>

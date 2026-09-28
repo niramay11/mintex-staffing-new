@@ -538,7 +538,7 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
     return (
       <div className="mx-auto max-w-6xl">
         <div className="text-[12.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Mintex Staffing</div>
-        <h1 className="mt-2 font-heading text-3xl font-bold tracking-tight text-navy dark:text-cream sm:text-4xl">What is your hiring actually costing you?</h1>
+        <h2 className="mt-2 font-heading text-3xl font-bold tracking-tight text-navy dark:text-cream sm:text-4xl">What is your hiring actually costing you?</h2>
         <p className="mt-3 max-w-2xl text-[18px] leading-relaxed text-navy/75 dark:text-cream/75">A few questions. We&apos;ll add up what you spend in a year — including the costs that never reach a spreadsheet — and show you what changes with Mintex. Every number comes with a plain-English explanation.</p>
         <div className="mt-7 grid gap-6 sm:grid-cols-3 lg:gap-8">
           {MODE_CARDS.map((m) => (
@@ -642,7 +642,7 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
       <div>
         <BackButton onClick={() => setMode(null)} />
         <p className="text-[12.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Employer &middot; in-house hiring</p>
-        <h1 className="mt-2 font-heading text-3xl font-bold text-navy dark:text-cream sm:text-4xl">Your hiring cost, per year</h1>
+        <h2 className="mt-2 font-heading text-3xl font-bold text-navy dark:text-cream sm:text-4xl">Your hiring cost, per year</h2>
 
         <div className="mt-6 grid gap-8 lg:grid-cols-[380px_1fr]">
           {/* ---------------- inputs ---------------- */}
@@ -1233,7 +1233,7 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
       <div>
         <BackButton onClick={() => setMode(null)} />
         <p className="text-[12.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Staffing firm &middot; MSP &middot; tier-1 vendor</p>
-        <h1 className="mt-2 font-heading text-3xl font-bold text-navy dark:text-cream sm:text-4xl">How many of your reqs never get worked?</h1>
+        <h2 className="mt-2 font-heading text-3xl font-bold text-navy dark:text-cream sm:text-4xl">How many of your reqs never get worked?</h2>
 
         <div className="mt-6 grid gap-8 lg:grid-cols-[380px_1fr]">
           <div className="rounded-3xl border border-navy/10 bg-white p-6 dark:border-white/10 dark:bg-navy-900">
@@ -1450,7 +1450,7 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
     <div>
       <BackButton onClick={() => setMode(null)} />
       <p className="text-[12.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">Executive search</p>
-      <h1 className="mt-2 font-heading text-3xl font-bold text-navy dark:text-cream sm:text-4xl">How much of your fee is gone before you send a name?</h1>
+      <h2 className="mt-2 font-heading text-3xl font-bold text-navy dark:text-cream sm:text-4xl">How much of your fee is gone before you send a name?</h2>
 
       <div className="mt-6 grid gap-8 lg:grid-cols-[380px_1fr]">
         <div className="rounded-3xl border border-navy/10 bg-white p-6 dark:border-white/10 dark:bg-navy-900">

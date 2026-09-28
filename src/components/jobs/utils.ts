@@ -206,3 +206,22 @@ export function matchesRoleTitle(job: CeipalJob, roleTitle: string): boolean {
   if (core.length < 3 || jobTitle.length < 3) return false;
   return jobTitle.includes(core) || core.includes(jobTitle);
 }
+
+// Remote/on-site pill shown on job cards (JobBoard + JobCard).
+export function remoteBadge(remote?: string): { label: string; cls: string } | null {
+  if (!remote) return null;
+  const v = remote.toLowerCase();
+  if (v === "yes" || v === "remote") return { label: "Remote", cls: "bg-[#b8e6c1]/60 text-navy dark:bg-[#4fae68]/30 dark:text-white" };
+  if (v === "no") return { label: "On-site", cls: "bg-[#f1b7ac]/60 text-navy dark:bg-[#d9765f]/30 dark:text-white" };
+  return { label: remote, cls: "bg-navy/10 text-navy dark:bg-navy-800 dark:text-cream" };
+}
+
+const NEW_JOB_WINDOW_DAYS = 7;
+
+// "New" tag on job cards: posted within the last week.
+export function isNewJob(published?: string): boolean {
+  if (!published) return false;
+  const d = new Date(published);
+  if (isNaN(d.getTime())) return false;
+  return Math.floor((Date.now() - d.getTime()) / 86400000) <= NEW_JOB_WINDOW_DAYS;
+}

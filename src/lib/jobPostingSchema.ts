@@ -60,6 +60,36 @@ function parseSalaryForSchema(raw?: string): { minValue: number; maxValue: numbe
   return { minValue: Math.min(...vals), maxValue: Math.max(...vals), unitText };
 }
 
+// Used when Ceipal has no real description for a job. The old one-liner
+// ("{title} — apply now with Mintex Staffing.") was flagged by Google's
+// rich-results validation as too short on 5 job pages; this builds a few
+// factual sentences purely from the job's own structured fields, so nothing
+// here is invented.
+function fallbackDescription(job: CeipalJob): string {
+  const { city, region } = resolveCityState(job);
+  const where = [city, region].filter(Boolean).join(", ");
+  const isRemote = ["yes", "remote"].includes((job.remote_job || "").trim().toLowerCase());
+  const skills = (job.primary_skills || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .slice(0, 6);
+
+  const sentences = [
+    `${BUSINESS.name} is hiring a ${job.job_title}${job.job_type ? ` (${job.job_type})` : ""}${
+      isRemote ? " for a remote role" : where ? ` in ${where}` : ""
+    }.`,
+    job.industry ? `This is a ${job.industry} position placed through our recruiting team.` : "",
+    job.experience ? `Experience required: ${job.experience}.` : "",
+    skills.length ? `Key skills: ${skills.join(", ")}.` : "",
+    job.pay_rate___salary && job.pay_rate___salary !== "0" && job.pay_rate___salary.toLowerCase() !== "n/a"
+      ? `Pay: ${job.pay_rate___salary}.`
+      : "",
+    `Apply now with ${BUSINESS.name} and a recruiter will reach out to discuss the role and next steps.`,
+  ];
+  return sentences.filter(Boolean).join(" ");
+}
+
 // Builds a schema.org JobPosting object (see https://schema.org/JobPosting)
 // for Google's Jobs rich result. Only valid for a job's own dedicated,
 // crawlable page — Google won't credit structured data sitting inside a
@@ -96,7 +126,7 @@ export function buildJobPostingSchema(job: CeipalJob, description: string) {
     // description (Google flags overly short/generic JobPosting
     // descriptions as a quality issue). Falls to the same generated summary
     // used when there's no description at all.
-    description: hasSubstantiveDescription(description) ? description.trim() : `${job.job_title} — apply now with ${BUSINESS.name}.`,
+    description: hasSubstantiveDescription(description) ? description.trim() : fallbackDescription(job),
     identifier: {
       "@type": "PropertyValue",
       name: BUSINESS.name,

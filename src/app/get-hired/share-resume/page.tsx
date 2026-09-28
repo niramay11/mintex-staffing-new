@@ -10,7 +10,7 @@ import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
 export const metadata: Metadata = pageMetadata({
   title: "Share Your Resume",
   description:
-    "Share your resume with Mintex Staffing and stay visible to our recruiters across every industry we serve.",
+    "Share your resume with Mintex Staffing and stay visible to our recruiters, so you're considered first for new roles across every industry we serve.",
   path: "/get-hired/share-resume",
 });
 

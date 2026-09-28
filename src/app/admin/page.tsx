@@ -2022,6 +2022,14 @@ function ClientStoriesTab({ password }: { password: string }) {
 type LocationRow = {
   location_key: string; page_name: string; section_name: string;
   default_src: string; file_path: string; alt_text: string | null; is_static: boolean;
+  // Only set on industry photo slots — where the live site shows that photo.
+  usage?: "featured" | "thumbnail" | "unused";
+};
+
+const USAGE_BADGE: Record<NonNullable<LocationRow["usage"]>, { label: string; cls: string }> = {
+  featured: { label: "In use · Featured", cls: "bg-green-100 text-green-800" },
+  thumbnail: { label: "In use · Small photo", cls: "bg-blue-50 text-blue-700" },
+  unused: { label: "Not shown on site", cls: "bg-navy/5 text-navy/50" },
 };
 type OrphanRow = { id: string; file_path: string };
 
@@ -2337,7 +2345,15 @@ function SiteImagesTab({ password }: { password: string }) {
                 const info = category ? IMAGE_CATEGORY_INFO[category] : null;
                 const warning = sizeWarnings[loc.location_key];
                 return (
-                <div key={loc.location_key} className="bg-cream/50 rounded-2xl border border-navy/10 p-4">
+                <div
+                  key={loc.location_key}
+                  className={`bg-cream/50 rounded-2xl border border-navy/10 p-4 ${loc.usage === "unused" ? "opacity-60 hover:opacity-100 transition-opacity" : ""}`}
+                >
+                  {loc.usage && (
+                    <span className={`mb-2 inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${USAGE_BADGE[loc.usage].cls}`}>
+                      {USAGE_BADGE[loc.usage].label}
+                    </span>
+                  )}
                   {/* Matches the real aspect-ratio and crop/letterbox behavior this
                       spot uses live — so what's previewed here is what visitors
                       actually see, not a generic guess. */}

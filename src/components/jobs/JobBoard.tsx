@@ -15,6 +15,8 @@ import {
   jobLocation,
   jobUrlSlug,
   type ExperienceBucketKey,
+  isNewJob,
+  remoteBadge,
 } from "./utils";
 import { IconArrowRight, IconBars, IconBell, IconBriefcase, IconCalendar, IconChevron, IconFlag, IconInfo, IconSearch } from "./icons";
 
@@ -56,27 +58,10 @@ function pageWindow(current: number, total: number): (number | "…")[] {
   return pages;
 }
 
-function remoteBadge(remote?: string) {
-  if (!remote) return null;
-  const v = remote.toLowerCase();
-  if (v === "yes" || v === "remote") return { label: "Remote", cls: "bg-[#b8e6c1]/60 text-navy dark:bg-[#4fae68]/30 dark:text-white" };
-  if (v === "no") return { label: "On-site", cls: "bg-[#f1b7ac]/60 text-navy dark:bg-[#d9765f]/30 dark:text-white" };
-  return { label: remote, cls: "bg-navy/10 text-navy dark:bg-navy-800 dark:text-cream" };
-}
-
 // One consistent accent color everywhere instead of a per-card rotating
 // palette — same icon-avatar/colored-tag treatment, just toned down to a
 // single brand color rather than reading as a rainbow list.
 const CARD_ACCENT_COLOR = "#0d98ba";
-
-const NEW_JOB_WINDOW_DAYS = 7;
-
-function isNewJob(published?: string): boolean {
-  if (!published) return false;
-  const d = new Date(published);
-  if (isNaN(d.getTime())) return false;
-  return Math.floor((Date.now() - d.getTime()) / 86400000) <= NEW_JOB_WINDOW_DAYS;
-}
 
 // ─── Collapsible sidebar section ───────────────────────────────────────────────
 function FilterSection({

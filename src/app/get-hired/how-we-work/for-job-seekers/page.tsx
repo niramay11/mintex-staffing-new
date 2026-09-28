@@ -83,7 +83,7 @@ export default async function HowWeHelpJobSeekersPage() {
               <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[28px] shadow-[0_25px_55px_-20px_rgba(0,48,96,0.35)]">
                 <Image
                   src={siteImages["seek-talent:how-we-work-visual"]}
-                  alt="Hiring manager and candidate discussing a staffing role with Mintex Staffing's recruitment guidance"
+                  alt="Hiring manager and candidate discussing a staffing role"
                   fill
                   className="object-cover"
                 />

@@ -6,11 +6,10 @@ import { getSiteImages } from "@/lib/siteImages";
 import { getIndustries } from "@/lib/industries";
 import { pageMetadata } from "@/lib/pageMetadata";
 import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
-import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = pageMetadata({
   title: "AI Interview Question Generator",
-  description: "Generate tailored interview questions by industry and role level.",
+  description: "Generate tailored interview questions by industry and role level with Mintex Staffing's free AI-powered interview prep tool.",
   path: "/resources/ai-interview-generator",
 });
 
@@ -19,18 +18,6 @@ const breadcrumbSchema = buildBreadcrumbSchema([
   { name: "Resources", path: "/resources" },
   { name: "AI Interview Question Generator", path: "/resources/ai-interview-generator" },
 ]);
-
-// See the hiring-cost-calculator page for why aggregateRating is deliberately omitted.
-const softwareApplicationSchema = {
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  name: "AI Interview Question Generator",
-  url: `${SITE_URL}/resources/ai-interview-generator`,
-  applicationCategory: "BusinessApplication",
-  operatingSystem: "Any (web-based)",
-  description: "Free AI tool that generates tailored interview questions by industry and role level.",
-  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-};
 
 const interviewPrepPoints = [
   "Interviews can be overstimulating and stressful, and getting nervous just before entering the room and panicking is the fastest way to lose an opportunity you’ve worked hard to earn. We understand the pressure, and that’s why we’ve designed an AI interview question generator that helps job seekers across all industries (IT, Healthcare, Legal, Engineering, Manufacturing, Finance, Administration, Sales, Logistics, Customer service, and more) prepare for success.",
@@ -48,11 +35,6 @@ export default async function AiInterviewGeneratorPage() {
         id="ai-interview-generator-breadcrumb-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
-      <script
-        id="ai-interview-generator-software-application-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareApplicationSchema) }}
       />
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
         <h1 className="font-heading text-4xl font-bold text-navy dark:text-cream sm:text-5xl">AI Interview Question Generator</h1>
@@ -98,7 +80,7 @@ export default async function AiInterviewGeneratorPage() {
               <div className="absolute left-0 top-0 h-[64%] w-[64%] overflow-hidden rounded-[2rem] shadow-[0_25px_60px_-20px_rgba(0,48,96,0.35)]">
                 <Image
                   src={siteImages["ai-interview-generator:handshake-visual"]}
-                  alt="Candidate shaking hands with a hiring manager after a job interview prepared with Mintex Staffing's AI interview question generator"
+                  alt="Candidate shaking hands with a hiring manager after a job interview"
                   fill
                   className="object-cover"
                 />
@@ -107,7 +89,7 @@ export default async function AiInterviewGeneratorPage() {
               <div className="absolute right-0 top-[6%] h-[38%] w-[44%] overflow-hidden rounded-[1.5rem] shadow-[0_20px_45px_-18px_rgba(0,48,96,0.35)]">
                 <Image
                   src={siteImages["ai-interview-generator:confident-visual"]}
-                  alt="Confident candidate smiling during a job interview, prepared using Mintex Staffing's interview resources"
+                  alt="Confident candidate smiling during a job interview"
                   fill
                   className="object-cover"
                 />
@@ -116,7 +98,7 @@ export default async function AiInterviewGeneratorPage() {
               <div className="absolute bottom-0 right-[8%] h-[40%] w-[42%] overflow-hidden rounded-[1.5rem] shadow-[0_20px_45px_-18px_rgba(0,48,96,0.35)]">
                 <Image
                   src={siteImages["ai-interview-generator:meeting-visual"]}
-                  alt="Job interview taking place in an office setting, supported by Mintex Staffing's staffing and recruitment services"
+                  alt="Job interview taking place in an office setting"
                   fill
                   className="object-cover"
                 />

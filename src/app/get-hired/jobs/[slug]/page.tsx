@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import Section from "@/components/ui/Section";
+import JobCard from "@/components/jobs/JobCard";
 import JobPageApply from "@/components/jobs/JobPageApply";
 import JobDescriptionLoader from "@/components/jobs/JobDescriptionLoader";
 import { IconBars, IconBriefcase, IconPeople, IconPin } from "@/components/jobs/icons";
@@ -119,6 +120,40 @@ async function findJobByLegacyCode(code: string): Promise<CeipalJob | null> {
   return job ?? null;
 }
 
+const RELATED_ROLES_SHOWN = 8;
+
+// "More open roles" links at the bottom of every job page. Ahrefs flagged 58
+// job pages as orphans: /get-hired's board only server-renders its first
+// page of 8 jobs, the rest are paginated client-side, so crawlers never find
+// a link to them. The next 3 jobs in the (date-sorted) list come first — a
+// rotation that guarantees every active job is linked from at least 3 other
+// job pages — then the list is topped up with same-industry roles.
+async function getRelatedJobs(current: CeipalJob): Promise<CeipalJob[]> {
+  const { jobs } = await getCachedJobs();
+  const active = (jobs as CeipalJob[])
+    .filter(isActiveJob)
+    .sort(
+      (a, b) =>
+        new Date(b.career_portal_published_date || 0).getTime() -
+          new Date(a.career_portal_published_date || 0).getTime() || a.job_code.localeCompare(b.job_code),
+    );
+  const index = active.findIndex((j) => j.job_code === current.job_code);
+  if (index === -1 || active.length < 2) return [];
+
+  const rotation = [1, 2, 3].map((offset) => active[(index + offset) % active.length]);
+  const sameIndustry = current.industry ? active.filter((j) => j.industry === current.industry) : [];
+
+  const seen = new Set([current.job_code]);
+  const related: CeipalJob[] = [];
+  for (const j of [...rotation, ...sameIndustry, ...active.slice(index + 4), ...active]) {
+    if (related.length >= RELATED_ROLES_SHOWN) break;
+    if (seen.has(j.job_code)) continue;
+    seen.add(j.job_code);
+    related.push(j);
+  }
+  return related;
+}
+
 function raceTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
   return Promise.race([promise, new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))]);
 }
@@ -190,6 +225,19 @@ async function loadDescription(job: CeipalJob): Promise<string> {
   return demoteDescriptionHeadings(result || fallback);
 }
 
+const TITLE_MAX_LENGTH = 60;
+
+// First candidate that fits in TITLE_MAX_LENGTH; if none does, the last one
+// cut at the last full word inside the limit.
+function fitTitle(candidates: string[]): string {
+  const fit = candidates.find((c) => c.length <= TITLE_MAX_LENGTH);
+  if (fit) return fit;
+  const last = candidates[candidates.length - 1];
+  const cut = last.slice(0, TITLE_MAX_LENGTH);
+  const lastSpace = cut.lastIndexOf(" ");
+  return (lastSpace > 0 ? cut.slice(0, lastSpace) : cut).replace(/[\s,–-]+$/, "");
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -208,15 +256,33 @@ export async function generateMetadata({
   const location = jobLocation(job);
   const titleWithLocation = location === "Location not specified" ? title : `${title} – ${location}`;
   const fullTitle = `${titleWithLocation} | Mintex Staffing`;
+  // Ahrefs still flagged 12 job titles as "too long" (>60 chars) even
+  // without the brand suffix — long titles plus a city/state easily hit
+  // 70-90. Use the richest variant that fits: title + location, then the
+  // bare title, then the bare title cut at a word boundary.
+  const pageTitle = fitTitle([titleWithLocation, title]);
   // Ahrefs flagged the short version ("{title} in {location}. Apply now with
   // Mintex Staffing.") as "meta description too short" on most job pages —
   // the longer, fixed tail below pushes the total length into Google's
   // ~120-155 char sweet spot regardless of how short the title/location is.
-  const description = `${job.job_title} in ${jobLocation(job)}${job.job_type ? ` — ${job.job_type}` : ""}. Apply now with Mintex Staffing and take the next step in your career.`;
+  // Short job titles (e.g. "RN ICU", "Engineer") still landed at 94-108
+  // chars, so a second sentence is added whenever it's under 120.
+  const baseDescription = `${job.job_title} in ${jobLocation(job)}${job.job_type ? ` — ${job.job_type}` : ""}. Apply now with Mintex Staffing and take the next step in your career.`;
+  const description =
+    baseDescription.length < 120
+      ? `${baseDescription} View pay, requirements and role details.`
+      : baseDescription;
   const path = `/get-hired/jobs/${jobUrlSlug(job)}`;
 
   return {
-    title: titleWithLocation,
+    // { absolute: ... } instead of a plain string deliberately skips the
+    // root layout's "%s | Mintex Staffing" title template — Screaming Frog
+    // flagged most job pages' titles as over 60 characters, and job titles
+    // (often already 40-50+ chars once combined with a location, e.g.
+    // "Commercial Truck Alignment and Front-End Mechanic – Santa Fe
+    // Springs, CA") have no more room to spare for a 19-character brand
+    // suffix that OG/Twitter's fullTitle below still carries anyway.
+    title: { absolute: pageTitle },
     description,
     alternates: { canonical: path },
     openGraph: {
@@ -251,7 +317,7 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
     notFound();
   }
 
-  const description = await loadDescription(job);
+  const [description, relatedJobs] = await Promise.all([loadDescription(job), getRelatedJobs(job)]);
   const schema = buildJobPostingSchema(job, description);
 
   const breadcrumbSchema = {
@@ -426,6 +492,25 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
           </aside>
         </div>
       </Section>
+
+      {relatedJobs.length > 0 && (
+        <Section background="white">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <h2 className="font-heading text-3xl font-bold text-navy dark:text-cream">More open roles</h2>
+            <Link
+              href="/get-hired#apply-to-jobs"
+              className="text-sm font-semibold text-steel transition-colors hover:text-navy dark:text-steel-light dark:hover:text-cream"
+            >
+              View all jobs →
+            </Link>
+          </div>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {relatedJobs.map((related) => (
+              <JobCard key={related.job_code} job={related} />
+            ))}
+          </div>
+        </Section>
+      )}
     </>
   );
 }

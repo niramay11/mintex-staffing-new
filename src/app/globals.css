@@ -19,6 +19,9 @@
   --color-mist: #f2f2f2;
   --color-mist-dark: #e9e7e2;
 
+  /* Site-wide page background (matches the homepage). */
+  --color-page: #f9f6f1;
+
   /* Dark-mode surfaces. Same hue as brand navy (~212°) but desaturated to
      ~25% (brand navy is 100%) so the theme reads as neutral dark-mode with
      a navy undertone, not "navy blue in low light". */
@@ -32,13 +35,13 @@
 }
 
 body {
-  background: var(--color-cream);
+  background: var(--color-page);
   color: var(--color-navy);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
 html[data-theme="dark"] body {
-  background: var(--color-navy-950);
+  background: var(--color-navy-900);
   color: var(--color-cream);
 }
 

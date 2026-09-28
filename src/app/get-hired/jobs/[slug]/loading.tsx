@@ -23,7 +23,7 @@ export default function JobDetailsLoading() {
 
   return (
     <>
-      <section className="relative mx-auto max-w-[1920px] overflow-hidden border-t border-navy/[0.06] bg-mist px-6 py-12 dark:border-white/[0.08] dark:bg-navy-900 sm:px-10 sm:py-14 lg:px-16 lg:py-16">
+      <section className="relative mx-auto max-w-[1920px] overflow-hidden border-t border-navy/[0.06] bg-page px-6 py-12 dark:border-white/[0.08] dark:bg-navy-900 sm:px-10 sm:py-14 lg:px-16 lg:py-16">
         <div className="relative">
           <div className="flex items-center gap-2.5 text-sm font-medium text-navy/50 dark:text-cream/50">
             <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-navy/20 border-t-steel dark:border-white/20 dark:border-t-steel-light" />
@@ -42,7 +42,7 @@ export default function JobDetailsLoading() {
         </div>
       </section>
 
-      <section className="relative mx-auto max-w-[1920px] overflow-hidden border-t border-navy/[0.06] bg-white px-6 py-16 dark:border-white/[0.08] dark:bg-navy-900 sm:px-10 sm:py-20 lg:px-16 lg:py-24">
+      <section className="relative mx-auto max-w-[1920px] overflow-hidden border-t border-navy/[0.06] bg-page px-6 py-16 dark:border-white/[0.08] dark:bg-navy-900 sm:px-10 sm:py-20 lg:px-16 lg:py-24">
         <div className="relative">
           <div className="lg:grid lg:grid-cols-[1fr_320px] lg:items-start lg:gap-10">
             <div className="rounded-2xl border border-navy/[0.08] bg-white p-6 sm:p-8 dark:border-white/10 dark:bg-navy-900">

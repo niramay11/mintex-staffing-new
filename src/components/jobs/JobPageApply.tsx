@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import ApplyModal from "./ApplyModal";
 import type { SelectedJob } from "./types";
 
@@ -23,7 +24,15 @@ export default function JobPageApply({
       <button type="button" onClick={() => setOpen(true)} className={className}>
         {children}
       </button>
-      {open && <ApplyModal jobs={[job]} onClose={() => setOpen(false)} onSuccess={() => setOpen(false)} />}
+      {/* Portaled to <body>: this button can sit inside a card that uses a
+          CSS transform (e.g. JobCard's hover lift), and a transformed
+          ancestor makes the modal's position: fixed relative to that card
+          instead of the viewport — the form rendered squeezed inside it. */}
+      {open &&
+        createPortal(
+          <ApplyModal jobs={[job]} onClose={() => setOpen(false)} onSuccess={() => setOpen(false)} />,
+          document.body
+        )}
     </>
   );
 }

@@ -198,7 +198,7 @@ export default async function IndustryPage({
 
       {/* Sec 3 — Sector insights */}
       <Section background="mist">
-        <h2 className="font-heading text-3xl font-bold text-navy dark:text-cream">What&apos;s Happening in the {industry.name} Job Market?</h2>
+        <h2 className="font-heading text-3xl font-bold text-navy dark:text-cream">{industry.name} Job Market Trends</h2>
         <h3 className="mt-4 text-xl font-semibold text-navy dark:text-cream">{industry.sectorInsight.title}</h3>
         <p className="mt-3 max-w-2xl text-navy/70 dark:text-cream/70">{industry.sectorInsight.body}</p>
 
@@ -239,7 +239,7 @@ export default async function IndustryPage({
 
       {/* Sec 4 — Why Us */}
       <Section background="mist">
-        <h2 className="text-3xl font-bold text-navy dark:text-cream">Why Choose Mintex Staffing for {industry.name}?</h2>
+        <h2 className="text-3xl font-bold text-navy dark:text-cream">Why Mintex Staffing for {industry.name}</h2>
         <p className="mt-2 max-w-2xl text-navy/70 dark:text-cream/70">{industry.workStyle}</p>
         <div className="mt-8 grid grid-cols-3 gap-6">
           {achievements.map((achievement) => (

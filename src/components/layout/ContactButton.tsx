@@ -1,9 +1,15 @@
 "use client";
 
-const PHONE_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "";
-const WHATSAPP_MESSAGE =
-  process.env.NEXT_PUBLIC_WHATSAPP_MESSAGE ??
-  "Hi, I'm interested in job opportunities at Mintex Staffing.";
+const PHONE_NUMBER = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "").replace(/\D/g, "");
+// Strip stray wrapping quotes (the env value has been set as "..." before,
+// which put literal quote marks into the prefilled message).
+const WHATSAPP_MESSAGE = (
+  process.env.NEXT_PUBLIC_WHATSAPP_MESSAGE ?? "Hi, I'm interested in job opportunities at Mintex Staffing."
+).replace(/^["']+|["']+$/g, "");
+
+// encodeURIComponent leaves ' unescaped, and WhatsApp cuts the prefilled
+// text off at a raw apostrophe ("Hi, I'm..." arrived as "Hi, I").
+const encodeWhatsAppText = (text: string) => encodeURIComponent(text).replace(/'/g, "%27");
 const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "info@mintexstaffing.com";
 
 export default function ContactButton({
@@ -14,7 +20,9 @@ export default function ContactButton({
   onOpenChange: (open: boolean) => void;
 }) {
   const whatsappHref = PHONE_NUMBER
-    ? `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`
+    ? // Direct api.whatsapp.com URL — wa.me 302-redirects here, which SEO
+      // crawlers flag as a "link to redirect" on every page.
+      `https://api.whatsapp.com/send?phone=${PHONE_NUMBER}&text=${encodeWhatsAppText(WHATSAPP_MESSAGE)}`
     : null;
   const emailHref = `mailto:${CONTACT_EMAIL}`;
 

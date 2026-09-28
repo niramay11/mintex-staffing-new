@@ -8,7 +8,7 @@ import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
 
 export const metadata: Metadata = pageMetadata({
   title: "Contact Us",
-  description: "Get in touch with Mintex Staffing by phone, email, or contact form.",
+  description: "Get in touch with Mintex Staffing by phone, email, or our contact form — we're ready to help with your staffing and hiring needs.",
   path: "/contact",
 });
 

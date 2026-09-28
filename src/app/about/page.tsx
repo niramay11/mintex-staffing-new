@@ -30,7 +30,7 @@ function IconLinkedIn({ className }: { className?: string }) {
 export const metadata: Metadata = pageMetadata({
   title: "About Us",
   description:
-    "We connect exceptional talent with leading employers and build lasting partnerships across the United States.",
+    "Mintex Staffing connects exceptional talent with leading employers, building lasting hiring partnerships across IT, healthcare, engineering and more.",
   path: "/about",
 });
 
@@ -154,7 +154,7 @@ export default async function AboutPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       {/* Hero — flat, edge-to-edge */}
-      <section className="bg-mist dark:bg-navy-900">
+      <section className="bg-page dark:bg-navy-900">
         <div className="grid lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:items-stretch">
           <div className="flex flex-col justify-center px-6 py-16 sm:px-10 sm:py-20 lg:px-16 lg:py-24 xl:px-24">
             <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-navy/60 dark:text-cream/60">
@@ -199,7 +199,7 @@ export default async function AboutPage() {
       </section>
 
       {/* Highlights strip */}
-      <section className="border-y border-navy/[0.06] bg-white dark:border-white/10 dark:bg-navy-900">
+      <section className="border-y border-navy/[0.06] bg-page dark:border-white/10 dark:bg-navy-900">
         <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-center gap-3 px-6 py-7 sm:px-10 sm:gap-4 lg:px-16">
           {highlights.map((item) => (
             <span
@@ -214,7 +214,7 @@ export default async function AboutPage() {
       </section>
 
       {/* Our Story */}
-      <section className="bg-white dark:bg-navy-900">
+      <section className="bg-page dark:bg-navy-900">
         <div className="mx-auto max-w-6xl px-6 py-20 sm:px-10 lg:px-16 lg:py-24">
           <div className="grid items-center gap-14 lg:grid-cols-[1fr_0.9fr] lg:gap-16">
             <div>
@@ -261,7 +261,7 @@ export default async function AboutPage() {
       </section>
 
       {/* The Mintex Approach */}
-      <section className="border-t border-navy/[0.06] bg-mist dark:border-white/10 dark:bg-navy-900">
+      <section className="border-t border-navy/[0.06] bg-page dark:border-white/10 dark:bg-navy-900">
         <div className="mx-auto max-w-6xl px-6 py-20 sm:px-10 lg:px-16 lg:py-24">
           <div className="grid items-center gap-14 lg:grid-cols-[0.9fr_1fr] lg:gap-16">
             <div className="relative mx-auto aspect-[4/3] w-full max-w-[480px] overflow-hidden rounded-2xl shadow-[0_25px_55px_-20px_rgba(0,48,96,0.35)] lg:order-1">
@@ -304,7 +304,7 @@ export default async function AboutPage() {
       </section>
 
       {/* Our Values */}
-      <section className="border-t border-navy/[0.06] bg-white dark:border-white/10 dark:bg-navy-900">
+      <section className="border-t border-navy/[0.06] bg-page dark:border-white/10 dark:bg-navy-900">
         <div className="mx-auto max-w-6xl px-6 py-20 sm:px-10 lg:px-16 lg:py-24">
           <div className="flex items-center justify-center gap-4">
             <span aria-hidden="true" className="h-px flex-1 bg-navy/10 dark:bg-white/10" />
@@ -328,7 +328,7 @@ export default async function AboutPage() {
 
       {/* Leadership */}
       {teamMembers.length > 0 && (
-        <section className="border-t border-navy/[0.06] bg-mist dark:border-white/10 dark:bg-navy-900">
+        <section className="border-t border-navy/[0.06] bg-page dark:border-white/10 dark:bg-navy-900">
           <div className="mx-auto max-w-7xl px-6 py-20 sm:px-10 lg:px-16 lg:py-24">
             <div className="flex items-center justify-center gap-4">
               <span aria-hidden="true" className="h-px flex-1 bg-navy/10 dark:bg-white/10" />

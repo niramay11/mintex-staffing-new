@@ -18,7 +18,7 @@ export async function generateMetadata({
 
   return pageMetadata({
     title: `${match.label} | Insights`,
-    description: `${match.label} articles from Mintex Staffing.`,
+    description: `${match.label} articles and advice from Mintex Staffing, covering practical guidance for job seekers and employers.`,
     path: `/insights/category/${match.slug}`,
   });
 }

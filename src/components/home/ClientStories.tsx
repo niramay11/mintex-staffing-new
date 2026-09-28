@@ -105,7 +105,7 @@ export default function ClientStories() {
 
   return (
     <>
-    <section className="border-t border-navy/[0.06] bg-mist dark:bg-navy-900 dark:border-white/10">
+    <section className="border-t border-navy/[0.06] bg-page dark:bg-navy-900 dark:border-white/10">
       <div className="mx-auto max-w-[1920px] px-6 py-16 sm:px-10 sm:py-20 lg:px-16 lg:py-24">
       <div className="mx-auto max-w-2xl text-center">
         <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">

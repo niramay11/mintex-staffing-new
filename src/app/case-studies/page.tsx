@@ -8,7 +8,7 @@ import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
 
 export const metadata: Metadata = pageMetadata({
   title: "Case Studies",
-  description: "Client testimonials, candidate testimonials, and other Mintex Staffing case studies.",
+  description: "Read Mintex Staffing case studies and testimonials from clients and candidates, with real hiring results across IT, healthcare, engineering and more.",
   path: "/case-studies",
 });
 

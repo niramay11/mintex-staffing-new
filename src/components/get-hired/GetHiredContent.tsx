@@ -1,12 +1,11 @@
 import { Suspense } from "react";
 import { after } from "next/server";
-import Image from "next/image";
+import HeroImage from "@/components/ui/HeroImage";
 import Section from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import JobBoard from "@/components/jobs/JobBoard";
 import BrowseRolesButton from "@/components/jobs/BrowseRolesButton";
 import FaqAccordion from "@/components/ui/FaqAccordion";
-import { IconBriefcase } from "@/components/jobs/icons";
 import { getSiteImages } from "@/lib/siteImages";
 import { getCachedJobs } from "@/lib/jobsCache";
 import { getJobMap } from "@/lib/ceipal-job-map";
@@ -112,7 +111,16 @@ async function JobBoardSection() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jobListSchema) }}
       />
-      <JobBoard initialJobs={typedJobs} initialDescriptions={initialDescriptions} />
+      {/* activeJobs, not the raw typedJobs — the raw cache holds every job
+          Ceipal has ever returned (confirmed live: 1,578 jobs going back
+          to job codes in the single digits, vs ~88 actually active),
+          and JobBoard only ever displays/filters isActiveJob() jobs
+          anyway (see its own activeJobs useMemo), so embedding the other
+          ~1,490 inactive jobs' data into this page's initial HTML was
+          pure dead weight — confirmed live as the reason this page (and
+          /get-hired, /get-hired/interview-prep, which render the same
+          component) ran over 2MB. */}
+      <JobBoard initialJobs={activeJobs} initialDescriptions={initialDescriptions} />
     </>
   );
 }
@@ -147,13 +155,12 @@ export default async function GetHiredContent() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
-        <div className="relative mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-14">
+        <div className="relative mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <div>
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[14.5px] font-medium text-navy/70 dark:border-white/10 dark:bg-navy-900 dark:text-cream/70">
-              <span className="h-[7px] w-[7px] rounded-full bg-steel shadow-[0_0_0_4px_rgba(74,115,140,0.25)]" />
+            <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
               For Job Seekers
-            </div>
-            <h1 className="mt-5 font-heading text-4xl font-bold text-navy sm:text-5xl dark:text-cream">Get Hired</h1>
+            </p>
+            <h1 className="mt-3 font-heading text-4xl font-bold text-navy sm:text-5xl dark:text-cream">Get Hired</h1>
             <p className="mt-4 max-w-xl text-steel dark:text-steel-light">
               Find jobs according to your career goals, whether you are beginning your career or
 planning to switch roles, we got you covered. Join our talent network to stay ahead of new
@@ -164,42 +171,11 @@ roles as they go live.
             </div>
           </div>
 
-          {/* Right — showcase visual */}
-          <div className="relative hidden lg:flex lg:items-center lg:justify-center lg:pl-6">
-            <div
-              aria-hidden="true"
-              className="absolute left-1/2 top-1/2 h-[320px] w-[320px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-steel/15 blur-[100px]"
-            />
-
-            <div className="absolute -left-8 -top-8 z-20 flex items-center gap-3 rounded-2xl border border-navy/10 bg-white px-4 py-3 shadow-[0_25px_60px_-15px_rgba(0,48,96,0.2)] dark:border-white/10 dark:bg-navy-900">
-              <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel dark:text-steel-light">
-                <IconBriefcase className="h-5 w-5" />
-              </span>
-              <div>
-                <p className="font-heading text-xl font-bold leading-none text-navy dark:text-cream">14k+</p>
-                <p className="mt-1 text-[13.5px] leading-none text-navy/50 dark:text-cream/50">Placements made</p>
-              </div>
-            </div>
-
-            <div className="relative aspect-[4/5] w-full max-w-[280px] overflow-hidden rounded-[32px] border border-navy/10 shadow-[0_40px_90px_-25px_rgba(0,48,96,0.3)] dark:border-white/10">
-              <Image
-                src={siteImages["get-hired:hero-visual"]}
-                alt="Job seeker preparing for an interview with Mintex Staffing's recruitment team"
-                fill
-                className="object-cover"
-              />
-            </div>
-
-            <div className="absolute -bottom-8 -right-8 z-20 flex items-center gap-3 rounded-2xl border border-navy/10 bg-white px-4 py-3 shadow-[0_25px_60px_-15px_rgba(0,48,96,0.2)] dark:border-white/10 dark:bg-navy-900">
-              <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel dark:text-steel-light">
-                <IconBriefcase className="h-5 w-5" />
-              </span>
-              <div>
-                <p className="font-heading text-xl font-bold leading-none text-navy dark:text-cream">9 days</p>
-                <p className="mt-1 text-[13.5px] leading-none text-navy/50 dark:text-cream/50">Avg. time to fill</p>
-              </div>
-            </div>
-          </div>
+          <HeroImage
+            src={siteImages["get-hired:hero-visual"]}
+            objectPosition="center 15%"
+            alt="Job seeker preparing for an interview with Mintex Staffing's recruitment team"
+          />
         </div>
       </Section>
 

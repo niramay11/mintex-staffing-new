@@ -6,7 +6,7 @@ import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
 
 export const metadata: Metadata = pageMetadata({
   title: "Insights",
-  description: "Career insights, job market insights, and ongoing hiring trends from Mintex Staffing.",
+  description: "Career advice, job market insights and the latest hiring trends from the Mintex Staffing team, for job seekers and employers planning their next move.",
   path: "/insights",
 });
 

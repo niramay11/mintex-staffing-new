@@ -21,8 +21,9 @@ const staticRoutes = [
   "",
   "/get-hired",
   "/get-hired/share-resume",
-  "/get-hired/interview-prep",
-  "/get-hired/apply-to-jobs",
+  // /get-hired/interview-prep and /get-hired/apply-to-jobs are left out on
+  // purpose: both canonicalize to /get-hired, and listing non-canonical URLs
+  // in a sitemap is a mixed signal to search engines.
   "/get-hired/how-we-work/for-job-seekers",
   "/interview-rights",
   "/industries",

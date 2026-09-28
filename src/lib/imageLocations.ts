@@ -53,7 +53,32 @@ export type ImageLocation = {
 // Industries tab both read/write the exact same row — editing one updates
 // the other because there's only one row to begin with.
 export const INDUSTRY_CARD_IMAGE_CATEGORY: ImageCategory = "photo-square";
-export const INDUSTRY_CARD_IMAGE_PAGE_NAME = "Industries We Serve (Homepage Cards)";
+export const INDUSTRY_CARD_IMAGE_PAGE_NAME = "Industry Photos (Home + Industries Banner)";
+
+// How many industry photos the site actually shows, by admin sort order.
+// Shared by the pages that render them and by the admin Site Images tab's
+// "where is this used" labels, so the labels can't drift from the site.
+//  - first FEATURED_INDUSTRY_COUNT: homepage glass cards + /industries banner
+//  - next EXPLORE_THUMB_INDUSTRY_COUNT: small round photos in the homepage
+//    "Explore all industries" bar
+//  - the rest: not shown anywhere right now (slot kept so the upload isn't
+//    lost, and so a re-order in admin can promote it)
+export const FEATURED_INDUSTRY_COUNT = 3;
+export const EXPLORE_THUMB_INDUSTRY_COUNT = 4;
+
+export type IndustryImageUsage = "featured" | "thumbnail" | "unused";
+
+export function industryImageUsage(sortIndex: number): IndustryImageUsage {
+  if (sortIndex < FEATURED_INDUSTRY_COUNT) return "featured";
+  if (sortIndex < FEATURED_INDUSTRY_COUNT + EXPLORE_THUMB_INDUSTRY_COUNT) return "thumbnail";
+  return "unused";
+}
+
+export const INDUSTRY_IMAGE_USAGE_LABEL: Record<IndustryImageUsage, string> = {
+  featured: "Featured — Home glass card + Industries page banner",
+  thumbnail: "Small round photo — Home “Explore all industries” bar",
+  unused: "Not shown on the site right now",
+};
 export function industryCardImageKey(slug: string): string {
   return `industry:${slug}:card-visual`;
 }

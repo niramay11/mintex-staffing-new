@@ -28,8 +28,8 @@ function TestimonialCard({ story }: { story: CaseStudy }) {
 
 export default function Testimonials({
   stories,
-  backgroundClassName = "bg-mist",
-  edgeFadeFromClassName = "from-mist",
+  backgroundClassName = "bg-page",
+  edgeFadeFromClassName = "from-page",
 }: {
   stories: CaseStudy[];
   // Lets one caller (the homepage) opt into a different section background

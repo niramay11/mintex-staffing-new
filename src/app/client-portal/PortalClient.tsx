@@ -81,7 +81,7 @@ function LoginForm({ onLogin, siteImages }: { onLogin: (client: ClientInfo) => v
     };
 
     return (
-        <div className="min-h-screen flex flex-col bg-cream dark:bg-navy-950">
+        <div className="min-h-screen flex flex-col bg-page dark:bg-navy-900">
             {/* Navbar */}
             <header className={`fixed top-0 left-0 right-0 z-50 bg-white/85 backdrop-blur-md border-b border-navy/10 dark:bg-navy-900/85 dark:border-white/10 transition-shadow duration-300 ${scrolled ? 'shadow-[0_4px_20px_rgba(0,48,96,0.08)]' : ''}`}>
                 <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-[60px]">
@@ -887,7 +887,7 @@ export default function PortalClient({
         setClient(null); setJobs([]);
     };
 
-    if (!authChecked) return <div className="min-h-screen bg-cream dark:bg-navy-950" />;
+    if (!authChecked) return <div className="min-h-screen bg-page dark:bg-navy-900" />;
 
     if (!client) return <LoginForm onLogin={setClient} siteImages={siteImages} />;
 
@@ -925,7 +925,7 @@ export default function PortalClient({
 
     return (
         <>
-        <div className="min-h-screen bg-cream dark:bg-navy-950">
+        <div className="min-h-screen bg-page dark:bg-navy-900">
             {/* Navbar */}
             <header className={`fixed top-0 left-0 right-0 z-50 bg-white/85 backdrop-blur-md border-b border-navy/10 dark:bg-navy-900/85 dark:border-white/10 transition-shadow duration-300 ${scrolled ? 'shadow-[0_4px_20px_rgba(0,48,96,0.08)]' : ''}`}>
                 <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-[60px]">

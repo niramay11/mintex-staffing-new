@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Section from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
-import { IconBriefcase, IconPeople } from "@/components/jobs/icons";
+import HeroImage from "@/components/ui/HeroImage";
 import { hiringServices } from "@/content/hiringServices";
 import { getSiteImages } from "@/lib/siteImages";
 import { pageMetadata } from "@/lib/pageMetadata";
@@ -49,13 +49,12 @@ export default async function SeekTalentPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
-        <div className="relative mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-14">
+        <div className="relative mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <div>
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-navy/10 bg-white px-4 py-2 text-[14.5px] font-medium text-navy/70 dark:border-white/10 dark:bg-navy-900 dark:text-cream/70">
-              <IconBriefcase className="h-4 w-4 flex-shrink-0" />
+            <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
               For Employers
-            </div>
-            <h1 className="mt-5 font-heading text-4xl font-bold text-navy sm:text-5xl dark:text-cream">Seek Talent</h1>
+            </p>
+            <h1 className="mt-3 font-heading text-4xl font-bold text-navy sm:text-5xl dark:text-cream">Seek Talent</h1>
             <p className="mt-4 max-w-xl text-steel dark:text-steel-light">
               Hire top talent fast with Mintex Staffing&apos;s tailored staffing solutions across
               IT, healthcare, engineering &amp; more. Discuss your hiring needs today.
@@ -74,40 +73,10 @@ export default async function SeekTalentPage() {
             </div>
           </div>
 
-          <div className="relative hidden lg:flex lg:items-center lg:justify-center lg:pl-6">
-            <div
-              aria-hidden="true"
-              className="absolute left-1/2 top-1/2 h-[320px] w-[320px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-steel/15 blur-[100px]"
-            />
-            <div className="relative aspect-[4/5] w-full max-w-[280px] overflow-hidden rounded-[32px] border border-navy/10 shadow-[0_40px_90px_-25px_rgba(0,48,96,0.3)] dark:border-white/10">
-              <Image
-                src={siteImages["seek-talent:hero-visual"]}
-                alt="Employer welcoming a new hire placed through Mintex Staffing's staffing and recruitment services"
-                fill
-                className="object-cover"
-              />
-            </div>
-
-            <div className="absolute -left-8 -top-8 z-20 flex items-center gap-3 rounded-2xl border border-navy/10 bg-white px-4 py-3 shadow-[0_25px_60px_-15px_rgba(0,48,96,0.2)] dark:border-white/10 dark:bg-navy-900">
-              <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel dark:text-steel-light">
-                <IconPeople className="h-5 w-5" />
-              </span>
-              <div>
-                <p className="font-heading text-xl font-bold leading-none text-navy dark:text-cream">14k+</p>
-                <p className="mt-1 text-[13.5px] leading-none text-navy/50 dark:text-cream/50">Placements made</p>
-              </div>
-            </div>
-
-            <div className="absolute -bottom-8 -right-8 z-20 flex items-center gap-3 rounded-2xl border border-navy/10 bg-white px-4 py-3 shadow-[0_25px_60px_-15px_rgba(0,48,96,0.2)] dark:border-white/10 dark:bg-navy-900">
-              <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel dark:text-steel-light">
-                <IconBriefcase className="h-5 w-5" />
-              </span>
-              <div>
-                <p className="font-heading text-xl font-bold leading-none text-navy dark:text-cream">9 days</p>
-                <p className="mt-1 text-[13.5px] leading-none text-navy/50 dark:text-cream/50">Avg. time to fill</p>
-              </div>
-            </div>
-          </div>
+          <HeroImage
+            src={siteImages["seek-talent:hero-visual"]}
+            alt="Employer welcoming a new hire placed through Mintex Staffing"
+          />
         </div>
       </Section>
 

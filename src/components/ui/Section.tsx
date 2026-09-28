@@ -4,10 +4,10 @@ import { getSiteImages } from "@/lib/siteImages";
 
 const backgrounds = {
   navy: "bg-gradient-to-br from-navy via-navy-deep to-navy-secondary text-white dark:from-navy-900 dark:via-navy-800 dark:to-navy-900 dark:text-cream",
-  white: "bg-white dark:bg-navy-900",
-  mist: "bg-mist dark:bg-navy-900",
-  tan: "bg-white text-navy dark:bg-navy-900 dark:text-cream",
-  cream: "bg-mist dark:bg-navy-900",
+  white: "bg-page dark:bg-navy-900",
+  mist: "bg-page dark:bg-navy-900",
+  tan: "bg-page text-navy dark:bg-navy-900 dark:text-cream",
+  cream: "bg-page dark:bg-navy-900",
 } as const;
 
 export default async function Section({

@@ -24,7 +24,11 @@ export async function generateMetadata({
 
   return pageMetadata({
     title: service.name,
-    description: service.tagline,
+    // service.intro, not the short tagline — Screaming Frog flagged all 3
+    // of these pages' descriptions as under 70 characters (the tagline's
+    // length). intro is a longer, already-written field that exists for
+    // each service and was simply never used for the meta description.
+    description: service.intro,
     path: `/seek-talent/${service.slug}`,
   });
 }

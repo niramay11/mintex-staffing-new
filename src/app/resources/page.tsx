@@ -56,7 +56,7 @@ const resourcesPoints = [
 export const metadata: Metadata = pageMetadata({
   title: "Resources",
   description:
-    "Hiring calculators and an AI interview question generator from Mintex Staffing.",
+    "Free hiring tools from Mintex Staffing: a hiring cost calculator for employers and an AI interview question generator for job seekers.",
   path: "/resources",
 });
 

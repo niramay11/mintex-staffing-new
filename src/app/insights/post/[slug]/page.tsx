@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import Section from "@/components/ui/Section";
-import { ButtonLink } from "@/components/ui/Button";
 import { getInsightCategories } from "@/components/insights/InsightsListing";
+import InsightImage from "@/components/insights/InsightImage";
 import { supabase } from "@/lib/supabase";
 import type { InsightPost } from "@/content/types";
 import { pageMetadata } from "@/lib/pageMetadata";
@@ -100,6 +100,67 @@ const RICH_BODY_CLASSNAME =
   "[&_a]:text-blue-600 [&_a]:underline [&_a]:decoration-blue-600/50 [&_a]:underline-offset-2 hover:[&_a]:text-blue-700 dark:[&_a]:text-blue-400 " +
   "[&_a.cta-button]:!mt-8 [&_a.cta-button]:inline-flex [&_a.cta-button]:items-center [&_a.cta-button]:rounded-full [&_a.cta-button]:bg-navy [&_a.cta-button]:px-8 [&_a.cta-button]:py-4 [&_a.cta-button]:text-base [&_a.cta-button]:font-semibold [&_a.cta-button]:text-white [&_a.cta-button]:no-underline hover:[&_a.cta-button]:bg-navy-secondary dark:[&_a.cta-button]:bg-steel dark:[&_a.cta-button]:text-navy-950";
 
+// The article is laid out as numbered sections (big sticky "01 / 02 / 03"
+// on the left, heading + body on the right), split at the post's own
+// sub-headings. Content before the first sub-heading becomes the intro.
+type ArticleSection =
+  | { kind: "html"; id: string; heading: string; html: string }
+  | { kind: "lines"; id: string; heading: string; lines: string[] };
+
+function splitRichSections(html: string): { introHtml: string; sections: ArticleSection[] } {
+  // split() with capture groups yields [intro, id, heading, body, id, heading, body, ...]
+  const parts = html.split(/<h2 id="(section-\d+)">([\s\S]*?)<\/h2>/);
+  const sections: ArticleSection[] = [];
+  for (let i = 1; i < parts.length; i += 3) {
+    sections.push({
+      kind: "html",
+      id: parts[i],
+      heading: (parts[i + 1] ?? "").replace(/<[^>]+>/g, "").trim(),
+      html: parts[i + 2] ?? "",
+    });
+  }
+  return { introHtml: parts[0] ?? "", sections };
+}
+
+// Authors often number their own sub-headings ("1. The supply peaks…"),
+// which would read "01 / 1. The supply peaks…" next to the big section
+// number — drop that leading "1." / "1)" from the displayed heading.
+function stripHeadingNumber(heading: string): string {
+  return heading.replace(/^\s*\d{1,2}\s*[.)]\s+/, "").trim() || heading;
+}
+
+function splitLineSections(lines: string[]): { introLines: string[]; sections: ArticleSection[] } {
+  const introLines: string[] = [];
+  const sections: { kind: "lines"; id: string; heading: string; lines: string[] }[] = [];
+  lines.forEach((line, i) => {
+    if (isHeadingLine(line)) sections.push({ kind: "lines", id: `section-${i}`, heading: line, lines: [] });
+    else if (sections.length === 0) introLines.push(line);
+    else sections[sections.length - 1].lines.push(line);
+  });
+  return { introLines, sections };
+}
+
+function ArticleLines({ lines }: { lines: string[] }) {
+  return (
+    <>
+      {lines.map((paragraph, i) =>
+        isCtaLine(paragraph) ? (
+          <div key={i} className="!mt-8">
+            <Link
+              href={resolveCtaHref(paragraph)}
+              className="inline-flex items-center rounded-full bg-navy px-8 py-4 text-base font-semibold text-white transition-colors hover:bg-navy-secondary dark:bg-steel dark:text-navy-950 dark:hover:bg-steel-light"
+            >
+              {paragraph.replace(/^(→|->)\s*/, "")}
+            </Link>
+          </div>
+        ) : (
+          <p key={i}>{paragraph}</p>
+        )
+      )}
+    </>
+  );
+}
+
 const SHARE_ICON_DEFS = [
   {
     key: "facebook",
@@ -176,6 +237,31 @@ async function getRelatedInsights(category: string, excludeSlug: string): Promis
   return (data ?? []) as InsightPost[];
 }
 
+// Confirmed live: one post's excerpt field was literally the placeholder
+// string "NA" — pageMetadata() happily used it as-is, giving that page a
+// 2-character search-result description. Same class of problem as
+// hasSubstantiveDescription in components/jobs/utils.ts (a Ceipal job
+// description that's really just a pasted-in title, non-empty but not
+// real content) — falls back to a real snippet pulled from the post's own
+// body instead of trusting whatever landed in the excerpt field.
+function resolvePostDescription(post: InsightPost): string {
+  const excerpt = (post.excerpt || "").trim();
+  const isPlaceholder = /^(n\/?a|tbd|todo|placeholder|coming soon)$/i.test(excerpt);
+  const plainBody =
+    post.body.join(" ").trim() ||
+    (post.body_html || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+
+  if (excerpt && !isPlaceholder && excerpt.length >= 30) {
+    if (excerpt.length >= 110 || !plainBody) return excerpt;
+    // A real but short excerpt (e.g. 78 chars) is still flagged as "meta
+    // description too short" — top it up with the opening of the body;
+    // pageMetadata() then trims the result to ~155 chars at a word boundary.
+    return `${excerpt}${/[.!?…]$/.test(excerpt) ? "" : "."} ${plainBody}`;
+  }
+
+  return plainBody.slice(0, 155).trim();
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -187,7 +273,7 @@ export async function generateMetadata({
 
   return pageMetadata({
     title: post.title,
-    description: post.excerpt,
+    description: resolvePostDescription(post),
     path: `/insights/post/${post.slug}`,
   });
 }
@@ -223,8 +309,22 @@ export default async function InsightPostPage({
 
   const mainLines = post.body.filter((p) => !isSourcesLine(p) && !isDisclaimerLine(p));
   const footnoteLines = post.body.filter((p) => isSourcesLine(p) || isDisclaimerLine(p));
-  const tocItems = mainLines.map((text, i) => ({ text, i })).filter(({ text }) => isHeadingLine(text));
-  const firstHeadingIndex = tocItems[0]?.i;
+
+  const rich = richBody ? splitRichSections(richBody.html) : null;
+  const legacy = rich ? null : splitLineSections(mainLines);
+  let sections: ArticleSection[] = rich ? rich.sections : legacy!.sections;
+  let introHtml = rich ? rich.introHtml.trim() : "";
+  let introLines = legacy ? legacy.introLines : [];
+  // A short post with no sub-headings still gets one numbered section
+  // instead of an unnumbered wall of text.
+  if (sections.length === 0) {
+    sections = rich
+      ? [{ kind: "html", id: "section-0", heading: "Overview", html: introHtml }]
+      : [{ kind: "lines", id: "section-0", heading: "Overview", lines: introLines }];
+    introHtml = "";
+    introLines = [];
+  }
+  const hasIntro = Boolean(introHtml) || introLines.length > 0;
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",
@@ -240,7 +340,7 @@ export default async function InsightPostPage({
     "@context": "https://schema.org",
     "@type": "Article",
     headline: post.title,
-    description: post.excerpt,
+    description: resolvePostDescription(post),
     datePublished: new Date(post.published_at).toISOString(),
     dateModified: new Date(post.published_at).toISOString(),
     author: {
@@ -303,187 +403,197 @@ export default async function InsightPostPage({
         </div>
       </Section>
 
-      <Section background="white" className="!pt-10 sm:!pt-12 lg:!pt-14">
+      {/* Numbered sections. overflow-visible: Section clips by default,
+          which would break the sticky section numbers. */}
+      <Section background="white" className="!overflow-visible !pt-10 sm:!pt-12 lg:!pt-14">
         {post.image_url && (
-          <div className="relative aspect-[2.5/1] w-full overflow-hidden rounded-2xl">
-            <Image src={post.image_url} alt={post.title} fill priority className="object-cover" />
+          <div className="relative mb-16 aspect-[2.5/1] w-full overflow-hidden rounded-2xl lg:mb-24">
+            <InsightImage src={post.image_url} alt={post.title} sizes="(min-width: 1920px) 1792px, 100vw" priority />
           </div>
         )}
 
-        <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-[1fr_320px] lg:gap-16">
-          <div className="min-w-0 space-y-5 text-[17.5px] leading-[1.8] text-navy/80 dark:text-cream/80">
-            {hasRichBody ? (
-              <>
-                {richBody!.tocItems.length >= 2 && (
-                  <nav className="rounded-[32px] bg-steel/[0.08] p-8 dark:bg-steel/[0.12] sm:p-10">
-                    <p className="font-heading text-lg font-bold text-navy dark:text-cream">{post.title}</p>
-                    <ol className="mt-4 space-y-2.5">
-                      {richBody!.tocItems.map((item) => (
-                        <li key={item.id}>
-                          <a
-                            href={`#${item.id}`}
-                            className="text-steel underline decoration-steel/40 underline-offset-2 transition-colors hover:text-navy hover:decoration-navy/50 dark:text-steel-light dark:decoration-steel-light/40 dark:hover:text-cream"
-                          >
-                            {item.text}
-                          </a>
-                        </li>
-                      ))}
-                    </ol>
-                  </nav>
-                )}
-                <div className={RICH_BODY_CLASSNAME} dangerouslySetInnerHTML={{ __html: richBody!.html }} />
-              </>
-            ) : (
-              mainLines.map((paragraph, i) => {
-                if (isCtaLine(paragraph)) {
-                  return (
-                    <div key={i} className="!mt-8">
-                      <Link
-                        href={resolveCtaHref(paragraph)}
-                        className="inline-flex items-center rounded-full bg-navy px-8 py-4 text-base font-semibold text-white transition-colors hover:bg-navy-secondary dark:bg-steel dark:text-navy-950 dark:hover:bg-steel-light"
-                      >
-                        {paragraph.replace(/^(→|->)\s*/, "")}
-                      </Link>
-                    </div>
-                  );
-                }
-                if (isHeadingLine(paragraph)) {
-                  const heading = (
-                    <h2
-                      key={i}
-                      id={`section-${i}`}
-                      className="!mt-10 scroll-mt-28 font-heading text-2xl font-bold text-navy dark:text-cream sm:text-[28px]"
-                    >
-                      {paragraph}
-                    </h2>
-                  );
-                  if (i !== firstHeadingIndex || tocItems.length < 2) return heading;
-                  return (
-                    <div key={`toc-wrap-${i}`}>
-                      <nav className="!mt-8 rounded-[32px] bg-steel/[0.08] p-8 dark:bg-steel/[0.12] sm:p-10">
-                        <p className="font-heading text-lg font-bold text-navy dark:text-cream">{post.title}</p>
-                        <ol className="mt-4 space-y-2.5">
-                          {tocItems.map((item) => (
-                            <li key={item.i}>
-                              <a
-                                href={`#section-${item.i}`}
-                                className="text-steel underline decoration-steel/40 underline-offset-2 transition-colors hover:text-navy hover:decoration-navy/50 dark:text-steel-light dark:decoration-steel-light/40 dark:hover:text-cream"
-                              >
-                                {item.text}
-                              </a>
-                            </li>
-                          ))}
-                        </ol>
-                      </nav>
-                      {heading}
-                    </div>
-                  );
-                }
-                return <p key={i}>{paragraph}</p>;
-              })
-            )}
-
-            {footnoteLines.length > 0 && (
-              <div className="!mt-10 space-y-3 border-t border-navy/10 pt-6 text-sm leading-relaxed text-navy dark:border-white/10 dark:text-cream">
-                {footnoteLines.map((line, i) => {
-                  if (isSourcesLine(line)) {
-                    const entries = line.replace(/^Sources:\s*/i, "").split(/\s*·\s*/).filter(Boolean);
-                    return (
-                      <div key={i} className="flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
-                        <span className="font-semibold">Sources:</span>
-                        {entries.map((entry, j) => (
-                          <span key={j} className="inline-flex items-baseline">
-                            {renderInlineLinks(entry)}
-                            {j < entries.length - 1 && (
-                              <span className="ml-1.5 text-navy/40 dark:text-cream/40">·</span>
-                            )}
-                          </span>
-                        ))}
-                      </div>
-                    );
-                  }
-                  return (
-                    <p key={i} className={isDisclaimerLine(line) ? "italic" : ""}>
-                      {renderInlineLinks(line)}
-                    </p>
-                  );
-                })}
-              </div>
-            )}
-
-            {post.author_bio && (
-              <div className="!mt-10 flex items-start gap-4 border-t border-navy/10 pt-8 dark:border-white/10">
-                <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-full bg-navy/10 dark:bg-navy-800">
-                  {post.author_photo_url ? (
-                    <Image src={post.author_photo_url} alt={post.author} fill className="object-cover object-top" />
-                  ) : (
-                    <span className="flex h-full w-full items-center justify-center font-heading text-lg font-semibold text-navy/40 dark:text-cream/40">
-                      {post.author.split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join("")}
-                    </span>
-                  )}
+        {hasIntro && (
+          <div className="mb-16 lg:mb-24 lg:grid lg:grid-cols-12 lg:gap-10">
+            <div className="min-w-0 lg:col-span-8 lg:col-start-4">
+              {introHtml ? (
+                <div
+                  className={`text-[19px] leading-[1.7] text-navy/80 sm:text-[21px] dark:text-cream/80 ${RICH_BODY_CLASSNAME}`}
+                  dangerouslySetInnerHTML={{ __html: introHtml }}
+                />
+              ) : (
+                <div className="space-y-5 text-[19px] leading-[1.7] text-navy/80 sm:text-[21px] dark:text-cream/80">
+                  <ArticleLines lines={introLines} />
                 </div>
-                <div>
-                  <p className="text-[13.5px] font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">About the author</p>
-                  <p className="mt-1 font-semibold text-navy dark:text-cream">
-                    {post.author}
-                    {post.author_title && <span className="font-normal text-navy/60 dark:text-cream/60"> · {post.author_title}</span>}
-                  </p>
-                  <p className="mt-1.5 text-sm leading-relaxed text-navy/70 dark:text-cream/70">{post.author_bio}</p>
-                </div>
-              </div>
-            )}
-
-            <div className="!mt-10">
-              <ButtonLink href="/insights">&larr; Back to all Insights</ButtonLink>
+              )}
             </div>
           </div>
+        )}
 
-          {related.length > 0 && (
-            <aside>
-              <p className="text-[13.5px] font-semibold uppercase tracking-wide text-navy/50 dark:text-cream/50">Related articles</p>
-              <ul className="mt-4 space-y-4">
-                {related.map((item) => (
-                  <li key={item.slug}>
-                    <Link href={`/insights/post/${item.slug}`} className="group flex gap-3">
-                      <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-mist dark:bg-navy-800">
-                        {item.image_url ? (
-                          // eslint-disable-next-line @next/next/no-img-element -- arbitrary admin-supplied URL
-                          <img src={item.image_url} alt="" className="h-full w-full object-cover" />
-                        ) : (
-                          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-steel to-navy-secondary">
-                            <span className="font-heading text-[11.5px] font-semibold uppercase tracking-wide text-white/70">
-                              {categoryLabel}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                      <span className="text-sm font-medium text-steel underline decoration-steel/30 underline-offset-2 group-hover:text-navy group-hover:decoration-navy/50 dark:text-steel-light dark:decoration-steel-light/30 dark:group-hover:text-cream">
-                        {item.title}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </aside>
-          )}
+        <div className="space-y-20 lg:space-y-32">
+          {sections.map((section, index) => (
+            <section key={section.id} id={section.id} className="scroll-mt-28 lg:grid lg:grid-cols-12 lg:gap-10">
+              <div className="lg:col-span-3">
+                <span
+                  aria-hidden="true"
+                  className="block font-heading text-[72px] font-bold leading-[0.85] text-navy sm:text-[96px] lg:sticky lg:top-28 lg:text-[150px] xl:text-[170px] dark:text-cream"
+                >
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+              </div>
+              <div className="mt-6 min-w-0 border-t-[3px] border-navy pt-7 lg:col-span-9 lg:mt-0 dark:border-cream">
+                <div className="md:grid md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.6fr)] md:gap-10">
+                  <div className="md:sticky md:top-28 md:self-start">
+                    <h2 className="font-heading text-[28px] font-bold leading-[1.1] text-navy sm:text-[32px] dark:text-cream">
+                      {stripHeadingNumber(section.heading)}
+                    </h2>
+                    <p className="mt-3 text-[12px] font-semibold uppercase tracking-[0.14em] text-navy/50 dark:text-cream/50">
+                      Part {index + 1} of {sections.length}
+                    </p>
+                  </div>
+                  <div className="mt-6 min-w-0 space-y-5 text-[16.5px] leading-[1.8] text-navy/70 md:mt-0 dark:text-cream/70">
+                    {section.kind === "html" ? (
+                      <div className={RICH_BODY_CLASSNAME} dangerouslySetInnerHTML={{ __html: section.html }} />
+                    ) : (
+                      <ArticleLines lines={section.lines} />
+                    )}
+                  </div>
+                </div>
+              </div>
+            </section>
+          ))}
         </div>
+
+        {(footnoteLines.length > 0 || post.author_bio || related.length > 0) && (
+          <div className="mt-20 lg:mt-28 lg:grid lg:grid-cols-12 lg:gap-10">
+            <div className="min-w-0 space-y-10 lg:col-span-9 lg:col-start-4">
+              {footnoteLines.length > 0 && (
+                <div className="space-y-3 border-t border-navy/15 pt-6 text-sm leading-relaxed text-navy dark:border-white/15 dark:text-cream">
+                  {footnoteLines.map((line, i) => {
+                    if (isSourcesLine(line)) {
+                      const entries = line.replace(/^Sources:\s*/i, "").split(/\s*·\s*/).filter(Boolean);
+                      return (
+                        <div key={i} className="flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
+                          <span className="font-semibold">Sources:</span>
+                          {entries.map((entry, j) => (
+                            <span key={j} className="inline-flex items-baseline">
+                              {renderInlineLinks(entry)}
+                              {j < entries.length - 1 && <span className="ml-1.5 text-navy/40 dark:text-cream/40">·</span>}
+                            </span>
+                          ))}
+                        </div>
+                      );
+                    }
+                    return (
+                      <p key={i} className={isDisclaimerLine(line) ? "italic" : ""}>
+                        {renderInlineLinks(line)}
+                      </p>
+                    );
+                  })}
+                </div>
+              )}
+
+              {post.author_bio && (
+                <div className="flex items-start gap-4 border-t border-navy/15 pt-8 dark:border-white/15">
+                  <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-full bg-navy/10 dark:bg-navy-800">
+                    {post.author_photo_url ? (
+                      <Image src={post.author_photo_url} alt={post.author} fill className="object-cover object-top" />
+                    ) : (
+                      <span className="flex h-full w-full items-center justify-center font-heading text-lg font-semibold text-navy/40 dark:text-cream/40">
+                        {post.author.split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join("")}
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-navy/50 dark:text-cream/50">About the author</p>
+                    <p className="mt-1 font-semibold text-navy dark:text-cream">
+                      {post.author}
+                      {post.author_title && <span className="font-normal text-navy/60 dark:text-cream/60"> · {post.author_title}</span>}
+                    </p>
+                    <p className="mt-1.5 text-sm leading-relaxed text-navy/70 dark:text-cream/70">{post.author_bio}</p>
+                  </div>
+                </div>
+              )}
+
+              {related.length > 0 && (
+                <div className="border-t border-navy/15 pt-8 dark:border-white/15">
+                  <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-navy/50 dark:text-cream/50">Related articles</p>
+                  <ul className="mt-5 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {related.map((item) => (
+                      <li key={item.slug}>
+                        <Link href={`/insights/post/${item.slug}`} className="group block">
+                          <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-mist dark:bg-navy-800">
+                            {item.image_url ? (
+                              <InsightImage
+                                src={item.image_url}
+                                sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                                className="transition-transform duration-500 group-hover:scale-105"
+                              />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-steel to-navy-secondary">
+                                <span className="font-heading text-sm font-semibold uppercase tracking-wide text-white/70">{categoryLabel}</span>
+                              </div>
+                            )}
+                          </div>
+                          <span className="mt-3 block font-heading text-lg font-bold leading-snug text-navy transition-colors group-hover:text-steel dark:text-cream dark:group-hover:text-steel-light">
+                            {item.title}
+                          </span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </Section>
 
-      <Section background="white">
-        <h2 className="font-heading text-2xl font-bold text-navy dark:text-cream sm:text-3xl">Ready to build your team?</h2>
-        <p className="mt-3 max-w-2xl italic text-navy/70 dark:text-cream/70">
-          Mintex connects you with vetted talent who can start fast — contract, temp-to-hire, or direct placement.
-        </p>
-        <div className="mt-6">
-          <Link
-            href="/seek-talent/get-started"
-            className="inline-flex items-center rounded-full bg-navy px-8 py-4 text-base font-semibold text-white transition-colors hover:bg-navy-secondary dark:bg-steel dark:text-navy-950 dark:hover:bg-steel-light"
-          >
-            Get Started
-          </Link>
-        </div>
-        <div className="mt-6">
-          <ShareIcons postUrl={postUrl} title={post.title} />
+      {/* Closing call-to-action: a rounded brand-navy card (same gradient,
+          grid texture and glows as Section's "navy" background) inset
+          from the page edges, so it doesn't run into the navy footer. */}
+      <Section background="white" className="!border-t-0 !pt-0">
+        <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-navy via-navy-deep to-navy-secondary px-7 py-14 text-white shadow-[0_30px_60px_-30px_rgba(0,48,96,0.55)] sm:px-12 sm:py-16 lg:px-16 lg:py-20 dark:from-navy-800 dark:via-navy-900 dark:to-navy-800 dark:ring-1 dark:ring-white/10">
+          <div aria-hidden="true" className="bg-grid-pattern pointer-events-none absolute inset-0 opacity-60" />
+          <div aria-hidden="true" className="pointer-events-none absolute -left-24 -top-24 h-[380px] w-[380px] rounded-full bg-steel-lighter/20 blur-[110px]" />
+          <div aria-hidden="true" className="pointer-events-none absolute -bottom-32 -right-16 h-[420px] w-[420px] rounded-full bg-steel/30 blur-[120px]" />
+
+          <div className="relative lg:grid lg:grid-cols-12 lg:items-end lg:gap-10">
+            <div className="lg:col-span-7">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-steel-lighter">Hire with Mintex</p>
+              <h2 className="mt-4 font-heading text-[40px] font-bold leading-[1.02] text-white sm:text-6xl">
+                Ready to build your team?
+              </h2>
+              <p className="mt-5 max-w-xl text-[17px] leading-relaxed text-white/75">
+                Mintex connects you with vetted talent who can start fast — contract, temp-to-hire, or direct placement.
+              </p>
+            </div>
+
+            <div className="mt-10 lg:col-span-5 lg:mt-0 lg:flex lg:flex-col lg:items-end">
+              <div className="flex flex-wrap items-center gap-5">
+                <Link
+                  href="/seek-talent/get-started"
+                  className="group inline-flex items-center gap-3 rounded-full bg-white py-2 pl-7 pr-2 text-[15px] font-semibold text-navy shadow-[0_10px_30px_-10px_rgba(0,0,0,0.4)] transition-all hover:-translate-y-0.5 hover:bg-cream"
+                >
+                  Get Started
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-navy text-white transition-transform duration-300 group-hover:translate-x-0.5">
+                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
+                      <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </span>
+                </Link>
+                <Link
+                  href="/insights"
+                  className="inline-flex items-center rounded-full border border-white/30 px-6 py-3.5 text-[14px] font-semibold text-white transition-colors hover:border-white/60 hover:bg-white/10"
+                >
+                  All Insights
+                </Link>
+              </div>
+              <div className="mt-8 flex items-center gap-4 lg:justify-end [&_a]:!text-white/60 hover:[&_a]:!text-white">
+                <span className="text-[11.5px] font-semibold uppercase tracking-[0.14em] text-white/50">Share</span>
+                <ShareIcons postUrl={postUrl} title={post.title} />
+              </div>
+            </div>
+          </div>
         </div>
       </Section>
     </>

@@ -4,7 +4,7 @@ import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
 
 export const metadata = pageMetadata({
   title: "Privacy Policy",
-  description: "How Mintex Staffing collects, uses, and protects your personal information.",
+  description: "Read how Mintex Staffing collects, uses, stores and protects the personal information you share with us as a candidate, client or site visitor.",
   path: "/privacy",
 });
 

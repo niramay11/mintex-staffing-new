@@ -4,7 +4,7 @@ import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
 
 export const metadata = pageMetadata({
   title: "Terms of Service",
-  description: "The terms that govern your use of the Mintex Staffing website.",
+  description: "The terms that govern your use of the Mintex Staffing website, including our tools, calculators, and job application process.",
   path: "/terms",
 });
 

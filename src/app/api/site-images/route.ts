@@ -3,7 +3,13 @@ import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase";
 import { verifyAdminPassword } from "@/lib/portal-auth";
 import { IMAGE_LOCATIONS, invalidateSiteImagesCache } from "@/lib/siteImages";
-import { INDUSTRY_CARD_IMAGE_PAGE_NAME, industryCardImageKey } from "@/lib/imageLocations";
+import {
+  INDUSTRY_CARD_IMAGE_PAGE_NAME,
+  INDUSTRY_IMAGE_USAGE_LABEL,
+  industryCardImageKey,
+  industryImageUsage,
+  type IndustryImageUsage,
+} from "@/lib/imageLocations";
 import { scanForOrphans } from "@/lib/imageScanner";
 
 // Industries are admin-managed DB rows, not static IMAGE_LOCATIONS entries
@@ -12,12 +18,19 @@ import { scanForOrphans } from "@/lib/imageScanner";
 // instead of the fixed IMAGE_LOCATIONS array.
 async function industryLocations() {
   const { data } = await supabaseAdmin.from("industries").select("slug, name").order("sort_order", { ascending: true });
-  return (data ?? []).map((row) => ({
-    locationKey: industryCardImageKey(row.slug as string),
-    pageName: INDUSTRY_CARD_IMAGE_PAGE_NAME,
-    sectionName: `${row.name} Card`,
-    defaultSrc: "/hero-office.webp",
-  }));
+  // Rows come back in sort order, so the index says where the site shows
+  // each photo (see industryImageUsage) — the admin labels follow any
+  // re-order automatically.
+  return (data ?? []).map((row, index) => {
+    const usage = industryImageUsage(index);
+    return {
+      locationKey: industryCardImageKey(row.slug as string),
+      pageName: INDUSTRY_CARD_IMAGE_PAGE_NAME,
+      sectionName: `${row.name} — ${INDUSTRY_IMAGE_USAGE_LABEL[usage]}`,
+      defaultSrc: "/hero-office.webp",
+      usage,
+    };
+  });
 }
 
 // GET /api/site-images — admin-guarded (rescans /public as a side effect).
@@ -39,6 +52,7 @@ export async function GET(req: NextRequest) {
   const locations = allLocations.map((loc) => {
     const override = overrides.get(loc.locationKey);
     return {
+      ...("usage" in loc ? { usage: loc.usage as IndustryImageUsage } : {}),
       location_key: loc.locationKey,
       page_name: loc.pageName,
       section_name: loc.sectionName,
