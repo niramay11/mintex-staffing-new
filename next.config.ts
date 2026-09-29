@@ -39,6 +39,11 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "img.youtube.com" },
     ],
     minimumCacheTTL: 2678400,
+    // Default list tops out at 3840px — crawlers (Ahrefs) fetch the largest
+    // srcset candidate, and a 3840px copy of a big upload was flagged as
+    // "image file size too large" (2.1 MB). 2048px is still sharp for the
+    // widest images here (full-width banners) on retina laptops.
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
   },
   async redirects() {
     return [

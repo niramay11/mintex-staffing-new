@@ -16,11 +16,18 @@ export async function generateMetadata({
   const match = categories.find((c) => c.slug === category);
   if (!match) return {};
 
-  return pageMetadata({
-    title: `${match.label} | Insights`,
-    description: `${match.label} articles and advice from Mintex Staffing, covering practical guidance for job seekers and employers.`,
-    path: `/insights/category/${match.slug}`,
-  });
+  // Every post lives on /insights (the category is just a filter there), so
+  // this page is a duplicate of it: canonical points to /insights and it is
+  // kept out of the index. It stays reachable for old links, and is no longer
+  // listed in the sitemap (Ahrefs flagged it as an orphan page there).
+  return {
+    ...pageMetadata({
+      title: `${match.label} | Insights`,
+      description: `${match.label} articles and advice from Mintex Staffing, covering practical guidance for job seekers and employers.`,
+      path: "/insights",
+    }),
+    robots: { index: false, follow: true },
+  };
 }
 
 export default async function InsightCategoryPage({

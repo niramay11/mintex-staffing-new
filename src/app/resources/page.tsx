@@ -68,7 +68,6 @@ const tools = [
     title: "Hiring Cost Calculator",
     description: "Estimate your true cost-per-hire across ad spend, agency fees, and internal time.",
     tags: ["Ad spend", "Agency fees", "Internal time"],
-    time: "2 min",
     audience: "For employers",
   },
   {
@@ -78,7 +77,6 @@ const tools = [
     title: "AI Interview Question Generator",
     description: "Generate tailored interview questions by industry and role level.",
     tags: ["IT", "Healthcare", "Engineering"],
-    time: "1 min",
     audience: "For job seekers",
   },
 ] as const;
@@ -129,6 +127,7 @@ export default async function ResourcesPage() {
                       src={siteImages[`resources:point-${index + 1}-visual`]}
                       alt={point.imageAlt}
                       fill
+                      sizes="320px"
                       className="object-cover"
                     />
                   </div>
@@ -173,7 +172,7 @@ export default async function ResourcesPage() {
 
               <div className="flex flex-1 flex-col px-4 pb-4 pt-6 sm:px-5 sm:pb-5">
                 <div className="flex items-start justify-between gap-4 text-[11px] uppercase tracking-[0.12em]">
-                  <span className="font-medium text-navy/45 dark:text-cream/45">{tool.time} · Free, no sign-up</span>
+                  <span className="font-medium text-navy/45 dark:text-cream/45">No sign-up required</span>
                   <span className="flex-shrink-0 text-right">
                     <span className="block font-bold text-navy dark:text-cream">Mintex</span>
                     <span className="mt-1 block font-semibold text-steel dark:text-steel-light">{tool.audience}</span>

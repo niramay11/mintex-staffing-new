@@ -82,6 +82,7 @@ export default async function AiInterviewGeneratorPage() {
                   src={siteImages["ai-interview-generator:handshake-visual"]}
                   alt="Candidate shaking hands with a hiring manager after a job interview"
                   fill
+                  sizes="(min-width: 768px) 430px, 64vw"
                   className="object-cover"
                 />
               </div>
@@ -91,6 +92,7 @@ export default async function AiInterviewGeneratorPage() {
                   src={siteImages["ai-interview-generator:confident-visual"]}
                   alt="Confident candidate smiling during a job interview"
                   fill
+                  sizes="(min-width: 768px) 300px, 44vw"
                   className="object-cover"
                 />
               </div>
@@ -100,6 +102,7 @@ export default async function AiInterviewGeneratorPage() {
                   src={siteImages["ai-interview-generator:meeting-visual"]}
                   alt="Job interview taking place in an office setting"
                   fill
+                  sizes="(min-width: 768px) 300px, 44vw"
                   className="object-cover"
                 />
               </div>

@@ -10,52 +10,20 @@ import { getIndustries, getIndustryBySlug } from "@/lib/industries";
 import { pageMetadata } from "@/lib/pageMetadata";
 import { getSiteImages } from "@/lib/siteImages";
 import { industryCardImageKey, INDUSTRY_CARD_FALLBACK_IMAGES } from "@/lib/imageLocations";
-import { getCachedJobs } from "@/lib/jobsCache";
+import { getJobsForCachedPage } from "@/lib/jobsForCachedPage";
 import { isActiveJob } from "@/components/jobs/utils";
-import { withTimeout } from "@/lib/withTimeout";
 import { SITE_URL } from "@/lib/site";
 import Testimonials from "@/components/home/Testimonials";
 import { getHomepageTestimonials } from "@/lib/caseStudies";
 import type { CeipalJob } from "@/components/jobs/types";
 
-// Job data changes with Ceipal sync cycles — never bake a stale snapshot into
-// the build (same reasoning as /get-hired, see that page's own comment).
-export const dynamic = "force-dynamic";
+// Cached page (ISR), refreshed in the background every 10 minutes — was
+// force-dynamic, flagged by Ahrefs as a slow server response.
+export const revalidate = 600;
 
-function IconRoles({ className }: { className?: string }) {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={className}>
-      <path d="M8 21h8M12 17v4M6 4h12v3a6 6 0 0 1-12 0V4Z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M6 5H4a2 2 0 0 0 2 2M18 5h2a2 2 0 0 1-2 2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function IconVetting({ className }: { className?: string }) {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={className}>
-      <path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-      <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function IconMarket({ className }: { className?: string }) {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={className}>
-      <path d="M4 20V10M10 20V4M16 20v-7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function IconEngagement({ className }: { className?: string }) {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={className}>
-      <circle cx="9" cy="12" r="5" stroke="currentColor" strokeWidth="1.6" />
-      <circle cx="15" cy="12" r="5" stroke="currentColor" strokeWidth="1.6" />
-    </svg>
-  );
-}
+// Room for the background jobs lookup (getJobsForCachedPage) to finish after
+// a cold-cache render; Vercel's default timeout would cut it short.
+export const maxDuration = 60;
 
 const MAX_ROLES_SHOWN = 3;
 
@@ -81,9 +49,13 @@ function matchesIndustry(job: CeipalJob, keywords: string[]): boolean {
   return keywords.some((keyword) => textMatchesKeyword(text, keyword));
 }
 
+// Empty list = on-demand ISR: each industry page is rendered on its first
+// live request (with real jobs) and then cached for `revalidate` seconds,
+// instead of at build time, where the jobs lookup is cold and slow. Without
+// generateStaticParams at all, this Next version ignores `revalidate` on a
+// [slug] route and renders it on every request.
 export async function generateStaticParams() {
-  const industries = await getIndustries();
-  return industries.map((industry) => ({ slug: industry.slug }));
+  return [];
 }
 
 export async function generateMetadata({
@@ -111,11 +83,7 @@ export default async function IndustryPage({
   const industry = await getIndustryBySlug(slug);
   if (!industry) notFound();
 
-  const { jobs } = await withTimeout(getCachedJobs(), 3000, {
-    jobs: [] as unknown[],
-    cachedAt: Date.now(),
-    stale: true,
-  });
+  const jobs = await getJobsForCachedPage();
   const openRoles = (jobs as CeipalJob[])
     .filter((job) => isActiveJob(job) && matchesIndustry(job, industry.jobKeywords))
     .slice(0, MAX_ROLES_SHOWN);
@@ -259,23 +227,39 @@ export default async function IndustryPage({
       {/* Sec 3.5 — In-depth: roles, vetting, market, engagement models */}
       <Section background="white">
         <h2 className="font-heading text-3xl font-bold text-navy dark:text-cream">Hiring {industry.name}, In Depth</h2>
-        <div className="mt-8 grid gap-5 sm:grid-cols-2">
+        {/* Same card language as the /industries grid: white 28px-radius
+            card, small uppercase labels top-left / top-right, big light
+            title, short body text. */}
+        <div className="mt-8 grid grid-cols-[minmax(0,1fr)] gap-2.5 sm:grid-cols-[repeat(2,minmax(0,1fr))]">
           {[
-            { title: "Typical Roles We Place", text: industry.typicalRoles, Icon: IconRoles },
-            { title: "How We Vet Candidates", text: industry.vettingProcess, Icon: IconVetting },
-            { title: "The Market Right Now", text: industry.marketContext, Icon: IconMarket },
-            { title: "Flexible Engagement Models", text: industry.engagementModels, Icon: IconEngagement },
-          ].map(({ title, text, Icon }) => (
+            { tag: "Roles", title: "Typical Roles We Place", text: industry.typicalRoles },
+            { tag: "Vetting", title: "How We Vet Candidates", text: industry.vettingProcess },
+            { tag: "Market", title: "The Market Right Now", text: industry.marketContext },
+            { tag: "Engagement", title: "Flexible Engagement Models", text: industry.engagementModels },
+          ].map(({ tag, title, text }, index) => (
             <div
               key={title}
-              className="rounded-2xl border border-navy/[0.08] bg-white p-8 shadow-[0_1px_3px_rgba(0,48,96,0.05)] transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)] dark:border-white/10 dark:bg-navy-900"
+              className="flex min-h-[300px] min-w-0 flex-col rounded-[28px] bg-white p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-28px_rgba(0,48,96,0.35)] sm:p-8 dark:bg-navy-800"
             >
-              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-steel/[0.14] text-steel dark:text-steel-light">
-                <Icon className="h-5 w-5" />
-              </span>
-              <h3 className="mt-5 font-heading text-[18.5px] font-semibold tracking-tight text-navy dark:text-cream">{title}</h3>
-              <span aria-hidden="true" className="mt-3 block h-px w-8 bg-steel/40" />
-              <p className="mt-3.5 text-[16px] leading-[1.85] text-steel dark:text-steel-light">{text}</p>
+              <div className="flex items-start justify-between gap-4 text-[11px] uppercase tracking-[0.12em]">
+                <span className="font-medium text-navy/45 dark:text-cream/45">
+                  {String(index + 1).padStart(2, "0")} · {tag}
+                </span>
+                <span className="flex-shrink-0 text-right">
+                  <span className="block font-bold text-navy dark:text-cream">Mintex</span>
+                  <span className="mt-1 block font-semibold text-steel dark:text-steel-light">{industry.name}</span>
+                </span>
+              </div>
+
+              <div className="mt-auto pt-12">
+                <h3
+                  style={{ fontFamily: "var(--font-sans), Arial, Helvetica, sans-serif" }}
+                  className="text-[26px] font-normal leading-[1.15] tracking-[-0.025em] text-navy sm:text-[30px] dark:text-cream"
+                >
+                  {title}
+                </h3>
+                <p className="mt-4 max-w-[560px] text-[14.5px] leading-relaxed text-navy/65 dark:text-cream/65">{text}</p>
+              </div>
             </div>
           ))}
         </div>

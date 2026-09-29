@@ -26,23 +26,40 @@ export default function JobDescriptionLoader({ jobCode }: { jobCode: string }) {
 
   useEffect(() => {
     let cancelled = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
 
-    fetch(`/api/jobs/description?job_code=${encodeURIComponent(jobCode)}`)
-      .then((r) => r.json())
-      .then((data: { public_job_description?: string; job_description?: string; error?: string }) => {
-        if (cancelled) return;
-        const desc = data.public_job_description || data.job_description || "";
-        const demoted = desc ? demoteDescriptionHeadings(desc) : "";
-        if (demoted && hasSubstantiveDescription(demoted)) setHtml(demoted);
-        else if (demoted) setThin(true);
-        else setFailed(true);
-      })
-      .catch(() => {
-        if (!cancelled) setFailed(true);
-      });
+    // Ceipal has short bursts of slow/failed responses (seen live: "page
+    // failed to fetch" in the jobs log while this showed the error). One
+    // failed attempt used to go straight to "couldn't load" — now it retries
+    // a few times with growing gaps (~2s, 5s, 10s) before giving up, still
+    // showing the loading skeleton meanwhile.
+    const RETRY_DELAYS_MS = [2000, 5000, 10000];
+
+    const attempt = (n: number) => {
+      fetch(`/api/jobs/description?job_code=${encodeURIComponent(jobCode)}`)
+        .then((r) => {
+          if (!r.ok) throw new Error(`HTTP ${r.status}`);
+          return r.json();
+        })
+        .then((data: { public_job_description?: string; job_description?: string; error?: string }) => {
+          if (cancelled) return;
+          const desc = data.public_job_description || data.job_description || "";
+          const demoted = desc ? demoteDescriptionHeadings(desc) : "";
+          if (demoted && hasSubstantiveDescription(demoted)) setHtml(demoted);
+          else if (demoted) setThin(true);
+          else throw new Error("empty description");
+        })
+        .catch(() => {
+          if (cancelled) return;
+          if (n < RETRY_DELAYS_MS.length) timer = setTimeout(() => attempt(n + 1), RETRY_DELAYS_MS[n]);
+          else setFailed(true);
+        });
+    };
+    attempt(0);
 
     return () => {
       cancelled = true;
+      if (timer) clearTimeout(timer);
     };
   }, [jobCode]);
 

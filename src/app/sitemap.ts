@@ -62,10 +62,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(post.published_at),
   }));
 
-  const { data: insightCategories } = await supabase.from("insight_categories").select("slug");
-  const insightCategoryEntries = (insightCategories ?? []).map((category) => ({
-    url: `${baseUrl}/insights/category/${category.slug}`,
-  }));
+  // /insights/category/* pages are intentionally left out: they're noindex
+  // duplicates of /insights (the category is only a filter there) with no
+  // internal links pointing at them, which Ahrefs flagged as orphan pages.
 
   const { jobs } = await getCachedJobs();
   const jobEntries = (jobs as CeipalJob[]).filter(isActiveJob).map((job) => ({
@@ -84,7 +83,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...industryEntries,
     ...hiringServiceEntries,
     ...insightEntries,
-    ...insightCategoryEntries,
     ...jobEntries,
     ...interviewRightsEntries,
   ];

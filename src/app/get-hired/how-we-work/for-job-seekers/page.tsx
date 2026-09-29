@@ -85,6 +85,7 @@ export default async function HowWeHelpJobSeekersPage() {
                   src={siteImages["seek-talent:how-we-work-visual"]}
                   alt="Hiring manager and candidate discussing a staffing role"
                   fill
+                  sizes="(min-width: 640px) 440px, 100vw"
                   className="object-cover"
                 />
               </div>

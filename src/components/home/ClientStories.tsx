@@ -34,6 +34,7 @@ function CardVisual({ story, opacityClassName }: { story: ClientStory; opacityCl
         src={`https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`}
         alt=""
         fill
+        sizes="(min-width: 1024px) 480px, 100vw"
         className={`object-cover ${opacityClassName}`}
       />
     );

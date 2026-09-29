@@ -566,7 +566,7 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
 
               <div className="flex flex-1 flex-col px-4 pb-4 pt-6 sm:px-5 sm:pb-5">
                 <div className="flex items-start justify-between gap-4 text-[11px] uppercase tracking-[0.12em]">
-                  <span className="font-medium text-navy/45 dark:text-cream/45">2 min · Free</span>
+                  <span className="font-medium text-navy/45 dark:text-cream/45">No sign-up required</span>
                   <span className="flex-shrink-0 text-right">
                     <span className="block font-bold text-navy dark:text-cream">Mintex</span>
                     <span className="mt-1 block font-semibold text-steel dark:text-steel-light">{m.audience}</span>

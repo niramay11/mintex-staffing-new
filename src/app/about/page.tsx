@@ -253,6 +253,7 @@ export default async function AboutPage() {
                 src={siteImages["about:story-visual"]}
                 alt="Mintex Staffing recruiter greeting a candidate during a staffing and recruitment consultation"
                 fill
+                sizes="(min-width: 640px) 480px, 100vw"
                 className="object-cover"
               />
             </div>
@@ -269,6 +270,7 @@ export default async function AboutPage() {
                 src={siteImages["about:approach-visual"]}
                 alt="Mintex Staffing team discussing a tailored hiring strategy with a client"
                 fill
+                sizes="(min-width: 640px) 480px, 100vw"
                 className="object-cover"
               />
             </div>

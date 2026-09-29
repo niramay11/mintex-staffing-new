@@ -176,6 +176,7 @@ export default async function HiringServicePage({
                       src={siteImages[`seek-talent-service:${slug}:point-${index + 1}-visual`]}
                       alt={`Mintex Staffing recruiters reviewing candidates for ${service.name.toLowerCase()} placements`}
                       fill
+                      sizes="320px"
                       className="object-cover"
                     />
                   </div>

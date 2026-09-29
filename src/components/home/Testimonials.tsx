@@ -15,14 +15,47 @@ function IconChevron({ direction, className }: { direction: "left" | "right"; cl
   );
 }
 
+const STORY_LABEL: Record<CaseStudy["type"], string> = {
+  client: "Client story",
+  candidate: "Candidate story",
+  other: "Success story",
+};
+
+// Same card language as the /industries grid: white 28px-radius card,
+// small uppercase labels top-left / top-right, big light text, author
+// pinned to the bottom.
 function TestimonialCard({ story }: { story: CaseStudy }) {
   return (
-    <div className="flex w-[360px] flex-shrink-0 snap-start flex-col justify-between rounded-3xl border border-navy/10 bg-white p-8 shadow-[0_10px_30px_-15px_rgba(0,0,0,0.15)] sm:w-[420px] dark:bg-navy-900 dark:border-white/10">
-      <p className="font-heading text-lg italic leading-relaxed text-navy/80 dark:text-cream/80">
-        &ldquo;{story.quote}&rdquo;
-      </p>
-      {story.author && <p className="mt-8 text-navy/70 dark:text-cream/70">- {story.author}</p>}
-    </div>
+    <figure className="flex min-h-[250px] w-[290px] flex-shrink-0 snap-start flex-col rounded-[24px] bg-white p-6 transition-shadow duration-300 hover:shadow-[0_24px_50px_-28px_rgba(0,48,96,0.35)] sm:w-[340px] dark:bg-navy-800">
+      <div className="flex items-start justify-between gap-4 text-[11px] uppercase tracking-[0.12em]">
+        <span className="font-medium text-navy/45 dark:text-cream/45">{STORY_LABEL[story.type] ?? "Success story"}</span>
+        <span className="flex-shrink-0 text-right">
+          <span className="block font-bold text-navy dark:text-cream">Mintex</span>
+          <span className="mt-1 block font-semibold text-steel dark:text-steel-light">Testimonial</span>
+        </span>
+      </div>
+
+      <blockquote className="mb-5 mt-5">
+        <p
+          style={{ fontFamily: "var(--font-sans), Arial, Helvetica, sans-serif" }}
+          className="line-clamp-5 text-[16px] font-light leading-[1.5] tracking-[-0.01em] text-navy sm:text-[17px] dark:text-cream"
+        >
+          &ldquo;{story.quote}&rdquo;
+        </p>
+      </blockquote>
+
+      {story.author && (
+        <figcaption className="mt-auto flex items-center gap-3 border-t border-navy/10 pt-4 dark:border-white/10">
+          <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-navy text-[11px] font-semibold text-white dark:bg-cream dark:text-navy-950">
+            {story.author.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]?.toUpperCase()).join("")}
+          </span>
+          <span className="min-w-0">
+            <span className="block truncate text-[13px] font-semibold text-navy dark:text-cream">{story.author}</span>
+            {story.role && <span className="block truncate text-[12px] text-navy/55 dark:text-cream/55">{story.role}</span>}
+          </span>
+        </figcaption>
+      )}
+    </figure>
   );
 }
 
@@ -67,7 +100,7 @@ export default function Testimonials({
   if (stories.length === 0) return null;
 
   const scrollBy = (dir: "left" | "right") => {
-    scrollerRef.current?.scrollBy({ left: dir === "left" ? -440 : 440, behavior: "smooth" });
+    scrollerRef.current?.scrollBy({ left: dir === "left" ? -360 : 360, behavior: "smooth" });
   };
 
   return (

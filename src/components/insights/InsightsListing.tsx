@@ -32,7 +32,13 @@ export default async function InsightsListing({ activeCategory }: { activeCatego
   // /insights/category/[slug] URLs still work and open with that box ticked.
   return (
     <Section background="white" className="!overflow-visible">
-      <InsightsExplorer posts={posts} initialSelected={activeCategory === "all" ? [] : [activeCategory]} />
+      {/* Only pre-tick the category if it actually has posts — otherwise
+          (e.g. an old link to a category nobody uses any more) show every
+          post instead of an empty "No insights published yet" page. */}
+      <InsightsExplorer
+        posts={posts}
+        initialSelected={activeCategory !== "all" && posts.some((p) => p.category === activeCategory) ? [activeCategory] : []}
+      />
     </Section>
   );
 }

@@ -27,7 +27,7 @@ function VideoThumbnail({ caseStudy, onPlay }: { caseStudy: CaseStudy; onPlay: (
       type="button"
       onClick={onPlay}
       aria-label={`Play video: ${caseStudy.author}`}
-      className="group relative mb-6 flex h-[13rem] w-full flex-shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-navy sm:h-[14rem]"
+      className="group relative flex aspect-[16/9] w-full flex-shrink-0 items-center justify-center overflow-hidden rounded-[18px] bg-navy"
     >
       {caseStudy.thumbnail_url ? (
         // eslint-disable-next-line @next/next/no-img-element -- arbitrary admin-supplied URL
@@ -37,6 +37,7 @@ function VideoThumbnail({ caseStudy, onPlay }: { caseStudy: CaseStudy; onPlay: (
           src={`https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`}
           alt=""
           fill
+          sizes="(min-width: 640px) 440px, 100vw"
           className="object-cover opacity-80"
         />
       ) : null}
@@ -59,27 +60,44 @@ export default function TestimonialCard({ caseStudy }: { caseStudy: CaseStudy })
 
   return (
     <>
-      <figure className="flex flex-col rounded-[32px] bg-white p-8 shadow-[0_4px_20px_-6px_rgba(0,48,96,0.12)] transition-shadow hover:shadow-[0_24px_50px_-20px_rgba(0,48,96,0.35)] dark:bg-navy-900 dark:shadow-[0_4px_20px_-6px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_24px_50px_-20px_rgba(0,0,0,0.5)] sm:p-9">
-        <div>
-          {caseStudy.video_url && (
-            <VideoThumbnail caseStudy={caseStudy} onPlay={() => setPlaying(true)} />
+      {/* Same card language as the /industries grid: white 28px-radius
+          card, small uppercase labels, big light quote, author at the
+          bottom; a video (if any) sits in its own rounded frame on top. */}
+      <figure className="flex h-full min-w-0 flex-col rounded-[24px] bg-white p-2.5 transition-shadow duration-300 hover:shadow-[0_24px_50px_-28px_rgba(0,48,96,0.35)] dark:bg-navy-800">
+        {caseStudy.video_url && <VideoThumbnail caseStudy={caseStudy} onPlay={() => setPlaying(true)} />}
+        <div className="flex flex-1 flex-col px-3.5 pb-3.5 pt-4">
+          <div className="flex items-start justify-between gap-4 text-[11px] uppercase tracking-[0.12em]">
+            <span className="font-medium text-navy/45 dark:text-cream/45">
+              {caseStudy.type === "candidate" ? "Candidate story" : caseStudy.type === "client" ? "Client story" : "Success story"}
+            </span>
+            <span className="flex-shrink-0 text-right">
+              <span className="block font-bold text-navy dark:text-cream">Mintex</span>
+              <span className="mt-1 block font-semibold text-steel dark:text-steel-light">{caseStudy.video_url ? "Video" : "Testimonial"}</span>
+            </span>
+          </div>
+
+          {caseStudy.title && (
+            <p className="mt-4 text-[12.5px] font-semibold text-navy/70 dark:text-cream/70">{caseStudy.title}</p>
           )}
-          <svg aria-hidden="true" viewBox="0 0 32 24" fill="currentColor" className="h-7 w-9 text-steel dark:text-steel-light">
-            <path d="M0 24V14.4C0 9.87 1.253 6.507 3.76 4.304 6.267 2.101 9.387 0.64 13.12 0L14.72 3.68C12.373 4.373 10.507 5.44 9.12 6.88 7.787 8.267 7.12 9.973 7.12 12H13.6V24H0ZM18.4 24V14.4C18.4 9.87 19.653 6.507 22.16 4.304 24.667 2.101 27.787 0.64 31.52 0L33.12 3.68C30.773 4.373 28.907 5.44 27.52 6.88 26.187 8.267 25.52 9.973 25.52 12H32V24H18.4Z" />
-          </svg>
-          <blockquote>
-            <p className="mt-3 font-heading text-[18.5px] italic leading-relaxed text-navy dark:text-cream">
-              {caseStudy.quote}
+          <blockquote className={`mb-5 ${caseStudy.title ? "mt-1.5" : "mt-4"}`}>
+            <p
+              style={{ fontFamily: "var(--font-sans), Arial, Helvetica, sans-serif" }}
+              className="text-[16px] font-light leading-[1.5] tracking-[-0.01em] text-navy sm:text-[17px] dark:text-cream"
+            >
+              &ldquo;{caseStudy.quote}&rdquo;
             </p>
           </blockquote>
+
+          <figcaption className="mt-auto flex items-center gap-3 border-t border-navy/10 pt-4 dark:border-white/10">
+            <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-navy text-[11px] font-semibold text-white dark:bg-cream dark:text-navy-950">
+              {caseStudy.author.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]?.toUpperCase()).join("")}
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate text-[13px] font-semibold text-navy dark:text-cream">{caseStudy.author}</span>
+              {caseStudy.role && <span className="block truncate text-[12px] text-navy/55 dark:text-cream/55">{caseStudy.role}</span>}
+            </span>
+          </figcaption>
         </div>
-        <figcaption className="mt-7">
-          <p className="text-sm font-semibold text-navy dark:text-cream">{caseStudy.title}</p>
-          <p className="mt-0.5 text-sm text-steel dark:text-steel-light">
-            {caseStudy.author}
-            {caseStudy.role ? ` · ${caseStudy.role}` : ""}
-          </p>
-        </figcaption>
       </figure>
 
       {playing && caseStudy.video_url && (

@@ -7,7 +7,7 @@ import JobBoard from "@/components/jobs/JobBoard";
 import BrowseRolesButton from "@/components/jobs/BrowseRolesButton";
 import FaqAccordion from "@/components/ui/FaqAccordion";
 import { getSiteImages } from "@/lib/siteImages";
-import { getCachedJobs } from "@/lib/jobsCache";
+import { getJobsForCachedPage, isBuildPhase } from "@/lib/jobsForCachedPage";
 import { getJobMap } from "@/lib/ceipal-job-map";
 import { getCachedDescription, type JobDescription } from "@/lib/jobDescriptionCache";
 import { withTimeout } from "@/lib/withTimeout";
@@ -56,9 +56,11 @@ async function JobBoardSection() {
   // silently refresh everything in the background after THIS response is
   // sent, so the next visitor never lands on the cold cache this one might
   // have. No-op (near-instant) when the cache was refreshed recently.
-  after(() => warmIfNearExpiry());
+  // Skipped during `next build` (see isBuildPhase).
+  if (!isBuildPhase()) after(() => warmIfNearExpiry());
 
-  const { jobs } = await withTimeout(getCachedJobs(), 3000, { jobs: [] as unknown[], cachedAt: Date.now(), stale: true });
+  // These pages are cached (ISR) now — see getJobsForCachedPage.
+  const jobs = await getJobsForCachedPage();
   const typedJobs = jobs as CeipalJob[];
 
   // Embed the first page's descriptions directly into this server render.
@@ -70,7 +72,7 @@ async function JobBoardSection() {
   // already cached. Bounded by withTimeout so a cold cache can never hold up
   // the page itself; any job that doesn't resolve in time just falls back to
   // that page's own on-demand server fetch, same as before this existed.
-  const jobMap = await withTimeout(getJobMap(), 2000, {} as Record<string, string>);
+  const jobMap = isBuildPhase() ? {} : await withTimeout(getJobMap(), 2000, {} as Record<string, string>);
   // JobBoard's default (unfiltered) view only shows isActiveJob() jobs, so
   // prefetching the raw list's first N misses whatever got filtered out
   // ahead of it — mirror that same filter here or this prefetches the wrong

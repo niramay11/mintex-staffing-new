@@ -119,6 +119,7 @@ export default async function SeekTalentPage() {
                 src={siteImages["seek-talent:cta-visual"]}
                 alt="Employer team collaborating around a table with Mintex Staffing's hiring consultants"
                 fill
+                sizes="(min-width: 640px) 576px, 100vw"
                 className="object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-navy/40 via-navy/0 to-navy/0" />

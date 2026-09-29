@@ -13,7 +13,11 @@ export const metadata: Metadata = pageMetadata({
   path: "/get-hired",
 });
 
-export const dynamic = "force-dynamic";
+// Cached page (ISR), refreshed in the background every 10 minutes — it was
+// force-dynamic before, which Ahrefs flagged as a slow server response
+// (~1.5s). Jobs stay fresh: the underlying jobs cache is 20 minutes anyway,
+// and the job board fetches jobs client-side if a snapshot has none.
+export const revalidate = 600;
 
 export default function ApplyToJobsPage() {
   return (

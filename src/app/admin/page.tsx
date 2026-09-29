@@ -993,7 +993,10 @@ function JobDetailModal({ job, onClose }: { job: CeipalJob; onClose: () => void 
       // failure to the catch below; one silent auto-retry after 2.5s then
       // resolves most of these before the admin even notices, same as the
       // route's own retry protects the cache from being poisoned by one.
-      const fetchDetails = (isAutoRetry = false) => {
+      // Up to two silent auto-retries (2.5s, then 6s) — Ceipal's bursts of
+      // failed responses often outlast a single 2.5s wait.
+      const AUTO_RETRY_DELAYS_MS = [2500, 6000];
+      const fetchDetails = (attempt = 0) => {
         setDL(true);
         fetch(`/api/admin/job-details?id=${encodeURIComponent(v2Id)}`)
           .then(r => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
@@ -1005,7 +1008,7 @@ function JobDetailModal({ job, onClose }: { job: CeipalJob; onClose: () => void 
           })
           .catch(() => {
             if (cancelled) return;
-            if (!isAutoRetry) { setTimeout(() => fetchDetails(true), 2500); return; }
+            if (attempt < AUTO_RETRY_DELAYS_MS.length) { setTimeout(() => fetchDetails(attempt + 1), AUTO_RETRY_DELAYS_MS[attempt]); return; }
             setDE('Failed to load details');
             setDL(false);
           });

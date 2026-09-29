@@ -142,6 +142,7 @@ export default async function HomePage() {
                   src={siteImages["home:what-we-do-visual"]}
                   alt="Mintex Staffing recruiter discussing a candidate's fit with a client"
                   fill
+                  sizes="(min-width: 640px) 480px, 100vw"
                   className="object-cover"
                 />
               </div>
@@ -450,6 +451,7 @@ on paper.
                 src={siteImages["home:industries-collage"]}
                 alt="Mintex Staffing recruiters collaborating with clients across industries"
                 fill
+                sizes="(min-width: 640px) 290px, 80vw"
                 className="object-cover"
               />
             </div>

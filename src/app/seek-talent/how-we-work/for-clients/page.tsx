@@ -110,6 +110,7 @@ export default async function HowWeHelpClientsPage() {
                   src={siteImages["seek-talent:how-we-work-clients-visual"]}
                   alt="Mintex Staffing recruiter discussing hiring needs with a client team"
                   fill
+                  sizes="(min-width: 640px) 440px, 100vw"
                   className="object-cover"
                 />
               </div>

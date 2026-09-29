@@ -42,7 +42,7 @@ function CaseStudyGroup({
       </div>
 
       {studies.length > 0 ? (
-        <div className="mx-auto mt-11 grid max-w-5xl items-start gap-6 sm:grid-cols-2">
+        <div className="mx-auto mt-10 grid max-w-4xl items-stretch gap-4 sm:grid-cols-2">
           {studies.map((cs) => (
             <TestimonialCard key={cs.id} caseStudy={cs} />
           ))}

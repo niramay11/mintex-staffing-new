@@ -15,10 +15,11 @@ const breadcrumbSchema = buildBreadcrumbSchema([
   { name: "Get Hired", path: "/get-hired" },
 ]);
 
-// Without this, Next would statically prerender this page at build time and
-// bake the Ceipal jobs fetched below into the HTML permanently — jobs need to
-// be fresh (cache-TTL-fresh) on every request, not a frozen build-time snapshot.
-export const dynamic = "force-dynamic";
+// Cached page (ISR), refreshed in the background every 10 minutes — it was
+// force-dynamic before, which Ahrefs flagged as a slow server response
+// (~1.5s). Jobs stay fresh: the underlying jobs cache is 20 minutes anyway,
+// and the job board fetches jobs client-side if a snapshot has none.
+export const revalidate = 600;
 
 // GetHiredContent schedules a background cache warm-up (via `after()`) that
 // can take up to ~45s on a cold cache — without raising this, Vercel's

@@ -91,6 +91,7 @@ export default async function SeekTalentGetStartedPage() {
                   src={siteImages["seek-talent:get-started-visual"]}
                   alt="Mintex Staffing recruiter ready to discuss your hiring needs"
                   fill
+                  sizes="512px"
                   className="object-cover"
                 />
               </div>

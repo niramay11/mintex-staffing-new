@@ -161,7 +161,9 @@ export default function ContactPage() {
             <a
               href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(OFFICE_ADDRESS)}`}
               target="_blank"
-              rel="noopener noreferrer"
+              // nofollow: Google Maps rate-limits crawlers, which SEO audits
+              // (Ahrefs) reported as "crawl speed is too limited".
+              rel="nofollow noopener noreferrer"
               className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-navy hover:text-steel dark:text-cream dark:hover:text-steel-light"
             >
               Get Directions

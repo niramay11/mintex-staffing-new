@@ -120,7 +120,7 @@ async function findJobByLegacyCode(code: string): Promise<CeipalJob | null> {
   return job ?? null;
 }
 
-const RELATED_ROLES_SHOWN = 8;
+const RELATED_ROLES_SHOWN = 6;
 
 // "More open roles" links at the bottom of every job page. Ahrefs flagged 58
 // job pages as orphans: /get-hired's board only server-renders its first
@@ -504,7 +504,7 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
               View all jobs →
             </Link>
           </div>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {relatedJobs.map((related) => (
               <JobCard key={related.job_code} job={related} />
             ))}

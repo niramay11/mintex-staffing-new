@@ -124,7 +124,7 @@ export default async function ShareResumePage() {
               className="absolute left-1/2 top-1/2 h-[320px] w-[320px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-steel/15 blur-[100px]"
             />
             <div className="relative aspect-[4/5] w-full max-w-[300px] overflow-hidden rounded-[32px] border border-navy/10 shadow-[0_40px_90px_-25px_rgba(0,48,96,0.3)] dark:border-white/10">
-              <Image src={siteImages["share-resume:hero-visual"]} alt="Candidate preparing their resume to share with Mintex Staffing's recruitment team" fill className="object-cover" />
+              <Image src={siteImages["share-resume:hero-visual"]} alt="Candidate preparing their resume to share with Mintex Staffing's recruitment team" fill sizes="(min-width: 640px) 300px, 100vw" className="object-cover" />
             </div>
           </div>
         </div>
