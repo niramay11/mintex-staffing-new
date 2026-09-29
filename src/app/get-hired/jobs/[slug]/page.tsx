@@ -124,7 +124,7 @@ const RELATED_ROLES_SHOWN = 6;
 
 // "More open roles" links at the bottom of every job page. Ahrefs flagged 58
 // job pages as orphans: /get-hired's board only server-renders its first
-// page of 8 jobs, the rest are paginated client-side, so crawlers never find
+// page of 9 jobs, the rest are paginated client-side, so crawlers never find
 // a link to them. The next 3 jobs in the (date-sorted) list come first — a
 // rotation that guarantees every active job is linked from at least 3 other
 // job pages — then the list is topped up with same-industry roles.

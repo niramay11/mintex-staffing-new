@@ -64,6 +64,20 @@ function button(label: string, href: string): string {
   `;
 }
 
+// Label-left / value-right row. A <table>, not display:flex — Gmail and
+// Outlook drop flexbox, which ran the two sides together
+// ("Phone Screen4 questions") in real inboxes.
+function summaryRow(labelHtml: string, valueHtml: string, labelStyle = '', valueStyle = 'font-weight:600;'): string {
+  return `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border-bottom:1px solid ${BRAND.tanLight};">
+      <tr>
+        <td style="padding:10px 16px 10px 0;color:${BRAND.navy};${labelStyle}">${labelHtml}</td>
+        <td align="right" style="padding:10px 0;color:${BRAND.navy};white-space:nowrap;${valueStyle}">${valueHtml}</td>
+      </tr>
+    </table>
+  `;
+}
+
 // Wraps arbitrary body HTML in the shared logo header / cream card / footer shell.
 function wrapEmail(bodyHtml: string, footerNote?: string): string {
   const url = siteUrl();
@@ -322,12 +336,14 @@ export async function sendHiringCalculatorBreakdown(fields: {
   const fromName  = process.env.SMTP_FROM_NAME  || 'Mintex Staffing';
   const fromEmail = process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER;
 
-  const rows = fields.lines.map((line) => `
-    <div style="display:flex;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid ${BRAND.tanLight};">
-      <span style="${line.strong ? 'font-weight:700;' : ''}color:${BRAND.navy};">${escapeHtml(line.label)}</span>
-      <span style="${line.strong ? 'font-weight:700;' : 'font-weight:600;'}color:${line.accent ? '#0f7a52' : BRAND.navy};white-space:nowrap;">${escapeHtml(line.value)}</span>
-    </div>
-  `).join('');
+  const rows = fields.lines.map((line) =>
+    summaryRow(
+      escapeHtml(line.label),
+      escapeHtml(line.value),
+      line.strong ? 'font-weight:700;' : '',
+      `${line.strong ? 'font-weight:700;' : 'font-weight:600;'}${line.accent ? 'color:#0f7a52;' : ''}`,
+    ),
+  ).join('');
 
   const body = `
     <h2 style="margin:0 0 4px;color:${BRAND.navy};">${escapeHtml(fields.heading)}</h2>
@@ -361,7 +377,9 @@ export async function sendInterviewKitEmail(fields: {
   roleTitle: string;
   state: string;
   competencies: string[];
-  sections: { label: string; count: number }[];
+  // `questions` is sent for the JD-paste/resume flow (no page to link to), so
+  // the email itself — plus a downloadable attachment — IS the kit.
+  sections: { label: string; count: number; questions?: string[] }[];
   // null for the JD-paste/resume flow, which has no server-side page to
   // link back to (the kit only ever lived in that browser tab) — the email
   // stays the same compact summary either way, just without the "view kit"
@@ -377,12 +395,23 @@ export async function sendInterviewKitEmail(fields: {
     <span style="display:inline-block;background:${BRAND.cream};color:${BRAND.navy};font-size:12px;font-weight:600;padding:6px 12px;border-radius:999px;margin:0 6px 6px 0;">${escapeHtml(c)}</span>
   `).join('');
 
-  const sectionRows = fields.sections.map((s) => `
-    <div style="display:flex;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid ${BRAND.tanLight};">
-      <span style="color:${BRAND.navy};">${escapeHtml(s.label)}</span>
-      <span style="font-weight:600;color:${BRAND.navy};white-space:nowrap;">${s.count} question${s.count === 1 ? '' : 's'}</span>
-    </div>
-  `).join('');
+  const sectionRows = fields.sections.map((s) =>
+    summaryRow(escapeHtml(s.label), `${s.count} question${s.count === 1 ? '' : 's'}`),
+  ).join('');
+
+  const hasQuestions = fields.sections.some((s) => s.questions && s.questions.length > 0);
+
+  // Full question list, grouped by interview round.
+  const questionBlocks = hasQuestions
+    ? fields.sections
+        .filter((s) => s.questions && s.questions.length > 0)
+        .map((s) => `
+          <p style="margin:24px 0 8px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:${BRAND.steel};">${escapeHtml(s.label)}</p>
+          <ol style="margin:0;padding:0 0 0 20px;color:${BRAND.navy};">
+            ${s.questions!.map((q) => `<li style="margin:0 0 10px;">${escapeHtml(q)}</li>`).join('')}
+          </ol>
+        `).join('')
+    : '';
 
   const ctaOrNote = fields.kitUrl
     ? `
@@ -390,7 +419,7 @@ export async function sendInterviewKitEmail(fields: {
       <p style="margin:16px 0 0;font-size:12px;color:${BRAND.steel};">Bookmark this link — it stays up to date and works on any device.</p>
     `
     : `
-      <p style="margin:24px 0 0;font-size:12px;color:${BRAND.steel};">This kit was generated from a pasted job posting and isn't saved anywhere on our end — this email is the only copy, so hang onto it.</p>
+      <p style="margin:24px 0 0;font-size:12px;color:${BRAND.steel};">This kit was generated from a pasted job posting and isn't saved anywhere on our end. All your questions are above, and the attached <b>interview-kit.html</b> file is a copy you can download, open in any browser, and print or save as a PDF.</p>
     `;
 
   const body = `
@@ -403,13 +432,41 @@ export async function sendInterviewKitEmail(fields: {
     <p style="margin:0 0 8px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:${BRAND.steel};">Competencies covered</p>
     <div style="margin:0 0 20px;">${competencyPills}</div>
     <div style="border-radius:10px;overflow:hidden;margin-bottom:20px;">${sectionRows}</div>
+    ${questionBlocks}
     ${ctaOrNote}
   `;
+
+  // Standalone, printable copy of the kit for download (only when the full
+  // questions were sent — the by-title flow links to its live page instead).
+  const attachments = hasQuestions
+    ? [
+        {
+          filename: 'interview-kit.html',
+          contentType: 'text/html; charset=utf-8',
+          content: `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${escapeHtml(fields.roleTitle)} Interview Kit — Mintex Staffing</title>
+<style>body{font-family:Arial,Helvetica,sans-serif;color:${BRAND.navy};max-width:760px;margin:40px auto;padding:0 20px;line-height:1.6}
+h1{margin:0 0 4px}.sub{color:${BRAND.steel};margin:0 0 24px}.label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:${BRAND.steel};margin:28px 0 8px}
+.pill{display:inline-block;background:${BRAND.cream};border-radius:999px;padding:4px 12px;margin:0 6px 6px 0;font-size:13px;font-weight:600}
+li{margin:0 0 10px}.foot{margin-top:40px;font-size:12px;color:${BRAND.steel}}@media print{body{margin:0}}</style></head><body>
+<h1>${escapeHtml(fields.roleTitle)} Interview Kit</h1>
+<p class="sub">Competency map and practice questions — plus your rights in ${escapeHtml(fields.state)}. ${totalQuestions} practice questions in total.</p>
+${fields.competencies.length ? `<p class="label">Competencies covered</p><div>${fields.competencies.map((c) => `<span class="pill">${escapeHtml(c)}</span>`).join('')}</div>` : ''}
+${fields.sections
+  .filter((sec) => sec.questions && sec.questions.length > 0)
+  .map((sec) => `<p class="label">${escapeHtml(sec.label)}</p><ol>${sec.questions!.map((q) => `<li>${escapeHtml(q)}</li>`).join('')}</ol>`)
+  .join('')}
+<p class="foot">Generated by the Mintex Staffing AI Interview Question Generator — mintexstaffing.com</p>
+</body></html>`,
+        },
+      ]
+    : [];
 
   await sendBrandedMail({
     from: `"${fromName}" <${fromEmail}>`,
     to: fields.to,
     subject: `Your ${fields.roleTitle} Interview Kit — Mintex Staffing`,
     html: wrapEmail(body),
+    attachments,
   });
 }

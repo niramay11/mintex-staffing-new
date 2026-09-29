@@ -6,6 +6,16 @@ import { pageMetadata } from "@/lib/pageMetadata";
 
 export const revalidate = 60;
 
+// Required for `revalidate` to take effect on a dynamic [param] route in
+// this Next version — without generateStaticParams the page silently renders
+// on every request (Ahrefs flagged posts as "slow page", ~1-1.6s TTFB, served
+// no-store). An empty list = on-demand ISR: each page is rendered on its first
+// request, then cached. Admin publish/edit/delete already calls
+// revalidatePath for the affected pages, so changes still show immediately.
+export async function generateStaticParams() {
+  return [];
+}
+
 export async function generateMetadata({
   params,
 }: {

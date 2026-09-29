@@ -20,7 +20,7 @@ import {
 } from "./utils";
 import { IconArrowRight, IconBars, IconBell, IconBriefcase, IconCalendar, IconChevron, IconFlag, IconInfo, IconSearch } from "./icons";
 
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 9; // 3 full rows of 3 on desktop
 
 const LOCATION_OPTIONS = [
   "Remote",

@@ -18,7 +18,7 @@ import type { CeipalJob } from "@/components/jobs/types";
 
 // Matches JobBoard's own PAGE_SIZE — no point prefetching more than the
 // first page can show before the user has even paged or filtered.
-const PREFETCH_DESCRIPTION_COUNT = 8;
+const PREFETCH_DESCRIPTION_COUNT = 9;
 
 const jobSeekerFaqs = [
   {

@@ -14,6 +14,16 @@ import { resolveCtaHref } from "@/lib/insightCtaRoutes";
 
 export const revalidate = 60;
 
+// Required for `revalidate` to take effect on a dynamic [param] route in
+// this Next version — without generateStaticParams the page silently renders
+// on every request (Ahrefs flagged posts as "slow page", ~1-1.6s TTFB, served
+// no-store). An empty list = on-demand ISR: each page is rendered on its first
+// request, then cached. Admin publish/edit/delete already calls
+// revalidatePath for the affected pages, so changes still show immediately.
+export async function generateStaticParams() {
+  return [];
+}
+
 // Post bodies are plain paragraph arrays, but longer articles embed structure
 // via a few plain-text conventions the admin authors write directly:
 //   "1. A short line with no closing punctuation"  -> subheading
@@ -332,7 +342,10 @@ export default async function InsightPostPage({
 
         <div className="mt-5 flex flex-wrap gap-2">
           <Link
-            href={`/insights/category/${post.category}`}
+            // Links to /insights, not /insights/category/* — those are noindex
+            // duplicates, and linking to them made Ahrefs crawl them and flag
+            // "noindex page". The category is a filter on /insights now.
+            href="/insights"
             className="rounded-full border border-steel/50 px-4 py-1.5 text-sm font-medium text-steel transition-colors hover:bg-steel/10 dark:border-steel-light/40 dark:text-steel-light dark:hover:bg-steel-light/10"
           >
             {categoryLabel}
