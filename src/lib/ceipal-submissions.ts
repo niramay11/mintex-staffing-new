@@ -71,6 +71,18 @@ export async function fetchJobSubmissions(v2Id: string): Promise<Record<string, 
   }
 }
 
+// Same cached read, but null on failure instead of [] — for callers that need
+// to tell "Ceipal didn't answer" apart from "this job has no submissions"
+// (the Client Portal counts, see portalSubmissions.ts).
+export async function fetchJobSubmissionsOrNull(v2Id: string): Promise<Record<string, unknown>[] | null> {
+  try {
+    return await getCachedJobSubmissionsRaw(v2Id);
+  } catch (err) {
+    console.warn(`[ceipal-submissions] ${err instanceof Error ? err.message : String(err)} — reporting as failed`);
+    return null;
+  }
+}
+
 // Confirmed live: Ceipal's getApplicantDetails endpoint routinely takes
 // 10-20+ seconds to respond (measured directly against production), but both
 // portal routes that called this were capping the wait at 6s (or not caching

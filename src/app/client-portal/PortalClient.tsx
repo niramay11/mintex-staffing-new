@@ -164,7 +164,104 @@ function mapStageIdx(status: string): number {
     return 0;
 }
 
-type Submission = { id: string; submission_id: number; submission_status: string; pipeline_status: string; source: string; submitted_on: string; employment_type?: string; tax_term?: string; pay_rate?: string | null; applicant_id?: number; };
+type Submission = { id: string; submission_id: number; submission_status: string; pipeline_status: string; source: string; submitted_on: string; employment_type?: string; tax_term?: string; pay_rate?: string | null; applicant_id?: number; candidate_name?: string; name_pending?: boolean; submission_key?: string; job_code?: string; };
+
+type SubmissionRow = Record<string, unknown>;
+
+function isHiredSubmission(s: SubmissionRow): boolean {
+    const raw = String(s.submission_status || s.pipeline_status || '');
+    const st = raw.toLowerCase();
+    return st.includes('placement') || st.includes('placed') || st.includes('offer accepted') || mapStageIdx(raw) === 5;
+}
+
+// ─── Submission loading ───────────────────────────────────────────────────────
+// Confirmed live: asking for every job's submissions in one request ran into
+// Vercel's 60s limit and came back partial (31 of 50 for CBREX). Each request
+// now carries a few job codes, a few requests run at once, and candidate names
+// are filled in afterwards by /api/portal/candidate-names.
+const SUBMISSION_CHUNK = 6;
+const NAME_CHUNK = 4;
+const REQUEST_CONCURRENCY = 3;
+const NAME_ROUNDS = 3;
+
+function chunkList<T>(items: T[], size: number): T[][] {
+    const out: T[][] = [];
+    for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
+    return out;
+}
+
+async function runPool<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>): Promise<R[]> {
+    const out = new Array<R>(items.length);
+    let next = 0;
+    await Promise.all(Array.from({ length: Math.min(limit, items.length) }, async () => {
+        while (next < items.length) { const i = next++; out[i] = await fn(items[i]); }
+    }));
+    return out;
+}
+
+async function loadSubmissionsForCodes(codes: string[]): Promise<{ all: SubmissionRow[]; failedJobs: string[] }> {
+    const groups = await runPool(chunkList(codes, SUBMISSION_CHUNK), REQUEST_CONCURRENCY, async group => {
+        try {
+            const res = await fetch(`/api/portal/submissions?job_codes=${encodeURIComponent(group.join(','))}`);
+            if (!res.ok) return { results: [] as SubmissionRow[], failed: group };
+            const d = await res.json();
+            return {
+                results: (Array.isArray(d.results) ? d.results : []) as SubmissionRow[],
+                failed: (Array.isArray(d.failed_jobs) ? d.failed_jobs : []) as string[],
+            };
+        } catch {
+            return { results: [] as SubmissionRow[], failed: group };
+        }
+    });
+    const all = groups.flatMap(g => g.results);
+    all.sort((a, b) => (new Date(String(b.submitted_on ?? '')).getTime() || 0) - (new Date(String(a.submitted_on ?? '')).getTime() || 0));
+    return { all, failedJobs: groups.flatMap(g => g.failed) };
+}
+
+// Fills in names for rows flagged `name_pending`, a few rounds at most,
+// reporting each batch as it lands so names appear progressively.
+async function resolvePendingNames(rows: SubmissionRow[], onNames: (names: Record<string, string>) => void, isCancelled: () => boolean) {
+    const known: Record<string, string> = {};
+    for (let round = 0; round < NAME_ROUNDS && !isCancelled(); round++) {
+        const codes = [...new Set(rows
+            .filter(r => r.name_pending && !known[String(r.submission_key ?? '')])
+            .map(r => String(r.job_code ?? ''))
+            .filter(Boolean))];
+        if (codes.length === 0) return;
+        let stillPending = 0;
+        await runPool(chunkList(codes, NAME_CHUNK), REQUEST_CONCURRENCY, async group => {
+            try {
+                const res = await fetch('/api/portal/candidate-names', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ job_codes: group }),
+                });
+                if (!res.ok) { stillPending += 1; return; }
+                const d = await res.json();
+                Object.assign(known, d.names ?? {});
+                stillPending += Number(d.pending) || 0;
+                if (!isCancelled()) onNames({ ...known });
+            } catch { stillPending += 1; }
+        });
+        if (stillPending === 0) return;
+    }
+}
+
+function applyNames<T extends SubmissionRow>(rows: T[], names: Record<string, string>, finished = false): T[] {
+    return rows.map(r => {
+        const name = names[String(r.submission_key ?? '')];
+        if (name) return { ...r, candidate_name: name, name_pending: false };
+        return finished && r.name_pending ? { ...r, name_pending: false } : r;
+    });
+}
+
+// Name cell: the real name, a "loading" placeholder while it's being looked
+// up, or the old ID fallback once lookups have given up.
+function CandidateName({ sub, fallback }: { sub: SubmissionRow; fallback: string }) {
+    if (sub.candidate_name) return <>{String(sub.candidate_name)}</>;
+    if (sub.name_pending) return <span className="font-normal italic text-navy/40 dark:text-cream/40">Loading name…</span>;
+    return <>{fallback}</>;
+}
 
 // ─── Job Detail Modal ─────────────────────────────────────────────────────────
 function JobDetailModal({ job, permissions, onClose }: { job: Job; permissions: Record<string, boolean>; onClose: () => void }) {
@@ -174,6 +271,7 @@ function JobDetailModal({ job, permissions, onClose }: { job: Job; permissions: 
     const [detailFailed, setDetailFailed]   = useState(false);
     const [submissions, setSubs]    = useState<Submission[]>([]);
     const [subsLoading, setSL]      = useState(false);
+    const [subsFailed, setSubsFailed] = useState(false);
     const [stageFilter, setStageFilter] = useState('all');
 
     useEffect(() => {
@@ -206,11 +304,25 @@ function JobDetailModal({ job, permissions, onClose }: { job: Job; permissions: 
         };
         fetchDetails();
 
-        // Fetch submissions
+        // Fetch submissions, then fill in any candidate names not stored yet
         setSL(true);
+        setSubsFailed(false);
         fetch(`/api/portal/job-submissions?job_code=${encodeURIComponent(code)}`)
-            .then(r => r.ok ? r.json() : []).then(d => { setSubs(Array.isArray(d) ? d : []); setSL(false); })
-            .catch(() => setSL(false));
+            .then(r => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+            .then(d => {
+                if (cancelled) return;
+                const list: Submission[] = Array.isArray(d) ? d : [];
+                setSubs(list);
+                setSL(false);
+                resolvePendingNames(
+                    list as SubmissionRow[],
+                    names => setSubs(prev => applyNames(prev as SubmissionRow[], names) as Submission[]),
+                    () => cancelled,
+                ).finally(() => {
+                    if (!cancelled) setSubs(prev => applyNames(prev as SubmissionRow[], {}, true) as Submission[]);
+                });
+            })
+            .catch(() => { if (!cancelled) { setSubsFailed(true); setSL(false); } });
 
         return () => { cancelled = true; };
     }, [job.job_code]);
@@ -354,6 +466,10 @@ function JobDetailModal({ job, permissions, onClose }: { job: Job; permissions: 
                                     <div className="w-5 h-5 animate-spin rounded-full border-2 border-navy/15 border-t-steel dark:border-white/15" />
                                     <span className="text-xs tracking-widest uppercase">Loading submissions…</span>
                                 </div>
+                            ) : subsFailed ? (
+                                <p className="py-10 text-center text-sm text-navy/60 dark:text-cream/60">
+                                    Couldn&apos;t load submissions from CEIPAL right now. Close and reopen this job to try again.
+                                </p>
                             ) : (
                                 <>
                                     {/* Stage filter */}
@@ -389,9 +505,7 @@ function JobDetailModal({ job, permissions, onClose }: { job: Job; permissions: 
                                                         <div className="flex items-start justify-between gap-3 mb-3">
                                                             <div>
                                                                 <p className="text-sm font-semibold text-navy dark:text-cream">
-                                                                    {(sub as Record<string,unknown>).candidate_name
-                                                                      ? String((sub as Record<string,unknown>).candidate_name)
-                                                                      : `Submission #${sub.submission_id}`}
+                                                                    <CandidateName sub={sub as SubmissionRow} fallback={`Submission #${sub.submission_id}`} />
                                                                 </p>
                                                                 <p className="text-xs mt-0.5 text-navy/50 dark:text-cream/50">
                                                                     {sub.source ? `Source: ${sub.source}` : ''}
@@ -462,30 +576,14 @@ function JobDetailModal({ job, permissions, onClose }: { job: Job; permissions: 
 }
 
 // ─── Submissions Modal ────────────────────────────────────────────────────────
-function SubmissionsModal({ onClose, permissions, onCountReady, jobCodes, initialData }: { onClose: () => void; permissions: Record<string, boolean>; onCountReady?: (n: number) => void; jobCodes?: string; initialData?: Record<string, unknown>[] }) {
-    const [submissions, setSubmissions] = useState<Record<string, unknown>[]>(initialData ?? []);
-    const [loading, setLoading]         = useState(!initialData);
+// `data` is the dashboard's shared submissions list (null while it's still
+// loading) — read straight from props so names filled in after the modal
+// opened show up here too.
+function SubmissionsModal({ onClose, permissions, data }: { onClose: () => void; permissions: Record<string, boolean>; data: SubmissionRow[] | null }) {
+    const submissions = data ?? [];
+    const loading = data === null;
     const [search, setSearch]           = useState('');
     const [stageFilter, setStageFilter] = useState('all');
-
-    useEffect(() => {
-        if (initialData) {
-            onCountReady?.(initialData.length);
-            return;
-        }
-        const url = jobCodes
-            ? `/api/portal/submissions?job_codes=${encodeURIComponent(jobCodes)}`
-            : '/api/portal/submissions';
-        fetch(url)
-            .then(r => r.ok ? r.json() : { results: [] })
-            .then(d => {
-                const list = Array.isArray(d.results) ? d.results : [];
-                setSubmissions(list);
-                onCountReady?.(list.length);
-                setLoading(false);
-            })
-            .catch(() => setLoading(false));
-    }, []);
 
     const fmt = (d: string) => { try { return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); } catch { return d; } };
 
@@ -579,7 +677,7 @@ function SubmissionsModal({ onClose, permissions, onCountReady, jobCodes, initia
                                         <div className="flex items-start justify-between gap-3 mb-3">
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-sm font-bold text-navy truncate dark:text-cream">
-                                                    {sub.candidate_name ? String(sub.candidate_name) : `Submission #${sub.submission_id ?? i + 1}`}
+                                                    <CandidateName sub={sub} fallback={`Submission #${sub.submission_id ?? i + 1}`} />
                                                 </p>
                                                 <div className="flex items-center gap-2 mt-1 flex-wrap">
                                                     <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-cream text-navy dark:bg-navy-800 dark:text-cream">
@@ -640,37 +738,10 @@ function SubmissionsModal({ onClose, permissions, onCountReady, jobCodes, initia
 }
 
 // ─── Hired Modal ──────────────────────────────────────────────────────────────
-function HiredModal({ onClose, permissions, onCountReady, jobCodes, initialData }: { onClose: () => void; permissions: Record<string, boolean>; onCountReady?: (n: number) => void; jobCodes?: string; initialData?: Record<string, unknown>[] }) {
-    const filterHired = (all: Record<string, unknown>[]) => all.filter(s => {
-        const st = String(s.submission_status || s.pipeline_status || '').toLowerCase();
-        return st.includes('placement') || st.includes('placed') || st.includes('offer accepted')
-            || mapStageIdx(String(s.submission_status || s.pipeline_status || '')) === 5;
-    });
-
-    const [placements, setPlacements] = useState<Record<string, unknown>[]>(initialData ? filterHired(initialData) : []);
-    const [loading, setLoading]       = useState(!initialData);
+function HiredModal({ onClose, permissions, data }: { onClose: () => void; permissions: Record<string, boolean>; data: SubmissionRow[] | null }) {
+    const placements = (data ?? []).filter(isHiredSubmission);
+    const loading = data === null;
     const [search, setSearch]         = useState('');
-
-    useEffect(() => {
-        if (initialData) {
-            const hired = filterHired(initialData);
-            onCountReady?.(hired.length);
-            return;
-        }
-        const url = jobCodes
-            ? `/api/portal/submissions?job_codes=${encodeURIComponent(jobCodes)}`
-            : '/api/portal/submissions';
-        fetch(url)
-            .then(r => r.ok ? r.json() : { results: [] })
-            .then(d => {
-                const all: Record<string, unknown>[] = Array.isArray(d.results) ? d.results : [];
-                const hired = filterHired(all);
-                setPlacements(hired);
-                onCountReady?.(hired.length);
-                setLoading(false);
-            })
-            .catch(() => setLoading(false));
-    }, []);
 
     const fmt = (d: string) => { try { return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); } catch { return d; } };
 
@@ -724,7 +795,7 @@ function HiredModal({ onClose, permissions, onCountReady, jobCodes, initialData 
                     ) : (
                         <div className="space-y-3">
                             {filtered.map((p, i) => {
-                                const candidateName = String(p.candidate_name ?? '') || `Candidate #${i + 1}`;
+                                const candidateName = <CandidateName sub={p} fallback={`Candidate #${i + 1}`} />;
                                 const jobTitle  = String(p.job_title ?? '—');
                                 const jobCode   = String(p.job_code ?? '');
                                 const submittedOn = String(p.submitted_on ?? '');
@@ -809,6 +880,8 @@ export default function PortalClient({
     const [hiredCount, setHiredCount]           = useState<number | null>(null);
     const [submissionsSlow, setSubmissionsSlow] = useState(false);
     const [cachedSubmissions, setCachedSubmissions] = useState<Record<string, unknown>[] | null>(null);
+    const [failedSubmissionJobs, setFailedSubmissionJobs] = useState<string[]>([]);
+    const [submissionsReload, setSubmissionsReload] = useState(0);
 
     // Guards the one-time skip of the mount-time jobs fetch when the server
     // already prefetched them — a later logout/login in the same session must
@@ -859,28 +932,32 @@ export default function PortalClient({
     // Fetch submissions once AFTER jobs are loaded — results shared with modals to avoid re-fetches
     useEffect(() => {
         if (!client || jobs.length === 0) return;
-        // Ceipal (the source this pulls from) can take 10-20+ seconds on an
-        // uncached candidate lookup — this just tells the client that's
-        // expected instead of leaving a bare "…" with no explanation.
+        let cancelled = false;
+        // Ceipal (the source this pulls from) can be slow — this just tells
+        // the client that's expected instead of leaving a bare "…".
         const slowTimer = setTimeout(() => setSubmissionsSlow(true), 5000);
-        const codes = jobs.map(j => j.job_code).filter(Boolean).join(',');
-        const url = `/api/portal/submissions?job_codes=${encodeURIComponent(codes)}`;
-        fetch(url)
-            .then(r => r.ok ? r.json() : { results: [] })
-            .then(d => {
-                const all: Record<string, unknown>[] = Array.isArray(d.results) ? d.results : [];
+        const codes = jobs.map(j => j.job_code).filter(Boolean);
+        loadSubmissionsForCodes(codes)
+            .then(({ all, failedJobs }) => {
+                if (cancelled) return;
                 setCachedSubmissions(all);
                 setSubmissionCount(all.length);
-                const hired = all.filter(s => {
-                    const st = String(s.submission_status || s.pipeline_status || '').toLowerCase();
-                    return st.includes('placement') || st.includes('placed') || st.includes('offer accepted')
-                        || mapStageIdx(String(s.submission_status || s.pipeline_status || '')) === 5;
+                setHiredCount(all.filter(isHiredSubmission).length);
+                setFailedSubmissionJobs(failedJobs);
+                clearTimeout(slowTimer);
+                setSubmissionsSlow(false);
+                // Names fill in after the counts are already on screen.
+                return resolvePendingNames(
+                    all,
+                    names => setCachedSubmissions(prev => (prev ? applyNames(prev, names) : prev)),
+                    () => cancelled,
+                ).finally(() => {
+                    if (!cancelled) setCachedSubmissions(prev => (prev ? applyNames(prev, {}, true) : prev));
                 });
-                setHiredCount(hired.length);
             })
-            .catch(() => { setSubmissionCount(0); setHiredCount(0); })
-            .finally(() => { clearTimeout(slowTimer); setSubmissionsSlow(false); });
-    }, [jobs]);
+            .finally(() => { clearTimeout(slowTimer); if (!cancelled) setSubmissionsSlow(false); });
+        return () => { cancelled = true; clearTimeout(slowTimer); };
+    }, [client, jobs, submissionsReload]);
 
     const handleLogout = async () => {
         await fetch("/api/portal/logout", { method: "POST" });
@@ -1018,6 +1095,26 @@ export default function PortalClient({
                     <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                         className="-mt-3 mb-6 text-xs text-navy/50 dark:text-cream/50">
                         Still fetching submissions &amp; hires — our data source (CEIPAL) can be slow, please wait a few seconds…
+                    </motion.p>
+                )}
+
+                {/* Some jobs' submissions didn't come back — say so instead of showing a quietly low count */}
+                {!loading && submissionCount !== null && failedSubmissionJobs.length > 0 && (
+                    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                        className="-mt-3 mb-6 text-xs text-amber-700 dark:text-amber-300">
+                        CEIPAL didn&apos;t respond for {failedSubmissionJobs.length} job{failedSubmissionJobs.length === 1 ? '' : 's'}, so these totals may be low.{' '}
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setSubmissionCount(null);
+                                setHiredCount(null);
+                                setFailedSubmissionJobs([]);
+                                setSubmissionsReload(n => n + 1);
+                            }}
+                            className="font-semibold underline hover:no-underline"
+                        >
+                            Retry
+                        </button>
                     </motion.p>
                 )}
 
@@ -1166,18 +1263,14 @@ export default function PortalClient({
             <SubmissionsModal
                 permissions={client.permissions ?? {}}
                 onClose={() => setShowSubmissions(false)}
-                onCountReady={n => setSubmissionCount(n)}
-                jobCodes={jobs.map(j => j.job_code).filter(Boolean).join(',')}
-                initialData={cachedSubmissions ?? undefined}
+                data={cachedSubmissions}
             />
         )}
         {showHired && (
             <HiredModal
                 permissions={client.permissions ?? {}}
                 onClose={() => setShowHired(false)}
-                onCountReady={n => setHiredCount(n)}
-                jobCodes={jobs.map(j => j.job_code).filter(Boolean).join(',')}
-                initialData={cachedSubmissions ?? undefined}
+                data={cachedSubmissions}
             />
         )}
         </>
