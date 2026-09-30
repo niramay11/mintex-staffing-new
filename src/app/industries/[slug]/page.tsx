@@ -1,15 +1,20 @@
+import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import Section from "@/components/ui/Section";
-import StatBlock from "@/components/ui/StatBlock";
 import JobCard from "@/components/jobs/JobCard";
-import FaqAccordion from "@/components/ui/FaqAccordion";
+import IndustryAccordion from "@/components/industries/IndustryAccordion";
 import { getIndustries, getIndustryBySlug } from "@/lib/industries";
 import { pageMetadata } from "@/lib/pageMetadata";
 import { getSiteImages } from "@/lib/siteImages";
-import { industryCardImageKey, INDUSTRY_CARD_FALLBACK_IMAGES } from "@/lib/imageLocations";
+import {
+  industryCardImageKey,
+  industryFaqImageKey,
+  industryFaqFallbackImage,
+  INDUSTRY_CARD_FALLBACK_IMAGES,
+} from "@/lib/imageLocations";
 import { getJobsForCachedPage } from "@/lib/jobsForCachedPage";
 import { isActiveJob } from "@/components/jobs/utils";
 import { SITE_URL } from "@/lib/site";
@@ -100,6 +105,7 @@ export default async function IndustryPage({
   const heroImage =
     siteImages[industryCardImageKey(industry.slug)] ??
     INDUSTRY_CARD_FALLBACK_IMAGES[industryIndex % INDUSTRY_CARD_FALLBACK_IMAGES.length];
+  const faqImage = siteImages[industryFaqImageKey(industry.slug)] ?? industryFaqFallbackImage(industryIndex);
   const heroStat = industry.stats[0];
 
   const serviceSchema = {
@@ -190,99 +196,277 @@ export default async function IndustryPage({
         </div>
       </Section>
 
-      {/* Sec 2 — Open roles */}
-      <Section background="white">
-        <h2 className="font-heading text-3xl font-bold text-navy dark:text-cream">Open {industry.name} Roles</h2>
-        <p className="mt-2 max-w-2xl text-navy/70 dark:text-cream/70">{industry.intro}</p>
+      {/* Sec 2 — Open roles. Heading + "View All Jobs" on one row, intro
+          directly under the heading; job cards unchanged. */}
+      <Section background="white" className="!border-t-0">
+        <SectionLabel>Open Roles</SectionLabel>
+        <div className="mt-5 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+          <TwoToneHeading lead={`Open ${industry.name} roles`} muted="hiring right now" />
+          <ArrowLink href="/get-hired" className="flex-shrink-0">
+            View All Jobs
+          </ArrowLink>
+        </div>
+        <p className="mt-5 max-w-[760px] text-[16px] leading-[1.7] text-navy/75 dark:text-cream/75">{industry.intro}</p>
         {openRoles.length > 0 ? (
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {openRoles.map((job) => (
               <JobCard key={job.job_code} job={job} />
             ))}
           </div>
         ) : (
-          <p className="mt-8 text-sm text-navy/60 dark:text-cream/60">
+          <p className="mt-10 text-sm text-navy/60 dark:text-cream/60">
             No open roles posted right now, check back soon or share your resume to get matched
             as new roles open.
           </p>
         )}
       </Section>
 
-      {/* Sec 3 — Sector insights */}
-      <Section background="mist">
-        <h2 className="font-heading text-3xl font-bold text-navy dark:text-cream">{industry.name} Job Market Trends</h2>
-        <h3 className="mt-4 text-xl font-semibold text-navy dark:text-cream">{industry.sectorInsight.title}</h3>
-        <p className="mt-3 max-w-2xl text-navy/70 dark:text-cream/70">{industry.sectorInsight.body}</p>
-
-        <div className="mt-6 flex flex-wrap gap-4">
-          <Link
-            href="/insights/post/2026-hiring-trends-outlook"
-            className="text-sm font-semibold text-steel hover:text-navy hover:underline dark:text-steel-light dark:hover:text-cream"
-          >
-            Related: 2026 Hiring Trends: What Employers Need to Watch &rarr;
-          </Link>
+      {/* Sec 3 — In depth: four equal-height cards (icon + pill tag on top,
+          title and full text below). Hover lifts the card and fills it navy —
+          no size change, so the row never jumps. */}
+      <Section background="white" className="!border-t-0">
+        <SectionLabel>In Depth</SectionLabel>
+        <div className="mt-5 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+          <TwoToneHeading lead={`Hiring ${industry.name},`} muted="explained in depth" />
+          <ArrowLink href="/seek-talent/get-started" className="flex-shrink-0">
+            Hire {industry.name} Talent
+          </ArrowLink>
         </div>
-      </Section>
 
-      {/* Sec 3.5 — In-depth: roles, vetting, market, engagement models */}
-      <Section background="white">
-        <h2 className="font-heading text-3xl font-bold text-navy dark:text-cream">Hiring {industry.name}, In Depth</h2>
-        {/* Same card language as the /industries grid: white 28px-radius
-            card, small uppercase labels top-left / top-right, big light
-            title, short body text. */}
-        <div className="mt-8 grid grid-cols-[minmax(0,1fr)] gap-2.5 sm:grid-cols-[repeat(2,minmax(0,1fr))]">
+        <div className="mt-10 grid gap-2.5 md:grid-cols-2 2xl:grid-cols-4">
           {[
-            { tag: "Roles", title: "Typical Roles We Place", text: industry.typicalRoles },
-            { tag: "Vetting", title: "How We Vet Candidates", text: industry.vettingProcess },
-            { tag: "Market", title: "The Market Right Now", text: industry.marketContext },
-            { tag: "Engagement", title: "Flexible Engagement Models", text: industry.engagementModels },
-          ].map(({ tag, title, text }, index) => (
-            <div
-              key={title}
-              className="flex min-h-[300px] min-w-0 flex-col rounded-[28px] bg-white p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-28px_rgba(0,48,96,0.35)] sm:p-8 dark:bg-navy-800"
-            >
-              <div className="flex items-start justify-between gap-4 text-[11px] uppercase tracking-[0.12em]">
-                <span className="font-medium text-navy/45 dark:text-cream/45">
-                  {String(index + 1).padStart(2, "0")} · {tag}
-                </span>
-                <span className="flex-shrink-0 text-right">
-                  <span className="block font-bold text-navy dark:text-cream">Mintex</span>
-                  <span className="mt-1 block font-semibold text-steel dark:text-steel-light">{industry.name}</span>
-                </span>
-              </div>
+            { tag: "roles", title: "Typical Roles We Place", text: industry.typicalRoles, icon: <IconPeople /> },
+            { tag: "vetting", title: "How We Vet Candidates", text: industry.vettingProcess, icon: <IconShield /> },
+            { tag: "market", title: "The Market Right Now", text: industry.marketContext, icon: <IconTrend /> },
+            { tag: "engagement", title: "Flexible Engagement Models", text: industry.engagementModels, icon: <IconLayers /> },
+          ].map(({ tag, title, text, icon }, index) => {
+            const [lead, rest] = splitLeadSentence(text);
+            return (
+              <div
+                key={title}
+                className="group relative flex min-w-0 flex-col overflow-hidden rounded-[24px] border border-navy/[0.06] bg-white p-6 shadow-[0_1px_2px_rgba(0,48,96,0.04),0_12px_32px_-24px_rgba(0,48,96,0.25)] transition-all duration-500 hover:-translate-y-1.5 hover:border-navy hover:bg-navy hover:shadow-[0_32px_60px_-28px_rgba(0,48,96,0.6)] sm:p-7 dark:border-white/[0.06] dark:bg-navy-800 dark:hover:border-navy-950 dark:hover:bg-navy-950"
+              >
+                {/* Hover glow, purely decorative. */}
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-steel-light/40 opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100"
+                />
 
-              <div className="mt-auto pt-12">
+                <div className="relative flex items-start justify-between gap-3">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-steel-lighter/60 to-steel-lighter/20 text-navy ring-1 ring-navy/[0.06] transition-all duration-500 group-hover:from-white group-hover:to-white/80 group-hover:text-navy group-hover:ring-white/20 dark:from-steel/40 dark:to-steel/10 dark:text-cream">
+                    {icon}
+                  </span>
+                  <span className="rounded-full border border-navy/15 bg-page/60 px-3 py-1 text-[11.5px] font-medium uppercase tracking-[0.1em] text-navy/60 transition-colors duration-500 group-hover:border-white/25 group-hover:bg-white/10 group-hover:text-white/85 dark:border-white/15 dark:bg-transparent dark:text-cream/70">
+                    {tag}
+                  </span>
+                </div>
+
                 <h3
-                  style={{ fontFamily: "var(--font-sans), Arial, Helvetica, sans-serif" }}
-                  className="text-[26px] font-normal leading-[1.15] tracking-[-0.025em] text-navy sm:text-[30px] dark:text-cream"
+                  style={SANS}
+                  className="relative mt-8 text-[23px] font-normal leading-[1.2] tracking-[-0.02em] text-navy transition-colors duration-500 group-hover:text-white dark:text-cream"
                 >
                   {title}
                 </h3>
-                <p className="mt-4 max-w-[560px] text-[14.5px] leading-relaxed text-navy/65 dark:text-cream/65">{text}</p>
+                <div className="relative mt-4 h-px bg-gradient-to-r from-steel/50 via-navy/10 to-transparent transition-colors duration-500 group-hover:from-white/50 group-hover:via-white/15" />
+                <p className="relative mt-4 text-[14.5px] leading-[1.7] text-navy/70 transition-colors duration-500 group-hover:text-white/75 dark:text-cream/70">
+                  <span className="font-medium text-navy transition-colors duration-500 group-hover:text-white dark:text-cream">{lead}</span>
+                  {rest && <> {rest}</>}
+                </p>
+
+                <div className="relative mt-auto flex items-center justify-between gap-4 pt-8">
+                  <span className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-navy/40 transition-colors duration-500 group-hover:text-white/55 dark:text-cream/40">
+                    <span className="text-navy transition-colors duration-500 group-hover:text-white dark:text-cream">
+                      {String(index + 1).padStart(2, "0")}
+                      <span className="text-navy/30 group-hover:text-white/40 dark:text-cream/30"> / 04</span>
+                    </span>
+                    <span aria-hidden="true" className="h-3 w-px bg-navy/15 group-hover:bg-white/25 dark:bg-white/15" />
+                    Mintex · {industry.name}
+                  </span>
+                  <Link
+                    href="/seek-talent/get-started"
+                    aria-label={`Hire ${industry.name} talent: ${title}`}
+                    className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-navy text-white transition-all duration-500 group-hover:rotate-45 group-hover:bg-white group-hover:text-navy dark:bg-steel dark:text-navy-950"
+                  >
+                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
+                      <path d="M7 17L17 7M9 7h8v8" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </Link>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </Section>
 
-      {/* Sec 4 — Why Us */}
-      <Section background="mist">
-        <h2 className="text-3xl font-bold text-navy dark:text-cream">Why Mintex Staffing for {industry.name}</h2>
-        <p className="mt-2 max-w-2xl text-navy/70 dark:text-cream/70">{industry.workStyle}</p>
-        <div className="mt-8 grid grid-cols-3 gap-6">
-          {achievements.map((achievement) => (
-            <StatBlock key={achievement.label} label={achievement.label} value={achievement.value} />
-          ))}
+      {/* Sec 4 — Why Us: heading + copy on the left, stacked stat cards on
+          the right. */}
+      <Section background="white" className="!border-t-0">
+        <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
+          <div className="flex flex-col">
+            <SectionLabel>Why Mintex</SectionLabel>
+            <TwoToneHeading className="mt-5" lead={`Why Mintex for ${industry.name} —`} muted="built around your team" />
+            <p className="mt-5 max-w-[420px] text-[15.5px] leading-[1.7] text-navy/75 dark:text-cream/75">
+              {industry.workStyle}
+            </p>
+            <ArrowLink href="/seek-talent/get-started" className="mt-8 lg:mt-auto">
+              Start Hiring
+            </ArrowLink>
+          </div>
+
+          <div className="flex flex-col gap-2.5">
+            {achievements.map((achievement, index) => (
+              <div
+                key={achievement.label}
+                className="flex items-start justify-between gap-6 rounded-[20px] bg-white p-6 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-28px_rgba(0,48,96,0.35)] dark:bg-navy-800"
+              >
+                <div>
+                  <p className="text-[11px] text-navy/40 dark:text-cream/40">proven result</p>
+                  <p style={SANS} className="mt-3 text-[34px] font-normal leading-none tracking-[-0.03em] text-navy dark:text-cream">
+                    {achievement.value}
+                  </p>
+                  <p className="mt-2 text-[14px] text-navy/55 dark:text-cream/55">{achievement.label}</p>
+                </div>
+                <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-page text-[12px] font-semibold text-navy/60 dark:bg-navy-900 dark:text-cream/60">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </Section>
 
       <Testimonials stories={testimonials} />
 
-      {/* Sec 5 — FAQ */}
-      <Section background="white">
-        <h2 className="text-3xl font-bold text-navy dark:text-cream">Frequently Asked Questions</h2>
-        <FaqAccordion items={industry.faqs} />
+      {/* Sec 5 — Market trends + FAQ: heading left / insight right, then a
+          photo beside the FAQ accordion. */}
+      <Section background="white" className="!border-t-0">
+        <SectionLabel>Market &amp; FAQ</SectionLabel>
+        <div className="mt-5">
+          <TwoToneHeading lead={`${industry.name} job market trends`} muted="and your questions answered" />
+          <div className="mt-6 max-w-[760px]">
+            <h3 style={SANS} className="text-[15px] font-semibold leading-snug text-navy dark:text-cream">
+              {industry.sectorInsight.title}
+            </h3>
+            <p className="mt-2 text-[15.5px] leading-[1.7] text-navy/75 dark:text-cream/75">{industry.sectorInsight.body}</p>
+          </div>
+        </div>
+
+        <div className="mt-10 grid gap-8 lg:grid-cols-2 lg:gap-10">
+          <div className="relative min-h-[320px] overflow-hidden rounded-[24px] bg-navy-950 lg:min-h-[480px]">
+            <Image src={faqImage} alt="" fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
+            <span className="absolute left-4 top-4 rounded-full bg-white/25 px-3 py-1.5 text-[12px] font-medium text-white backdrop-blur-md">
+              Mintex · {industry.name}
+            </span>
+          </div>
+
+          <div className="flex flex-col">
+            <h2 style={SANS} className="text-[13px] font-semibold uppercase tracking-[0.14em] text-navy/45 dark:text-cream/45">
+              Frequently Asked Questions
+            </h2>
+            <div className="mt-2">
+              <IndustryAccordion items={industry.faqs} />
+            </div>
+            <ArrowLink href="/insights/post/2026-hiring-trends-outlook" className="mt-8">
+              Read: 2026 Hiring Trends
+            </ArrowLink>
+          </div>
+        </div>
       </Section>
     </>
+  );
+}
+
+// Headings on this page use the body sans at a light weight (the global
+// h1–h4 rule forces the condensed heading font, so override inline).
+const SANS = { fontFamily: "var(--font-sans), Arial, Helvetica, sans-serif" };
+
+function SectionLabel({ children }: { children: ReactNode }) {
+  return (
+    <p className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em] text-navy/60 dark:text-cream/60">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className="h-3 w-3 text-steel dark:text-steel-light">
+        <path d="M12 2l2.9 6.9 7.1.6-5.4 4.7 1.6 7L12 17.5 5.8 21.2l1.6-7L2 9.5l7.1-.6L12 2z" />
+      </svg>
+      {children}
+    </p>
+  );
+}
+
+function TwoToneHeading({ lead, muted, className = "" }: { lead: string; muted: string; className?: string }) {
+  return (
+    <h2
+      style={SANS}
+      className={`max-w-[760px] text-[32px] font-normal leading-[1.12] tracking-[-0.025em] text-navy sm:text-[40px] dark:text-cream ${className}`}
+    >
+      {lead} <span className="text-navy/35 dark:text-cream/35">{muted}</span>
+    </h2>
+  );
+}
+
+function ArrowLink({ href, children, className = "" }: { href: string; children: ReactNode; className?: string }) {
+  return (
+    <Link
+      href={href}
+      className={`group inline-flex items-center gap-3 self-start text-[14px] font-semibold text-navy dark:text-cream ${className}`}
+    >
+      {children}
+      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-navy shadow-[0_1px_3px_rgba(0,48,96,0.1)] transition-all duration-300 group-hover:bg-navy group-hover:text-white dark:bg-navy-800 dark:text-cream dark:group-hover:bg-steel dark:group-hover:text-navy-950">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5">
+          <path d="M7 17L17 7M9 7h8v8" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </span>
+    </Link>
+  );
+}
+
+// First sentence (or clause ending in ":"/";") gets emphasis on the In Depth
+// cards; admin text with no such break is shown whole as the lead.
+function splitLeadSentence(text: string): [string, string] {
+  const match = /^(.+?[.:;])\s+([\s\S]+)$/.exec(text.trim());
+  return match ? [match[1], match[2]] : [text, ""];
+}
+
+const iconProps = {
+  "aria-hidden": true,
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 1.8,
+  strokeLinecap: "round",
+  strokeLinejoin: "round",
+  className: "h-5 w-5",
+} as const;
+
+function IconPeople() {
+  return (
+    <svg {...iconProps}>
+      <circle cx="9" cy="8" r="3.5" />
+      <path d="M2.5 20c.6-3.4 3.2-5.5 6.5-5.5s5.9 2.1 6.5 5.5M16 4.8a3.5 3.5 0 010 6.4M18.5 14.8c1.7.8 2.7 2.6 3 5.2" />
+    </svg>
+  );
+}
+
+function IconShield() {
+  return (
+    <svg {...iconProps}>
+      <path d="M12 3l8 3v6c0 4.5-3.3 8-8 9-4.7-1-8-4.5-8-9V6l8-3z" />
+      <path d="M8.5 12l2.5 2.5 4.5-5" />
+    </svg>
+  );
+}
+
+function IconTrend() {
+  return (
+    <svg {...iconProps}>
+      <path d="M3 17l6-6 4 4 8-8M15 7h6v6" />
+    </svg>
+  );
+}
+
+function IconLayers() {
+  return (
+    <svg {...iconProps}>
+      <path d="M12 3l9 5-9 5-9-5 9-5z" />
+      <path d="M3 13l9 5 9-5" />
+    </svg>
   );
 }

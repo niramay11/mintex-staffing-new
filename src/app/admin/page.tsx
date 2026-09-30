@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { IMAGE_LOCATIONS, IMAGE_CATEGORY_INFO, INDUSTRY_CARD_IMAGE_CATEGORY, industryCardImageKey } from "@/lib/imageLocations";
+import { IMAGE_LOCATIONS, IMAGE_CATEGORY_INFO, industryCardImageKey, industryFaqImageKey, industryImageCategory } from "@/lib/imageLocations";
 import type { InsightPost, InsightCategoryRow, CaseStudy, CaseStudyType, TeamMember, Industry } from "@/content/types";
 import type { CalculatorBreakdownLine } from "@/lib/calculatorShare";
 import InsightBodyEditor from "@/components/admin/InsightBodyEditor";
@@ -2197,8 +2197,7 @@ function SiteImagesTab({ password }: { password: string }) {
     // Industry photo slots are generated per industry row, not listed in
     // IMAGE_LOCATIONS — they all share one category.
     const category =
-      IMAGE_LOCATIONS.find((l) => l.locationKey === key)?.category ??
-      (key.startsWith("industry:") ? INDUSTRY_CARD_IMAGE_CATEGORY : undefined);
+      IMAGE_LOCATIONS.find((l) => l.locationKey === key)?.category ?? industryImageCategory(key);
     if (category) {
       try {
         const { width, height } = await getImageDimensions(file);
@@ -2350,7 +2349,7 @@ function SiteImagesTab({ password }: { password: string }) {
               {locations.filter((l) => l.page_name === page).map((loc) => {
                 const category =
                   IMAGE_LOCATIONS.find((l) => l.locationKey === loc.location_key)?.category ??
-                  (loc.usage ? INDUSTRY_CARD_IMAGE_CATEGORY : undefined);
+                  industryImageCategory(loc.location_key);
                 const info = category ? IMAGE_CATEGORY_INFO[category] : null;
                 const warning = sizeWarnings[loc.location_key];
                 return (
@@ -4248,6 +4247,43 @@ function slugPreview(name: string): string {
   return name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 }
 
+function IndustryImagePicker({
+  src,
+  uploading,
+  disabled,
+  onFile,
+}: {
+  src?: string;
+  uploading: boolean;
+  disabled: boolean;
+  onFile: (file: File) => void;
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-cream border border-navy/10">
+        {src && (
+          // eslint-disable-next-line @next/next/no-img-element -- admin-supplied preview, arbitrary URL
+          <img src={src} alt="" className="h-full w-full object-cover" />
+        )}
+      </div>
+      <label className="relative inline-flex items-center justify-center px-3 py-1.5 rounded-full bg-cream hover:bg-mist text-navy/70 text-xs font-medium cursor-pointer transition-colors">
+        {uploading ? "Uploading…" : "Upload from computer"}
+        <input
+          type="file"
+          accept="image/*"
+          disabled={disabled}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) onFile(file);
+            e.target.value = "";
+          }}
+          className="absolute inset-0 opacity-0 cursor-pointer"
+        />
+      </label>
+    </div>
+  );
+}
+
 function IndustriesTab({ password }: { password: string }) {
   const [items, setItems]         = useState<Industry[]>([]);
   const [loaded, setLoaded]       = useState(false);
@@ -4260,9 +4296,13 @@ function IndustriesTab({ password }: { password: string }) {
   // in the same site_images table the Site Images tab edits (keyed by
   // industryCardImageKey), not on the industry row itself — so uploading it
   // here updates the exact same record that tab would show, and vice versa.
+  // The FAQ-section photo on the industry page works the same way, under
+  // industryFaqImageKey.
   const [cardImages, setCardImages] = useState<Record<string, string>>({});
-  const [cardImageUploading, setCardImageUploading] = useState(false);
+  const [faqImages, setFaqImages] = useState<Record<string, string>>({});
+  const [imageUploading, setImageUploading] = useState<"card" | "faq" | null>(null);
   const [cardImageError, setCardImageError] = useState("");
+  const [faqImageError, setFaqImageError] = useState("");
 
   const fetchData = () =>
     fetch("/api/admin/industries", { headers: { "x-admin-password": password } })
@@ -4278,25 +4318,28 @@ function IndustriesTab({ password }: { password: string }) {
     fetch("/api/site-images", { headers: { "x-admin-password": password } })
       .then((r) => r.json())
       .then((data: { locations?: { location_key: string; file_path: string }[] }) => {
-        const next: Record<string, string> = {};
+        const cards: Record<string, string> = {};
+        const faqs: Record<string, string> = {};
         for (const loc of data.locations ?? []) {
-          const m = /^industry:(.+):card-visual$/.exec(loc.location_key);
-          if (m) next[m[1]] = loc.file_path;
+          const m = /^industry:(.+):(card|faq)-visual$/.exec(loc.location_key);
+          if (m) (m[2] === "card" ? cards : faqs)[m[1]] = loc.file_path;
         }
-        setCardImages(next);
+        setCardImages(cards);
+        setFaqImages(faqs);
       })
       .catch(() => {});
 
   useEffect(() => { fetchData(); fetchCardImages(); }, []);
 
   const openNew = () => { setSaveError(""); setDraft({ ...BLANK_INDUSTRY }); };
-  const openEdit = (ind: Industry) => { setSaveError(""); setCardImageError(""); setDraft(toIndustryDraft(ind)); };
+  const openEdit = (ind: Industry) => { setSaveError(""); setCardImageError(""); setFaqImageError(""); setDraft(toIndustryDraft(ind)); };
   const closeEditor = () => setDraft(null);
   const updateDraft = (patch: Partial<IndustryDraft>) => setDraft((d) => (d ? { ...d, ...patch } : d));
 
-  const uploadCardImage = async (slug: string, file: File) => {
-    setCardImageError("");
-    setCardImageUploading(true);
+  const uploadIndustryImage = async (kind: "card" | "faq", slug: string, file: File) => {
+    const setError = kind === "card" ? setCardImageError : setFaqImageError;
+    setError("");
+    setImageUploading(kind);
     try {
       const formData = new FormData();
       formData.append("file", file);
@@ -4304,26 +4347,27 @@ function IndustriesTab({ password }: { password: string }) {
       const res = await fetch("/api/site-images/upload", { method: "POST", body: formData });
       const json = await res.json().catch(() => ({}));
       if (!res.ok || !json.url) {
-        setCardImageError(json.error || "Upload failed. Try a smaller image.");
+        setError(json.error || "Upload failed. Try a smaller image.");
         return;
       }
+      const locationKey = kind === "card" ? industryCardImageKey(slug) : industryFaqImageKey(slug);
       const putRes = await fetch("/api/site-images", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           password,
-          locations: [{ location_key: industryCardImageKey(slug), file_path: json.url, alt_text: null }],
+          locations: [{ location_key: locationKey, file_path: json.url, alt_text: null }],
         }),
       });
       if (!putRes.ok) {
-        setCardImageError("Uploaded, but couldn't save it to this industry. Try again.");
+        setError("Uploaded, but couldn't save it to this industry. Try again.");
         return;
       }
-      setCardImages((prev) => ({ ...prev, [slug]: json.url }));
+      (kind === "card" ? setCardImages : setFaqImages)((prev) => ({ ...prev, [slug]: json.url }));
     } catch {
-      setCardImageError("Could not reach the server.");
+      setError("Could not reach the server.");
     } finally {
-      setCardImageUploading(false);
+      setImageUploading(null);
     }
   };
 
@@ -4467,35 +4511,37 @@ function IndustriesTab({ password }: { password: string }) {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-navy/60 mb-1">Homepage Card Image</label>
+                <label className="block text-xs font-semibold text-navy/60 mb-1">Header Banner &amp; Homepage Card Image</label>
                 {draft.id ? (
-                  <div className="flex items-center gap-3">
-                    <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-cream border border-navy/10">
-                      {cardImages[draft.slug] && (
-                        // eslint-disable-next-line @next/next/no-img-element -- admin-supplied preview, arbitrary URL
-                        <img src={cardImages[draft.slug]} alt="" className="h-full w-full object-cover" />
-                      )}
-                    </div>
-                    <label className="relative inline-flex items-center justify-center px-3 py-1.5 rounded-full bg-cream hover:bg-mist text-navy/70 text-xs font-medium cursor-pointer transition-colors">
-                      {cardImageUploading ? "Uploading…" : "Upload from computer"}
-                      <input
-                        type="file"
-                        accept="image/*"
-                        disabled={cardImageUploading}
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) uploadCardImage(draft.slug, file);
-                          e.target.value = "";
-                        }}
-                        className="absolute inset-0 opacity-0 cursor-pointer"
-                      />
-                    </label>
-                  </div>
+                  <IndustryImagePicker
+                    src={cardImages[draft.slug]}
+                    uploading={imageUploading === "card"}
+                    disabled={imageUploading !== null}
+                    onFile={(file) => uploadIndustryImage("card", draft.slug, file)}
+                  />
                 ) : (
                   <p className="text-xs text-navy/40">Save the industry first, then reopen it here to add its card image.</p>
                 )}
                 {cardImageError && <p className="text-xs text-red-600 mt-1">{cardImageError}</p>}
                 <p className="text-xs text-navy/40 mt-1">Also editable from the Site Images tab — both edit the same image.</p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-navy/60 mb-1">FAQ Section Photo</label>
+                {draft.id ? (
+                  <IndustryImagePicker
+                    src={faqImages[draft.slug]}
+                    uploading={imageUploading === "faq"}
+                    disabled={imageUploading !== null}
+                    onFile={(file) => uploadIndustryImage("faq", draft.slug, file)}
+                  />
+                ) : (
+                  <p className="text-xs text-navy/40">Save the industry first, then reopen it here to add its FAQ photo.</p>
+                )}
+                {faqImageError && <p className="text-xs text-red-600 mt-1">{faqImageError}</p>}
+                <p className="text-xs text-navy/40 mt-1">
+                  The photo beside the FAQ on this industry&apos;s page, separate from the header banner. Best at 4:3, at least 1000×750px.
+                </p>
               </div>
 
               <div className="grid grid-cols-2 gap-3">

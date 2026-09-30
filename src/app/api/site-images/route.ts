@@ -6,7 +6,10 @@ import { IMAGE_LOCATIONS, invalidateSiteImagesCache } from "@/lib/siteImages";
 import {
   INDUSTRY_CARD_IMAGE_PAGE_NAME,
   INDUSTRY_IMAGE_USAGE_LABEL,
+  INDUSTRY_FAQ_IMAGE_PAGE_NAME,
   industryCardImageKey,
+  industryFaqFallbackImage,
+  industryFaqImageKey,
   industryImageUsage,
   type IndustryImageUsage,
 } from "@/lib/imageLocations";
@@ -21,7 +24,8 @@ async function industryLocations() {
   // Rows come back in sort order, so the index says where the site shows
   // each photo (see industryImageUsage) — the admin labels follow any
   // re-order automatically.
-  return (data ?? []).map((row, index) => {
+  const rows = data ?? [];
+  const cardSlots = rows.map((row, index) => {
     const usage = industryImageUsage(index);
     return {
       locationKey: industryCardImageKey(row.slug as string),
@@ -31,6 +35,13 @@ async function industryLocations() {
       usage,
     };
   });
+  const faqSlots = rows.map((row, index) => ({
+    locationKey: industryFaqImageKey(row.slug as string),
+    pageName: INDUSTRY_FAQ_IMAGE_PAGE_NAME,
+    sectionName: `${row.name} — Photo beside the FAQ`,
+    defaultSrc: industryFaqFallbackImage(index),
+  }));
+  return [...cardSlots, ...faqSlots];
 }
 
 // GET /api/site-images — admin-guarded (rescans /public as a side effect).

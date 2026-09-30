@@ -92,6 +92,29 @@ export function industryCardImageKey(slug: string): string {
   return `industry:${slug}:card-visual`;
 }
 
+// Second per-industry photo: the one beside the FAQ on that industry's page.
+// Same dynamic-slot setup as the card photo above, but its own row, so it can
+// differ from the header banner.
+export const INDUSTRY_FAQ_IMAGE_CATEGORY: ImageCategory = "photo-square";
+export const INDUSTRY_FAQ_IMAGE_PAGE_NAME = "Industry Pages — FAQ Section Photos";
+
+export function industryFaqImageKey(slug: string): string {
+  return `industry:${slug}:faq-visual`;
+}
+
+// Until an admin uploads one, offset from the card fallback so the FAQ photo
+// never defaults to the same picture as the header banner.
+export function industryFaqFallbackImage(sortIndex: number): string {
+  return INDUSTRY_CARD_FALLBACK_IMAGES[(sortIndex + 2) % INDUSTRY_CARD_FALLBACK_IMAGES.length];
+}
+
+// Category for either kind of per-industry slot (they aren't in IMAGE_LOCATIONS).
+export function industryImageCategory(locationKey: string): ImageCategory | undefined {
+  if (/^industry:.+:faq-visual$/.test(locationKey)) return INDUSTRY_FAQ_IMAGE_CATEGORY;
+  if (/^industry:.+:card-visual$/.test(locationKey)) return INDUSTRY_CARD_IMAGE_CATEGORY;
+  return undefined;
+}
+
 // Shared with the homepage carousel (src/app/page.tsx) and the /industries
 // listing page — the same placeholder set so an industry without an
 // admin-uploaded photo yet still looks intentional in both places, cycled
