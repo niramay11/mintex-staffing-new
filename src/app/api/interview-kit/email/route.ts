@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendInterviewKitEmail } from "@/lib/mailer";
 import { SITE_URL } from "@/lib/site";
+import { InterviewKitSchema, type InterviewKit } from "@/lib/interviewKit/schema";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// A generated kit is ~20–40 KB of JSON; this leaves room for expanded
+// questions without letting the endpoint turn arbitrary payloads into PDFs.
+const MAX_KIT_JSON = 250_000;
 const MAX_TEXT = 120;
 const MAX_ITEMS = 12;
 const MAX_QUESTIONS_PER_SECTION = 20;
@@ -67,19 +71,31 @@ export async function POST(req: NextRequest) {
         .slice(0, MAX_ITEMS)
     : [];
 
+  // Full kit for the PDF attachment. Optional and best-effort: a kit that's
+  // missing, too large, or doesn't match the schema just means no PDF — the
+  // summary email still goes out.
+  let kit: InterviewKit | undefined;
+  if (body.kit && JSON.stringify(body.kit).length <= MAX_KIT_JSON) {
+    const parsed = InterviewKitSchema.safeParse(body.kit);
+    if (parsed.success) kit = parsed.data;
+    else console.warn("Interview kit email: kit failed schema check, sending without PDF");
+  }
+
+  let pdfAttached = false;
   try {
-    await sendInterviewKitEmail({
+    ({ pdfAttached } = await sendInterviewKitEmail({
       to: email,
       roleTitle,
       state,
       competencies,
       sections,
       kitUrl: slug ? `${SITE_URL}/interview-questions/${slug}` : null,
-    });
+      kit,
+    }));
   } catch (err) {
     console.error("Failed to send interview kit email:", err);
     return NextResponse.json({ error: "Couldn't send that email — please try again." }, { status: 502 });
   }
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ success: true, pdfAttached });
 }

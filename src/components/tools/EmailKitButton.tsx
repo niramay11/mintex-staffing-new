@@ -17,6 +17,7 @@ export default function EmailKitButton({ kit, slug }: { kit: InterviewKit; slug?
   const [email, setEmail] = useState("");
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [error, setError] = useState("");
+  const [pdfAttached, setPdfAttached] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -44,10 +45,13 @@ export default function EmailKitButton({ kit, slug }: { kit: InterviewKit; slug?
             count: s.questions.length,
             ...(slug ? {} : { questions: s.questions.map((q) => q.question) }),
           })),
+          // Rendered server-side into the attached PDF (both flows).
+          kit,
         }),
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json.error ?? "Couldn't send that email — please try again.");
+      setPdfAttached(Boolean(json.pdfAttached));
       setState("sent");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Couldn't send that email — please try again.");
@@ -73,7 +77,8 @@ export default function EmailKitButton({ kit, slug }: { kit: InterviewKit; slug?
   if (state === "sent") {
     return (
       <p className="text-sm text-navy/70 dark:text-cream/70">
-        Sent to <b>{email}</b> — check your inbox{slug ? " for the link" : " for the full kit"}.
+        Sent to <b>{email}</b> — check your inbox
+        {pdfAttached ? " for the full kit (PDF attached)" : slug ? " for the link" : " for the full kit"}.
       </p>
     );
   }

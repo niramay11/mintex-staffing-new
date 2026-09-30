@@ -1,6 +1,8 @@
 import nodemailer from 'nodemailer';
 import path from 'path';
 import { SITE_URL } from './site';
+import { buildInterviewKitPdf } from './interviewKit/kitPdf';
+import type { InterviewKit } from './interviewKit/schema';
 
 // Referenced as `cid:${LOGO_CID}` in email HTML and attached inline below —
 // mail clients block/can't reach the localhost dev URL a plain <img src>
@@ -48,6 +50,11 @@ async function sendBrandedMail(options: Parameters<nodemailer.Transporter['sendM
       ...(options.attachments ?? []),
     ],
   });
+}
+
+// "Senior Chef / Kitchen Mgr" -> "senior-chef-kitchen-mgr", for attachment names.
+function slugifyFilename(s: string): string {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'interview';
 }
 
 function escapeHtml(s: string): string {
@@ -385,6 +392,10 @@ export async function sendInterviewKitEmail(fields: {
   // stays the same compact summary either way, just without the "view kit"
   // button, since there's nowhere for it to point.
   kitUrl: string | null;
+  // The full kit, when the client sent one — rendered into the attached PDF
+  // (every question with its answer guidance, prep and rights, same as the
+  // page). Both flows send it.
+  kit?: InterviewKit;
 }) {
   const fromName  = process.env.SMTP_FROM_NAME  || 'Mintex Staffing';
   const fromEmail = process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER;
@@ -413,13 +424,31 @@ export async function sendInterviewKitEmail(fields: {
         `).join('')
     : '';
 
+  // Built before the body so the copy only mentions an attachment that's
+  // actually there — a PDF failure still sends the email, just without it.
+  let pdf: Buffer | null = null;
+  if (fields.kit) {
+    try {
+      pdf = await buildInterviewKitPdf(fields.kit, fields.kitUrl);
+    } catch (err) {
+      console.error('Failed to build interview kit PDF:', err);
+    }
+  }
+  const pdfFilename = `${slugifyFilename(fields.roleTitle)}-interview-kit.pdf`;
+
+  const pdfNote = pdf
+    ? `<p style="margin:24px 0 0;padding:14px 16px;background:${BRAND.cream};border-radius:10px;font-size:13px;color:${BRAND.navy};">📎 <b>Your full kit is attached as a PDF</b> (${escapeHtml(pdfFilename)}) — every question with what the interviewer is checking for, strong and weak answers, follow-up probes, prep tips, and your rights in ${escapeHtml(fields.state)}. Print it or keep it on your phone.</p>`
+    : '';
+
   const ctaOrNote = fields.kitUrl
     ? `
-      <p style="margin:24px 0 0;">${button('View your interview kit', fields.kitUrl)}</p>
+      ${pdfNote}
+      <p style="margin:24px 0 0;">${button('View your full interview kit', fields.kitUrl)}</p>
       <p style="margin:16px 0 0;font-size:12px;color:${BRAND.steel};">Bookmark this link — it stays up to date and works on any device.</p>
     `
     : `
-      <p style="margin:24px 0 0;font-size:12px;color:${BRAND.steel};">This kit was generated from a pasted job posting and isn't saved anywhere on our end. All your questions are above, and the attached <b>interview-kit.html</b> file is a copy you can download, open in any browser, and print or save as a PDF.</p>
+      ${pdfNote}
+      <p style="margin:24px 0 0;font-size:12px;color:${BRAND.steel};">This kit was generated from a pasted job posting and isn't saved anywhere on our end${pdf ? ', so the attached PDF is your copy of it.' : '. All your questions are above.'}</p>
     `;
 
   const body = `
@@ -436,30 +465,8 @@ export async function sendInterviewKitEmail(fields: {
     ${ctaOrNote}
   `;
 
-  // Standalone, printable copy of the kit for download (only when the full
-  // questions were sent — the by-title flow links to its live page instead).
-  const attachments = hasQuestions
-    ? [
-        {
-          filename: 'interview-kit.html',
-          contentType: 'text/html; charset=utf-8',
-          content: `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${escapeHtml(fields.roleTitle)} Interview Kit — Mintex Staffing</title>
-<style>body{font-family:Arial,Helvetica,sans-serif;color:${BRAND.navy};max-width:760px;margin:40px auto;padding:0 20px;line-height:1.6}
-h1{margin:0 0 4px}.sub{color:${BRAND.steel};margin:0 0 24px}.label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:${BRAND.steel};margin:28px 0 8px}
-.pill{display:inline-block;background:${BRAND.cream};border-radius:999px;padding:4px 12px;margin:0 6px 6px 0;font-size:13px;font-weight:600}
-li{margin:0 0 10px}.foot{margin-top:40px;font-size:12px;color:${BRAND.steel}}@media print{body{margin:0}}</style></head><body>
-<h1>${escapeHtml(fields.roleTitle)} Interview Kit</h1>
-<p class="sub">Competency map and practice questions — plus your rights in ${escapeHtml(fields.state)}. ${totalQuestions} practice questions in total.</p>
-${fields.competencies.length ? `<p class="label">Competencies covered</p><div>${fields.competencies.map((c) => `<span class="pill">${escapeHtml(c)}</span>`).join('')}</div>` : ''}
-${fields.sections
-  .filter((sec) => sec.questions && sec.questions.length > 0)
-  .map((sec) => `<p class="label">${escapeHtml(sec.label)}</p><ol>${sec.questions!.map((q) => `<li>${escapeHtml(q)}</li>`).join('')}</ol>`)
-  .join('')}
-<p class="foot">Generated by the Mintex Staffing AI Interview Question Generator — mintexstaffing.com</p>
-</body></html>`,
-        },
-      ]
+  const attachments = pdf
+    ? [{ filename: pdfFilename, content: pdf, contentType: 'application/pdf' }]
     : [];
 
   await sendBrandedMail({
@@ -469,4 +476,5 @@ ${fields.sections
     html: wrapEmail(body),
     attachments,
   });
+  return { pdfAttached: pdf !== null };
 }

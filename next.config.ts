@@ -33,6 +33,10 @@ const nextConfig: NextConfig = {
   experimental: {
     inlineCss: true,
   },
+  // pdfkit (interview-kit PDF attachment, lib/interviewKit/kitPdf.ts) reads
+  // its built-in font metric files from its own package folder at runtime —
+  // bundling it breaks those paths, so load it with plain Node require.
+  serverExternalPackages: ["pdfkit"],
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "**.supabase.co" },
