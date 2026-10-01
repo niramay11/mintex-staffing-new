@@ -1,5 +1,7 @@
+import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import Section from "@/components/ui/Section";
 import ResumeForm from "@/components/forms/ResumeForm";
 import { getSiteImages } from "@/lib/siteImages";
@@ -41,6 +43,70 @@ function IconLock({ className }: { className?: string }) {
       <path d="M8 11V7.5a4 4 0 0 1 8 0V11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
       <path d="M12 14.5v2.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
+  );
+}
+
+// Card design copied from the /industries grid (IndustriesExplorer's
+// IndustryCard): small label top-left, "Mintex / Your resume" top-right, big
+// light title + text at the bottom, outlined arrow pill. Unlike those cards
+// this one isn't a single link (the body has its own links), so the pill is
+// the link.
+const SANS_HEADING = { fontFamily: "var(--font-sans), Arial, Helvetica, sans-serif" } as const;
+const CARD_LINK = "font-medium text-steel hover:text-navy dark:text-steel-light dark:hover:text-cream";
+
+function InfoCard({
+  index,
+  label,
+  title,
+  icon: Icon,
+  href,
+  linkLabel,
+  children,
+}: {
+  index: number;
+  label: string;
+  title: string;
+  icon: (props: { className?: string }) => ReactNode;
+  href: string;
+  linkLabel: string;
+  children: ReactNode;
+}) {
+  // Content flows from the top and only the arrow is pinned to the bottom —
+  // the cards in a row stretch to the tallest one (the industries list), and
+  // bottom-aligning everything left a big empty gap at the top of the others.
+  return (
+    <div className="group flex min-w-0 flex-col rounded-[28px] bg-white p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-28px_rgba(0,48,96,0.35)] sm:p-8 dark:bg-navy-800">
+      <div className="flex items-start justify-between gap-4 text-[11px] uppercase tracking-[0.12em]">
+        <span className="min-w-0 font-medium leading-snug text-navy/45 dark:text-cream/45">
+          {String(index + 1).padStart(2, "0")} · {label}
+        </span>
+        <span className="flex-shrink-0 text-right sm:whitespace-nowrap">
+          <span className="block font-bold text-navy dark:text-cream">Mintex</span>
+          <span className="mt-1 block font-semibold text-steel dark:text-steel-light">Your resume</span>
+        </span>
+      </div>
+
+      <span className="mt-8 flex h-12 w-12 items-center justify-center rounded-full bg-steel/15 text-steel transition-colors duration-300 group-hover:bg-navy group-hover:text-white dark:text-steel-light dark:group-hover:bg-steel dark:group-hover:text-navy-950">
+        <Icon className="h-5 w-5" />
+      </span>
+
+      <h3 style={SANS_HEADING} className="mt-6 break-words text-[26px] font-normal leading-[1.15] tracking-[-0.025em] text-navy sm:text-[28px] dark:text-cream">
+        {title}
+      </h3>
+      <p className="mt-4 text-[14px] leading-relaxed text-navy/70 dark:text-cream/70">{children}</p>
+
+      <div className="mt-auto pt-7">
+        <Link
+          href={href}
+          aria-label={linkLabel}
+          className="inline-flex h-9 w-14 items-center justify-center rounded-full border border-navy/80 text-navy transition-all duration-300 group-hover:w-[72px] group-hover:bg-navy group-hover:text-white dark:border-cream/60 dark:text-cream dark:group-hover:bg-cream dark:group-hover:text-navy-950"
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-4 w-4">
+            <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </Link>
+      </div>
+    </div>
   );
 }
 
@@ -175,71 +241,72 @@ export default async function ShareResumePage() {
           </p>
         </div>
 
-        <div className="mt-11 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="group rounded-2xl border border-navy/[0.08] bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-20px_rgba(0,48,96,0.3)] dark:border-white/10 dark:bg-navy-800">
-            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-steel/15 text-steel transition-colors duration-300 group-hover:bg-steel group-hover:text-white dark:text-steel-light">
-              <IconInbox className="h-5 w-5" />
-            </span>
-            <h3 className="mt-4 font-heading font-semibold text-navy dark:text-cream">What happens to your resume</h3>
-            <p className="mt-2 text-sm leading-relaxed text-navy/70 dark:text-cream/70">
-              Your resume and contact details go straight into our candidate database, and our team
-              is notified right away, with a confirmation email sent to you so you know it went
-              through. From there, a recruiter reviews your background and adds you to the pool we
-              search whenever a matching role opens, today or next month.
-            </p>
-          </div>
+        {/* Same card design as the /industries grid (IndustriesExplorer). */}
+        <div className="mt-11 grid gap-2.5 md:grid-cols-2 2xl:grid-cols-4">
+          <InfoCard
+            index={0}
+            label="After you submit"
+            icon={IconInbox}
+            title="What happens to your resume"
+            href="/get-hired"
+            linkLabel="Browse open roles"
+          >
+            Your resume and contact details go straight into our candidate database, and our team
+            is notified right away, with a confirmation email sent to you so you know it went
+            through. From there, a recruiter reviews your background and adds you to the pool we
+            search whenever a matching role opens, today or next month.
+          </InfoCard>
 
-          <div className="group rounded-2xl border border-navy/[0.08] bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-20px_rgba(0,48,96,0.3)] dark:border-white/10 dark:bg-navy-800">
-            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-steel/15 text-steel transition-colors duration-300 group-hover:bg-steel group-hover:text-white dark:text-steel-light">
-              <IconClock className="h-5 w-5" />
-            </span>
-            <h3 className="mt-4 font-heading font-semibold text-navy dark:text-cream">How long we keep it on file</h3>
-            <p className="mt-2 text-sm leading-relaxed text-navy/70 dark:text-cream/70">
-              We don&apos;t put an expiration date on it. Your resume stays on file indefinitely, so
-              you&apos;re considered for new openings as they come up, not just whatever was available
-              the week you applied. Prefer we remove it?{" "}
-              <a href="/contact" className="font-medium text-steel hover:text-navy dark:text-steel-light dark:hover:text-cream">Contact us</a> and
-              we will, per our{" "}
-              <a href="/privacy" className="font-medium text-steel hover:text-navy dark:text-steel-light dark:hover:text-cream">Privacy Policy</a>.
-            </p>
-          </div>
+          <InfoCard
+            index={1}
+            label="On file"
+            icon={IconClock}
+            title="How long we keep it on file"
+            href="/contact"
+            linkLabel="Contact us about your resume"
+          >
+            We don&apos;t put an expiration date on it. Your resume stays on file indefinitely, so
+            you&apos;re considered for new openings as they come up, not just whatever was available
+            the week you applied. Prefer we remove it?{" "}
+            <a href="/contact" className={CARD_LINK}>Contact us</a> and we will, per our{" "}
+            <a href="/privacy" className={CARD_LINK}>Privacy Policy</a>.
+          </InfoCard>
 
-          <div className="group rounded-2xl border border-navy/[0.08] bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-20px_rgba(0,48,96,0.3)] dark:border-white/10 dark:bg-navy-800">
-            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-steel/15 text-steel transition-colors duration-300 group-hover:bg-steel group-hover:text-white dark:text-steel-light">
-              <IconLayers className="h-5 w-5" />
-            </span>
-            <h3 className="mt-4 font-heading font-semibold text-navy dark:text-cream">Which roles you&apos;re considered for</h3>
-            <p className="mt-2 text-sm leading-relaxed text-navy/70 dark:text-cream/70">
-              Sharing your resume this way isn&apos;t tied to one posting, it puts you in front of
-              recruiters across every industry we staff, including{" "}
-              {industries.map((industry, index) => (
-                <span key={industry.slug}>
-                  <a
-                    href={`/industries/${industry.slug}`}
-                    className="font-medium text-steel hover:text-navy dark:text-steel-light dark:hover:text-cream"
-                  >
-                    {industry.name}
-                  </a>
-                  {index < industries.length - 2 ? ", " : index === industries.length - 2 ? ", and " : ""}
-                </span>
-              ))}
-              . A preferred industry on the form gets prioritized first, but your profile stays
-              visible for any role that fits.
-            </p>
-          </div>
+          <InfoCard
+            index={2}
+            label="Roles"
+            icon={IconLayers}
+            title="Which roles you're considered for"
+            href="/industries"
+            linkLabel="See every industry we staff"
+          >
+            Sharing your resume this way isn&apos;t tied to one posting, it puts you in front of
+            recruiters across every industry we staff, including{" "}
+            {industries.map((industry, index) => (
+              <span key={industry.slug}>
+                <a href={`/industries/${industry.slug}`} className={CARD_LINK}>
+                  {industry.name}
+                </a>
+                {index < industries.length - 2 ? ", " : index === industries.length - 2 ? ", and " : ""}
+              </span>
+            ))}
+            . A preferred industry on the form gets prioritized first, but your profile stays
+            visible for any role that fits.
+          </InfoCard>
 
-          <div className="group rounded-2xl border border-navy/[0.08] bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-20px_rgba(0,48,96,0.3)] dark:border-white/10 dark:bg-navy-800">
-            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-steel/15 text-steel transition-colors duration-300 group-hover:bg-steel group-hover:text-white dark:text-steel-light">
-              <IconLock className="h-5 w-5" />
-            </span>
-            <h3 className="mt-4 font-heading font-semibold text-navy dark:text-cream">Privacy</h3>
-            <p className="mt-2 text-sm leading-relaxed text-navy/70 dark:text-cream/70">
-              Your resume is stored privately and never published or made publicly searchable. Only
-              Mintex&apos;s own recruiting team can access it internally, and it&apos;s only ever
-              shared with a specific employer once we&apos;ve confirmed a real fit and you&apos;ve
-              agreed, we never submit your details without your consent first.
-            </p>
-          </div>
+          <InfoCard
+            index={3}
+            label="Privacy"
+            icon={IconLock}
+            title="Privacy"
+            href="/privacy"
+            linkLabel="Read our Privacy Policy"
+          >
+            Your resume is stored privately and never published or made publicly searchable. Only
+            Mintex&apos;s own recruiting team can access it internally, and it&apos;s only ever
+            shared with a specific employer once we&apos;ve confirmed a real fit and you&apos;ve
+            agreed, we never submit your details without your consent first.
+          </InfoCard>
         </div>
       </Section>
     </>
