@@ -39,14 +39,14 @@ export const metadata: Metadata = {
     description:
       "Mintex Staffing connects exceptional talent with leading employers across IT, healthcare, engineering, manufacturing, finance, and more.",
     type: "website",
-    images: [{ url: "/share-image?v=3", width: 1200, height: 630 }],
+    images: [{ url: "/share-image?v=4", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Staffing & Recruitment | Mintex Staffing",
     description:
       "Mintex Staffing connects exceptional talent with leading employers across IT, healthcare, engineering, manufacturing, finance, and more.",
-    images: ["/share-image?v=3"],
+    images: ["/share-image?v=4"],
   },
   // Next's file-based icon convention (src/app/favicon.ico, icon.png,
   // apple-icon.png) already emits modern rel="icon"/rel="apple-touch-icon"
