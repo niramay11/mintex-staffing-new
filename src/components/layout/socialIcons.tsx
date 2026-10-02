@@ -11,8 +11,10 @@ function IconInstagram({ className }: { className?: string }) {
 function IconFacebook({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      {/* Full-size Facebook logo (same as the insight share buttons) — the old
+          lone "f" only filled the middle third and looked tiny next to the others. */}
       <path
-        d="M14 8.5h2V5.5h-2c-2 0-3.5 1.5-3.5 3.5v2H8.5v3H10.5v7h3v-7h2.2l.5-3H13.5v-2c0-.6.4-1 1-1Z"
+        d="M22 12.06C22 6.51 17.52 2 12 2S2 6.51 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.91h2.54V9.91c0-2.51 1.49-3.9 3.77-3.9 1.09 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.78-1.63 1.57v1.88h2.78l-.45 2.91h-2.33v7.03C18.34 21.21 22 17.06 22 12.06Z"
         fill="currentColor"
       />
     </svg>

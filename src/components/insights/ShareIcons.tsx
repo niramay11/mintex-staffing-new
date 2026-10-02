@@ -37,17 +37,35 @@ const SHARE_ICON_DEFS = [
   },
 ];
 
-const ICON_CLASS = "text-navy/70 transition-colors hover:text-navy dark:text-cream/60 dark:hover:text-cream";
+// Round outlined buttons. `onDark` is for the navy CTA banner at the bottom of
+// a post — it used to rely on a parent `[&_a]:text-white` override, which only
+// reached the email <a>; the Facebook/LinkedIn/X <button>s stayed navy on navy
+// and were nearly invisible.
+const ICON_CLASS = {
+  light:
+    "flex h-10 w-10 items-center justify-center rounded-full border border-navy/15 bg-white text-navy/75 transition-colors hover:border-navy hover:bg-navy hover:text-white dark:border-white/15 dark:bg-navy-800 dark:text-cream/75 dark:hover:border-cream dark:hover:bg-cream dark:hover:text-navy-950",
+  onDark:
+    "flex h-10 w-10 items-center justify-center rounded-full border border-white/35 bg-white/10 text-white transition-colors hover:border-white hover:bg-white hover:text-navy",
+};
 
-export default function ShareIcons({ postUrl, title }: { postUrl: string; title: string }) {
+export default function ShareIcons({
+  postUrl,
+  title,
+  variant = "light",
+}: {
+  postUrl: string;
+  title: string;
+  variant?: "light" | "onDark";
+}) {
+  const iconClass = ICON_CLASS[variant];
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-2.5">
       {SHARE_ICON_DEFS.map((icon) => {
         const svg = (
           <svg
             aria-hidden="true"
             viewBox="0 0 24 24"
-            className="h-5 w-5"
+            className="h-[18px] w-[18px]"
             {...(icon.fill
               ? { fill: "currentColor" }
               : { fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round" as const, strokeLinejoin: "round" as const })}
@@ -59,7 +77,7 @@ export default function ShareIcons({ postUrl, title }: { postUrl: string; title:
 
         if (icon.key === "email") {
           return (
-            <a key={icon.key} href={href} aria-label={icon.label} className={ICON_CLASS}>
+            <a key={icon.key} href={href} aria-label={icon.label} className={iconClass}>
               {svg}
             </a>
           );
@@ -69,7 +87,7 @@ export default function ShareIcons({ postUrl, title }: { postUrl: string; title:
             key={icon.key}
             type="button"
             aria-label={icon.label}
-            className={ICON_CLASS}
+            className={iconClass}
             onClick={() => window.open(href, "_blank", "noopener,noreferrer,width=640,height=560")}
           >
             {svg}

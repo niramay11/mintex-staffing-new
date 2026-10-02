@@ -545,9 +545,9 @@ export default async function InsightPostPage({
                   All Insights
                 </Link>
               </div>
-              <div className="mt-8 flex items-center gap-4 lg:justify-end [&_a]:!text-white/60 hover:[&_a]:!text-white">
-                <span className="text-[11.5px] font-semibold uppercase tracking-[0.14em] text-white/50">Share</span>
-                <ShareIcons postUrl={postUrl} title={post.title} />
+              <div className="mt-8 flex items-center gap-4 lg:justify-end">
+                <span className="text-[11.5px] font-semibold uppercase tracking-[0.14em] text-white/75">Share</span>
+                <ShareIcons postUrl={postUrl} title={post.title} variant="onDark" />
               </div>
             </div>
           </div>
