@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useEditor, useEditorState, EditorContent } from "@tiptap/react";
-import { DOMParser as PMDOMParser } from "@tiptap/pm/model";
+import { DOMParser as PMDOMParser, DOMSerializer } from "@tiptap/pm/model";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import { resolveCtaHref } from "@/lib/insightCtaRoutes";
@@ -21,32 +21,116 @@ function escapeHtml(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-// A paste is still recognized as "plain convention text" even when the
-// clipboard also carries simple auto-generated HTML (a lone <p>/<div>/<span>
-// wrapper, no real formatting) — only a paste that already carries actual
-// rich markup skips this and falls through to Tiptap's normal paste handling,
-// so pasting from another richly formatted source isn't flattened.
+// A paste is "rich" when the clipboard carries real formatting (links, bold,
+// lists…) — e.g. copied from ChatGPT, Google Docs or a web page.
 function clipboardHtmlIsPlain(html: string): boolean {
   return !/<(strong|b|em|i|a\s|a>|ul|ol|table|h1|h2|h3|blockquote)[\s>]/i.test(html);
 }
 
-// Upgrades pasted plain text written in the old convention (a short
-// unpunctuated line is a heading, "-> "/"→ " starts a CTA button) into real
-// nodes, so admins can keep pasting drafts from ChatGPT/docs in that shape
-// instead of only being able to build structure via the toolbar.
-function convertConventionTextToHtml(text: string): string {
+// ─── Auto-format ────────────────────────────────────────────────────────────
+// Same structure rules the legacy post renderer applies to old plain-text
+// bodies (insights/post/[slug]/page.tsx isHeadingLine/isCtaLine), applied to
+// the editor's top-level paragraphs:
+//   short line, no closing punctuation      -> H2 heading
+//   short line that's entirely bold         -> H2 heading
+//   "→ Label" / "-> Label"                  -> CTA button
+//   "- item" / "• item" / "* item" lines    -> bullet list
+// Confirmed live: a post pasted with links in it skipped the old plain-text
+// conversion entirely, so all 9 of its section titles stayed body paragraphs
+// (0 headings, no table of contents). This now runs on rich pastes too, and
+// on demand via the toolbar's Auto-format button. Existing headings, lists,
+// quotes etc. are never touched — only plain top-level paragraphs.
+const CTA_PREFIX = /^(→|->)\s*/;
+const BULLET_PREFIX = /^[-•*]\s+/;
+
+function isFootnoteLine(text: string): boolean {
+  return /^Sources:/i.test(text) || (text.length < 220 && /(legal advice|financial advice|informational purposes only)/i.test(text));
+}
+
+function isEntirelyBold(p: Element): boolean {
+  const text = (p.textContent ?? "").trim();
+  if (!text) return false;
+  const boldText = Array.from(p.querySelectorAll("strong, b"))
+    .map((el) => el.textContent ?? "")
+    .join("")
+    .trim();
+  return boldText.length > 0 && boldText.replace(/\s+/g, " ") === text.replace(/\s+/g, " ");
+}
+
+function looksLikeHeading(p: Element): boolean {
+  const text = (p.textContent ?? "").trim();
+  // A paragraph that carries a link is real content (or a CTA), not a title.
+  if (!text || p.querySelector("a") || CTA_PREFIX.test(text) || isFootnoteLine(text)) return false;
+  if (isEntirelyBold(p)) return text.length <= 90 && !/[.!]$/.test(text);
+  return text.length <= 70 && !/[.!,;:]$/.test(text);
+}
+
+// Removes a leading prefix (bullet marker) from an element's first text node,
+// keeping any inline formatting/links after it.
+function stripLeadingPrefix(el: Element, prefix: RegExp) {
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+  let node = walker.nextNode();
+  while (node && !(node.textContent ?? "").trim()) node = walker.nextNode();
+  if (node) node.textContent = (node.textContent ?? "").replace(/^\s+/, "").replace(prefix, "");
+}
+
+function autoFormatContainer(root: HTMLElement): HTMLElement {
+  const out = document.createElement("div");
+  let list: HTMLUListElement | null = null;
+
+  for (const child of Array.from(root.childNodes)) {
+    if (!(child instanceof Element) || child.tagName !== "P") {
+      list = null;
+      if (child instanceof Element || (child.textContent ?? "").trim()) out.appendChild(child);
+      continue;
+    }
+    const text = (child.textContent ?? "").trim();
+    if (!text) { list = null; continue; } // drop empty spacer paragraphs
+
+    if (BULLET_PREFIX.test(text)) {
+      if (!list) { list = document.createElement("ul"); out.appendChild(list); }
+      stripLeadingPrefix(child, BULLET_PREFIX);
+      const li = document.createElement("li");
+      const p = document.createElement("p");
+      p.innerHTML = child.innerHTML;
+      li.appendChild(p);
+      list.appendChild(li);
+      continue;
+    }
+    list = null;
+
+    if (CTA_PREFIX.test(text) && !child.querySelector("a")) {
+      const label = text.replace(CTA_PREFIX, "");
+      const p = document.createElement("p");
+      p.innerHTML = `<a href="${resolveCtaHref(label)}" class="cta-button">${escapeHtml(label)}</a>`;
+      out.appendChild(p);
+      continue;
+    }
+
+    if (looksLikeHeading(child)) {
+      const h2 = document.createElement("h2");
+      // Headings are already bold — unwrap <strong>/<b> so they don't double up.
+      h2.innerHTML = child.innerHTML.replace(/<\/?(strong|b)(\s[^>]*)?>/gi, "");
+      out.appendChild(h2);
+      continue;
+    }
+    out.appendChild(child);
+  }
+  return out;
+}
+
+function autoFormatHtml(html: string): string {
+  const root = document.createElement("div");
+  root.innerHTML = html;
+  return autoFormatContainer(root).innerHTML;
+}
+
+function plainTextToParagraphs(text: string): string {
   return text
     .split(/\r\n|\r|\n/)
     .map((line) => line.trim())
     .filter(Boolean)
-    .map((line) => {
-      if (/^(→|->)\s*/.test(line)) {
-        const label = line.replace(/^(→|->)\s*/, "");
-        return `<p><a href="${resolveCtaHref(label)}" class="cta-button">${escapeHtml(label)}</a></p>`;
-      }
-      const isHeading = line.length <= 70 && !/[.!,;:]$/.test(line);
-      return isHeading ? `<h2>${escapeHtml(line)}</h2>` : `<p>${escapeHtml(line)}</p>`;
-    })
+    .map((line) => `<p>${escapeHtml(line)}</p>`)
     .join("");
 }
 
@@ -95,11 +179,25 @@ export default function InsightBodyEditor({
       handlePaste(view, event) {
         const text = event.clipboardData?.getData("text/plain") ?? "";
         const html = event.clipboardData?.getData("text/html") ?? "";
-        if (!text.trim() || !clipboardHtmlIsPlain(html)) return false;
+        // A single line (a word, a phrase, a sentence) pastes as-is — only a
+        // multi-line block gets auto-formatted, so pasting a short phrase
+        // mid-paragraph never turns it into a heading.
+        if (!text.trim() || text.trim().split(/\r\n|\r|\n/).filter((l) => l.trim()).length < 2) return false;
 
+        const parser = PMDOMParser.fromSchema(view.state.schema);
         const dom = document.createElement("div");
-        dom.innerHTML = convertConventionTextToHtml(text);
-        const slice = PMDOMParser.fromSchema(view.state.schema).parseSlice(dom, { preserveWhitespace: true });
+        if (html && !clipboardHtmlIsPlain(html)) {
+          // Rich paste: let the editor's schema clean up the clipboard HTML
+          // first (keeps links/bold, drops Docs/ChatGPT wrapper junk), then
+          // apply the same structure rules to the result.
+          const source = document.createElement("div");
+          source.innerHTML = html;
+          const cleaned = parser.parseSlice(source);
+          dom.appendChild(DOMSerializer.fromSchema(view.state.schema).serializeFragment(cleaned.content));
+        } else {
+          dom.innerHTML = plainTextToParagraphs(text);
+        }
+        const slice = parser.parseSlice(autoFormatContainer(dom), { preserveWhitespace: true });
         view.dispatch(view.state.tr.replaceSelection(slice));
         return true;
       },
@@ -212,6 +310,16 @@ export default function InsightBodyEditor({
         <div className="mx-1 h-5 w-px bg-navy/10" />
         <ToolbarButton active={state.link} onClick={insertLink} title="Insert / edit link">
           Link
+        </ToolbarButton>
+        <div className="mx-1 h-5 w-px bg-navy/10" />
+        <ToolbarButton
+          onClick={() => {
+            const next = autoFormatHtml(editor.getHTML());
+            if (next !== editor.getHTML()) editor.chain().focus().setContent(next, { emitUpdate: true }).run();
+          }}
+          title="Auto-format: turn short title lines into headings, '→ ' lines into CTA buttons and '- ' lines into bullet lists (Ctrl+Z to undo)"
+        >
+          ✨ Auto-format
         </ToolbarButton>
         <select
           defaultValue=""
