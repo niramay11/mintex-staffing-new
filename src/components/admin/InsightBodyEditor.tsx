@@ -107,6 +107,35 @@ function autoFormatContainer(root: HTMLElement): HTMLElement {
       continue;
     }
 
+    // Same rule the live page applies (insights/post/[slug] normalizeCtaButtons):
+    // a line that's only one internal link is a CTA button; a button inside a
+    // sentence is split out — the words stay in the sentence as plain text and
+    // the button goes on its own line right after the paragraph.
+    const anchors = Array.from(child.querySelectorAll("a"));
+    const linkText = anchors.map((a) => a.textContent ?? "").join("").trim();
+    if (anchors.length === 1 && linkText === text && (anchors[0].getAttribute("href") ?? "").startsWith("/")) {
+      anchors[0].setAttribute("class", "cta-button");
+      out.appendChild(child);
+      continue;
+    }
+    const inlineButtons = linkText !== text ? anchors.filter((a) => a.classList.contains("cta-button")) : [];
+    if (inlineButtons.length > 0) {
+      const buttonParagraphs = inlineButtons.map((a) => {
+        const label = (a.textContent ?? "").trim();
+        const p = document.createElement("p");
+        const button = document.createElement("a");
+        button.setAttribute("href", a.getAttribute("href") ?? "");
+        button.className = "cta-button";
+        button.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+        p.appendChild(button);
+        a.replaceWith(document.createTextNode(a.textContent ?? ""));
+        return p;
+      });
+      out.appendChild(child);
+      buttonParagraphs.forEach((p) => out.appendChild(p));
+      continue;
+    }
+
     if (looksLikeHeading(child)) {
       const h2 = document.createElement("h2");
       // Headings are already bold — unwrap <strong>/<b> so they don't double up.
@@ -174,7 +203,8 @@ export default function InsightBodyEditor({
           "[&_blockquote]:border-l-4 [&_blockquote]:border-steel/40 [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-navy/70 " +
           "[&_hr]:my-4 [&_hr]:border-navy/15 " +
           "[&_a]:text-blue-600 [&_a]:underline " +
-          "[&_a.cta-button]:inline-block [&_a.cta-button]:no-underline [&_a.cta-button]:rounded-full [&_a.cta-button]:bg-navy [&_a.cta-button]:px-4 [&_a.cta-button]:py-1.5 [&_a.cta-button]:text-white [&_a.cta-button]:font-semibold",
+          // Same look as the live article (insights/post/[slug] RICH_BODY_CLASSNAME).
+          "[&_a.cta-button]:mt-3 [&_a.cta-button]:inline-flex [&_a.cta-button]:items-center [&_a.cta-button]:no-underline [&_a.cta-button]:rounded-full [&_a.cta-button]:bg-navy [&_a.cta-button]:px-8 [&_a.cta-button]:py-4 [&_a.cta-button]:text-base [&_a.cta-button]:text-white [&_a.cta-button]:font-semibold",
       },
       handlePaste(view, event) {
         const text = event.clipboardData?.getData("text/plain") ?? "";
@@ -252,14 +282,40 @@ export default function InsightBodyEditor({
       href = url.trim();
     }
 
-    // Cursor already sitting inside an existing button: re-point it to the
-    // new destination and keep its current label — don't insert a second one.
-    if (state.link && editor.getAttributes("link").class === "cta-button") {
-      editor.chain().focus().extendMarkRange("link").setLink({ href, class: "cta-button" }).run();
+    // Inside an existing link/button, act on the whole link.
+    if (state.link) editor.chain().focus().extendMarkRange("link").run();
+
+    const { from, to, $from, $to } = editor.state.selection;
+    const paragraphText = $from.parent.textContent.trim();
+    const selectedText = editor.state.doc.textBetween(from, to, " ").trim();
+    const coversWholeParagraph = $from.sameParent($to) && selectedText === paragraphText;
+
+    // A button that's already its own line: re-point it to the new
+    // destination and keep its label — don't insert a second one.
+    if (state.link && coversWholeParagraph && editor.getAttributes("link").class === "cta-button") {
+      editor.chain().focus().setLink({ href, class: "cta-button" }).run();
       return;
     }
 
-    const { from, to } = editor.state.selection;
+    // Cursor or selection inside a sentence: a button can't live mid-sentence,
+    // so the selected words stay in the sentence as plain text and the button
+    // goes on its own line right after this paragraph (same as Auto-format).
+    if (paragraphText && !coversWholeParagraph) {
+      const typed = selectedText ? selectedText : window.prompt("Button text", "Learn more")?.trim();
+      if (!typed) return;
+      const label = typed.charAt(0).toUpperCase() + typed.slice(1);
+      const after = $to.after();
+      const chain = editor.chain().focus();
+      if (state.link) chain.unsetLink();
+      chain
+        .insertContentAt(after, {
+          type: "paragraph",
+          content: [{ type: "text", text: label, marks: [{ type: "link", attrs: { href, class: "cta-button" } }] }],
+        })
+        .run();
+      return;
+    }
+
     if (from === to) {
       const label = window.prompt("Button text", "Learn more");
       if (!label || !label.trim()) return;

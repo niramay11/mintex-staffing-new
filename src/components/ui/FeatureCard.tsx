@@ -14,10 +14,6 @@ import Link from "next/link";
 export const FEATURE_CARD_LINK =
   "font-medium text-steel underline decoration-steel/30 underline-offset-2 transition-colors duration-500 hover:text-navy group-hover:text-white group-hover:decoration-white/40 dark:text-steel-light dark:hover:text-cream";
 
-// The global h1–h4 rule forces the condensed heading font; these cards use
-// the body sans at a light weight, so override inline.
-const SANS = { fontFamily: "var(--font-sans), Arial, Helvetica, sans-serif" };
-
 export default function FeatureCard({
   icon,
   tag,
@@ -62,8 +58,7 @@ export default function FeatureCard({
       </div>
 
       <h3
-        style={SANS}
-        className="relative mt-8 text-[23px] font-normal leading-[1.2] tracking-[-0.02em] text-navy transition-colors duration-500 group-hover:text-white dark:text-cream"
+        className="relative mt-8 font-heading text-[26px] font-bold leading-[1.15] text-navy transition-colors duration-500 group-hover:text-white dark:text-cream"
       >
         {title}
       </h3>

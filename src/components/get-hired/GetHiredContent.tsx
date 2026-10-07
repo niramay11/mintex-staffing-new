@@ -6,7 +6,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import JobBoard from "@/components/jobs/JobBoard";
 import BrowseRolesButton from "@/components/jobs/BrowseRolesButton";
 import JobAlertButton from "@/components/jobs/JobAlertButton";
-import IndustryAccordion from "@/components/industries/IndustryAccordion";
+import FaqSplit from "@/components/ui/FaqSplit";
 import Testimonials from "@/components/home/Testimonials";
 import Link from "next/link";
 import { getSiteImages } from "@/lib/siteImages";
@@ -313,23 +313,17 @@ export default async function GetHiredContent() {
 
       {/* Sec 6 — FAQ (also feeds the FAQPage schema above) */}
       <Section background="white">
-        <div className="mx-auto max-w-3xl">
-          <div className="text-center">
-            <Eyebrow>FAQ</Eyebrow>
-            <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
-              Frequently asked questions
-            </h2>
-          </div>
-          <div className="mt-10">
-            <IndustryAccordion items={jobSeekerFaqs} />
-          </div>
-        </div>
+        <FaqSplit
+          title="Frequently asked questions"
+          intro="Answers to what job seekers ask us most. Don't see yours? Our team is happy to help."
+          items={jobSeekerFaqs}
+        />
       </Section>
 
       {/* Sec 7 — Closing CTA */}
       <Section background="mist">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="font-heading text-[34px] font-bold leading-tight text-navy sm:text-[42px] dark:text-cream">
+          <h2 className="font-heading text-[38px] font-bold leading-tight text-navy sm:text-[46px] dark:text-cream">
             Your next role might open tomorrow
           </h2>
           <p className="mt-4 text-[19px] leading-relaxed text-steel dark:text-steel-light">Get on our radar today.</p>

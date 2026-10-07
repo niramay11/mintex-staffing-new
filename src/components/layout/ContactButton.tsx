@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { openCalendlyPopup } from "@/components/contact/CalendlyButton";
 
 const PHONE_NUMBER = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "").replace(/\D/g, "");
 // Strip stray wrapping quotes (the env value has been set as "..." before,
@@ -34,6 +35,30 @@ export default function ContactButton({
 
   return (
     <div className="pointer-events-none fixed bottom-6 right-6 z-50 flex flex-col items-center gap-3">
+      {/* Opens the Calendly scheduler right on the page to book a call. */}
+      <button
+        type="button"
+        onClick={() => {
+          onOpenChange(false);
+          openCalendlyPopup();
+        }}
+        aria-label="Quick contact: book a call"
+        className={`relative flex h-12 w-12 items-center justify-center rounded-full bg-steel text-white shadow-lg transition-all duration-200 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-steel dark:bg-steel-light dark:text-navy-950 ${
+          open ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"
+        }`}
+      >
+        <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="17" rx="2" />
+          <path d="M16 2v4M8 2v4M3 10h18M9 15l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        <span
+          aria-hidden="true"
+          className="absolute right-full mr-3 whitespace-nowrap rounded-full bg-white px-3 py-1.5 text-[13px] font-semibold text-navy shadow-[0_6px_18px_-6px_rgba(0,48,96,0.35)] dark:bg-navy-800 dark:text-cream"
+        >
+          Quick contact
+        </span>
+      </button>
+
       <a
         href={emailHref}
         aria-label="Email us"

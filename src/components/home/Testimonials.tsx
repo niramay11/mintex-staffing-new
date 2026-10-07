@@ -67,8 +67,12 @@ export default function Testimonials({
   heading = "Testimonials",
   intro,
   link,
+  centerWhenFits = false,
 }: {
   stories: CaseStudy[];
+  // Centers the row when every card fits on screen (auto margins on the
+  // first/last card, so overflow still scrolls without clipping the left edge).
+  centerWhenFits?: boolean;
   // Optional homepage copy; other callers keep the plain "Testimonials" title.
   heading?: string;
   intro?: string;
@@ -125,7 +129,9 @@ export default function Testimonials({
       <div className="relative mx-auto mt-14 max-w-[1920px]">
         <div
           ref={scrollerRef}
-          className="flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className={`flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
+            centerWhenFits ? "[&>*:first-child]:ml-auto [&>*:last-child]:mr-auto" : ""
+          }`}
         >
           {stories.map((story) => (
             <TestimonialCard key={story.id} story={story} />

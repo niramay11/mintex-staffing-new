@@ -7,8 +7,11 @@ import { useState } from "react";
 // crawlable and match the page's FAQPage schema.
 export default function IndustryAccordion({
   items,
+  wideAnswers = false,
 }: {
   items: { question: string; answer: string }[];
+  // Lets answers span the full row instead of capping at 560px.
+  wideAnswers?: boolean;
 }) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
@@ -41,7 +44,9 @@ export default function IndustryAccordion({
               }`}
             >
               <div className="overflow-hidden">
-                <p className="max-w-[560px] pb-6 text-[15px] leading-[1.7] text-navy/70 dark:text-cream/70">{item.answer}</p>
+                <p
+                  className={`${wideAnswers ? "pr-12 sm:pr-14" : "max-w-[560px]"} pb-6 text-[15px] leading-[1.7] text-navy/70 dark:text-cream/70`}
+                >{item.answer}</p>
               </div>
             </div>
           </div>

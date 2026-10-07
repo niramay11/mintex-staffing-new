@@ -7,10 +7,6 @@ import type { IndustryListItem } from "./industryGroups";
 
 const AUTOPLAY_MS = 6500;
 
-// globals.css forces h1-h4 into the condensed heading font via an unlayered
-// rule that beats Tailwind utilities; this design uses a light sans instead.
-const SANS_HEADING = { fontFamily: "var(--font-sans), Arial, Helvetica, sans-serif" } as const;
-
 function IconArrow({ className }: { className?: string }) {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className}>
@@ -65,7 +61,7 @@ export default function FeaturedIndustries({ items }: { items: IndustryListItem[
               {item.stat && (
                 <p className="text-[11.5px] font-semibold uppercase tracking-[0.14em] text-white/70">{item.stat}</p>
               )}
-              <h2 style={SANS_HEADING} className="mt-3 text-[30px] font-light leading-[1.14] tracking-[-0.025em] text-white sm:text-[38px] lg:text-[44px]">
+              <h2 className="mt-3 font-heading text-[34px] font-bold leading-[1.05] text-white sm:text-[44px] lg:text-[52px]">
                 {item.headline}
               </h2>
               <p className="mt-5 line-clamp-3 max-w-[380px] text-[14px] leading-relaxed text-white/75">{item.description}</p>
@@ -84,7 +80,7 @@ export default function FeaturedIndustries({ items }: { items: IndustryListItem[
 
       {/* Page H1 sits where the reference shows its "FEATURED" label */}
       <div className="pointer-events-none absolute left-7 top-7 sm:left-12 sm:top-9 lg:left-16">
-        <h1 style={{ ...SANS_HEADING, letterSpacing: "0.16em" }} className="text-[12px] font-semibold uppercase tracking-[0.16em] text-white/80">Industries We Serve</h1>
+        <h1 style={{ fontFamily: "var(--font-sans), Arial, Helvetica, sans-serif", letterSpacing: "0.16em" }} className="text-[12px] font-semibold uppercase tracking-[0.16em] text-white/80">Industries We Serve</h1>
       </div>
 
       {items.length > 1 && (

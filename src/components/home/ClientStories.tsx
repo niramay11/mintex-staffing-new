@@ -112,7 +112,7 @@ export default function ClientStories() {
         <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
           Client stories
         </p>
-        <h2 className="mt-3.5 font-heading text-[36px] font-bold leading-tight text-navy sm:text-[40px] dark:text-cream">
+        <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
           You need to see it to believe it
         </h2>
         <p className="mt-4 text-[20px] text-steel dark:text-steel-light">

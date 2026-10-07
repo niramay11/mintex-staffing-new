@@ -48,10 +48,9 @@ function IconLock({ className }: { className?: string }) {
 
 // Card design copied from the /industries grid (IndustriesExplorer's
 // IndustryCard): small label top-left, "Mintex / Your resume" top-right, big
-// light title + text at the bottom, outlined arrow pill. Unlike those cards
+// title + text at the bottom, outlined arrow pill. Unlike those cards
 // this one isn't a single link (the body has its own links), so the pill is
 // the link.
-const SANS_HEADING = { fontFamily: "var(--font-sans), Arial, Helvetica, sans-serif" } as const;
 const CARD_LINK = "font-medium text-steel hover:text-navy dark:text-steel-light dark:hover:text-cream";
 
 function InfoCard({
@@ -90,7 +89,7 @@ function InfoCard({
         <Icon className="h-5 w-5" />
       </span>
 
-      <h3 style={SANS_HEADING} className="mt-6 break-words text-[26px] font-normal leading-[1.15] tracking-[-0.025em] text-navy sm:text-[28px] dark:text-cream">
+      <h3 className="mt-6 break-words font-heading text-[28px] font-bold leading-[1.1] text-navy sm:text-[30px] dark:text-cream">
         {title}
       </h3>
       <p className="mt-4 text-[14px] leading-relaxed text-navy/70 dark:text-cream/70">{children}</p>

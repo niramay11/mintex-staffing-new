@@ -35,7 +35,7 @@ function CaseStudyGroup({
     <Section id={id} background={background}>
       <div className="mx-auto max-w-2xl text-center">
         <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">{eyebrow}</p>
-        <h2 className="mt-3.5 font-heading text-[32px] font-semibold leading-tight text-navy dark:text-cream sm:text-[36px]">
+        <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy dark:text-cream sm:text-[36px]">
           {title}
         </h2>
         <p className="mt-4 text-[20px] text-steel dark:text-steel-light">{intro}</p>

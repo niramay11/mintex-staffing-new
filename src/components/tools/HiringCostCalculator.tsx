@@ -573,10 +573,7 @@ export default function HiringCostCalculator({ siteImages }: { siteImages: Recor
                   </span>
                 </div>
 
-                <h3
-                  style={{ fontFamily: "var(--font-sans), Arial, Helvetica, sans-serif" }}
-                  className="mt-8 text-[24px] font-normal leading-[1.15] tracking-[-0.025em] text-navy sm:text-[26px] dark:text-cream"
-                >
+                <h3 className="mt-8 font-heading text-[26px] font-bold leading-[1.1] text-navy sm:text-[28px] dark:text-cream">
                   {m.title}
                 </h3>
                 <p className="mt-3 text-[13.5px] leading-relaxed text-navy/65 dark:text-cream/65">{m.desc}</p>

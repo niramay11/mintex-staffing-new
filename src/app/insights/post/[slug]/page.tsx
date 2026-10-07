@@ -46,6 +46,9 @@ function isHeadingLine(text: string): boolean {
   return !/[.!,;:]$/.test(t);
 }
 
+const SOURCE_LINK_CLASSNAME =
+  "text-blue-600 underline decoration-blue-600/50 underline-offset-2 hover:text-blue-700 hover:decoration-blue-700 dark:text-blue-400 dark:decoration-blue-400/50 dark:hover:text-blue-300 dark:hover:decoration-blue-300";
+
 // The admin's "Sources" section (a repeatable label+URL list, not a rich-text
 // editor) serializes each entry as "[label](url)" into the Sources: line —
 // this turns that markdown-lite syntax back into real, clickable links.
@@ -70,7 +73,7 @@ function renderInlineLinks(text: string) {
         href={part.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-blue-600 underline decoration-blue-600/50 underline-offset-2 hover:text-blue-700 hover:decoration-blue-700 dark:text-blue-400 dark:decoration-blue-400/50 dark:hover:text-blue-300 dark:hover:decoration-blue-300"
+        className={SOURCE_LINK_CLASSNAME}
       >
         {part.label}
       </a>
@@ -84,12 +87,61 @@ function renderInlineLinks(text: string) {
 // ids onto them for anchor scrolling and pulls out the same list to build
 // the table of contents, mirroring what the legacy path derives from
 // isHeadingLine.
-function prepareRichBody(html: string): { html: string; tocItems: { id: string; text: string }[] } {
+type SourceLink = { label: string; url: string };
+
+const stripTags = (s: string) => s.replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ").trim();
+
+const capitalizeFirst = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+// A CTA button only reads as a button on a line of its own. One saved inside
+// a sentence ("our <button> builds…", which the editor used to allow) is
+// split out: the words stay in the sentence as plain text and the button is
+// placed on its own line right after that paragraph. Conversely, a paragraph
+// that is nothing but one internal link is a CTA even if it was saved
+// without the class (pasted posts, older saves).
+function normalizeCtaButtons(html: string): string {
+  return html.replace(/<p([^>]*)>([\s\S]*?)<\/p>/g, (whole, pAttrs: string, inner: string) => {
+    const anchors = inner.match(/<a\b[^>]*>[\s\S]*?<\/a>/g) ?? [];
+    const textOutsideLinks = stripTags(inner.replace(/<a\b[^>]*>[\s\S]*?<\/a>/g, ""));
+    if (anchors.length === 1 && !textOutsideLinks) {
+      const a = anchors[0];
+      const href = a.match(/\bhref="([^"]*)"/)?.[1] ?? "";
+      if (/class="[^"]*cta-button/.test(a) || !href.startsWith("/")) return whole;
+      return `<p${pAttrs}>${inner.replace(/<a\b/, '<a class="cta-button"')}</p>`;
+    }
+    if (!inner.includes("cta-button")) return whole;
+    const buttons: string[] = [];
+    const sentence = inner.replace(/<a\b([^>]*\bclass="cta-button"[^>]*)>([\s\S]*?)<\/a>/g, (_a, attrs: string, label: string) => {
+      const href = attrs.match(/\bhref="([^"]*)"/)?.[1] ?? "";
+      const text = stripTags(label);
+      if (href && text) buttons.push(`<p><a class="cta-button" href="${href}">${capitalizeFirst(text)}</a></p>`);
+      return label;
+    });
+    return `<p${pAttrs}>${sentence}</p>${buttons.join("")}`;
+  });
+}
+
+// Pulls a "Sources: <a>…</a> · <a>…</a>" paragraph out of the article body so
+// it renders in the footnote block under the article (with its links)
+// instead of as body text inside the last numbered section.
+function extractSources(html: string): { html: string; sources: SourceLink[] } {
+  let sources: SourceLink[] = [];
+  const out = html.replace(/<p[^>]*>\s*(?:<(?:strong|b)>)?\s*Sources:[\s\S]*?<\/p>/i, (para) => {
+    sources = [...para.matchAll(/<a\b[^>]*\bhref="([^"]+)"[^>]*>([\s\S]*?)<\/a>/g)]
+      .map((m) => ({ url: m[1].replace(/&amp;/g, "&"), label: stripTags(m[2]) }))
+      .filter((s) => s.label && /^https?:\/\//.test(s.url));
+    return sources.length ? "" : para;
+  });
+  return { html: out, sources };
+}
+
+function prepareRichBody(html: string): { html: string; tocItems: { id: string; text: string }[]; sources: SourceLink[] } {
+  const extracted = extractSources(normalizeCtaButtons(html));
   // Some post bodies (pasted from Word/Docs) carry a literal <h1> — the page
   // already renders the real <h1> (the post title) above, so a surviving
   // <h1> in the body would give the page two. Same fix already applied to
   // job descriptions in components/jobs/utils.ts (demoteDescriptionHeadings).
-  const demoted = html.replace(/<(\/?)h1(\s|>)/gi, "<$1h2$2");
+  const demoted = extracted.html.replace(/<(\/?)h1(\s|>)/gi, "<$1h2$2");
   let i = 0;
   const tocItems: { id: string; text: string }[] = [];
   const withIds = demoted.replace(/<h2>([\s\S]*?)<\/h2>/g, (_match, inner: string) => {
@@ -97,7 +149,7 @@ function prepareRichBody(html: string): { html: string; tocItems: { id: string; 
     tocItems.push({ id, text: inner.replace(/<[^>]+>/g, "").trim() });
     return `<h2 id="${id}">${inner}</h2>`;
   });
-  return { html: withIds, tocItems };
+  return { html: withIds, tocItems, sources: extracted.sources };
 }
 
 const RICH_BODY_CLASSNAME =
@@ -259,7 +311,12 @@ export default async function InsightPostPage({
   });
 
   const mainLines = post.body.filter((p) => !isSourcesLine(p) && !isDisclaimerLine(p));
-  const footnoteLines = post.body.filter((p) => isSourcesLine(p) || isDisclaimerLine(p));
+  // Linked sources pulled out of the rich body win over the plain-text
+  // Sources line in `body` (which for those posts carries the labels only).
+  const richSources = richBody?.sources ?? [];
+  const footnoteLines = post.body.filter(
+    (p) => (isSourcesLine(p) && richSources.length === 0) || isDisclaimerLine(p)
+  );
 
   const rich = richBody ? splitRichSections(richBody.html) : null;
   const legacy = rich ? null : splitLineSections(mainLines);
@@ -420,11 +477,24 @@ export default async function InsightPostPage({
           ))}
         </div>
 
-        {(footnoteLines.length > 0 || post.author_bio || related.length > 0) && (
+        {(footnoteLines.length > 0 || richSources.length > 0 || post.author_bio || related.length > 0) && (
           <div className="mt-20 lg:mt-28 lg:grid lg:grid-cols-12 lg:gap-10">
             <div className="min-w-0 space-y-10 lg:col-span-9 lg:col-start-4">
-              {footnoteLines.length > 0 && (
+              {(footnoteLines.length > 0 || richSources.length > 0) && (
                 <div className="space-y-3 border-t border-navy/15 pt-6 text-sm leading-relaxed text-navy dark:border-white/15 dark:text-cream">
+                  {richSources.length > 0 && (
+                    <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
+                      <span className="font-semibold">Sources:</span>
+                      {richSources.map((source, j) => (
+                        <span key={j} className="inline-flex items-baseline">
+                          <a href={source.url} target="_blank" rel="noopener noreferrer" className={SOURCE_LINK_CLASSNAME}>
+                            {source.label}
+                          </a>
+                          {j < richSources.length - 1 && <span className="ml-1.5 text-navy/40 dark:text-cream/40">·</span>}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                   {footnoteLines.map((line, i) => {
                     if (isSourcesLine(line)) {
                       const entries = line.replace(/^Sources:\s*/i, "").split(/\s*·\s*/).filter(Boolean);

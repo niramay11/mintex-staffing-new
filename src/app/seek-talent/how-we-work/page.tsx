@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Section from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
-import IndustryAccordion from "@/components/industries/IndustryAccordion";
+import FaqSplit from "@/components/ui/FaqSplit";
 import { getSiteImages } from "@/lib/siteImages";
 import { pageMetadata } from "@/lib/pageMetadata";
 import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
@@ -224,7 +224,7 @@ export default async function HowWeWorkPage() {
       <Section background="white" className="!py-10 sm:!py-12">
         <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-5 rounded-2xl border border-navy/10 bg-white p-7 shadow-[0_15px_35px_-15px_rgba(0,48,96,0.15)] sm:flex-row sm:items-center sm:p-8 dark:border-white/10 dark:bg-navy-900">
           <div>
-            <h2 className="text-xl font-semibold text-navy dark:text-cream">Already a client?</h2>
+            <h2 className="text-xl font-bold text-navy dark:text-cream">Already a client?</h2>
             <p className="mt-1 text-[15px] text-navy/70 dark:text-cream/70">
               Sign in to the client portal to review candidates, track open roles and manage your account.
             </p>
@@ -270,17 +270,12 @@ export default async function HowWeWorkPage() {
 
       {/* Sec 5 — FAQ (also feeds the FAQPage schema above) */}
       <Section background="white">
-        <div className="mx-auto max-w-3xl">
-          <div className="text-center">
-            <Eyebrow>Common questions</Eyebrow>
-            <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl dark:text-cream">
-              Frequently asked questions
-            </h2>
-          </div>
-          <div className="mt-10">
-            <IndustryAccordion items={FAQS} />
-          </div>
-        </div>
+        <FaqSplit
+          eyebrow="Common questions"
+          title="Frequently asked questions"
+          intro="Answers to what employers ask most about how a search runs. Don't see yours? Our team is happy to help."
+          items={FAQS}
+        />
       </Section>
     </>
   );

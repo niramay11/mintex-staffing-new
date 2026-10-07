@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Section from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
-import IndustryAccordion from "@/components/industries/IndustryAccordion";
+import FaqSplit from "@/components/ui/FaqSplit";
 import { getHiringServiceBySlug } from "@/content/hiringServices";
 import { getSiteImages } from "@/lib/siteImages";
 import { pageMetadata } from "@/lib/pageMetadata";
@@ -286,7 +286,7 @@ export default async function ExecutiveSearchPage() {
       <Section background="white">
         <div className="mx-auto max-w-3xl rounded-[24px] border border-navy/[0.08] bg-white p-8 shadow-[0_15px_35px_-10px_rgba(0,48,96,0.08)] sm:p-10 dark:border-white/10 dark:bg-navy-800">
           <Eyebrow>Board advisory</Eyebrow>
-          <h2 className="mt-3.5 font-heading text-[30px] font-bold leading-tight text-navy sm:text-[34px] dark:text-cream">
+          <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
             Board recruitment and advisory
           </h2>
           <p className="mt-5 text-[18px] leading-[1.85] text-navy/70 dark:text-cream/70">
@@ -320,23 +320,17 @@ export default async function ExecutiveSearchPage() {
 
       {/* Sec 8 — FAQ (also feeds the FAQPage schema above) */}
       <Section background="white">
-        <div className="mx-auto max-w-3xl">
-          <div className="text-center">
-            <Eyebrow>FAQ</Eyebrow>
-            <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
-              Executive search FAQ
-            </h2>
-          </div>
-          <div className="mt-10">
-            <IndustryAccordion items={FAQS} />
-          </div>
-        </div>
+        <FaqSplit
+          title="Executive search FAQ"
+          intro="Answers to what employers ask most about executive search. Don't see yours? Our team is happy to help."
+          items={FAQS}
+        />
       </Section>
 
       {/* Sec 9 — Closing CTA */}
       <Section background="mist">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="font-heading text-[34px] font-bold leading-tight text-navy sm:text-[42px] dark:text-cream">
+          <h2 className="font-heading text-[38px] font-bold leading-tight text-navy sm:text-[46px] dark:text-cream">
             Planning a leadership change?
           </h2>
           <p className="mt-4 text-[19px] leading-relaxed text-steel dark:text-steel-light">

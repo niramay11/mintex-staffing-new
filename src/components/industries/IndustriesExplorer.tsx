@@ -12,11 +12,6 @@ function IconArrow({ className }: { className?: string }) {
   );
 }
 
-// globals.css sets h1-h4 to the condensed heading font with an unlayered
-// rule that beats Tailwind's font-* utilities, so the light, regular-width
-// sans this design calls for has to be set inline.
-const SANS_HEADING = { fontFamily: "var(--font-sans), Arial, Helvetica, sans-serif" } as const;
-
 function IndustryCard({ item }: { item: IndustryListItem }) {
   return (
     <Link
@@ -32,7 +27,7 @@ function IndustryCard({ item }: { item: IndustryListItem }) {
       </div>
 
       <div className="mt-auto pt-12">
-        <h2 style={SANS_HEADING} className="break-words text-[28px] font-normal leading-[1.15] tracking-[-0.025em] text-navy sm:text-[32px] dark:text-cream">
+        <h2 className="break-words font-heading text-[30px] font-bold leading-[1.1] text-navy sm:text-[34px] dark:text-cream">
           {item.name}
         </h2>
         <p className="mt-4 line-clamp-4 max-w-[300px] text-[13.5px] leading-relaxed text-navy/65 dark:text-cream/65">

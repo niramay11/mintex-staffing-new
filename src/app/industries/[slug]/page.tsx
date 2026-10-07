@@ -285,7 +285,7 @@ export default async function IndustryPage({
               >
                 <div>
                   <p className="text-[11px] text-navy/40 dark:text-cream/40">proven result</p>
-                  <p style={SANS} className="mt-3 text-[34px] font-normal leading-none tracking-[-0.03em] text-navy dark:text-cream">
+                  <p className="mt-3 font-heading text-[38px] font-bold leading-none text-navy dark:text-cream">
                     {achievement.value}
                   </p>
                   <p className="mt-2 text-[14px] text-navy/55 dark:text-cream/55">{achievement.label}</p>
@@ -308,7 +308,7 @@ export default async function IndustryPage({
         <div className="mt-5">
           <TwoToneHeading lead={`${industry.name} job market trends`} muted="and your questions answered" />
           <div className="mt-6 max-w-[760px]">
-            <h3 style={SANS} className="text-[15px] font-semibold leading-snug text-navy dark:text-cream">
+            <h3 className="font-heading text-[22px] font-bold leading-snug text-navy dark:text-cream">
               {industry.sectorInsight.title}
             </h3>
             <p className="mt-2 text-[15.5px] leading-[1.7] text-navy/75 dark:text-cream/75">{industry.sectorInsight.body}</p>
@@ -340,8 +340,9 @@ export default async function IndustryPage({
   );
 }
 
-// Headings on this page use the body sans at a light weight (the global
-// h1–h4 rule forces the condensed heading font, so override inline).
+// The global h1–h4 rule sets the condensed heading font; the FAQ label below
+// is styled as a small sans eyebrow (like the site's other eyebrows), so it
+// overrides inline.
 const SANS = { fontFamily: "var(--font-sans), Arial, Helvetica, sans-serif" };
 
 function SectionLabel({ children }: { children: ReactNode }) {
@@ -358,8 +359,7 @@ function SectionLabel({ children }: { children: ReactNode }) {
 function TwoToneHeading({ lead, muted, className = "" }: { lead: string; muted: string; className?: string }) {
   return (
     <h2
-      style={SANS}
-      className={`max-w-[760px] text-[32px] font-normal leading-[1.12] tracking-[-0.025em] text-navy sm:text-[40px] dark:text-cream ${className}`}
+      className={`max-w-[760px] font-heading text-[32px] font-bold leading-[1.1] text-navy sm:text-[36px] dark:text-cream ${className}`}
     >
       {lead} <span className="text-navy/35 dark:text-cream/35">{muted}</span>
     </h2>

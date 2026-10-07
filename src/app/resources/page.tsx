@@ -179,10 +179,7 @@ export default async function ResourcesPage() {
                   </span>
                 </div>
 
-                <h2
-                  style={{ fontFamily: "var(--font-sans), Arial, Helvetica, sans-serif" }}
-                  className="mt-8 text-[26px] font-normal leading-[1.15] tracking-[-0.025em] text-navy sm:text-[30px] dark:text-cream"
-                >
+                <h2 className="mt-8 font-heading text-[28px] font-bold leading-[1.1] text-navy sm:text-[32px] dark:text-cream">
                   {tool.title}
                 </h2>
                 <p className="mt-3 max-w-[340px] text-[13.5px] leading-relaxed text-navy/65 dark:text-cream/65">{tool.description}</p>

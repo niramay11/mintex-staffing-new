@@ -7,7 +7,8 @@ import HeroImage from "@/components/ui/HeroImage";
 import { getSiteImages } from "@/lib/siteImages";
 import { pageMetadata } from "@/lib/pageMetadata";
 import Testimonials from "@/components/home/Testimonials";
-import IndustryAccordion from "@/components/industries/IndustryAccordion";
+import IndustriesShowcase from "@/components/home/IndustriesShowcase";
+import FaqSplit from "@/components/ui/FaqSplit";
 import { getHomepageTestimonials } from "@/lib/caseStudies";
 import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
 import { SITE_URL } from "@/lib/site";
@@ -84,21 +85,6 @@ const SEARCH_INCLUDES = [
   { title: "Interview coordination", text: "with your hiring managers, through to the offer." },
   { title: "A client portal", text: "where you review candidates and track every open role." },
   { title: "Check-ins after the start date", text: "because a placement isn't finished on day one." },
-];
-
-const INDUSTRY_LINKS = [
-  { label: "IT", slug: "it-staffing" },
-  { label: "healthcare", slug: "healthcare-staffing" },
-  { label: "engineering", slug: "engineering-staffing" },
-  { label: "manufacturing", slug: "manufacturing-staffing" },
-  { label: "finance and accounting", slug: "finance-staffing" },
-  { label: "administrative", slug: "administrative-staffing" },
-  { label: "sales and marketing", slug: "sales-staffing" },
-  { label: "customer service", slug: "customer-service-staffing" },
-  { label: "logistics", slug: "logistics-staffing" },
-  { label: "creative and design", slug: "creative-design-staffing" },
-  { label: "legal", slug: "legal-staffing" },
-  { label: "hospitality", slug: "hospitality-staffing" },
 ];
 
 // The three employer quotes this page features, in display order, matched
@@ -236,7 +222,7 @@ export default async function SeekTalentPage() {
             <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
               The problem
             </p>
-            <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[40px] dark:text-cream">
+            <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
               An open seat costs more than a salary
             </h2>
             <div className="mt-5 h-[3px] w-12 bg-steel" />
@@ -324,77 +310,66 @@ export default async function SeekTalentPage() {
 
       {/* Sec 4 — What every search includes */}
       <Section background="white">
-        <SectionHeading eyebrow="What every search includes" title="What's included in every search" />
+        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+          <div className="lg:pt-2">
+            <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
+              What every search includes
+            </p>
+            <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
+              What&apos;s included in every search
+            </h2>
+            <p className="mt-4 max-w-sm text-[17px] leading-relaxed text-steel dark:text-steel-light">
+              Every engagement, whatever the hiring model, comes with the same five things.
+            </p>
+            <div className="mt-8">
+              <ButtonLink href="/seek-talent/get-started" variant="primary">
+                Request talent
+              </ButtonLink>
+            </div>
+          </div>
 
-        <ol className="mx-auto mt-11 max-w-3xl space-y-4">
-          {SEARCH_INCLUDES.map((item, index) => (
-            <li
-              key={item.title}
-              className="flex items-start gap-4 rounded-2xl border border-navy/[0.08] bg-white p-5 shadow-[0_1px_3px_rgba(0,48,96,0.05)] sm:p-6 dark:border-white/10 dark:bg-navy-800"
-            >
-              <span
-                aria-hidden="true"
-                className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-navy text-sm font-semibold text-white dark:bg-steel dark:text-navy-950"
+          <ol className="space-y-4">
+            {SEARCH_INCLUDES.map((item, index) => (
+              <li
+                key={item.title}
+                className="flex items-start gap-4 rounded-2xl border border-navy/[0.08] bg-white p-5 shadow-[0_1px_3px_rgba(0,48,96,0.05)] sm:p-6 dark:border-white/10 dark:bg-navy-800"
               >
-                {index + 1}
-              </span>
-              <p className="pt-0.5 text-[17px] leading-relaxed text-navy/70 dark:text-cream/70">
-                <strong className="font-semibold text-navy dark:text-cream">{item.title}</strong> {item.text}
-              </p>
-            </li>
-          ))}
-        </ol>
+                <span
+                  aria-hidden="true"
+                  className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-navy text-sm font-semibold text-white dark:bg-steel dark:text-navy-950"
+                >
+                  {index + 1}
+                </span>
+                <p className="pt-0.5 text-[17px] leading-relaxed text-navy/70 dark:text-cream/70">
+                  <strong className="font-semibold text-navy dark:text-cream">{item.title}</strong> {item.text}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </div>
       </Section>
 
-      {/* Sec 5 — Industries: all 12, listed once */}
-      <Section background="white">
-        <SectionHeading eyebrow="Industries" title="Industries we recruit for" />
-        <p className="mx-auto mt-6 max-w-3xl text-center text-[18px] leading-[1.85] text-navy/70 dark:text-cream/70">
-          We place talent across {INDUSTRY_LINKS.length} industries:{" "}
-          {INDUSTRY_LINKS.map((industry, index) => (
-            <span key={industry.slug}>
-              {index === INDUSTRY_LINKS.length - 1 ? "and " : ""}
-              <Link
-                href={`/industries/${industry.slug}`}
-                className="text-navy underline decoration-steel/40 underline-offset-4 transition-colors hover:decoration-navy dark:text-cream dark:hover:decoration-cream"
-              >
-                {industry.label}
-              </Link>
-              {index < INDUSTRY_LINKS.length - 2 ? ", " : index === INDUSTRY_LINKS.length - 2 ? " " : "."}
-            </span>
-          ))}
-        </p>
-      </Section>
+      {/* Sec 5 — Industries: homepage card design, plus all 12 linked once below */}
+      <IndustriesShowcase title="Industries we recruit for" />
 
       {/* Sec 6 — Proof: employer quotes only; candidate stories belong on Get Hired */}
-      <Testimonials stories={employerStories} heading="What employers say" />
+      <Testimonials stories={employerStories} heading="What employers say" centerWhenFits />
 
       {/* Sec 7 — FAQ (also feeds the FAQPage schema above) */}
       <Section background="white">
-        <div className="mx-auto max-w-3xl">
-          <SectionHeading eyebrow="FAQ" title="Questions employers ask us" />
-          <div className="mt-10">
-            <IndustryAccordion items={EMPLOYER_FAQS} />
-          </div>
-        </div>
+        <FaqSplit
+          title="Questions employers ask us"
+          intro="Quick answers on timelines, hiring models and where we recruit. Don't see yours? Our team is happy to help."
+          items={EMPLOYER_FAQS}
+        />
       </Section>
 
       {/* Sec 8 — Closing CTA */}
       <Section background="mist">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="font-heading text-[34px] font-bold leading-tight text-navy sm:text-[42px] dark:text-cream">
+          <h2 className="font-heading text-[38px] font-bold leading-tight text-navy sm:text-[46px] dark:text-cream">
             Have a role that won&apos;t fill itself?
           </h2>
-          <p className="mt-4 text-[19px] leading-relaxed text-steel dark:text-steel-light">
-            Book a scoping call. Already a client?{" "}
-            <Link
-              href="/client-portal"
-              className="font-semibold text-navy underline decoration-steel/40 underline-offset-4 transition-colors hover:decoration-navy dark:text-cream dark:hover:decoration-cream"
-            >
-              Sign in to the client portal
-            </Link>
-            .
-          </p>
           <div className="mt-8 flex justify-center">
             <ButtonLink href="/seek-talent/get-started" variant="primary">
               Discuss your hiring needs

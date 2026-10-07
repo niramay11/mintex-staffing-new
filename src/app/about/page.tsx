@@ -204,11 +204,15 @@ export default async function AboutPage() {
             <p className="mt-5 max-w-lg text-[19px] leading-relaxed text-steel dark:text-steel-light">
               {`Mintex Staffing has been matching people with jobs since ${BUSINESS.foundingYear}. ${BUSINESS.founder} started it as a small recruiting operation in Edison, New Jersey. More than 14,000 placements later, he still runs it, and he still judges the business by how many clients come back.`}
             </p>
-            <p className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-steel dark:text-steel-light">
-              <span>{BUSINESS.streetAddress}, {BUSINESS.addressLocality}, {BUSINESS.addressRegion} {BUSINESS.postalCode}</span>
-              <span aria-hidden="true">&middot;</span>
-              <a href={`tel:${BUSINESS.telephone}`} className="font-medium text-navy hover:text-navy-secondary dark:text-cream">{BUSINESS.telephoneDisplay}</a>
-            </p>
+            <div className="mt-7">
+              <ButtonLink
+                href="/contact"
+                variant="primary"
+                className="!bg-navy !text-white hover:!bg-navy-deep dark:!bg-steel dark:!text-navy-950 dark:hover:!bg-steel-light"
+              >
+                Contact us
+              </ButtonLink>
+            </div>
           </div>
 
           <div className="relative mx-6 mb-2 aspect-[4/3] overflow-hidden rounded-2xl shadow-[0_20px_45px_-20px_rgba(0,48,96,0.25)] sm:mx-10 sm:aspect-[16/10] lg:mx-0 lg:mb-0 lg:aspect-auto lg:min-h-[480px] lg:overflow-visible lg:rounded-none lg:shadow-none xl:min-h-[560px]">
@@ -434,12 +438,9 @@ export default async function AboutPage() {
       {/* Closing CTA — replaces the old "Learn More About Us" → /contact button */}
       <section className="border-t border-navy/[0.06] bg-page dark:border-white/10 dark:bg-navy-900">
         <div className="mx-auto max-w-2xl px-6 py-20 text-center sm:px-10 lg:py-24">
-          <h2 className="font-heading text-[34px] font-bold leading-tight text-navy sm:text-[42px] dark:text-cream">
+          <h2 className="font-heading text-[38px] font-bold leading-tight text-navy sm:text-[46px] dark:text-cream">
             Work with us
           </h2>
-          <p className="mt-4 text-[19px] leading-relaxed text-steel dark:text-steel-light">
-            Hiring? Let&apos;s talk about the role. Looking for work? Let&apos;s talk about what&apos;s next.
-          </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3.5">
             <ButtonLink
               href="/seek-talent"

@@ -50,7 +50,7 @@ export default async function AiInterviewGeneratorPage() {
               <span className="h-[7px] w-[7px] rounded-full bg-steel" />
               AI-Powered Prep
             </div>
-            <h2 className="mt-5 font-heading text-[32px] font-semibold leading-tight text-navy dark:text-cream sm:text-[40px]">
+            <h2 className="mt-5 font-heading text-[32px] font-bold leading-tight text-navy dark:text-cream sm:text-[36px]">
               Walk into your next interview ready for anything
             </h2>
           </div>

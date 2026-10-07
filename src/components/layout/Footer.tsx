@@ -48,7 +48,7 @@ function BackToTopButton({ lifted }: { lifted: boolean }) {
       aria-label="Back to top"
       className={`fixed bottom-24 right-4 z-40 flex h-14 w-14 flex-col items-center justify-center gap-0.5 rounded-full bg-white shadow-[0_4px_16px_rgba(0,0,0,0.1),0_8px_26px_rgba(0,0,0,0.04),0_2px_35px_rgba(0,0,0,0.02)] transition-[opacity,transform] duration-300 hover:bg-steel/10 dark:border dark:border-white/10 dark:bg-navy-900 dark:hover:bg-navy-800 sm:bottom-28 sm:right-6 sm:h-16 sm:w-16 sm:gap-1 lg:bottom-32 lg:h-20 lg:w-20 ${
         visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"
-      } ${lifted ? "!bottom-56" : ""}`}
+      } ${lifted ? "!bottom-72" : ""}`}
     >
       <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 text-steel dark:text-steel-light sm:h-5 sm:w-5 lg:h-8 lg:w-8" aria-hidden="true">
         <path d="M5 15l7-7 7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
