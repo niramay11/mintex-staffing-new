@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { CeipalJob } from "./types";
 import JobPageApply from "./JobPageApply";
-import { fmtPay, fmtPosted, isNewJob, jobLocation, jobUrlSlug, remoteBadge } from "./utils";
+import { fmtPay, fmtPosted, isNewJob, jobLocation, jobType, jobUrlSlug, remoteBadge } from "./utils";
 import { IconArrowRight, IconBriefcase, IconCalendar, IconFlag, IconInfo, IconTag } from "./icons";
 
 // Standalone copy of the skeuomorphic job card from the /get-hired job board
@@ -34,12 +34,12 @@ export default function JobCard({ job }: { job: CeipalJob }) {
       </div>
 
       <div className="grid grid-cols-2 gap-2">
-        {job.job_type && (
+        {jobType(job) && (
           <div className="flex items-center gap-2 rounded-lg bg-[#eef2f4] px-2.5 py-1.5 shadow-[inset_2px_2px_5px_rgba(0,48,96,0.09),inset_-2px_-2px_5px_rgba(255,255,255,0.7)] dark:bg-navy-950 dark:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.4),inset_-2px_-2px_5px_rgba(255,255,255,0.03)]">
             <IconTag className="h-3.5 w-3.5 flex-shrink-0 text-navy/40 dark:text-cream/40" />
             <div className="min-w-0">
               <p className="text-[10.5px] leading-tight text-navy/45 dark:text-cream/45">Type</p>
-              <p className="truncate text-[12.5px] font-medium text-navy dark:text-cream">{job.job_type}</p>
+              <p className="truncate text-[12.5px] font-medium text-navy dark:text-cream">{jobType(job)}</p>
             </div>
           </div>
         )}

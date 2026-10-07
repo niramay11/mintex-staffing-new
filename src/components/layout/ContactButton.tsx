@@ -1,5 +1,7 @@
 "use client";
 
+import { usePathname } from "next/navigation";
+
 const PHONE_NUMBER = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "").replace(/\D/g, "");
 // Strip stray wrapping quotes (the env value has been set as "..." before,
 // which put literal quote marks into the prefilled message).
@@ -19,7 +21,11 @@ export default function ContactButton({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  const whatsappHref = PHONE_NUMBER
+  // The prefilled WhatsApp message is written for job seekers, so employer
+  // pages (/seek-talent and everything under it) only offer email.
+  const pathname = usePathname();
+  const isEmployerPage = pathname === "/seek-talent" || pathname.startsWith("/seek-talent/");
+  const whatsappHref = PHONE_NUMBER && !isEmployerPage
     ? // Direct api.whatsapp.com URL — wa.me 302-redirects here, which SEO
       // crawlers flag as a "link to redirect" on every page.
       `https://api.whatsapp.com/send?phone=${PHONE_NUMBER}&text=${encodeWhatsAppText(WHATSAPP_MESSAGE)}`

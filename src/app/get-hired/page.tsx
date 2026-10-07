@@ -3,10 +3,12 @@ import GetHiredContent from "@/components/get-hired/GetHiredContent";
 import { pageMetadata } from "@/lib/pageMetadata";
 import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
 
+// "Find Jobs: Contract & Full-Time Roles" + " | Mintex Staffing" fits in 60
+// chars, so the layout template produces the exact title.
 export const metadata: Metadata = pageMetadata({
-  title: "Get Hired",
+  title: "Find Jobs: Contract & Full-Time Roles",
   description:
-    "Apply to open roles, share your resume, sign up for job alerts, and prep for your next interview with Mintex Staffing.",
+    "Browse contract, contract-to-hire and full-time jobs across 12 industries. Free for job seekers: apply, share your resume and get matched by a recruiter.",
   path: "/get-hired",
 });
 

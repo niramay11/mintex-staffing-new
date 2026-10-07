@@ -13,6 +13,7 @@ import {
   isActiveJob,
   jobIndustries,
   jobLocation,
+  jobType,
   jobUrlSlug,
   type ExperienceBucketKey,
   isNewJob,
@@ -334,8 +335,9 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
   const jobTypeCounts = useMemo(() => {
     const counts = new Map<string, number>();
     for (const j of activeJobs) {
-      if (!j.job_type) continue;
-      counts.set(j.job_type, (counts.get(j.job_type) ?? 0) + 1);
+      const type = jobType(j);
+      if (!type) continue;
+      counts.set(type, (counts.get(type) ?? 0) + 1);
     }
     return counts;
   }, [activeJobs]);
@@ -368,7 +370,7 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
     const q = search.trim().toLowerCase();
     const z = zip.trim();
     return activeJobs.filter((job) => {
-      if (typeFilter.size > 0 && !typeFilter.has(job.job_type || "")) return false;
+      if (typeFilter.size > 0 && !typeFilter.has(jobType(job) ?? "")) return false;
       if (experienceFilter.size > 0) {
         const key = experienceBucketKey(job.experience);
         if (!key || !experienceFilter.has(key)) return false;
@@ -690,12 +692,12 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
                       {/* Two-column meta row — Type / Posted, same layout
                           as the reference's "Type / Extracted date" pair. */}
                       <div className="grid grid-cols-2 gap-3">
-                        {job.job_type && (
+                        {jobType(job) && (
                           <div className="flex items-center gap-2 rounded-xl bg-[#eef2f4] px-3 py-2 shadow-[inset_2px_2px_5px_rgba(0,48,96,0.09),inset_-2px_-2px_5px_rgba(255,255,255,0.7)] dark:bg-navy-950 dark:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.4),inset_-2px_-2px_5px_rgba(255,255,255,0.03)]">
                             <IconTag className="h-3.5 w-3.5 flex-shrink-0 text-navy/40 dark:text-cream/40" />
                             <div className="min-w-0">
                               <p className="text-[11px] text-navy/45 dark:text-cream/45">Type</p>
-                              <p className="truncate text-[13px] font-medium text-navy dark:text-cream">{job.job_type}</p>
+                              <p className="truncate text-[13px] font-medium text-navy dark:text-cream">{jobType(job)}</p>
                             </div>
                           </div>
                         )}

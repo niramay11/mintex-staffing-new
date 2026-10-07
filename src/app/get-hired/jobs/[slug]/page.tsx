@@ -15,6 +15,7 @@ import { warmIfNearExpiry } from "@/lib/warmCaches";
 import {
   isActiveJob,
   jobLocation,
+  jobType,
   jobUrlSlug,
   fmtPay,
   fmtPosted,
@@ -267,7 +268,7 @@ export async function generateMetadata({
   // ~120-155 char sweet spot regardless of how short the title/location is.
   // Short job titles (e.g. "RN ICU", "Engineer") still landed at 94-108
   // chars, so a second sentence is added whenever it's under 120.
-  const baseDescription = `${job.job_title} in ${jobLocation(job)}${job.job_type ? ` — ${job.job_type}` : ""}. Apply now with Mintex Staffing and take the next step in your career.`;
+  const baseDescription = `${job.job_title} in ${jobLocation(job)}${jobType(job) ? ` — ${jobType(job)}` : ""}. Apply now with Mintex Staffing and take the next step in your career.`;
   const description =
     baseDescription.length < 120
       ? `${baseDescription} View pay, requirements and role details.`
@@ -348,7 +349,7 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
 
   const snapshot: { label: string; value?: string | number; Icon: (props: { className?: string }) => React.JSX.Element }[] = [
     { label: "Location", value: jobLocation(job), Icon: IconPin },
-    { label: "Job Type", value: job.job_type, Icon: IconBriefcase },
+    { label: "Job Type", value: jobType(job), Icon: IconBriefcase },
     { label: "Work Type", value: remoteLabel, Icon: IconGlobe },
     { label: "Experience", value: job.experience, Icon: IconBars },
     { label: "Industry", value: job.industry, Icon: IconLayers },
@@ -399,10 +400,10 @@ export default async function JobPage({ params }: { params: Promise<{ slug: stri
 
         <div className="mt-6 flex flex-wrap items-center gap-2.5">
           {pay && <span className="rounded-full bg-navy px-4 py-2 text-[18px] font-semibold text-white dark:bg-steel dark:text-navy-950">{pay}</span>}
-          {job.job_type && (
+          {jobType(job) && (
             <span className="inline-flex items-center gap-1.5 rounded-full border border-navy/15 bg-white px-3.5 py-1.5 text-[13.5px] font-medium text-navy/70 dark:border-white/10 dark:bg-navy-900 dark:text-cream/70">
               <IconBriefcase className="h-3.5 w-3.5" />
-              {job.job_type}
+              {jobType(job)}
             </span>
           )}
           {remoteLabel && (

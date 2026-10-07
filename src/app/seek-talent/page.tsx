@@ -4,24 +4,138 @@ import Link from "next/link";
 import Section from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import HeroImage from "@/components/ui/HeroImage";
-import { hiringServices } from "@/content/hiringServices";
 import { getSiteImages } from "@/lib/siteImages";
 import { pageMetadata } from "@/lib/pageMetadata";
 import Testimonials from "@/components/home/Testimonials";
+import IndustryAccordion from "@/components/industries/IndustryAccordion";
 import { getHomepageTestimonials } from "@/lib/caseStudies";
 import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
+import { SITE_URL } from "@/lib/site";
 
-export const metadata: Metadata = pageMetadata({
-  title: "Seek Talent",
-  description:
-    "Hire contract, permanent, or executive talent with Mintex Staffing, built around how your team actually works.",
-  path: "/seek-talent",
-});
+const PAGE_DESCRIPTION =
+  "Hire contract, contract-to-hire, permanent or executive talent through Mintex Staffing. Pre-screened candidates, a 9-day average fill, 12 industries.";
+
+// pageMetadata's fitTitle would drop the brand suffix here (the title plus
+// " | Mintex Staffing" runs past 60 chars), so the exact title is set with
+// `absolute` and the helper only supplies canonical/OG/Twitter.
+export const metadata: Metadata = {
+  ...pageMetadata({
+    title: "Hire Contract, Permanent & Executive Talent",
+    description: PAGE_DESCRIPTION,
+    path: "/seek-talent",
+  }),
+  title: { absolute: "Hire Contract, Permanent & Executive Talent | Mintex" },
+};
 
 const breadcrumbSchema = buildBreadcrumbSchema([
   { name: "Home", path: "/" },
   { name: "Seek Talent", path: "/seek-talent" },
 ]);
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  serviceType: "Staffing services for employers",
+  name: "Contract, contract-to-hire, permanent and executive staffing",
+  description: PAGE_DESCRIPTION,
+  url: `${SITE_URL}/seek-talent`,
+  provider: { "@id": `${SITE_URL}/#business` },
+  areaServed: { "@type": "Country", name: "United States" },
+};
+
+const HERO_STATS = [
+  { value: "14,000+", label: "Placements" },
+  { value: "9 days", label: "Average time to fill" },
+  { value: "93%", label: "Client retention" },
+];
+
+// Contract-to-hire has no page of its own; it links to its section on the
+// Contract Talent page.
+const HIRING_MODELS = [
+  {
+    name: "Contract talent",
+    useItWhen: "A project, a seasonal peak or leave coverage",
+    whatYouGet: "A screened professional for a set term, ready to start",
+    href: "/seek-talent/contract-talent",
+  },
+  {
+    name: "Contract-to-hire",
+    useItWhen: "You want to see someone in the role first",
+    whatYouGet: "A contract with a clear path to a permanent offer",
+    href: "/seek-talent/contract-talent#contract-to-hire",
+  },
+  {
+    name: "Permanent talent",
+    useItWhen: "You're building your core team",
+    whatYouGet: "Full-time hires vetted for skills and long-term fit",
+    href: "/seek-talent/permanent-talent",
+  },
+  {
+    name: "Executive search",
+    useItWhen: "A C-suite, board or founding-team seat",
+    whatYouGet: "A confidential search run to your internal policies",
+    href: "/seek-talent/executive-search",
+  },
+];
+
+const SEARCH_INCLUDES = [
+  { title: "A scoping call", text: "before we source anyone." },
+  { title: "A short list", text: "of candidates screened for skills, track record and culture fit." },
+  { title: "Interview coordination", text: "with your hiring managers, through to the offer." },
+  { title: "A client portal", text: "where you review candidates and track every open role." },
+  { title: "Check-ins after the start date", text: "because a placement isn't finished on day one." },
+];
+
+const INDUSTRY_LINKS = [
+  { label: "IT", slug: "it-staffing" },
+  { label: "healthcare", slug: "healthcare-staffing" },
+  { label: "engineering", slug: "engineering-staffing" },
+  { label: "manufacturing", slug: "manufacturing-staffing" },
+  { label: "finance and accounting", slug: "finance-staffing" },
+  { label: "administrative", slug: "administrative-staffing" },
+  { label: "sales and marketing", slug: "sales-staffing" },
+  { label: "customer service", slug: "customer-service-staffing" },
+  { label: "logistics", slug: "logistics-staffing" },
+  { label: "creative and design", slug: "creative-design-staffing" },
+  { label: "legal", slug: "legal-staffing" },
+  { label: "hospitality", slug: "hospitality-staffing" },
+];
+
+// The three employer quotes this page features, in display order, matched
+// by the case study's author field. If an admin renames them, the page falls
+// back to every non-candidate story rather than showing nothing.
+const EMPLOYER_STORY_AUTHORS = ["VP of Engineering", "Operations Director", "Director of Talent Acquisition"];
+
+const EMPLOYER_FAQS = [
+  {
+    question: "How quickly can you fill a role?",
+    answer:
+      "Our average time to fill is 9 days. We pull from a network that's screened year-round, so most searches start with candidates we already know.",
+  },
+  {
+    question: "Which hiring model should I choose?",
+    answer:
+      "Contract for defined projects or coverage, contract-to-hire if you want to see someone in the role first, permanent for core team members and executive search for leadership. We'll recommend one on the scoping call.",
+  },
+  {
+    question: "Can a contract hire convert to full-time?",
+    answer: "Yes. Many contract placements are set up with a path to a permanent offer once both sides agree on the fit.",
+  },
+  {
+    question: "Do you recruit outside New Jersey?",
+    answer: "Yes. We're based in Edison, NJ, and place talent with employers across the U.S.",
+  },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: EMPLOYER_FAQS.map((faq) => ({
+    "@type": "Question",
+    name: faq.question,
+    acceptedAnswer: { "@type": "Answer", text: faq.answer },
+  })),
+};
 
 function IconArrowRight({ className }: { className?: string }) {
   return (
@@ -31,16 +145,26 @@ function IconArrowRight({ className }: { className?: string }) {
   );
 }
 
-const seekTalentPoints = [
-  "Finding the right talent shouldn’t affect your business. At Mintex Staffing, we know that hiring isn’t one-size-fits-all — the best staffing strategy is one built around your specific hiring objectives, industry, and workforce needs.",
-  "We provide tailored solutions across IT staffing, healthcare staffing, engineering staffing, manufacturing staffing, finance staffing, administrative staffing, sales staffing, customer service staffing, legal staffing and logistics staffing. Whether you’re scaling a growing team, filling a hard-to-source technical role, or need reliable talent on a tight timeline, our recruiters bring talent that matches your hiring requirements and fits into your company culture.",
-  "From initial staffing consultation to finding the right talent match, we work as an extension of your team, understanding your company culture, role requirements, and growth plans before we ever share a candidate profile. We focus on overall company fit, not just speed — that’s what sets our approach apart.",
-  "Let’s build your stronger, more talented workforce. Discuss your hiring needs with our recruiters or explore how our proven process connects you with qualified talent across our specialized industries (IT staffing, healthcare staffing, engineering staffing, manufacturing staffing, finance staffing, administrative staffing, sales staffing, customer service staffing, legal staffing and logistics staffing) — we believe in working efficiently, reliably, and without the guesswork.",
-];
+function SectionHeading({ eyebrow, title }: { eyebrow: string; title: string }) {
+  return (
+    <div className="mx-auto max-w-2xl text-center">
+      <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">{eyebrow}</p>
+      <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
+        {title}
+      </h2>
+    </div>
+  );
+}
 
 export default async function SeekTalentPage() {
   const siteImages = await getSiteImages();
-  const testimonials = await getHomepageTestimonials();
+  const allStories = await getHomepageTestimonials();
+  const featuredStories = EMPLOYER_STORY_AUTHORS.map((author) => allStories.find((s) => s.author === author)).filter(
+    (s) => s !== undefined
+  );
+  const employerStories =
+    featuredStories.length > 0 ? featuredStories : allStories.filter((s) => s.type !== "candidate");
+
   return (
     <>
       <script
@@ -48,16 +172,30 @@ export default async function SeekTalentPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
+      <script
+        id="seek-talent-service-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
+      />
+      <script
+        id="seek-talent-faq-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+
+      {/* Sec 1 — Hero */}
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
         <div className="relative mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <div>
             <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
-              For Employers
+              For employers
             </p>
-            <h1 className="mt-3 font-heading text-4xl font-bold text-navy sm:text-5xl dark:text-cream">Seek Talent</h1>
-            <p className="mt-4 max-w-xl text-steel dark:text-steel-light">
-              Hire top talent fast with Mintex Staffing&apos;s tailored staffing solutions across
-              IT, healthcare, engineering &amp; more. Discuss your hiring needs today.
+            <h1 className="mt-3 font-heading text-4xl font-bold leading-tight text-navy sm:text-5xl dark:text-cream">
+              Hire contract, permanent and executive talent
+            </h1>
+            <p className="mt-4 max-w-xl text-[18px] leading-relaxed text-steel dark:text-steel-light">
+              Tell us the role and the deadline. We&apos;ll send pre-screened candidates who fit the work
+              and the team, usually within 9 days.
             </p>
             <div className="mt-7 flex flex-wrap gap-3.5">
               <ButtonLink href="/seek-talent/get-started" variant="primary">
@@ -71,6 +209,17 @@ export default async function SeekTalentPage() {
                 See how we work
               </ButtonLink>
             </div>
+
+            <dl className="mt-9 grid max-w-lg grid-cols-3 gap-x-6 border-t border-navy/10 pt-6 dark:border-white/10">
+              {HERO_STATS.map((stat) => (
+                <div key={stat.label} className="flex flex-col-reverse">
+                  <dt className="mt-1.5 text-[14px] leading-snug text-steel dark:text-steel-light">{stat.label}</dt>
+                  <dd className="font-heading text-[26px] font-bold leading-none text-navy sm:text-[28px] dark:text-cream">
+                    {stat.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
           </div>
 
           <HeroImage
@@ -80,24 +229,26 @@ export default async function SeekTalentPage() {
         </div>
       </Section>
 
-      <Section background="white" className="relative">
-        <div className="mx-auto grid w-full items-start gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
+      {/* Sec 2 — The problem */}
+      <Section background="white">
+        <div className="mx-auto grid w-full max-w-6xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
           <div>
-            <h2 className="font-heading text-4xl font-bold leading-tight text-navy sm:text-5xl dark:text-cream">
-              How can we help you?
+            <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
+              The problem
+            </p>
+            <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[40px] dark:text-cream">
+              An open seat costs more than a salary
             </h2>
             <div className="mt-5 h-[3px] w-12 bg-steel" />
-
-            <div className="mt-7 space-y-5">
-              {seekTalentPoints.map((point, index) => (
-                <div key={index} className="flex gap-3">
-                  <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-navy text-xs font-semibold text-white">
-                    {index + 1}
-                  </span>
-                  <p className="text-[18px] leading-relaxed text-navy/70 dark:text-cream/70">{point}</p>
-                </div>
-              ))}
-            </div>
+            <p className="mt-6 text-[18px] leading-[1.85] text-navy/70 dark:text-cream/70">
+              The role has been open six weeks. Your team is covering it on top of their own jobs. The
+              last three candidates looked great on paper and fell apart in the second interview.
+            </p>
+            <p className="mt-4 text-[18px] leading-[1.85] text-navy/70 dark:text-cream/70">
+              We fix that part. Every search starts with a conversation about your team, your goals and
+              your timeline, before we share a single profile. Then we send people who&apos;ve been
+              screened for a delivery track record, not just keywords.
+            </p>
           </div>
 
           <div className="relative mx-auto w-full max-w-xl py-8">
@@ -113,7 +264,6 @@ export default async function SeekTalentPage() {
               aria-hidden="true"
               className="absolute -right-4 -top-4 h-full w-full rounded-[2.5rem] border-2 border-steel/30"
             />
-
             <div className="relative aspect-[5/4] overflow-hidden rounded-[2.5rem] shadow-[0_35px_80px_-25px_rgba(0,48,96,0.45)]">
               <Image
                 src={siteImages["seek-talent:cta-visual"]}
@@ -126,61 +276,131 @@ export default async function SeekTalentPage() {
             </div>
           </div>
         </div>
+      </Section>
 
-        <div className="relative z-20 mt-14 grid gap-6 lg:grid-cols-3">
-          {hiringServices.map((service, index) => {
-            const Icon = service.icon;
-            return (
-              <div
-                key={service.slug}
-                id={service.slug}
-                className="group flex scroll-mt-24 flex-col justify-between rounded-[20px] border border-navy/[0.06] bg-white p-9 shadow-[0_15px_35px_-10px_rgba(0,48,96,0.08)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_25px_50px_-15px_rgba(0,48,96,0.15)] dark:border-white/10 dark:bg-navy-900"
-              >
+      {/* Sec 3 — Pick a model */}
+      <Section background="white" id="hiring-models">
+        <SectionHeading eyebrow="Pick a model" title="Choose the hiring model that fits the work" />
+
+        <div className="mx-auto mt-11 grid max-w-[1320px] gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {HIRING_MODELS.map((model, index) => (
+            <div
+              key={model.name}
+              className="group flex flex-col rounded-[20px] border border-navy/[0.06] bg-white p-7 shadow-[0_15px_35px_-10px_rgba(0,48,96,0.08)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_25px_50px_-15px_rgba(0,48,96,0.15)] dark:border-white/10 dark:bg-navy-800"
+            >
+              <span className="font-heading text-4xl font-extrabold text-navy/10 dark:text-cream/10">0{index + 1}</span>
+              <div className="mt-5 h-[3px] w-6 bg-steel" />
+              <h3 className="mt-4 text-[22px] font-bold tracking-tight text-navy dark:text-cream">{model.name}</h3>
+
+              <dl className="mt-5 space-y-4">
                 <div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-steel/15 text-steel dark:text-steel-light">
-                      <Icon className="h-6 w-6" />
-                    </div>
-                    <span className="font-heading text-4xl font-extrabold text-navy/10 dark:text-cream/10">
-                      0{index + 1}
-                    </span>
-                  </div>
-                  <div className="mt-9 h-[3px] w-6 bg-steel" />
-                  <h3 className="mt-4 text-2xl font-bold tracking-tight text-navy dark:text-cream">{service.name}</h3>
-                  <p className="mt-3 text-navy/60 dark:text-cream/60">{service.tagline}</p>
+                  <dt className="text-[12.5px] font-semibold uppercase tracking-[0.12em] text-steel dark:text-steel-light">
+                    Use it when
+                  </dt>
+                  <dd className="mt-1 text-[16px] leading-[1.6] text-navy/70 dark:text-cream/70">{model.useItWhen}</dd>
                 </div>
-                <Link
-                  href={`/seek-talent/${service.slug}`}
-                  className="mt-9 inline-flex w-fit items-center gap-3 rounded-[10px] bg-steel/10 px-7 py-3.5 text-sm font-bold text-navy transition-colors duration-200 group-hover:bg-steel group-hover:text-white dark:text-cream"
-                >
-                  Explore Service
-                  <IconArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
-                </Link>
-              </div>
-            );
-          })}
+                <div>
+                  <dt className="text-[12.5px] font-semibold uppercase tracking-[0.12em] text-steel dark:text-steel-light">
+                    What you get
+                  </dt>
+                  <dd className="mt-1 text-[16px] leading-[1.6] text-navy/70 dark:text-cream/70">{model.whatYouGet}</dd>
+                </div>
+              </dl>
+
+              <Link
+                href={model.href}
+                className="mt-auto inline-flex w-fit items-center gap-2.5 pt-7 text-sm font-bold text-navy transition-colors dark:text-cream"
+              >
+                <span className="rounded-[10px] bg-steel/10 px-5 py-3 transition-colors duration-200 group-hover:bg-steel group-hover:text-white">
+                  Learn more
+                  <span className="sr-only"> about {model.name.toLowerCase()}</span>
+                </span>
+                <IconArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
+              </Link>
+            </div>
+          ))}
         </div>
       </Section>
 
-      <Testimonials stories={testimonials} />
+      {/* Sec 4 — What every search includes */}
+      <Section background="white">
+        <SectionHeading eyebrow="What every search includes" title="What's included in every search" />
 
-      <Section background="white" className="!py-10 sm:!py-12">
-        <Link
-          href="/seek-talent/how-we-work"
-          className="group mx-auto flex max-w-6xl flex-col items-start justify-between gap-5 rounded-2xl border border-navy/10 bg-mist p-7 transition-all duration-300 hover:-translate-y-0.5 hover:border-steel/40 hover:shadow-[0_20px_45px_-20px_rgba(0,48,96,0.3)] sm:flex-row sm:items-center sm:p-8 dark:border-white/10 dark:bg-navy-900"
-        >
-          <div>
-            <h3 className="text-lg font-semibold text-navy dark:text-cream">How We Work</h3>
-            <p className="mt-1 text-sm text-navy/70 dark:text-cream/70">
-              See our scoping-to-support process, and sign in to the client portal if
-              you&apos;re already a client.
-            </p>
+        <ol className="mx-auto mt-11 max-w-3xl space-y-4">
+          {SEARCH_INCLUDES.map((item, index) => (
+            <li
+              key={item.title}
+              className="flex items-start gap-4 rounded-2xl border border-navy/[0.08] bg-white p-5 shadow-[0_1px_3px_rgba(0,48,96,0.05)] sm:p-6 dark:border-white/10 dark:bg-navy-800"
+            >
+              <span
+                aria-hidden="true"
+                className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-navy text-sm font-semibold text-white dark:bg-steel dark:text-navy-950"
+              >
+                {index + 1}
+              </span>
+              <p className="pt-0.5 text-[17px] leading-relaxed text-navy/70 dark:text-cream/70">
+                <strong className="font-semibold text-navy dark:text-cream">{item.title}</strong> {item.text}
+              </p>
+            </li>
+          ))}
+        </ol>
+      </Section>
+
+      {/* Sec 5 — Industries: all 12, listed once */}
+      <Section background="white">
+        <SectionHeading eyebrow="Industries" title="Industries we recruit for" />
+        <p className="mx-auto mt-6 max-w-3xl text-center text-[18px] leading-[1.85] text-navy/70 dark:text-cream/70">
+          We place talent across {INDUSTRY_LINKS.length} industries:{" "}
+          {INDUSTRY_LINKS.map((industry, index) => (
+            <span key={industry.slug}>
+              {index === INDUSTRY_LINKS.length - 1 ? "and " : ""}
+              <Link
+                href={`/industries/${industry.slug}`}
+                className="text-navy underline decoration-steel/40 underline-offset-4 transition-colors hover:decoration-navy dark:text-cream dark:hover:decoration-cream"
+              >
+                {industry.label}
+              </Link>
+              {index < INDUSTRY_LINKS.length - 2 ? ", " : index === INDUSTRY_LINKS.length - 2 ? " " : "."}
+            </span>
+          ))}
+        </p>
+      </Section>
+
+      {/* Sec 6 — Proof: employer quotes only; candidate stories belong on Get Hired */}
+      <Testimonials stories={employerStories} heading="What employers say" />
+
+      {/* Sec 7 — FAQ (also feeds the FAQPage schema above) */}
+      <Section background="white">
+        <div className="mx-auto max-w-3xl">
+          <SectionHeading eyebrow="FAQ" title="Questions employers ask us" />
+          <div className="mt-10">
+            <IndustryAccordion items={EMPLOYER_FAQS} />
           </div>
-          <span className="inline-flex flex-shrink-0 items-center gap-2 rounded-full border border-navy/15 bg-white px-6 py-2.5 text-sm font-semibold text-navy transition-colors group-hover:bg-navy group-hover:text-white dark:border-white/10 dark:bg-navy-800 dark:text-cream dark:group-hover:bg-steel dark:group-hover:text-navy-950">
-            See how we work
-            <IconArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </span>
-        </Link>
+        </div>
+      </Section>
+
+      {/* Sec 8 — Closing CTA */}
+      <Section background="mist">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="font-heading text-[34px] font-bold leading-tight text-navy sm:text-[42px] dark:text-cream">
+            Have a role that won&apos;t fill itself?
+          </h2>
+          <p className="mt-4 text-[19px] leading-relaxed text-steel dark:text-steel-light">
+            Book a scoping call. Already a client?{" "}
+            <Link
+              href="/client-portal"
+              className="font-semibold text-navy underline decoration-steel/40 underline-offset-4 transition-colors hover:decoration-navy dark:text-cream dark:hover:decoration-cream"
+            >
+              Sign in to the client portal
+            </Link>
+            .
+          </p>
+          <div className="mt-8 flex justify-center">
+            <ButtonLink href="/seek-talent/get-started" variant="primary">
+              Discuss your hiring needs
+            </ButtonLink>
+          </div>
+        </div>
       </Section>
     </>
   );

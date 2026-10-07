@@ -8,6 +8,12 @@ import { SITE_URL, BUSINESS } from "@/lib/site";
 // /api/social-links's PUT handler whenever an admin actually updates them.
 const CACHE_TAG = "local-business-schema";
 
+// Stable schema.org @id for a leader's Person node, so the business's
+// `founder` and the matching entry on /about resolve to the same person.
+export function personSchemaId(name: string): string {
+  return `${SITE_URL}/about#${name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")}`;
+}
+
 const getCachedSocialLinks = unstable_cache(
   async () => {
     const { data } = await supabase.from("social_links").select("url");
@@ -27,7 +33,12 @@ export async function getLocalBusinessSchema() {
     name: BUSINESS.name,
     url: SITE_URL,
     telephone: BUSINESS.telephone,
+    email: BUSINESS.email,
     image: `${SITE_URL}/logo-navy.png`,
+    foundingDate: BUSINESS.foundingYear,
+    // Same @id as the founder's Person node on /about (personSchemaId).
+    founder: { "@type": "Person", "@id": personSchemaId(BUSINESS.founder), name: BUSINESS.founder },
+    areaServed: { "@type": "Country", name: "United States" },
     address: {
       "@type": "PostalAddress",
       streetAddress: BUSINESS.streetAddress,

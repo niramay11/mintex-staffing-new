@@ -31,10 +31,13 @@ export default function IndustryGlassCard({
   industry,
   imageSrc,
   featured = false,
+  description,
 }: {
   industry: Industry;
   imageSrc: string;
   featured?: boolean;
+  // Homepage-specific blurb; falls back to the industry's own SEO subheading.
+  description?: string;
 }) {
   const stat = industry.stats[0];
   const s = featured ? STYLES.featured : STYLES.normal;
@@ -62,7 +65,7 @@ export default function IndustryGlassCard({
           {industry.name}
         </h3>
         <p className={`mt-4 line-clamp-3 text-[15.5px] leading-relaxed transition-colors duration-500 ${s.body}`}>
-          {industry.seoSubheading}
+          {description ?? industry.seoSubheading}
         </p>
 
         <span className={`mt-auto inline-flex items-center gap-2 pt-10 text-[14px] font-medium transition-colors duration-500 ${s.foot}`}>

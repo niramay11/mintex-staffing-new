@@ -9,8 +9,17 @@ import { getSiteImages } from "@/lib/siteImages";
 import { pageMetadata } from "@/lib/pageMetadata";
 import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
 
+// Services that have their own dedicated page folder (which wins over this
+// dynamic route) — skipped here so the same URL isn't generated twice. All
+// three current services have one, so this template is kept as the fallback
+// for any service added to hiringServices without a dedicated page. An empty
+// list is fine here (it would only break a build with Cache Components on).
+const DEDICATED_PAGES = new Set(["contract-talent", "permanent-talent", "executive-search"]);
+
 export function generateStaticParams() {
-  return hiringServices.map((service) => ({ slug: service.slug }));
+  return hiringServices
+    .filter((service) => !DEDICATED_PAGES.has(service.slug))
+    .map((service) => ({ slug: service.slug }));
 }
 
 export async function generateMetadata({
@@ -195,7 +204,7 @@ export default async function HiringServicePage({
                         variant="primary"
                         className="mt-4 inline-flex items-center gap-2"
                       >
-                        Let's talk
+                        Let&apos;s talk
                         <IconArrowRight className="h-4 w-4" />
                       </ButtonLink>
                     )}

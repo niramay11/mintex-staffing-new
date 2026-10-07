@@ -53,9 +53,11 @@ export const hiringServices: HiringService[] = [
     slug: "contract-talent",
     name: "Contract Talent",
     badge: "Flexible staffing",
-    tagline: "Flexible talent for projects, seasonal peaks, and interim needs.",
+    tagline: "Contract and contract-to-hire talent for projects, peaks and coverage gaps.",
+    // Contract Talent renders from src/app/seek-talent/contract-talent/page.tsx;
+    // this entry still feeds the sitemap and admin image slots.
     intro:
-      "Grow your team faster with Mintex Staffing's contract talent solutions. Pre-qualified professionals ready to step in. Get started today.",
+      "Contract and contract-to-hire staffing for projects, seasonal peaks and leave coverage. Pre-screened professionals, 9-day average fill. Edison, NJ.",
     accent: "tan",
     icon: IconClock,
     points: [
@@ -85,9 +87,11 @@ export const hiringServices: HiringService[] = [
     slug: "permanent-talent",
     name: "Permanent Talent",
     badge: "Long-term hires",
-    tagline: "Full-time hires vetted for skills, culture, and long-term fit.",
+    tagline: "Direct hire and permanent placement, screened for the long run.",
+    // Permanent Talent renders from src/app/seek-talent/permanent-talent/page.tsx;
+    // this entry still feeds the sitemap and admin image slots.
     intro:
-      "Speed up your hiring process with high-calibre permanent talent from Mintex Staffing. Quality-vetted candidates for long-term hires across the states. Get started today.",
+      "Direct hire and permanent placement from Mintex Staffing. We source, screen and vet full-time hires across 12 industries, with a 9-day average fill.",
     accent: "tan",
     icon: IconStar,
     points: [
@@ -117,9 +121,11 @@ export const hiringServices: HiringService[] = [
     slug: "executive-search",
     name: "Executive Search",
     badge: "Leadership hiring",
-    tagline: "Confidential search for senior leaders and hard-to-fill roles.",
+    tagline: "Confidential search for C-suite, board and founding leadership roles.",
+    // Executive Search renders from src/app/seek-talent/executive-search/page.tsx;
+    // this entry still feeds the sitemap and admin image slots.
     intro:
-      "Confidential executive search for C-suite and board roles. Mintex’s team places leadership talent statewide and beyond.",
+      "Confidential executive search for C-suite, board and founding leadership roles. Public, private and non-profit searches run from Edison, NJ.",
     accent: "steel",
     icon: IconBriefcase,
     points: [

@@ -23,13 +23,12 @@ const staticRoutes = [
   "/get-hired/share-resume",
   // /get-hired/interview-prep and /get-hired/apply-to-jobs are left out on
   // purpose: both canonicalize to /get-hired, and listing non-canonical URLs
-  // in a sitemap is a mixed signal to search engines.
-  "/get-hired/how-we-work/for-job-seekers",
+  // in a sitemap is a mixed signal to search engines. Same for the two old
+  // How We Work sub-pages, which now 301 to sections of /seek-talent/how-we-work.
   "/interview-rights",
   "/industries",
   "/seek-talent",
   "/seek-talent/how-we-work",
-  "/seek-talent/how-we-work/for-clients",
   "/seek-talent/get-started",
   "/resources",
   "/resources/hiring-cost-calculator",

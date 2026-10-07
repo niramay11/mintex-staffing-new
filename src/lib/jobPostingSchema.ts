@@ -1,6 +1,6 @@
 import type { CeipalJob } from "@/components/jobs/types";
 import { BUSINESS, SITE_URL } from "@/lib/site";
-import { hasSubstantiveDescription } from "@/components/jobs/utils";
+import { hasSubstantiveDescription, jobType } from "@/components/jobs/utils";
 
 // Google accepts employmentType as a single enum string or an array of them —
 // returning an array covers dual-classified listings (e.g. "Full-Time or
@@ -76,7 +76,7 @@ function fallbackDescription(job: CeipalJob): string {
     .slice(0, 6);
 
   const sentences = [
-    `${BUSINESS.name} is hiring a ${job.job_title}${job.job_type ? ` (${job.job_type})` : ""}${
+    `${BUSINESS.name} is hiring a ${job.job_title}${jobType(job) ? ` (${jobType(job)})` : ""}${
       isRemote ? " for a remote role" : where ? ` in ${where}` : ""
     }.`,
     job.industry ? `This is a ${job.industry} position placed through our recruiting team.` : "",
@@ -134,7 +134,9 @@ export function buildJobPostingSchema(job: CeipalJob, description: string) {
     },
     datePosted,
     validThrough,
-    employmentType: toEmploymentType(job.job_type),
+    // jobType() falls back to `duration` when Ceipal's job_type is blank —
+    // otherwise those jobs reach Google for Jobs as "OTHER".
+    employmentType: toEmploymentType(jobType(job)),
     hiringOrganization: {
       "@type": "Organization",
       name: BUSINESS.name,

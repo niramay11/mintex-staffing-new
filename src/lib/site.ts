@@ -15,4 +15,7 @@ export const BUSINESS = {
   addressRegion: "NJ",
   postalCode: "08820",
   addressCountry: "US",
+  email: "info@mintexstaffing.com",
+  foundingYear: "2003",
+  founder: "Bhagvat Parmar",
 };

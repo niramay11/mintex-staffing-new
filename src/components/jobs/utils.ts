@@ -26,6 +26,27 @@ export function jobIndustries(job: CeipalJob): string[] {
   return parts.length > MAX_PLAUSIBLE_INDUSTRIES_PER_JOB ? [] : parts;
 }
 
+// Ceipal's job_type is blank on many active jobs (confirmed live: 38 of 78),
+// which hid them from the Job Type filter counts and sent "OTHER" as their
+// JobPosting employmentType. `duration` is filled on every one of them but is
+// recruiter free text ("Fulltime", "Full-time", "Full time", "Permanent",
+// "Contract to Hire", "Full time/Part time", …), so both fields are folded
+// into one clean label here. job_type still wins when it's set.
+export function jobType(job: CeipalJob): string | undefined {
+  const raw = (job.job_type || "").trim() || (job.duration || "").trim();
+  if (!raw) return undefined;
+  const s = raw.toLowerCase().replace(/[\s_-]+/g, "");
+  if (s.includes("contracttohire") || s.includes("c2h")) return "Contract-to-hire";
+  const full = s.includes("full") || s.includes("permanent");
+  const part = s.includes("part");
+  if (full && part) return "Full-time / Part-time";
+  if (full) return "Full-time";
+  if (part) return "Part-time";
+  if (s.includes("contract")) return "Contract";
+  if (s.includes("temp")) return "Temporary";
+  return raw;
+}
+
 // Mirror the admin panel's "Active" definition: status Active and modified within 6 months.
 const SIX_MONTHS_AGO = new Date();
 SIX_MONTHS_AGO.setMonth(SIX_MONTHS_AGO.getMonth() - 6);

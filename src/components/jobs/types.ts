@@ -13,6 +13,9 @@ export interface CeipalJob {
   pay_rate___salary?: string;
   career_portal_published_date?: string;
   job_type?: string;
+  // Free-text engagement length/type ("Fulltime", "Contract to Hire", …).
+  // Filled on every active job even when job_type is blank — see jobType().
+  duration?: string;
   job_status?: string;
   job_end_date?: string;
   number_of_positions?: string | number;

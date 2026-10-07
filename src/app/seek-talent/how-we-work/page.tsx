@@ -1,154 +1,153 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import Section from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
-import FaqAccordion from "@/components/ui/FaqAccordion";
+import IndustryAccordion from "@/components/industries/IndustryAccordion";
 import { getSiteImages } from "@/lib/siteImages";
 import { pageMetadata } from "@/lib/pageMetadata";
 import { buildBreadcrumbSchema } from "@/lib/breadcrumbSchema";
+import { SITE_URL } from "@/lib/site";
+
+const PATH = "/seek-talent/how-we-work";
+const PAGE_DESCRIPTION =
+  "From scoping call to post-placement check-in: how Mintex Staffing runs a search for employers and supports job seekers, step by step.";
 
 export const metadata: Metadata = pageMetadata({
-  title: "How We Work",
-  description:
-    "See how Mintex Staffing scopes, sources, and supports every search, plus how existing clients sign in to the client portal.",
-  path: "/seek-talent/how-we-work",
+  title: "How Our Staffing Process Works",
+  description: PAGE_DESCRIPTION,
+  path: PATH,
 });
 
-function IconSearchTalent({ className }: { className?: string }) {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={className}>
-      <circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M20 20l-4.5-4.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  );
-}
+const breadcrumbSchema = buildBreadcrumbSchema([
+  { name: "Home", path: "/" },
+  { name: "Seek Talent", path: "/seek-talent" },
+  { name: "How We Work", path: PATH },
+]);
 
-function IconLayers({ className }: { className?: string }) {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={className}>
-      <path d="M12 3 3 8l9 5 9-5-9-5Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-      <path d="M3 13l9 5 9-5M3 8l9 5 9-5" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-    </svg>
-  );
-}
+// HowTo isn't eligible for rich results on service pages, so the steps are
+// described with a plain WebPage node instead.
+const webPageSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": `${SITE_URL}${PATH}#webpage`,
+  url: `${SITE_URL}${PATH}`,
+  name: "How Our Staffing Process Works",
+  description: PAGE_DESCRIPTION,
+  isPartOf: { "@id": `${SITE_URL}/#website` },
+  about: { "@id": `${SITE_URL}/#business` },
+};
 
-function IconTarget({ className }: { className?: string }) {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={className}>
-      <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.8" />
-      <circle cx="12" cy="12" r="4.5" stroke="currentColor" strokeWidth="1.8" />
-      <circle cx="12" cy="12" r="0.9" fill="currentColor" />
-    </svg>
-  );
-}
-
-const steps = [
+const EMPLOYER_STEPS = [
   {
-    number: "1",
-    title: "",
-    description:
-      "Finding the right job shouldn't feel like sending resumes into a void. At Mintex Staffing, we take time to understand where you've been and where you want to go and then match you with roles across IT, healthcare, engineering, manufacturing, finance, administrative, sales, customer service, legal and logistics that actually fit.",
-    icon: IconSearchTalent,
+    title: "Scoping call.",
+    text: "We ask what you need, how soon you need it and where the team is heading. Nothing gets sourced until this is clear.",
   },
   {
-    number: "2",
-    title: "",
-    description:
-      "It starts with a conversation, not a form. We understand your skills, your goals, and the kind of workplace culture where you'll thrive and grow. From there, we tap our active employer network to connect you with roles that match your experience, and we screen every opportunity before it reaches you, so your time is never wasted on a bad fit.",
-    icon: IconLayers,
+    title: "Pick the model.",
+    text: "Contract, contract-to-hire, permanent or executive search, based on the work, not on what's easiest for us.",
   },
+  { title: "Search.", text: "We start with our pre-screened talent network, then recruit outward if needed." },
   {
-    number: "3",
-    title: "",
-    description:
-      "Once you're placed, we don't disappear. We stay involved through your offer, your first days on the job, and beyond, because your success is our success.",
-    icon: IconTarget,
+    title: "Shortlist.",
+    text: "You get candidates screened for skills, delivery track record and culture fit. Healthcare candidates arrive with licenses verified and credentialing done.",
   },
+  { title: "Interviews and offer.", text: "We schedule interviews, collect feedback and help close the offer." },
   {
-    number: "4",
-    title: "",
-    description:
-      "Whether you're exploring a career change or ready for your next step, Mintex Staffing is here to help you find your desired position that fits your standards. Ready to get started?",
-    icon: IconTarget,
+    title: "After the start date.",
+    text: "We check in with you and the new hire, and contract placements can convert to permanent when both sides agree.",
   },
 ];
 
-const clientSteps = [
+const JOB_SEEKER_STEPS = [
+  { title: "Apply or share your resume.", text: "Pick a role or send your resume for future openings." },
+  { title: "Recruiter review.", text: "A real recruiter compares your experience with the role's requirements." },
   {
-    number: "1",
-    title: "",
-    description:
-      "At Mintex Staffing, our hiring process starts with listening, what you want, how soon you want and your future goals for the business. We partner with employers to help them with IT staffing, healthcare staffing, engineering staffing, manufacturing staffing, finance staffing, administrative staffing, sales staffing, customer service staffing, legal staffing and logistics staffing, which means no two searches look the same, and no two shortlists should either.",
+    title: "A conversation.",
+    text: "If it's a match, we call to talk about the role and where you want your career to go.",
   },
-  {
-    number: "2",
-    title: "",
-    description:
-      "Every engagement begins with a scoping call, where we learn your team's culture, timeline, and what “great fit” really means for your business, before we start the hunt. From there, we source and screen candidates from our active talent network, vetting for skill, experience, and cultural fit so you only meet people worth your time.",
-  },
-  {
-    number: "3",
-    title: "",
-    description:
-      "Placement isn't the finish line. We stay involved through offer negotiations, onboarding, and beyond, making sure the fit holds up in the real world.",
-  },
-  {
-    number: "4",
-    title: "",
-    description:
-      "This is what lets Mintex Staffing deliver consistent, high-quality hires across industries, not just fast ones. Ready to build a shortlist around your team?",
-  },
+  { title: "Presented to the employer.", text: "We introduce you, schedule interviews and prep you for them." },
+  { title: "Offer and start.", text: "We handle the offer details and stay in touch after you start." },
 ];
 
-const faqs = [
+const FAQS = [
   {
-    question: "How quickly can Mintex Staffing fill an open role?",
-    answer:
-      "Our average time to hire is 9 days, drawing from an active, pre-vetted talent network across every industry we serve.",
+    question: "How quickly can Mintex fill an open role?",
+    answer: "Our average time to fill is 9 days, drawing on an active, pre-vetted talent network.",
   },
   {
-    question: "What types of hiring arrangements do you offer?",
-    answer:
-      "Contract, permanent, and executive search placements, so you can pick the engagement model that fits your project or team.",
+    question: "What hiring arrangements do you offer?",
+    answer: "Contract, contract-to-hire, permanent and executive search.",
   },
   {
-    question: "Can a contract hire convert to a full-time employee?",
+    question: "Can a contract hire become a full-time employee?",
     answer:
-      "Yes. Many of our contract placements are structured with a clear path to permanent hire once both sides confirm it's the right fit.",
+      "Yes. Many contract placements are set up with a path to permanent hire once both sides confirm the fit.",
   },
   {
-    question: "What industries does Mintex Staffing recruit for?",
+    question: "What industries do you recruit for?",
     answer:
-      "IT, healthcare, engineering, manufacturing, finance, administrative, sales, customer service, and logistics.",
+      "Twelve: IT, healthcare, engineering, manufacturing, finance and accounting, administrative, sales and marketing, customer service, logistics, creative and design, legal and hospitality.",
   },
   {
     question: "How do I get started?",
     answer:
-      "Reach out through our contact form or submit a hiring inquiry, and our team will schedule a scoping call to understand your needs before we source any candidates.",
+      "Employers can submit a hiring inquiry and we'll schedule a scoping call. Job seekers can browse open roles or share a resume.",
   },
 ];
 
 const faqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  mainEntity: faqs.map((faq) => ({
+  mainEntity: FAQS.map((faq) => ({
     "@type": "Question",
     name: faq.question,
-    acceptedAnswer: {
-      "@type": "Answer",
-      text: faq.answer,
-    },
+    acceptedAnswer: { "@type": "Answer", text: faq.answer },
   })),
 };
 
+function Eyebrow({ children }: { children: string }) {
+  return (
+    <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">{children}</p>
+  );
+}
+
+function StepList({ steps }: { steps: { title: string; text: string }[] }) {
+  return (
+    <ol className="mt-8 space-y-3.5">
+      {steps.map((step, index) => (
+        <li
+          key={step.title}
+          className="flex items-start gap-4 rounded-2xl border border-navy/[0.08] bg-white p-5 shadow-[0_1px_3px_rgba(0,48,96,0.05)] dark:border-white/10 dark:bg-navy-800"
+        >
+          <span
+            aria-hidden="true"
+            className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-navy text-sm font-semibold text-white dark:bg-steel dark:text-navy-950"
+          >
+            {index + 1}
+          </span>
+          <p className="pt-0.5 text-[16.5px] leading-relaxed text-navy/70 dark:text-cream/70">
+            <strong className="font-semibold text-navy dark:text-cream">{step.title}</strong> {step.text}
+          </p>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function SidePhoto({ src, alt }: { src: string; alt: string }) {
+  return (
+    <div className="relative mx-auto w-full max-w-[440px] lg:sticky lg:top-28">
+      <div aria-hidden="true" className="absolute -inset-4 -z-10 rounded-[36px] border-2 border-steel/25" />
+      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[28px] shadow-[0_25px_55px_-20px_rgba(0,48,96,0.35)]">
+        <Image src={src} alt={alt} fill sizes="(min-width: 640px) 440px, 100vw" className="object-cover" />
+      </div>
+    </div>
+  );
+}
+
 export default async function HowWeWorkPage() {
   const siteImages = await getSiteImages();
-  const breadcrumbSchema = buildBreadcrumbSchema([
-    { name: "Home", path: "/" },
-    { name: "Seek Talent", path: "/seek-talent" },
-    { name: "How We Work", path: "/seek-talent/how-we-work" },
-  ]);
+
   return (
     <>
       <script
@@ -157,138 +156,129 @@ export default async function HowWeWorkPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       <script
+        id="how-we-work-webpage-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
+      />
+      <script
         id="how-we-work-faq-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
+
+      {/* Sec 1 — Hero */}
       <Section background="mist" className="!py-12 sm:!py-14 lg:!py-16">
-        <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
-          Our process
+        <Eyebrow>Our process</Eyebrow>
+        <h1 className="mt-2.5 font-heading text-4xl font-bold text-navy sm:text-5xl dark:text-cream">
+          How our staffing process works
+        </h1>
+        <p className="mt-4 max-w-2xl text-[18px] leading-relaxed text-steel dark:text-steel-light">
+          Every search starts with a conversation, not a candidate. Here&apos;s exactly what happens after you
+          reach out, whether you&apos;re hiring or looking for work.
         </p>
-        <h1 className="mt-2.5 font-heading text-4xl font-bold text-navy sm:text-5xl dark:text-cream">How Our Staffing Process Works</h1>
-        <p className="mt-4 max-w-2xl text-steel dark:text-steel-light">
-          At Mintex Staffing, every partnership begins with a conversation. We take time to
-          understand your team, culture, and hiring timeline before recommending a single
-          candidate, because a great fit starts with real insight. Our proven hiring process
-          helps businesses across IT, healthcare, manufacturing, finance, and more industries.
-        </p>
+        <div className="mt-8 flex flex-wrap gap-3.5">
+          <ButtonLink href="#employers" variant="primary">
+            I&apos;m hiring
+          </ButtonLink>
+          <ButtonLink
+            href="#job-seekers"
+            variant="outline"
+            className="!border-navy !text-navy hover:!bg-navy hover:!text-white dark:!border-steel dark:!text-cream dark:hover:!bg-steel dark:hover:!text-navy-950"
+          >
+            I&apos;m looking for a job
+          </ButtonLink>
+        </div>
       </Section>
 
-      <Section background="white">
-        <div className="mx-auto max-w-6xl">
-          <div className="grid items-center gap-14 lg:grid-cols-[1fr_0.8fr] lg:gap-20">
-            <div>
-              <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
-                For clients
-              </p>
-              <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl dark:text-cream">
-                How We Help Our Clients
-              </h2>
-
-              <p className="mt-6 text-[18px] leading-relaxed text-navy/70 dark:text-cream/70">
-                {clientSteps[0].description}
-              </p>
-              <Link
-                href="/seek-talent/how-we-work/for-clients"
-                className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-navy transition-colors hover:text-navy-secondary dark:text-cream"
-              >
-                Know more
-                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4">
-                  <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </Link>
-
-              <div className="mt-8">
-                <ButtonLink href="/seek-talent/get-started" variant="primary">
-                  Let&apos;s Talk Hiring
-                </ButtonLink>
-              </div>
-            </div>
-
-            <div className="relative mx-auto w-full max-w-[440px]">
-              <div
-                aria-hidden="true"
-                className="absolute -inset-4 -z-10 rounded-[36px] border-2 border-steel/25"
-              />
-              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[28px] shadow-[0_25px_55px_-20px_rgba(0,48,96,0.35)]">
-                <Image
-                  src={siteImages["seek-talent:how-we-work-clients-visual"]}
-                  alt="Mintex Staffing recruiter discussing hiring needs with a client team"
-                  fill
-                  sizes="(min-width: 640px) 440px, 100vw"
-                  className="object-cover"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-20 grid items-center gap-14 lg:grid-cols-[0.8fr_1fr] lg:gap-20">
-            <div className="relative mx-auto w-full max-w-[440px]">
-              <div
-                aria-hidden="true"
-                className="absolute -inset-4 -z-10 rounded-[36px] border-2 border-steel/25"
-              />
-              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[28px] shadow-[0_25px_55px_-20px_rgba(0,48,96,0.35)]">
-                <Image
-                  src={siteImages["seek-talent:how-we-work-visual"]}
-                  alt="Hiring manager and candidate discussing a staffing role"
-                  fill
-                  sizes="(min-width: 640px) 440px, 100vw"
-                  className="object-cover"
-                />
-              </div>
-            </div>
-
-            <div>
-              <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
-                For job seekers
-              </p>
-              <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl dark:text-cream">
-                How We Help Job Seekers
-              </h2>
-
-              <p className="mt-6 text-[18px] leading-relaxed text-navy/70 dark:text-cream/70">
-                {steps[0].description}
-              </p>
-              <Link
-                href="/get-hired/how-we-work/for-job-seekers"
-                className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-navy transition-colors hover:text-navy-secondary dark:text-cream"
-              >
-                Know more
-                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4">
-                  <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </Link>
-
-              <div className="mt-8">
-                <ButtonLink href="/get-hired" variant="primary">
-                  Browse Open Roles
-                </ButtonLink>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-14 flex flex-col items-start justify-between gap-5 rounded-2xl border border-navy/10 bg-white p-7 shadow-[0_15px_35px_-15px_rgba(0,48,96,0.15)] sm:flex-row sm:items-center sm:p-8 dark:border-white/10 dark:bg-navy-900">
-            <div>
-              <h3 className="text-lg font-semibold text-navy dark:text-cream">Already a client?</h3>
-              <p className="mt-1 text-sm text-navy/70 dark:text-cream/70">
-                Sign in to the client portal to review candidates, track open roles, and manage
-                your account.
-              </p>
-            </div>
-            <ButtonLink href="/client-portal" variant="secondary" className="flex-shrink-0">
-              Client Login
-            </ButtonLink>
-          </div>
-
-          <div className="mt-16">
-            <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">
-              Common questions
+      {/* Sec 2 — For employers (target of the /for-clients redirect) */}
+      <Section background="white" id="employers" className="scroll-mt-24">
+        <div className="mx-auto grid max-w-6xl items-start gap-14 lg:grid-cols-[1fr_0.8fr] lg:gap-20">
+          <div>
+            <Eyebrow>For employers</Eyebrow>
+            <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl dark:text-cream">
+              How we work with employers
+            </h2>
+            <p className="mt-5 text-[18px] leading-relaxed text-navy/70 dark:text-cream/70">
+              No two searches look the same, so no two shortlists should either.
             </p>
+            <StepList steps={EMPLOYER_STEPS} />
+            <p className="mt-7 text-[18px] text-navy/75 dark:text-cream/75">
+              Average time from scoping call to filled role:{" "}
+              <strong className="font-heading text-[22px] font-bold text-navy dark:text-cream">9 days.</strong>
+            </p>
+            <div className="mt-7">
+              <ButtonLink href="/seek-talent/get-started" variant="primary">
+                Let&apos;s talk hiring
+              </ButtonLink>
+            </div>
+          </div>
+
+          <SidePhoto
+            src={siteImages["seek-talent:how-we-work-clients-visual"]}
+            alt="Mintex Staffing recruiter discussing hiring needs with a client team"
+          />
+        </div>
+      </Section>
+
+      {/* Sec 3 — Client portal */}
+      <Section background="white" className="!py-10 sm:!py-12">
+        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-5 rounded-2xl border border-navy/10 bg-white p-7 shadow-[0_15px_35px_-15px_rgba(0,48,96,0.15)] sm:flex-row sm:items-center sm:p-8 dark:border-white/10 dark:bg-navy-900">
+          <div>
+            <h2 className="text-xl font-semibold text-navy dark:text-cream">Already a client?</h2>
+            <p className="mt-1 text-[15px] text-navy/70 dark:text-cream/70">
+              Sign in to the client portal to review candidates, track open roles and manage your account.
+            </p>
+          </div>
+          <ButtonLink href="/client-portal" variant="secondary" className="flex-shrink-0">
+            Client login
+          </ButtonLink>
+        </div>
+      </Section>
+
+      {/* Sec 4 — For job seekers (target of the /for-job-seekers redirect) */}
+      <Section background="white" id="job-seekers" className="scroll-mt-24">
+        <div className="mx-auto grid max-w-6xl items-start gap-14 lg:grid-cols-[0.8fr_1fr] lg:gap-20">
+          <div className="order-2 lg:order-1">
+            <SidePhoto
+              src={siteImages["seek-talent:how-we-work-visual"]}
+              alt="Mintex Staffing recruiter talking a job seeker through an open role"
+            />
+          </div>
+
+          <div className="order-1 lg:order-2">
+            <Eyebrow>For job seekers</Eyebrow>
+            <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl dark:text-cream">
+              How we work with job seekers
+            </h2>
+            <p className="mt-5 text-[18px] leading-relaxed text-navy/70 dark:text-cream/70">
+              Applying for jobs shouldn&apos;t feel like dropping resumes into a void. Here&apos;s what happens with
+              yours.
+            </p>
+            <StepList steps={JOB_SEEKER_STEPS} />
+            <p className="mt-7 text-[18px] text-navy/75 dark:text-cream/75">
+              <strong className="font-semibold text-navy dark:text-cream">It&apos;s free.</strong> The employer pays
+              our fee, never you.
+            </p>
+            <div className="mt-7">
+              <ButtonLink href="/get-hired" variant="primary">
+                Browse open roles
+              </ButtonLink>
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      {/* Sec 5 — FAQ (also feeds the FAQPage schema above) */}
+      <Section background="white">
+        <div className="mx-auto max-w-3xl">
+          <div className="text-center">
+            <Eyebrow>Common questions</Eyebrow>
             <h2 className="mt-2.5 text-3xl font-bold leading-tight text-navy sm:text-4xl dark:text-cream">
               Frequently asked questions
             </h2>
-            <FaqAccordion items={faqs} />
+          </div>
+          <div className="mt-10">
+            <IndustryAccordion items={FAQS} />
           </div>
         </div>
       </Section>

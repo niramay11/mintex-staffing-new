@@ -12,7 +12,7 @@ export default function BrowseRolesButton() {
       variant="primary"
       onClick={() => document.getElementById("apply-to-jobs")?.scrollIntoView({ behavior: "smooth" })}
     >
-      Browse Open Roles
+      Browse open roles
     </Button>
   );
 }

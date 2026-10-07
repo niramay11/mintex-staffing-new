@@ -5,7 +5,7 @@ import Image from "next/image";
 // (converted to exact percentages from the original px values, not rounded
 // approximations), and the connector SVG's path data and dot coordinates
 // used completely unmodified. The stats themselves (14,000+ placements,
-// 93% retention, 9-day avg fill, 9+ industries) are the same real numbers
+// 93% retention, 9-day avg fill, 12 industries) are the same real numbers
 // used elsewhere on the site — only the presentation changed.
 
 function IconCheck({ className }: { className?: string }) {
@@ -225,7 +225,7 @@ export default function HeroPhotoCollage({
             <IconGrid className="h-5 w-5" />
           </span>
           <div className="min-w-0">
-            <p className="font-heading text-lg font-bold leading-none text-navy dark:text-cream">9+</p>
+            <p className="font-heading text-lg font-bold leading-none text-navy dark:text-cream">12</p>
             <p className="mt-1.5 text-[13px] leading-tight text-steel dark:text-steel-light">Industries served</p>
           </div>
         </div>

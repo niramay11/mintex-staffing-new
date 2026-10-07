@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import type { CaseStudy } from "@/content/types";
 
 function IconChevron({ direction, className }: { direction: "left" | "right"; className?: string }) {
@@ -63,8 +64,15 @@ export default function Testimonials({
   stories,
   backgroundClassName = "bg-page",
   edgeFadeFromClassName = "from-page",
+  heading = "Testimonials",
+  intro,
+  link,
 }: {
   stories: CaseStudy[];
+  // Optional homepage copy; other callers keep the plain "Testimonials" title.
+  heading?: string;
+  intro?: string;
+  link?: { href: string; label: string };
   // Lets one caller (the homepage) opt into a different section background
   // without changing the default this component also renders with on
   // /industries/[slug] and /seek-talent, where it should stay unchanged.
@@ -106,8 +114,13 @@ export default function Testimonials({
   return (
     <section className={`border-t border-navy/[0.06] px-4 py-20 sm:px-6 sm:py-24 lg:px-8 dark:bg-navy-900 dark:border-white/10 ${backgroundClassName}`}>
       <h2 className="text-center font-heading text-[42px] font-bold text-navy sm:text-[52px] dark:text-cream">
-        Testimonials
+        {heading}
       </h2>
+      {intro && (
+        <p className="mx-auto mt-4 max-w-2xl text-center text-[18px] leading-relaxed text-steel dark:text-steel-light">
+          {intro}
+        </p>
+      )}
 
       <div className="relative mx-auto mt-14 max-w-[1920px]">
         <div
@@ -152,6 +165,18 @@ export default function Testimonials({
           </>
         )}
       </div>
+
+      {link && (
+        <div className="mt-10 text-center">
+          <Link
+            href={link.href}
+            className="inline-flex items-center gap-2 font-semibold text-navy underline decoration-steel/40 underline-offset-4 transition-colors hover:decoration-navy dark:text-cream dark:hover:decoration-cream"
+          >
+            {link.label}
+            <IconChevron direction="right" className="h-4 w-4" />
+          </Link>
+        </div>
+      )}
     </section>
   );
 }

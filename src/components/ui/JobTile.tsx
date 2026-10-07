@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { CeipalJob } from "@/components/jobs/types";
-import { fmtPay, fmtPosted, jobLocation, jobUrlSlug } from "@/components/jobs/utils";
+import { fmtPay, fmtPosted, jobLocation, jobType, jobUrlSlug } from "@/components/jobs/utils";
 import { IconArrowRight, IconPin } from "@/components/jobs/icons";
 
 export default function JobTile({ job }: { job: CeipalJob }) {
@@ -15,9 +15,9 @@ export default function JobTile({ job }: { job: CeipalJob }) {
             {job.job_title}
           </Link>
         </h3>
-        {job.job_type && (
+        {jobType(job) && (
           <span className="rounded-full bg-cream px-3 py-1 text-[13.5px] font-medium text-navy dark:bg-navy-800 dark:text-cream">
-            {job.job_type}
+            {jobType(job)}
           </span>
         )}
       </div>
