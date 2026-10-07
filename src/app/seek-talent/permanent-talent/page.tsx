@@ -4,6 +4,7 @@ import Link from "next/link";
 import Section from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import FaqSplit from "@/components/ui/FaqSplit";
+import IndustriesShowcase from "@/components/home/IndustriesShowcase";
 import { getHiringServiceBySlug } from "@/content/hiringServices";
 import { getSiteImages } from "@/lib/siteImages";
 import { getHomepageTestimonials } from "@/lib/caseStudies";
@@ -61,21 +62,6 @@ const RIGHT_FOR_YOU_IF = [
   "You've tried posting the job and got volume without quality.",
   "A growing startup needs founding or leadership hires (a Mintex specialty).",
   "You'd rather your managers spend time interviewing finalists than reading resumes.",
-];
-
-const INDUSTRY_LINKS = [
-  { label: "IT", slug: "it-staffing" },
-  { label: "healthcare", slug: "healthcare-staffing" },
-  { label: "engineering", slug: "engineering-staffing" },
-  { label: "manufacturing", slug: "manufacturing-staffing" },
-  { label: "finance and accounting", slug: "finance-staffing" },
-  { label: "administrative", slug: "administrative-staffing" },
-  { label: "sales and marketing", slug: "sales-staffing" },
-  { label: "customer service", slug: "customer-service-staffing" },
-  { label: "logistics", slug: "logistics-staffing" },
-  { label: "creative and design", slug: "creative-design-staffing" },
-  { label: "legal", slug: "legal-staffing" },
-  { label: "hospitality", slug: "hospitality-staffing" },
 ];
 
 // The featured quote, matched by the case study's author field so admin
@@ -202,8 +188,7 @@ export default async function PermanentTalentPage() {
           </ButtonLink>
           <ButtonLink
             href="/seek-talent"
-            variant="outline"
-            className="!border-navy !text-navy inline-flex items-center gap-2 hover:!bg-navy hover:!text-white dark:!border-steel dark:!text-cream dark:hover:!bg-steel dark:hover:!text-navy-950"
+            className="inline-flex items-center gap-2"
           >
             See all services
             <IconArrowRight className="h-4 w-4" />
@@ -322,31 +307,8 @@ export default async function PermanentTalentPage() {
         </div>
       </Section>
 
-      {/* Sec 6 — Industries */}
-      <Section background="white">
-        <div className="mx-auto max-w-2xl text-center">
-          <Eyebrow>Industries</Eyebrow>
-          <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
-            Permanent hires across {INDUSTRY_LINKS.length} industries
-          </h2>
-        </div>
-        <p className="mx-auto mt-6 max-w-3xl text-center text-[18px] leading-[1.85] text-navy/70 dark:text-cream/70">
-          We recruit permanent staff in{" "}
-          {INDUSTRY_LINKS.map((industry, index) => (
-            <span key={industry.slug}>
-              {index === INDUSTRY_LINKS.length - 1 ? "and " : ""}
-              <Link
-                href={`/industries/${industry.slug}`}
-                className="text-navy underline decoration-steel/40 underline-offset-4 transition-colors hover:decoration-navy dark:text-cream dark:hover:decoration-cream"
-              >
-                {industry.label}
-              </Link>
-              {index < INDUSTRY_LINKS.length - 2 ? ", " : " "}
-            </span>
-          ))}
-          for employers across the U.S.
-        </p>
-      </Section>
+      {/* Sec 6 — Industries: same card design as the homepage */}
+      <IndustriesShowcase title="Permanent hires across {count} industries" />
 
       {/* Sec 7 — Proof */}
       <Section background="white">

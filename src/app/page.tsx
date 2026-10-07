@@ -186,8 +186,7 @@ export default async function HomePage() {
                 </ButtonLink>
                 <ButtonLink
                   href="/get-hired"
-                  variant="outline"
-                  className="!border-navy !text-navy transition-all hover:-translate-y-0.5 hover:!bg-navy hover:!text-white xl:!px-9 xl:!py-4.5 xl:!text-lg dark:!border-white/15 dark:!text-cream"
+                  className="xl:!px-9 xl:!py-4.5 xl:!text-lg"
                 >
                   Find a job
                 </ButtonLink>
@@ -509,8 +508,6 @@ export default async function HomePage() {
               </ButtonLink>
               <ButtonLink
                 href="/get-hired"
-                variant="outline"
-                className="!border-navy !text-navy hover:!bg-navy hover:!text-white dark:!border-white/15 dark:!text-cream"
               >
                 Find a job
               </ButtonLink>

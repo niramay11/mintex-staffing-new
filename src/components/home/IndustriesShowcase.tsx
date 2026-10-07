@@ -32,6 +32,7 @@ export default async function IndustriesShowcase({
   children,
 }: {
   eyebrow?: string;
+  /** "{count}" is replaced with the live number of industries. */
   title: string;
   children?: ReactNode;
 }) {
@@ -72,7 +73,7 @@ export default async function IndustriesShowcase({
             {eyebrow}
           </p>
           <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
-            {title}
+            {title.replace("{count}", String(industries.length))}
           </h2>
         </div>
 

@@ -189,8 +189,6 @@ export default async function SeekTalentPage() {
               </ButtonLink>
               <ButtonLink
                 href="/seek-talent/how-we-work"
-                variant="outline"
-                className="!border-navy !text-navy hover:!bg-navy hover:!text-white dark:!border-steel dark:!text-cream dark:hover:!bg-steel dark:hover:!text-navy-950"
               >
                 See how we work
               </ButtonLink>

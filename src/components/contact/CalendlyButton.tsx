@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { PRIMARY_BUTTON } from "@/components/ui/Button";
 
 const CALENDLY_URL = "https://calendly.com/meet-mintextech/your-success-partner";
 
@@ -59,8 +60,7 @@ export default function CalendlyButton({ className }: { className?: string }) {
       type="button"
       onClick={openCalendlyPopup}
       className={
-        className ??
-        "inline-flex items-center justify-center gap-1.5 rounded-full bg-navy px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-navy-secondary dark:bg-steel dark:text-navy-950 dark:hover:bg-steel-light"
+        className ?? `${PRIMARY_BUTTON} gap-1.5`
       }
     >
       Book a Meeting

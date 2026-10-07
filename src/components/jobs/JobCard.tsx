@@ -3,6 +3,7 @@ import type { CeipalJob } from "./types";
 import JobPageApply from "./JobPageApply";
 import { fmtPay, fmtPosted, isNewJob, jobLocation, jobType, jobUrlSlug, remoteBadge } from "./utils";
 import { IconArrowRight, IconBriefcase, IconCalendar, IconFlag, IconInfo, IconTag } from "./icons";
+import { PRIMARY_BUTTON_COLORS } from "@/components/ui/Button";
 
 // Standalone copy of the skeuomorphic job card from the /get-hired job board
 // (JobBoard.tsx), for lists outside the board — e.g. "More open roles" on a
@@ -76,7 +77,7 @@ export default function JobCard({ job }: { job: CeipalJob }) {
       <div className="mt-auto flex items-center gap-2">
         <Link
           href={href}
-          className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-navy/15 bg-white px-3 py-2 text-[12.5px] font-semibold text-navy transition-colors hover:border-navy/30 hover:bg-mist dark:border-white/15 dark:bg-navy-900 dark:text-cream dark:hover:border-white/25 dark:hover:bg-navy-800"
+          className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-full px-3 py-2 text-[12.5px] font-semibold transition-all ${PRIMARY_BUTTON_COLORS}`}
         >
           <IconInfo className="h-3.5 w-3.5" />
           Details
@@ -88,7 +89,7 @@ export default function JobCard({ job }: { job: CeipalJob }) {
             location: jobLocation(job),
             pay_rate: job.pay_rate___salary || "N/A",
           }}
-          className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full bg-navy px-3 py-2 text-[12.5px] font-semibold text-white transition-colors hover:bg-navy-secondary dark:bg-steel dark:text-navy-950 dark:hover:bg-steel-light"
+          className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-full px-3 py-2 text-[12.5px] font-semibold transition-all ${PRIMARY_BUTTON_COLORS}`}
         >
           <IconArrowRight className="h-3.5 w-3.5" />
           Apply

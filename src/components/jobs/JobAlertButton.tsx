@@ -7,7 +7,7 @@ import JobAlertModal from "./JobAlertModal";
 // Opens the same job alert modal the job board's own "Create job alert"
 // button uses, for CTAs that sit outside the board.
 export default function JobAlertButton({
-  variant = "outline",
+  variant = "primary",
   className = "",
   children = "Create a job alert",
 }: {

@@ -182,8 +182,6 @@ export default async function HowWeWorkPage() {
           </ButtonLink>
           <ButtonLink
             href="#job-seekers"
-            variant="outline"
-            className="!border-navy !text-navy hover:!bg-navy hover:!text-white dark:!border-steel dark:!text-cream dark:hover:!bg-steel dark:hover:!text-navy-950"
           >
             I&apos;m looking for a job
           </ButtonLink>
@@ -229,7 +227,7 @@ export default async function HowWeWorkPage() {
               Sign in to the client portal to review candidates, track open roles and manage your account.
             </p>
           </div>
-          <ButtonLink href="/client-portal" variant="secondary" className="flex-shrink-0">
+          <ButtonLink href="/client-portal" className="flex-shrink-0">
             Client login
           </ButtonLink>
         </div>

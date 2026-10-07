@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Select from "@/components/ui/Select";
+import { PRIMARY_BUTTON } from "@/components/ui/Button";
 
 function IconSend({ className }: { className?: string }) {
   return (
@@ -217,7 +218,7 @@ export default function ContactForm() {
         <button
           type="submit"
           disabled={submitting}
-          className="inline-flex items-center justify-center gap-2 rounded-full bg-navy px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-navy-secondary focus-visible:outline-2 focus-visible:outline-steel disabled:opacity-60 dark:bg-steel dark:text-navy-950 dark:hover:bg-steel-light"
+          className={`${PRIMARY_BUTTON} gap-2`}
         >
           <IconSend className="h-4 w-4" />
           {submitting ? "Sending…" : "Send Message"}

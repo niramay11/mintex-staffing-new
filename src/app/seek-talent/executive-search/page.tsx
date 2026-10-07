@@ -169,8 +169,7 @@ export default async function ExecutiveSearchPage() {
           </ButtonLink>
           <ButtonLink
             href="/seek-talent"
-            variant="outline"
-            className="!border-navy !text-navy inline-flex items-center gap-2 hover:!bg-navy hover:!text-white dark:!border-steel dark:!text-cream dark:hover:!bg-steel dark:hover:!text-navy-950"
+            className="inline-flex items-center gap-2"
           >
             See all services
             <IconArrowRight className="h-4 w-4" />

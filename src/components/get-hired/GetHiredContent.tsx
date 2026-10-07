@@ -208,8 +208,6 @@ export default async function GetHiredContent() {
               <BrowseRolesButton />
               <ButtonLink
                 href="/get-hired/share-resume"
-                variant="outline"
-                className="!border-navy !text-navy hover:!bg-navy hover:!text-white dark:!border-steel dark:!text-cream dark:hover:!bg-steel dark:hover:!text-navy-950"
               >
                 Share your resume
               </ButtonLink>
@@ -331,7 +329,7 @@ export default async function GetHiredContent() {
             <ButtonLink href="/get-hired/share-resume" variant="primary">
               Share your resume
             </ButtonLink>
-            <JobAlertButton className="!border-navy !text-navy hover:!bg-navy hover:!text-white dark:!border-steel dark:!text-cream dark:hover:!bg-steel dark:hover:!text-navy-950" />
+            <JobAlertButton />
           </div>
         </div>
       </Section>

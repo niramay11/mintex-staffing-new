@@ -451,8 +451,6 @@ export default async function AboutPage() {
             </ButtonLink>
             <ButtonLink
               href="/get-hired"
-              variant="outline"
-              className="!border-navy !text-navy hover:!bg-navy hover:!text-white dark:!border-steel dark:!text-cream dark:hover:!bg-steel dark:hover:!text-navy-950"
             >
               Find a job
             </ButtonLink>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import Section from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import FaqSplit from "@/components/ui/FaqSplit";
+import IndustriesShowcase from "@/components/home/IndustriesShowcase";
 import { getHiringServiceBySlug } from "@/content/hiringServices";
 import { getSiteImages } from "@/lib/siteImages";
 import { pageMetadata } from "@/lib/pageMetadata";
@@ -66,21 +67,6 @@ const INCLUDED = [
   "Candidates screened and matched to that scope, so you're not sorting unqualified resumes.",
   "A professional who's ready to start, with no lengthy onboarding on your side.",
   "Ongoing check-ins during the assignment, plus a client portal to track every role.",
-];
-
-const INDUSTRY_LINKS = [
-  { label: "IT", slug: "it-staffing" },
-  { label: "healthcare (including per diem)", slug: "healthcare-staffing" },
-  { label: "engineering", slug: "engineering-staffing" },
-  { label: "manufacturing", slug: "manufacturing-staffing" },
-  { label: "finance", slug: "finance-staffing" },
-  { label: "administrative", slug: "administrative-staffing" },
-  { label: "sales", slug: "sales-staffing" },
-  { label: "customer service", slug: "customer-service-staffing" },
-  { label: "logistics", slug: "logistics-staffing" },
-  { label: "creative", slug: "creative-design-staffing" },
-  { label: "legal", slug: "legal-staffing" },
-  { label: "hospitality", slug: "hospitality-staffing" },
 ];
 
 const FAQS = [
@@ -185,8 +171,7 @@ export default async function ContractTalentPage() {
           </ButtonLink>
           <ButtonLink
             href="/seek-talent"
-            variant="outline"
-            className="!border-navy !text-navy inline-flex items-center gap-2 hover:!bg-navy hover:!text-white dark:!border-steel dark:!text-cream dark:hover:!bg-steel dark:hover:!text-navy-950"
+            className="inline-flex items-center gap-2"
           >
             See all services
             <IconArrowRight className="h-4 w-4" />
@@ -318,31 +303,8 @@ export default async function ContractTalentPage() {
         </ol>
       </Section>
 
-      {/* Sec 7 — Industries */}
-      <Section background="white">
-        <div className="mx-auto max-w-2xl text-center">
-          <Eyebrow>Industries</Eyebrow>
-          <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
-            Contract talent across {INDUSTRY_LINKS.length} industries
-          </h2>
-        </div>
-        <p className="mx-auto mt-6 max-w-3xl text-center text-[18px] leading-[1.85] text-navy/70 dark:text-cream/70">
-          We place contractors in{" "}
-          {INDUSTRY_LINKS.map((industry, index) => (
-            <span key={industry.slug}>
-              {index === INDUSTRY_LINKS.length - 1 ? "and " : ""}
-              <Link
-                href={`/industries/${industry.slug}`}
-                className="text-navy underline decoration-steel/40 underline-offset-4 transition-colors hover:decoration-navy dark:text-cream dark:hover:decoration-cream"
-              >
-                {industry.label}
-              </Link>
-              {index < INDUSTRY_LINKS.length - 2 ? ", " : " "}
-            </span>
-          ))}
-          roles across the U.S.
-        </p>
-      </Section>
+      {/* Sec 7 — Industries: same card design as the homepage */}
+      <IndustriesShowcase title="Contract talent across {count} industries" />
 
       {/* Sec 8 — FAQ (also feeds the FAQPage schema above) */}
       <Section background="white">

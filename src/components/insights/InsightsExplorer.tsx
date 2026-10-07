@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import InsightImage from "@/components/insights/InsightImage";
+import { PRIMARY_BUTTON_COLORS } from "@/components/ui/Button";
 
 export type InsightListItem = {
   slug: string;
@@ -133,7 +134,7 @@ export default function InsightsExplorer({
           type="button"
           onClick={() => setSelected([])}
           disabled={selected.length === 0}
-          className="mt-6 hidden rounded-full border-[1.5px] border-navy px-5 py-2 text-[11.5px] font-semibold uppercase tracking-[0.08em] text-navy transition-colors hover:bg-navy hover:text-white disabled:pointer-events-none disabled:opacity-40 lg:inline-flex dark:border-cream/70 dark:text-cream dark:hover:bg-cream dark:hover:text-navy-950"
+          className={`mt-6 hidden rounded-full px-5 py-2 text-[11.5px] font-semibold uppercase tracking-[0.08em] transition-all disabled:pointer-events-none disabled:opacity-40 lg:inline-flex ${PRIMARY_BUTTON_COLORS}`}
         >
           Reset all
         </button>

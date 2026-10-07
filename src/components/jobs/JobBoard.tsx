@@ -20,6 +20,7 @@ import {
   remoteBadge,
 } from "./utils";
 import { IconArrowRight, IconBars, IconBell, IconBriefcase, IconCalendar, IconChevron, IconFlag, IconInfo, IconSearch } from "./icons";
+import { PRIMARY_BUTTON_COLORS } from "@/components/ui/Button";
 
 const PAGE_SIZE = 9; // 3 full rows of 3 on desktop
 
@@ -505,7 +506,7 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
           placeholder="Zip code"
           className="w-full rounded-md border border-navy/20 bg-white px-3 py-2.5 text-sm text-navy focus:border-steel focus:outline-none sm:max-w-[160px] dark:border-white/15 dark:bg-navy-900 dark:text-cream"
         />
-        <button type="submit" className="rounded-full bg-navy border border-navy px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-navy-secondary sm:flex-shrink-0 dark:bg-steel dark:border-steel dark:text-navy-950 dark:hover:bg-steel-light">
+        <button type="submit" className={`rounded-full px-6 py-2.5 text-sm font-semibold transition-all sm:flex-shrink-0 ${PRIMARY_BUTTON_COLORS}`}>
           Search
         </button>
       </form>
@@ -514,9 +515,9 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
         <button
           type="button"
           onClick={() => setAlertOpen(true)}
-          className="inline-flex items-center gap-2 rounded-full border border-navy/10 bg-white py-1.5 pl-1.5 pr-3.5 text-sm font-semibold text-navy transition-colors hover:border-[#0d98ba]/40 dark:border-white/10 dark:bg-navy-900 dark:text-cream"
+          className={`inline-flex items-center gap-2 rounded-full py-1.5 pl-1.5 pr-3.5 text-sm font-semibold transition-all ${PRIMARY_BUTTON_COLORS}`}
         >
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0d98ba]/15 text-[#0d98ba] dark:bg-[#0d98ba]/25 dark:text-[#6bc7db]">
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/15 text-white dark:bg-navy-950/15 dark:text-navy-950">
             <IconBell className="h-3.5 w-3.5" />
           </span>
           Create job alert
@@ -741,7 +742,7 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
                       <div className="mt-auto flex items-center gap-2.5 pt-1">
                         <Link
                           href={`/get-hired/jobs/${jobUrlSlug(job)}`}
-                          className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-navy/15 bg-white px-4 py-2.5 text-[13.5px] font-semibold text-navy transition-colors hover:border-navy/30 hover:bg-mist dark:border-white/15 dark:bg-navy-900 dark:text-cream dark:hover:border-white/25 dark:hover:bg-navy-800"
+                          className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-full px-4 py-2.5 text-[13.5px] font-semibold transition-all ${PRIMARY_BUTTON_COLORS}`}
                         >
                           <IconInfo className="h-3.5 w-3.5" />
                           View details
@@ -749,7 +750,7 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
                         <button
                           type="button"
                           onClick={() => openApplyForJob(job)}
-                          className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full bg-navy px-4 py-2.5 text-[13.5px] font-semibold text-white transition-colors hover:bg-navy-secondary dark:bg-steel dark:text-navy-950 dark:hover:bg-steel-light"
+                          className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-full px-4 py-2.5 text-[13.5px] font-semibold transition-all ${PRIMARY_BUTTON_COLORS}`}
                         >
                           <IconArrowRight className="h-3.5 w-3.5" />
                           Apply now
@@ -832,7 +833,7 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
               <button
                 type="button"
                 onClick={openApplyForSelected}
-                className="rounded-full bg-white border border-navy px-5 py-2 text-sm font-semibold text-navy hover:bg-mist"
+                className={`rounded-full px-5 py-2 text-sm font-semibold transition-all ${PRIMARY_BUTTON_COLORS}`}
               >
                 Apply now
               </button>
