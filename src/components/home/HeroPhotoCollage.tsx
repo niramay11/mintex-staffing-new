@@ -142,10 +142,11 @@ export default function HeroPhotoCollage({
               // the tiny fallback keeps phones from downloading a full photo.
               sizes="(min-width: 1024px) 27vw, 64px"
               className="object-cover"
-              // LCP image on desktop. fetchPriority instead of the deprecated
-              // `priority` (Next 16), and no <head> preload, which would make
-              // phones fetch it too even though it's hidden there.
-              fetchPriority="high"
+              // Eager (above the fold on desktop) but NOT fetchPriority="high":
+              // the collage is display:none on phones, and a high-priority
+              // fetch there was counted by Lighthouse's mobile simulation as
+              // something the hero text's LCP had to wait for. Chrome raises
+              // it to high priority by itself on desktop once it's visible.
               loading="eager"
             />
           </div>

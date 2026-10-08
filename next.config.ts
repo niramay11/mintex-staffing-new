@@ -7,10 +7,8 @@ import type { NextConfig } from "next";
 // auth), and Calendly's popup scheduling widget (CalendlyButton, /contact —
 // assets.calendly.com serves its script/CSS, calendly.com is the popup
 // iframe itself and its API calls). 'unsafe-inline' is required for both
-// script-src and style-src — Next's own hydration scripts need it, and
-// `experimental.inlineCss` above inlines all page CSS as <style> tags,
-// which a stricter policy would block outright (no nonce plumbing exists
-// here to avoid it). Ceipal API calls are unaffected: every api.ceipal.com
+// script-src and style-src — Next's own hydration scripts need it (no
+// nonce plumbing exists here to avoid it). Ceipal API calls are unaffected: every api.ceipal.com
 // fetch happens server-side (lib/ceipal*.ts via app/api/**/route.ts) — the
 // browser never talks to Ceipal directly, so no Ceipal host needs to
 // appear in connect-src.
@@ -41,7 +39,13 @@ const contentSecurityPolicy = [
 
 const nextConfig: NextConfig = {
   experimental: {
-    inlineCss: true,
+    // Off: inlining put the whole ~227KB stylesheet into every page's HTML
+    // AND again inside the RSC payload (homepage HTML 943KB raw / 128KB
+    // gzipped -> 44KB without it), which phones had to download and parse
+    // on every page instead of caching one CSS file. Measured with
+    // Lighthouse on a production build: desktop stays 98-99, mobile
+    // blocking time drops.
+    inlineCss: false,
   },
   // pdfkit (interview-kit PDF attachment, lib/interviewKit/kitPdf.ts) reads
   // its built-in font metric files from its own package folder at runtime —

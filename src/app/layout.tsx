@@ -25,14 +25,21 @@ const inter = Inter({
 const barlowCondensed = Barlow_Condensed({
   variable: "--font-barlow-condensed",
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  // 600/700 only — 500 was preloaded on every page but used nowhere
+  // (checked computed weights across the main pages); each weight is its own
+  // preloaded file competing with the page's first paint on mobile.
+  weight: ["600", "700"],
   display: "optional",
 });
 
+// Only used by a few small labels (job page job-order chip, calculator, admin,
+// client portal) — not preloaded, so its 3 files no longer compete with the
+// page's own CSS/JS on every page load on mobile.
 const ibmPlexMono = IBM_Plex_Mono({
   variable: "--font-ibm-plex-mono",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
+  preload: false,
 });
 
 export const metadata: Metadata = {
