@@ -19,7 +19,7 @@ import {
   INDUSTRY_CARD_FALLBACK_IMAGES,
 } from "@/lib/imageLocations";
 import { getJobsForCachedPage } from "@/lib/jobsForCachedPage";
-import { isActiveJob } from "@/components/jobs/utils";
+import { isActiveJob, jobMatchesKeywords } from "@/components/jobs/utils";
 import { SITE_URL } from "@/lib/site";
 import Testimonials from "@/components/home/Testimonials";
 import { getHomepageTestimonials } from "@/lib/caseStudies";
@@ -34,28 +34,6 @@ export const revalidate = 600;
 export const maxDuration = 60;
 
 const MAX_ROLES_SHOWN = 3;
-
-// Matched against the job's title + skills text, deliberately NOT Ceipal's
-// `industry` field — confirmed live that field records the hiring CLIENT's
-// business sector (e.g. a "Senior Software Engineer" role came through
-// tagged "Healthcare" because the client company is a healthcare business),
-// which would misclassify real jobs onto the wrong industry page. Keywords
-// longer than 4 chars or containing a space are substring-matched (safe,
-// since they're specific phrases); short keywords use a word-boundary check
-// so they don't false-match inside unrelated words.
-function textMatchesKeyword(text: string, keyword: string): boolean {
-  const k = keyword.toLowerCase();
-  if (k.includes(" ") || k.length > 4) return text.includes(k);
-  return new RegExp(`\\b${k}\\b`).test(text);
-}
-
-function matchesIndustry(job: CeipalJob, keywords: string[]): boolean {
-  const text = [job.job_title, job.primary_skills, job.secondary_skills]
-    .filter(Boolean)
-    .join(" ")
-    .toLowerCase();
-  return keywords.some((keyword) => textMatchesKeyword(text, keyword));
-}
 
 // Empty list = on-demand ISR: each industry page is rendered on its first
 // live request (with real jobs) and then cached for `revalidate` seconds,
@@ -95,7 +73,7 @@ export default async function IndustryPage({
 
   const jobs = await getJobsForCachedPage();
   const openRoles = (jobs as CeipalJob[])
-    .filter((job) => isActiveJob(job) && matchesIndustry(job, industry.jobKeywords))
+    .filter((job) => isActiveJob(job) && jobMatchesKeywords(job, industry.jobKeywords))
     .slice(0, MAX_ROLES_SHOWN);
 
   const achievements = industry.stats;

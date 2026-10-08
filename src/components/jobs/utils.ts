@@ -9,6 +9,80 @@ export function jobLocation(job: CeipalJob): string {
   return stripZip(job.location || [job.city, job.states].filter(Boolean).join(", ")) || "Location not specified";
 }
 
+// Matched against the job's title + skills text, deliberately NOT Ceipal's
+// `industry` field — confirmed live that field records the hiring CLIENT's
+// business sector (e.g. a "Senior Software Engineer" role came through
+// tagged "Healthcare" because the client company is a healthcare business).
+// Keywords longer than 4 chars or containing a space are substring-matched
+// (safe, since they're specific phrases); short keywords use a word-boundary
+// check so they don't false-match inside unrelated words. Shared by the
+// /industries/[slug] pages and the job board's Industry filter so both put
+// the same jobs under the same industry.
+export function textMatchesKeyword(text: string, keyword: string): boolean {
+  const k = keyword.toLowerCase();
+  if (k.includes(" ") || k.length > 4) return text.includes(k);
+  return new RegExp(`\\b${escapeRegExp(k)}\\b`).test(text);
+}
+
+export function jobMatchesKeywords(job: CeipalJob, keywords: string[]): boolean {
+  const text = [job.job_title, job.primary_skills, job.secondary_skills]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+  return keywords.some((keyword) => textMatchesKeyword(text, keyword));
+}
+
+function escapeRegExp(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+const STATE_ABBREVIATIONS: Record<string, string> = {
+  alabama: "al", alaska: "ak", arizona: "az", arkansas: "ar", california: "ca", colorado: "co",
+  connecticut: "ct", delaware: "de", "district of columbia": "dc", florida: "fl", georgia: "ga",
+  hawaii: "hi", idaho: "id", illinois: "il", indiana: "in", iowa: "ia", kansas: "ks", kentucky: "ky",
+  louisiana: "la", maine: "me", maryland: "md", massachusetts: "ma", michigan: "mi", minnesota: "mn",
+  mississippi: "ms", missouri: "mo", montana: "mt", nebraska: "ne", nevada: "nv", "new hampshire": "nh",
+  "new jersey": "nj", "new mexico": "nm", "new york": "ny", "north carolina": "nc", "north dakota": "nd",
+  ohio: "oh", oklahoma: "ok", oregon: "or", pennsylvania: "pa", "rhode island": "ri",
+  "south carolina": "sc", "south dakota": "sd", tennessee: "tn", texas: "tx", utah: "ut", vermont: "vt",
+  virginia: "va", washington: "wa", "west virginia": "wv", wisconsin: "wi", wyoming: "wy",
+};
+
+// Ceipal's `states` is a comma-joined list of full state names on multi-state
+// jobs ("Iowa, New Jersey"), so it's split and compared as whole names —
+// a substring check let "Virginia" match "West Virginia" and "Kansas" match
+// "Arkansas".
+export function jobStates(job: CeipalJob): string[] {
+  return (job.states || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+// Free-text job search: every word typed must appear somewhere in the job
+// (title, skills, city, states, location), in any order, matched from the
+// start of a word ("dev" finds "Developer", "nj" doesn't hit "ninja"). Each
+// job's state abbreviations are searchable too, so "NJ" also finds
+// multi-state jobs whose location text only spells out "New Jersey".
+export function jobMatchesSearch(job: CeipalJob, query: string): boolean {
+  const words = query.toLowerCase().split(/\s+/).filter(Boolean);
+  if (words.length === 0) return true;
+  const states = jobStates(job).map((s) => s.toLowerCase());
+  const haystack = [
+    job.job_title,
+    job.primary_skills,
+    job.secondary_skills,
+    job.city,
+    job.location,
+    ...states,
+    ...states.map((s) => STATE_ABBREVIATIONS[s]).filter(Boolean),
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+  return words.every((word) => new RegExp(`(^|[^a-z0-9])${escapeRegExp(word)}`).test(haystack));
+}
+
 // A real job realistically spans a handful of industries at most. Some Ceipal records come
 // through with the entire industry picklist dumped as one comma-joined string instead of a
 // real value — past this count it's corrupted data, not a genuine multi-industry job.

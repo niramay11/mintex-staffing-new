@@ -12,6 +12,8 @@ import {
   fmtPosted,
   isActiveJob,
   jobIndustries,
+  jobMatchesSearch,
+  jobStates,
   jobLocation,
   jobType,
   jobUrlSlug,
@@ -24,17 +26,9 @@ import { PRIMARY_BUTTON_COLORS, SECONDARY_BUTTON_COLORS } from "@/components/ui/
 
 const PAGE_SIZE = 9; // 3 full rows of 3 on desktop
 
-const LOCATION_OPTIONS = [
-  "Remote",
-  "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
-  "Delaware", "District of Columbia", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois",
-  "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts",
-  "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada",
-  "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota",
-  "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina",
-  "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington",
-  "West Virginia", "Wisconsin", "Wyoming",
-];
+// Location options are built from the jobs actually open (see
+// locationOptions in JobBoard) — a fixed list of all 50 states left most
+// options returning zero results, which read as a broken filter.
 
 function toSelectedJob(job: CeipalJob): SelectedJob {
   return {
@@ -112,10 +106,12 @@ function CheckboxList({
   options,
   selected,
   onToggle,
+  counts,
 }: {
   options: string[];
   selected: Set<string>;
   onToggle: (value: string) => void;
+  counts?: Map<string, number>;
 }) {
   return (
     <div className="space-y-2">
@@ -134,7 +130,10 @@ function CheckboxList({
             >
               <IconTag className="h-4 w-4" />
             </span>
-            <span className="min-w-0 flex-1 truncate text-sm font-medium text-navy/80 dark:text-cream/80">{opt}</span>
+            <span className="min-w-0 flex-1 text-sm font-medium leading-snug text-navy/80 dark:text-cream/80">
+              {opt}
+              {counts?.has(opt) && <span className="ml-1.5 text-xs font-normal text-navy/45 dark:text-cream/45">({counts.get(opt)})</span>}
+            </span>
             <input
               type="checkbox"
               checked={active}
@@ -212,7 +211,15 @@ function OptionCard({
 
 // Custom location dropdown — a native <select>'s popup is styled entirely by the
 // OS/browser and can render oversized or mispositioned; this renders in-flow instead.
-function LocationSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+function LocationSelect({
+  value,
+  onChange,
+  options,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  options: { value: string; count: number }[];
+}) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -250,16 +257,17 @@ function LocationSelect({ value, onChange }: { value: string; onChange: (v: stri
           >
             All locations
           </button>
-          {LOCATION_OPTIONS.map((opt) => (
+          {options.map((opt) => (
             <button
-              key={opt}
+              key={opt.value}
               type="button"
-              onClick={() => select(opt)}
+              onClick={() => select(opt.value)}
               className={`block w-full rounded-md px-3 py-1.5 text-left text-sm ${
-                value === opt ? "bg-mist font-medium text-navy dark:bg-white/10 dark:text-cream" : "text-navy/70 hover:bg-mist dark:text-cream/70 dark:hover:bg-white/10"
+                value === opt.value ? "bg-mist font-medium text-navy dark:bg-white/10 dark:text-cream" : "text-navy/70 hover:bg-mist dark:text-cream/70 dark:hover:bg-white/10"
               }`}
             >
-              {opt}
+              {opt.value}
+              <span className="ml-1.5 text-xs text-navy/40 dark:text-cream/40">({opt.count})</span>
             </button>
           ))}
         </div>
@@ -274,6 +282,15 @@ interface JobBoardProps {
   // GetHiredContent.tsx) — seeded straight into descCacheRef below so the
   // very first render already has them, no client fetch needed at all.
   initialDescriptions?: Record<string, { job_description: string; public_job_description: string }>;
+}
+
+// Filter option for active jobs that have no industry set in Ceipal, so they
+// can still be reached through the Industry filter.
+const NO_INDUSTRY = "Not specified";
+
+function industryKeys(job: CeipalJob): string[] {
+  const industries = jobIndustries(job);
+  return industries.length > 0 ? industries : [NO_INDUSTRY];
 }
 
 export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardProps) {
@@ -344,10 +361,33 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
   }, [activeJobs]);
   const jobTypes = useMemo(() => Array.from(jobTypeCounts.keys()).sort(), [jobTypeCounts]);
 
+  // Industry options come straight from the active jobs' own industry values,
+  // each with how many open jobs carry it; jobs with none are grouped under
+  // "Not specified" (listed last).
+  const industryCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const j of activeJobs) {
+      for (const industry of new Set(industryKeys(j))) counts.set(industry, (counts.get(industry) ?? 0) + 1);
+    }
+    return counts;
+  }, [activeJobs]);
   const industries = useMemo(
-    () => Array.from(new Set(activeJobs.flatMap(jobIndustries))).sort(),
-    [activeJobs]
+    () =>
+      Array.from(industryCounts.keys()).sort((a, b) =>
+        a === NO_INDUSTRY ? 1 : b === NO_INDUSTRY ? -1 : a.localeCompare(b)
+      ),
+    [industryCounts]
   );
+
+  const locationOptions = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const j of activeJobs) {
+      for (const state of new Set(jobStates(j))) counts.set(state, (counts.get(state) ?? 0) + 1);
+    }
+    const remote = activeJobs.filter((j) => ["remote", "yes"].includes((j.remote_job || "").toLowerCase())).length;
+    const states = Array.from(counts, ([value, count]) => ({ value, count })).sort((a, b) => a.value.localeCompare(b.value));
+    return remote > 0 ? [{ value: "Remote", count: remote }, ...states] : states;
+  }, [activeJobs]);
 
   const experienceCounts = useMemo(() => {
     const counts = new Map<ExperienceBucketKey, number>();
@@ -383,19 +423,13 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
           if (remoteVal !== "remote" && remoteVal !== "yes") return false;
         } else {
           const target = locationFilter.toLowerCase();
-          const state = (job.states || "").toLowerCase();
-          const city = (job.city || "").toLowerCase();
-          const location = (job.location || "").toLowerCase();
-          if (!state.includes(target) && !city.includes(target) && !location.includes(target)) return false;
+          if (!jobStates(job).some((state) => state.toLowerCase() === target)) return false;
         }
       }
 
-      if (industryFilter.size > 0 && !jobIndustries(job).some((i) => industryFilter.has(i))) return false;
+      if (industryFilter.size > 0 && !industryKeys(job).some((i) => industryFilter.has(i))) return false;
 
-      if (q) {
-        const haystack = `${job.job_title} ${job.primary_skills || ""} ${job.city || ""} ${job.states || ""} ${job.location || ""}`.toLowerCase();
-        if (!haystack.includes(q)) return false;
-      }
+      if (q && !jobMatchesSearch(job, q)) return false;
 
       if (z) {
         if (!job.zip_code?.includes(z) && !job.location?.includes(z)) return false;
@@ -566,7 +600,7 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
               )}
 
               <FilterSection title="Work Location">
-                <LocationSelect value={locationFilter} onChange={setLocationFilter} />
+                <LocationSelect value={locationFilter} onChange={setLocationFilter} options={locationOptions} />
               </FilterSection>
 
               {industries.length > 0 && (
@@ -575,6 +609,7 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
                     options={industries}
                     selected={industryFilter}
                     onToggle={(v) => toggleInSet(setIndustryFilter, v)}
+                    counts={industryCounts}
                   />
                 </FilterSection>
               )}
