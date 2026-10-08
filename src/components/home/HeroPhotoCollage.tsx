@@ -136,9 +136,17 @@ export default function HeroPhotoCollage({
               src={photo1Src}
               alt="Mintex Staffing candidate placed with a client team"
               fill
-              sizes="(min-width: 1024px) 32vw, 60vw"
+              // ~51% of the collage, which is ~24-27vw at every lg+ width
+              // (322px rendered at 1350px wide); the old 32vw made the browser
+              // fetch a 640px file. The collage is display:none below lg, so
+              // the tiny fallback keeps phones from downloading a full photo.
+              sizes="(min-width: 1024px) 27vw, 64px"
               className="object-cover"
-              priority
+              // LCP image on desktop. fetchPriority instead of the deprecated
+              // `priority` (Next 16), and no <head> preload, which would make
+              // phones fetch it too even though it's hidden there.
+              fetchPriority="high"
+              loading="eager"
             />
           </div>
 
@@ -175,7 +183,7 @@ export default function HeroPhotoCollage({
               src={photo2Src}
               alt="Mintex Staffing recruiter finalizing a placement"
               fill
-              sizes="(min-width: 1024px) 30vw, 52vw"
+              sizes="(min-width: 1024px) 28vw, 64px"
               className="object-cover"
             />
           </div>

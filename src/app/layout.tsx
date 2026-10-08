@@ -9,15 +9,24 @@ import { getIndustries } from "@/lib/industries";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
+// display "optional": the web font is only swapped in if it arrives within
+// the browser's short block period (next/font preloads it, so normally it
+// does); otherwise that page view keeps the size-matched fallback. With the
+// default "swap", the late swap re-wrapped the homepage hero text at some
+// desktop widths (heading 242px -> 302px at 1280px wide), and since the hero
+// is vertically centered that moved the whole photo collage — PageSpeed
+// desktop CLS 0.215.
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+  display: "optional",
 });
 
 const barlowCondensed = Barlow_Condensed({
   variable: "--font-barlow-condensed",
   subsets: ["latin"],
   weight: ["500", "600", "700"],
+  display: "optional",
 });
 
 const ibmPlexMono = IBM_Plex_Mono({
