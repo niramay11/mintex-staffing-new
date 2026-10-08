@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase";
 import { verifyAdminPassword } from "@/lib/portal-auth";
+import { cleanSlug } from "@/lib/cleanSlug";
 import { sanitizeInsightBodyHtml } from "@/lib/sanitizeInsightHtml";
 
 function adminGuard(req: NextRequest): boolean {
@@ -64,7 +65,7 @@ export async function POST(req: NextRequest) {
     ? body.body.map((p: unknown) => String(p).trim()).filter(Boolean)
     : [];
   const body_html = body.body_html ? sanitizeInsightBodyHtml(String(body.body_html)) : null;
-  const slug = String(body.slug ?? "").trim() || slugify(title);
+  const slug = cleanSlug(String(body.slug ?? "")) || slugify(title);
 
   if (!title || !category || !excerpt || !author || !published_at || bodyParagraphs.length === 0 || !slug) {
     return NextResponse.json({ error: "Title, category, excerpt, author, published date, and body are required" }, { status: 400 });

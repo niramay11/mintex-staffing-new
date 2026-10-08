@@ -31,6 +31,17 @@ export interface Industry {
   // Small stat cards (e.g. "1,200+ IT placements made") — the first one is
   // shown on the homepage card, all of them on the industry's own page.
   stats: { label: string; value: string }[];
+  // Optional fields added for the Marketing "Industry Rewrite" copy
+  // (migration 027). Empty string = not set; the page falls back to the
+  // pre-rewrite behaviour for each one.
+  metaDescription: string;
+  // Exact <title> (brand included) when set (migration 028).
+  seoTitle: string;
+  // Lowercase name for headings, e.g. "finance and accounting" (migration 028).
+  shortName: string;
+  ctaLabel: string;
+  introHeading: string;
+  closingCta: { title: string; body: string };
 }
 
 // Row shape from the `insight_categories` Supabase table (admin-managed via /api/insight-categories).
@@ -82,6 +93,9 @@ export interface CaseStudy {
   role: string | null;
   video_url: string | null;
   thumbnail_url: string | null;
+  // Industry page(s) this testimonial belongs on, comma separated (migration
+  // 027); null = general.
+  industry_slug?: string | null;
 }
 
 export interface InterviewQuestionSet {

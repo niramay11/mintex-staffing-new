@@ -28,6 +28,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   if (body.role !== undefined)          updates.role = body.role ? String(body.role).trim() : null;
   if (body.video_url !== undefined)     updates.video_url = body.video_url ? String(body.video_url).trim() : null;
   if (body.thumbnail_url !== undefined) updates.thumbnail_url = body.thumbnail_url ? String(body.thumbnail_url).trim() : null;
+  if (body.industry_slug !== undefined) updates.industry_slug = body.industry_slug ? String(body.industry_slug).trim() : null;
 
   const { data, error } = await supabaseAdmin
     .from("case_studies")

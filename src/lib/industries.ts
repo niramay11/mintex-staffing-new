@@ -25,6 +25,14 @@ export type IndustryRow = {
   engagement_models: string;
   sort_order: number;
   stats: { label: string; value: string }[];
+  // Migration 027 — absent until it's run, null until set.
+  meta_description?: string | null;
+  seo_title?: string | null;
+  short_name?: string | null;
+  cta_label?: string | null;
+  intro_heading?: string | null;
+  closing_cta_title?: string | null;
+  closing_cta_body?: string | null;
 };
 
 export function mapIndustryRow(row: IndustryRow): Industry {
@@ -45,6 +53,12 @@ export function mapIndustryRow(row: IndustryRow): Industry {
     engagementModels: row.engagement_models,
     sortOrder: row.sort_order,
     stats: row.stats ?? [],
+    metaDescription: row.meta_description ?? "",
+    seoTitle: row.seo_title ?? "",
+    shortName: row.short_name ?? "",
+    ctaLabel: row.cta_label ?? "",
+    introHeading: row.intro_heading ?? "",
+    closingCta: { title: row.closing_cta_title ?? "", body: row.closing_cta_body ?? "" },
   };
 }
 

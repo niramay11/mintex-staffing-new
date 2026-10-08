@@ -5,10 +5,10 @@ const variants = {
   // Solid navy pill — the homepage hero "Request talent" look, site-wide.
   primary:
     "border border-navy bg-navy text-white shadow-[0_14px_36px_-10px_rgba(0,48,96,0.35)] hover:-translate-y-0.5 hover:border-navy-secondary hover:bg-navy-secondary hover:shadow-[0_18px_44px_-8px_rgba(0,48,96,0.45)] dark:border-steel dark:bg-steel dark:text-navy-950 dark:hover:border-steel-light dark:hover:bg-steel-light",
-  // Every action button on the site uses the same navy look (kept as its own
-  // key so existing variant="secondary" call sites keep working).
+  // Outlined navy pill on the page background — the homepage hero "Find a
+  // job" look. Used for the second button of a pair, next to a primary.
   secondary:
-    "border border-navy bg-navy text-white shadow-[0_14px_36px_-10px_rgba(0,48,96,0.35)] hover:-translate-y-0.5 hover:border-navy-secondary hover:bg-navy-secondary hover:shadow-[0_18px_44px_-8px_rgba(0,48,96,0.45)] dark:border-steel dark:bg-steel dark:text-navy-950 dark:hover:border-steel-light dark:hover:bg-steel-light",
+    "border border-navy bg-transparent text-navy hover:-translate-y-0.5 hover:bg-navy hover:text-white dark:border-white/15 dark:text-cream dark:hover:bg-navy dark:hover:text-white",
   outline: "border border-white text-white hover:bg-white hover:text-navy",
 } as const;
 
@@ -19,6 +19,7 @@ const baseClasses =
 // markup) so they match ButtonLink/Button exactly. PRIMARY_BUTTON_COLORS is
 // the look alone, for compact buttons that keep their own size (job cards).
 export const PRIMARY_BUTTON_COLORS = variants.primary;
+export const SECONDARY_BUTTON_COLORS = variants.secondary;
 export const PRIMARY_BUTTON = `${baseClasses} ${variants.primary}`;
 
 export function ButtonLink({

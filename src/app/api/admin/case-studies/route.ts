@@ -37,6 +37,7 @@ export async function POST(req: NextRequest) {
   const role = body.role ? String(body.role).trim() : null;
   const video_url = body.video_url ? String(body.video_url).trim() : null;
   const thumbnail_url = body.thumbnail_url ? String(body.thumbnail_url).trim() : null;
+  const industry_slug = body.industry_slug ? String(body.industry_slug).trim() : null;
 
   if (!VALID_TYPES.has(type) || !title || !quote || !author) {
     return NextResponse.json({ error: "Type, title, quote, and author are required" }, { status: 400 });
@@ -49,7 +50,7 @@ export async function POST(req: NextRequest) {
 
   const { data, error } = await supabaseAdmin
     .from("case_studies")
-    .insert({ type, title, quote, author, role, video_url, thumbnail_url, sort_order: count ?? 0 })
+    .insert({ type, title, quote, author, role, video_url, thumbnail_url, industry_slug, sort_order: count ?? 0 })
     .select()
     .single();
 

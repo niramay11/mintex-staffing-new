@@ -65,6 +65,13 @@ export async function POST(req: NextRequest) {
       market_context: String(body.marketContext ?? "").trim(),
       engagement_models: String(body.engagementModels ?? "").trim(),
       sort_order: count ?? 0,
+      meta_description: String(body.metaDescription ?? "").trim() || null,
+      seo_title: String(body.seoTitle ?? "").trim() || null,
+      short_name: String(body.shortName ?? "").trim() || null,
+      cta_label: String(body.ctaLabel ?? "").trim() || null,
+      intro_heading: String(body.introHeading ?? "").trim() || null,
+      closing_cta_title: String(body.closingCtaTitle ?? "").trim() || null,
+      closing_cta_body: String(body.closingCtaBody ?? "").trim() || null,
     })
     .select()
     .single();

@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase";
 import { verifyAdminPassword } from "@/lib/portal-auth";
 import { sanitizeInsightBodyHtml } from "@/lib/sanitizeInsightHtml";
+import { cleanSlug } from "@/lib/cleanSlug";
 
 function adminGuard(req: NextRequest): boolean {
   return verifyAdminPassword(req.headers.get("x-admin-password") ?? "");
@@ -27,7 +28,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const body = await req.json().catch(() => ({}));
   const updates: Record<string, unknown> = {};
 
-  if (body.slug !== undefined)         updates.slug = String(body.slug).trim();
+  // Only a non-empty cleaned slug replaces the current one.
+  if (body.slug !== undefined && cleanSlug(String(body.slug))) updates.slug = cleanSlug(String(body.slug));
   if (body.category !== undefined)     updates.category = String(body.category).trim();
   if (body.title !== undefined)        updates.title = String(body.title).trim();
   if (body.excerpt !== undefined)      updates.excerpt = String(body.excerpt).trim();

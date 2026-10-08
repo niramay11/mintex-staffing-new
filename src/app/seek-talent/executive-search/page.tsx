@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import Section from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import FaqSplit from "@/components/ui/FaqSplit";
+import ServicePointRows, { PointList } from "@/components/seek-talent/ServicePointRows";
 import { getHiringServiceBySlug } from "@/content/hiringServices";
 import { getSiteImages } from "@/lib/siteImages";
 import { pageMetadata } from "@/lib/pageMetadata";
@@ -113,12 +113,6 @@ function IconArrowRight({ className }: { className?: string }) {
   );
 }
 
-function Eyebrow({ children }: { children: string }) {
-  return (
-    <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">{children}</p>
-  );
-}
-
 export default async function ExecutiveSearchPage() {
   const siteImages = await getSiteImages();
   const ServiceIcon = getHiringServiceBySlug("executive-search")?.icon;
@@ -169,6 +163,7 @@ export default async function ExecutiveSearchPage() {
           </ButtonLink>
           <ButtonLink
             href="/seek-talent"
+            variant="secondary"
             className="inline-flex items-center gap-2"
           >
             See all services
@@ -177,147 +172,104 @@ export default async function ExecutiveSearchPage() {
         </div>
       </Section>
 
-      {/* Sec 2 — Definition (featured-snippet target) */}
-      <Section background="white">
-        <div className="mx-auto max-w-3xl">
-          <Eyebrow>Definition</Eyebrow>
-          <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
-            What is executive search?
-          </h2>
-          <p className="mt-5 text-[19px] leading-[1.8] text-navy/75 dark:text-cream/75">
-            Executive search is a confidential recruiting service for senior roles: CEOs, CFOs, other C-suite
-            leaders, board members and key founding hires. The search firm identifies and approaches qualified
-            leaders, many of whom aren&apos;t job hunting, then assesses them for experience, leadership style
-            and fit with your strategy.
-          </p>
-        </div>
-      </Section>
-
-      {/* Sec 3 — What we search for */}
-      <Section background="white">
-        <div className="mx-auto max-w-2xl text-center">
-          <Eyebrow>What we search for</Eyebrow>
-          <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
-            Roles we fill
-          </h2>
-        </div>
-        <ul className="mx-auto mt-11 grid max-w-5xl gap-5 sm:grid-cols-2">
-          {ROLES.map((role) => (
-            <li
-              key={role.title}
-              className="rounded-2xl border border-navy/[0.08] bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)] transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)] dark:border-white/10 dark:bg-navy-800"
-            >
-              <div className="h-[3px] w-6 bg-steel" />
-              <p className="mt-4 text-[17px] leading-[1.7] text-navy/70 dark:text-cream/70">
-                <strong className="font-semibold text-navy dark:text-cream">{role.title}</strong> {role.text}
+      {/* Sec 2 — Content in the original service-template design: one
+          photo + card row per topic (definition first: featured-snippet
+          target), "Let's talk" in the last card. */}
+      <ServicePointRows
+        slug="executive-search"
+        siteImages={siteImages}
+        points={[
+          {
+            title: "What is executive search?",
+            imageAlt: "Private meeting between a Mintex executive search consultant and a leadership candidate",
+            body: (
+              <p>
+                Executive search is a confidential recruiting service for senior roles: CEOs, CFOs, other C-suite
+                leaders, board members and key founding hires. The search firm identifies and approaches qualified
+                leaders, many of whom aren&apos;t job hunting, then assesses them for experience, leadership style
+                and fit with your strategy.
               </p>
-            </li>
-          ))}
-        </ul>
-        <p className="mx-auto mt-8 max-w-2xl text-center text-[18px] leading-relaxed text-steel dark:text-steel-light">
-          We search for public, private and non-profit organizations in New Jersey and nationwide.
-        </p>
-      </Section>
-
-      {/* Sec 4 — Confidentiality */}
-      <Section background="white">
-        <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
-          <div>
-            <Eyebrow>Confidentiality</Eyebrow>
-            <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
-              Discreet by default
-            </h2>
-            <div className="mt-5 h-[3px] w-12 bg-steel" />
-            <p className="mt-6 text-[18px] leading-[1.85] text-navy/70 dark:text-cream/70">
-              Leadership searches leak in predictable places: a job post, a recruiter&apos;s careless call, a
-              candidate who mentions it to the wrong colleague.
-            </p>
-            <p className="mt-4 text-[18px] leading-[1.85] text-navy/70 dark:text-cream/70">
-              We close those gaps. Searches run to your internal standards on who knows, when, and how candidates
-              are approached. Nothing goes public unless you decide it should.
-            </p>
-          </div>
-
-          <div className="relative mx-auto w-full max-w-md">
-            <div aria-hidden="true" className="absolute -inset-3 rounded-[2rem] border border-navy/10 dark:border-white/10" />
-            <div className="relative aspect-[4/3] overflow-hidden rounded-[1.5rem] shadow-[0_20px_45px_-20px_rgba(0,48,96,0.25)]">
-              <Image
-                src={siteImages["seek-talent-service:executive-search:point-1-visual"]}
-                alt="Private meeting between a Mintex executive search consultant and a leadership candidate"
-                fill
-                sizes="(min-width: 640px) 448px, 100vw"
-                className="object-cover"
+            ),
+          },
+          {
+            title: "Roles we fill",
+            imageAlt: "Leadership candidates considered in a Mintex executive search",
+            body: (
+              <>
+                <PointList
+                  items={ROLES.map((role) => (
+                    <>
+                      <strong>{role.title}</strong> {role.text}
+                    </>
+                  ))}
+                />
+                <p className="!mt-3">
+                  We search for public, private and non-profit organizations in New Jersey and nationwide.
+                </p>
+              </>
+            ),
+          },
+          {
+            title: "Discreet by default",
+            imageAlt: "Confidential executive search conversation held off-site",
+            body: (
+              <>
+                <p>
+                  Leadership searches leak in predictable places: a job post, a recruiter&apos;s careless call, a
+                  candidate who mentions it to the wrong colleague.
+                </p>
+                <p>
+                  We close those gaps. Searches run to your internal standards on who knows, when, and how
+                  candidates are approached. Nothing goes public unless you decide it should.
+                </p>
+              </>
+            ),
+          },
+          {
+            title: "How our executive search works",
+            imageAlt: "Search committee reviewing an executive shortlist with Mintex Staffing",
+            body: (
+              <PointList
+                items={SEARCH_STEPS.map((step) => (
+                  <>
+                    <strong>{step.title}</strong> {step.text}
+                  </>
+                ))}
               />
-            </div>
-          </div>
-        </div>
-      </Section>
-
-      {/* Sec 5 — How a search runs */}
-      <Section background="white">
-        <div className="mx-auto max-w-2xl text-center">
-          <Eyebrow>How a search runs</Eyebrow>
-          <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
-            How our executive search works
-          </h2>
-        </div>
-        <ol className="mx-auto mt-11 max-w-3xl space-y-4">
-          {SEARCH_STEPS.map((step, index) => (
-            <li
-              key={step.title}
-              className="flex items-start gap-4 rounded-2xl border border-navy/[0.08] bg-white p-5 shadow-[0_1px_3px_rgba(0,48,96,0.05)] sm:p-6 dark:border-white/10 dark:bg-navy-800"
-            >
-              <span
-                aria-hidden="true"
-                className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-navy text-sm font-semibold text-white dark:bg-steel dark:text-navy-950"
-              >
-                {index + 1}
-              </span>
-              <p className="pt-0.5 text-[17px] leading-relaxed text-navy/70 dark:text-cream/70">
-                <strong className="font-semibold text-navy dark:text-cream">{step.title}</strong> {step.text}
+            ),
+          },
+          {
+            title: "Board recruitment and advisory",
+            imageAlt: "Board members meeting to review leadership gaps",
+            body: (
+              <p>
+                A board is only as useful as the range of experience around the table. Beyond single placements, we
+                help you see the gaps in your current board or leadership team and find people who fill them.
               </p>
-            </li>
-          ))}
-        </ol>
-      </Section>
+            ),
+          },
+          {
+            title: "Why leaders trust Mintex with the search",
+            imageAlt: "Mintex Staffing leadership team",
+            body: (
+              <p>
+                Mintex has recruited since {BUSINESS.foundingYear}, under the same founder and CEO, {BUSINESS.founder}.
+                Our leadership team has more than two decades in the industry. That continuity matters when a search
+                depends on relationships and discretion.{" "}
+                <Link
+                  href="/about#leadership"
+                  className="font-semibold text-navy underline decoration-steel/40 underline-offset-4 transition-colors hover:decoration-navy dark:text-cream dark:hover:decoration-cream"
+                >
+                  Meet the team
+                </Link>
+                .
+              </p>
+            ),
+          },
+        ]}
+      />
 
-      {/* Sec 6 — Board advisory */}
-      <Section background="white">
-        <div className="mx-auto max-w-3xl rounded-[24px] border border-navy/[0.08] bg-white p-8 shadow-[0_15px_35px_-10px_rgba(0,48,96,0.08)] sm:p-10 dark:border-white/10 dark:bg-navy-800">
-          <Eyebrow>Board advisory</Eyebrow>
-          <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
-            Board recruitment and advisory
-          </h2>
-          <p className="mt-5 text-[18px] leading-[1.85] text-navy/70 dark:text-cream/70">
-            A board is only as useful as the range of experience around the table. Beyond single placements, we
-            help you see the gaps in your current board or leadership team and find people who fill them.
-          </p>
-        </div>
-      </Section>
-
-      {/* Sec 7 — Why Mintex */}
-      <Section background="white">
-        <div className="mx-auto max-w-3xl text-center">
-          <Eyebrow>Why Mintex</Eyebrow>
-          <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
-            Why leaders trust Mintex with the search
-          </h2>
-          <p className="mt-5 text-[18px] leading-[1.85] text-navy/70 dark:text-cream/70">
-            Mintex has recruited since {BUSINESS.foundingYear}, under the same founder and CEO, {BUSINESS.founder}.
-            Our leadership team has more than two decades in the industry. That continuity matters when a search
-            depends on relationships and discretion.{" "}
-            <Link
-              href="/about#leadership"
-              className="font-semibold text-navy underline decoration-steel/40 underline-offset-4 transition-colors hover:decoration-navy dark:text-cream dark:hover:decoration-cream"
-            >
-              Meet the team
-            </Link>
-            .
-          </p>
-        </div>
-      </Section>
-
-      {/* Sec 8 — FAQ (also feeds the FAQPage schema above) */}
+      {/* Sec 3 — FAQ (also feeds the FAQPage schema above) */}
       <Section background="white">
         <FaqSplit
           title="Executive search FAQ"
@@ -326,7 +278,7 @@ export default async function ExecutiveSearchPage() {
         />
       </Section>
 
-      {/* Sec 9 — Closing CTA */}
+      {/* Sec 4 — Closing CTA */}
       <Section background="mist">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-heading text-[38px] font-bold leading-tight text-navy sm:text-[46px] dark:text-cream">

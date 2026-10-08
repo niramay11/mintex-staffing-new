@@ -451,6 +451,7 @@ export default async function AboutPage() {
             </ButtonLink>
             <ButtonLink
               href="/get-hired"
+              variant="secondary"
             >
               Find a job
             </ButtonLink>

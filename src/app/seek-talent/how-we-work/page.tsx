@@ -182,6 +182,7 @@ export default async function HowWeWorkPage() {
           </ButtonLink>
           <ButtonLink
             href="#job-seekers"
+            variant="secondary"
           >
             I&apos;m looking for a job
           </ButtonLink>

@@ -208,6 +208,7 @@ export default async function GetHiredContent() {
               <BrowseRolesButton />
               <ButtonLink
                 href="/get-hired/share-resume"
+                variant="secondary"
               >
                 Share your resume
               </ButtonLink>
@@ -329,7 +330,7 @@ export default async function GetHiredContent() {
             <ButtonLink href="/get-hired/share-resume" variant="primary">
               Share your resume
             </ButtonLink>
-            <JobAlertButton />
+            <JobAlertButton variant="secondary" />
           </div>
         </div>
       </Section>

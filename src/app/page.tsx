@@ -186,6 +186,7 @@ export default async function HomePage() {
                 </ButtonLink>
                 <ButtonLink
                   href="/get-hired"
+                  variant="secondary"
                   className="xl:!px-9 xl:!py-4.5 xl:!text-lg"
                 >
                   Find a job
@@ -508,6 +509,7 @@ export default async function HomePage() {
               </ButtonLink>
               <ButtonLink
                 href="/get-hired"
+                variant="secondary"
               >
                 Find a job
               </ButtonLink>

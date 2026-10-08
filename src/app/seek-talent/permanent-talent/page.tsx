@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import Section from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import FaqSplit from "@/components/ui/FaqSplit";
 import IndustriesShowcase from "@/components/home/IndustriesShowcase";
+import ServicePointRows, { PointList } from "@/components/seek-talent/ServicePointRows";
 import { getHiringServiceBySlug } from "@/content/hiringServices";
 import { getSiteImages } from "@/lib/siteImages";
 import { getHomepageTestimonials } from "@/lib/caseStudies";
@@ -117,20 +117,6 @@ function IconArrowRight({ className }: { className?: string }) {
   );
 }
 
-function IconCheck({ className }: { className?: string }) {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className={className}>
-      <path d="M20 7 9 18l-5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function Eyebrow({ children }: { children: string }) {
-  return (
-    <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">{children}</p>
-  );
-}
-
 const INLINE_LINK =
   "font-semibold text-navy underline decoration-steel/40 underline-offset-4 transition-colors hover:decoration-navy dark:text-cream dark:hover:decoration-cream";
 
@@ -188,6 +174,7 @@ export default async function PermanentTalentPage() {
           </ButtonLink>
           <ButtonLink
             href="/seek-talent"
+            variant="secondary"
             className="inline-flex items-center gap-2"
           >
             See all services
@@ -196,150 +183,98 @@ export default async function PermanentTalentPage() {
         </div>
       </Section>
 
-      {/* Sec 2 — Definition (featured-snippet target) */}
-      <Section background="white">
-        <div className="mx-auto max-w-3xl">
-          <Eyebrow>Definition</Eyebrow>
-          <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
-            What is direct hire staffing?
-          </h2>
-          <p className="mt-5 text-[19px] leading-[1.8] text-navy/75 dark:text-cream/75">
-            Direct hire staffing, also called permanent placement, is when a staffing agency finds a full-time
-            employee who joins your payroll from day one. The agency handles sourcing, screening and interview
-            coordination. You make the offer and the hire is yours. Mintex fills permanent roles in an average
-            of 9 days.
-          </p>
-        </div>
-      </Section>
-
-      {/* Sec 3 — The trade-off we refuse */}
-      <Section background="white">
-        <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
-          <div>
-            <Eyebrow>The trade-off we refuse</Eyebrow>
-            <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
-              Speed without settling
-            </h2>
-            <div className="mt-5 h-[3px] w-12 bg-steel" />
-            <p className="mt-6 text-[18px] leading-[1.85] text-navy/70 dark:text-cream/70">
-              Most permanent searches force a choice. Hire fast and risk a bad fit, or hold out for the right
-              person while the work piles up.
-            </p>
-            <p className="mt-4 text-[18px] leading-[1.85] text-navy/70 dark:text-cream/70">
-              We skip that choice by starting early. Our talent network is screened year-round, so a new search
-              starts with people we already know something about. Then we test for genuine fit: skills, track
-              record and how someone works with a team.
-            </p>
-          </div>
-
-          <div className="relative mx-auto w-full max-w-md">
-            <div aria-hidden="true" className="absolute -inset-3 rounded-[2rem] border border-navy/10 dark:border-white/10" />
-            <div className="relative aspect-[4/3] overflow-hidden rounded-[1.5rem] shadow-[0_20px_45px_-20px_rgba(0,48,96,0.25)]">
-              <Image
-                src={siteImages["seek-talent-service:permanent-talent:point-1-visual"]}
-                alt="Hiring manager interviewing a pre-screened candidate for a permanent role"
-                fill
-                sizes="(min-width: 640px) 448px, 100vw"
-                className="object-cover"
-              />
-            </div>
-          </div>
-        </div>
-      </Section>
-
-      {/* Sec 4 — What we handle */}
-      <Section background="white">
-        <div className="mx-auto max-w-2xl text-center">
-          <Eyebrow>What we handle</Eyebrow>
-          <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
-            What Mintex handles in a permanent search
-          </h2>
-        </div>
-        <ol className="mx-auto mt-11 grid max-w-5xl gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {PROCESS_STEPS.map((step, index) => (
-            <li
-              key={step.title}
-              className="rounded-2xl border border-navy/[0.08] bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)] dark:border-white/10 dark:bg-navy-800"
-            >
-              <span
-                aria-hidden="true"
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-navy text-sm font-semibold text-white dark:bg-steel dark:text-navy-950"
-              >
-                {index + 1}
-              </span>
-              <p className="mt-4 text-[17px] leading-[1.7] text-navy/70 dark:text-cream/70">
-                <strong className="font-semibold text-navy dark:text-cream">{step.title}</strong> {step.text}
+      {/* Sec 2 — Content in the original service-template design: one
+          photo + card row per topic (definition first: featured-snippet
+          target), "Let's talk" in the last card. */}
+      <ServicePointRows
+        slug="permanent-talent"
+        siteImages={siteImages}
+        points={[
+          {
+            title: "What is direct hire staffing?",
+            imageAlt: "Hiring manager interviewing a pre-screened candidate for a permanent role",
+            body: (
+              <p>
+                Direct hire staffing, also called permanent placement, is when a staffing agency finds a full-time
+                employee who joins your payroll from day one. The agency handles sourcing, screening and interview
+                coordination. You make the offer and the hire is yours. Mintex fills permanent roles in an average
+                of 9 days.
               </p>
-            </li>
-          ))}
-        </ol>
-      </Section>
+            ),
+          },
+          {
+            title: "Speed without settling",
+            imageAlt: "Mintex Staffing recruiters reviewing a shortlist for a permanent search",
+            body: (
+              <>
+                <p>
+                  Most permanent searches force a choice. Hire fast and risk a bad fit, or hold out for the right
+                  person while the work piles up.
+                </p>
+                <p>
+                  We skip that choice by starting early. Our talent network is screened year-round, so a new search
+                  starts with people we already know something about. Then we test for genuine fit: skills, track
+                  record and how someone works with a team.
+                </p>
+              </>
+            ),
+          },
+          {
+            title: "What Mintex handles in a permanent search",
+            imageAlt: "Recruiter coordinating interviews for a permanent placement",
+            body: (
+              <PointList
+                items={PROCESS_STEPS.map((step) => (
+                  <>
+                    <strong>{step.title}</strong> {step.text}
+                  </>
+                ))}
+              />
+            ),
+          },
+          {
+            title: "Permanent placement is right for you if…",
+            imageAlt: "Growing team adding a long-term hire through Mintex Staffing",
+            body: (
+              <>
+                <PointList items={RIGHT_FOR_YOU_IF} />
+                <p className="!mt-3">
+                  Not sure yet?{" "}
+                  <Link href="/seek-talent/contract-talent#contract-to-hire" className={INLINE_LINK}>
+                    Contract-to-hire
+                  </Link>{" "}
+                  lets you see the work first.
+                </p>
+              </>
+            ),
+          },
+          {
+            title: "Results employers have seen",
+            imageAlt: "Employer team that filled permanent roles with Mintex Staffing",
+            body: (
+              <>
+                <figure>
+                  <blockquote>
+                    <p className="italic">&ldquo;{story.quote}&rdquo;</p>
+                  </blockquote>
+                  <figcaption className="mt-1.5 text-[13px]">
+                    <strong>{story.author}</strong>
+                    {story.role && <span>, {story.role}</span>}
+                  </figcaption>
+                </figure>
+                <p>
+                  <strong>93%</strong> of our clients come back for their next hire.
+                </p>
+              </>
+            ),
+          },
+        ]}
+      />
 
-      {/* Sec 5 — Who it's for */}
-      <Section background="white">
-        <div className="mx-auto max-w-3xl">
-          <div className="text-center">
-            <Eyebrow>Who it&apos;s for</Eyebrow>
-            <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
-              Permanent placement is right for you if…
-            </h2>
-          </div>
-          <ul className="mt-10 space-y-3.5">
-            {RIGHT_FOR_YOU_IF.map((item) => (
-              <li
-                key={item}
-                className="flex items-start gap-4 rounded-2xl border border-navy/[0.08] bg-white p-5 shadow-[0_1px_3px_rgba(0,48,96,0.05)] dark:border-white/10 dark:bg-navy-800"
-              >
-                <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-steel/15 text-steel dark:text-steel-light">
-                  <IconCheck className="h-4 w-4" />
-                </span>
-                <p className="pt-0.5 text-[17px] leading-relaxed text-navy/75 dark:text-cream/75">{item}</p>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-8 text-center text-[18px] text-steel dark:text-steel-light">
-            Not sure yet?{" "}
-            <Link href="/seek-talent/contract-talent#contract-to-hire" className={INLINE_LINK}>
-              Contract-to-hire
-            </Link>{" "}
-            lets you see the work first.
-          </p>
-        </div>
-      </Section>
-
-      {/* Sec 6 — Industries: same card design as the homepage */}
+      {/* Sec 3 — Industries: same card design as the homepage */}
       <IndustriesShowcase title="Permanent hires across {count} industries" />
 
-      {/* Sec 7 — Proof */}
-      <Section background="white">
-        <div className="mx-auto max-w-2xl text-center">
-          <Eyebrow>Proof</Eyebrow>
-          <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
-            Results employers have seen
-          </h2>
-        </div>
-        <div className="mx-auto mt-11 grid max-w-5xl items-stretch gap-6 lg:grid-cols-[1.6fr_1fr]">
-          <figure className="flex flex-col rounded-[24px] bg-white p-8 shadow-[0_15px_35px_-10px_rgba(0,48,96,0.08)] dark:bg-navy-800">
-            <blockquote>
-              <p className="text-[20px] font-light leading-[1.55] text-navy sm:text-[22px] dark:text-cream">
-                &ldquo;{story.quote}&rdquo;
-              </p>
-            </blockquote>
-            <figcaption className="mt-auto border-t border-navy/10 pt-5 text-[14px] dark:border-white/10">
-              <span className="block font-semibold text-navy dark:text-cream">{story.author}</span>
-              {story.role && <span className="block text-navy/55 dark:text-cream/55">{story.role}</span>}
-            </figcaption>
-          </figure>
-          <div className="flex flex-col justify-center rounded-[24px] bg-navy p-8 text-white dark:bg-steel dark:text-navy-950">
-            <p className="font-heading text-[56px] font-bold leading-none">93%</p>
-            <p className="mt-3 text-[18px] leading-snug text-white/85 dark:text-navy-950/80">
-              of our clients come back for their next hire.
-            </p>
-          </div>
-        </div>
-      </Section>
-
-      {/* Sec 8 — FAQ (also feeds the FAQPage schema above) */}
+      {/* Sec 4 — FAQ (also feeds the FAQPage schema above) */}
       <Section background="white">
         <FaqSplit
           title="Permanent placement FAQ"
@@ -348,7 +283,7 @@ export default async function PermanentTalentPage() {
         />
       </Section>
 
-      {/* Sec 9 — Closing CTA */}
+      {/* Sec 5 — Closing CTA */}
       <Section background="mist">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-heading text-[38px] font-bold leading-tight text-navy sm:text-[46px] dark:text-cream">

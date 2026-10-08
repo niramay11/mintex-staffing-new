@@ -40,6 +40,13 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   if (body.marketContext !== undefined)       updates.market_context = String(body.marketContext).trim();
   if (body.engagementModels !== undefined)    updates.engagement_models = String(body.engagementModels).trim();
   if (body.sortOrder !== undefined)           updates.sort_order = Number(body.sortOrder) || 0;
+  if (body.metaDescription !== undefined)     updates.meta_description = String(body.metaDescription).trim() || null;
+  if (body.seoTitle !== undefined)            updates.seo_title = String(body.seoTitle).trim() || null;
+  if (body.shortName !== undefined)           updates.short_name = String(body.shortName).trim() || null;
+  if (body.ctaLabel !== undefined)            updates.cta_label = String(body.ctaLabel).trim() || null;
+  if (body.introHeading !== undefined)        updates.intro_heading = String(body.introHeading).trim() || null;
+  if (body.closingCtaTitle !== undefined)     updates.closing_cta_title = String(body.closingCtaTitle).trim() || null;
+  if (body.closingCtaBody !== undefined)      updates.closing_cta_body = String(body.closingCtaBody).trim() || null;
 
   if (!updates.slug || updates.slug === "") delete updates.slug;
 

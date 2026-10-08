@@ -151,6 +151,7 @@ export default async function HiringServicePage({
           </ButtonLink>
           <ButtonLink
             href="/seek-talent"
+            variant="secondary"
             className="inline-flex items-center gap-2"
           >
             See all services

@@ -3,7 +3,7 @@ import type { CeipalJob } from "./types";
 import JobPageApply from "./JobPageApply";
 import { fmtPay, fmtPosted, isNewJob, jobLocation, jobType, jobUrlSlug, remoteBadge } from "./utils";
 import { IconArrowRight, IconBriefcase, IconCalendar, IconFlag, IconInfo, IconTag } from "./icons";
-import { PRIMARY_BUTTON_COLORS } from "@/components/ui/Button";
+import { PRIMARY_BUTTON_COLORS, SECONDARY_BUTTON_COLORS } from "@/components/ui/Button";
 
 // Standalone copy of the skeuomorphic job card from the /get-hired job board
 // (JobBoard.tsx), for lists outside the board — e.g. "More open roles" on a
@@ -77,7 +77,7 @@ export default function JobCard({ job }: { job: CeipalJob }) {
       <div className="mt-auto flex items-center gap-2">
         <Link
           href={href}
-          className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-full px-3 py-2 text-[12.5px] font-semibold transition-all ${PRIMARY_BUTTON_COLORS}`}
+          className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-full px-3 py-2 text-[12.5px] font-semibold transition-all ${SECONDARY_BUTTON_COLORS}`}
         >
           <IconInfo className="h-3.5 w-3.5" />
           Details

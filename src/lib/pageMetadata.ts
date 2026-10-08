@@ -17,14 +17,16 @@ function truncateDescription(text: string, maxLength = META_DESCRIPTION_MAX_LENG
 
 const TITLE_MAX_LENGTH = 60;
 const BRAND_SUFFIX = " | Mintex Staffing";
+const SHORT_BRAND_SUFFIX = " | Mintex";
 
 // Google cuts <title> off at ~60 chars and Ahrefs flags anything longer.
 // Keep the layout's "%s | Mintex Staffing" template when it fits; otherwise
-// drop the brand suffix, and if the bare title is still too long, cut it at
-// the last full word inside the limit. Returns undefined when the normal
-// template already fits.
+// fall back to the short " | Mintex" brand, then drop the brand, and if the
+// bare title is still too long, cut it at the last full word inside the
+// limit. Returns undefined when the normal template already fits.
 function fitTitle(title: string): string | undefined {
   if (title.length + BRAND_SUFFIX.length <= TITLE_MAX_LENGTH) return undefined;
+  if (title.length + SHORT_BRAND_SUFFIX.length <= TITLE_MAX_LENGTH) return `${title}${SHORT_BRAND_SUFFIX}`;
   if (title.length <= TITLE_MAX_LENGTH) return title;
   const cut = title.slice(0, TITLE_MAX_LENGTH);
   const lastSpace = cut.lastIndexOf(" ");

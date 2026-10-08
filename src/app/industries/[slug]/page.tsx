@@ -7,6 +7,8 @@ import Section from "@/components/ui/Section";
 import JobCard from "@/components/jobs/JobCard";
 import IndustryAccordion from "@/components/industries/IndustryAccordion";
 import FeatureCard from "@/components/ui/FeatureCard";
+import { ButtonLink } from "@/components/ui/Button";
+import { IconArrowRight } from "@/components/jobs/icons";
 import { getIndustries, getIndustryBySlug } from "@/lib/industries";
 import { pageMetadata } from "@/lib/pageMetadata";
 import { getSiteImages } from "@/lib/siteImages";
@@ -73,11 +75,13 @@ export async function generateMetadata({
   const industry = await getIndustryBySlug(slug);
   if (!industry) return {};
 
-  return pageMetadata({
+  const metadata = pageMetadata({
     title: industry.heroTitle,
-    description: industry.seoSubheading,
+    description: industry.metaDescription || industry.seoSubheading,
     path: `/industries/${industry.slug}`,
   });
+  // Admin-set exact title (brand included) wins over the H1-based one.
+  return industry.seoTitle ? { ...metadata, title: { absolute: industry.seoTitle } } : metadata;
 }
 
 export default async function IndustryPage({
@@ -95,11 +99,28 @@ export default async function IndustryPage({
     .slice(0, MAX_ROLES_SHOWN);
 
   const achievements = industry.stats;
-  const [testimonials, siteImages, allIndustries] = await Promise.all([
+  const [allTestimonials, siteImages, allIndustries] = await Promise.all([
     getHomepageTestimonials(),
     getSiteImages(),
     getIndustries(),
   ]);
+  // Only this industry's own testimonials once any are tagged to it in admin
+  // (a testimonial can be tagged to several, comma separated). An industry
+  // with none of its own shows only the untagged, general ones — never a
+  // quote tagged to another industry (e.g. a nursing quote on the admin page).
+  // The section hides itself when that leaves none.
+  const testimonialSlugs = (story: (typeof allTestimonials)[number]) =>
+    (story.industry_slug ?? "").split(",").map((slug) => slug.trim()).filter(Boolean);
+  const ownTestimonials = allTestimonials.filter((story) => testimonialSlugs(story).includes(industry.slug));
+  const testimonials =
+    ownTestimonials.length > 0
+      ? ownTestimonials
+      : allTestimonials.filter((story) => testimonialSlugs(story).length === 0);
+  // Every industry name ends in "Staffing" ("IT Staffing"), which reads badly
+  // in "Open IT Staffing roles", so headings use the short form: the admin
+  // short name when set, else the name minus "Staffing".
+  const shortName = industry.shortName || industry.name.replace(/\s+Staffing$/i, "");
+  const ctaLabel = industry.ctaLabel || `Hire ${industry.name} Talent`;
   // Same photo (and same fallback-by-index) this industry uses on the home
   // page and the /industries banner, so it's one image to manage in admin.
   const industryIndex = Math.max(0, allIndustries.findIndex((i) => i.slug === industry.slug));
@@ -114,7 +135,7 @@ export default async function IndustryPage({
     "@type": "Service",
     serviceType: industry.name,
     name: industry.heroTitle,
-    description: industry.seoSubheading,
+    description: industry.metaDescription || industry.seoSubheading,
     provider: { "@id": `${SITE_URL}/#business` },
   };
 
@@ -185,7 +206,7 @@ export default async function IndustryPage({
                 href="/seek-talent/get-started"
                 className="group mt-8 inline-flex items-center gap-3 rounded-full bg-white py-2 pl-6 pr-2 text-[14.5px] font-semibold text-navy transition-colors hover:bg-cream"
               >
-                Hire {industry.name} Talent
+                {ctaLabel}
                 <span className="flex h-9 w-9 items-center justify-center rounded-full bg-navy text-white transition-transform duration-300 group-hover:translate-x-0.5">
                   <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
                     <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
@@ -197,17 +218,32 @@ export default async function IndustryPage({
         </div>
       </Section>
 
+      {/* Intro under its own H2 (a featured-snippet target), when the
+          industry has an intro heading set; otherwise the intro stays under
+          the Open Roles heading as before. */}
+      {industry.introHeading && (
+        <Section background="white" className="!border-t-0">
+          <SectionLabel>Overview</SectionLabel>
+          <h2 className="mt-5 max-w-[760px] font-heading text-[32px] font-bold leading-[1.1] text-navy sm:text-[36px] dark:text-cream">
+            {industry.introHeading}
+          </h2>
+          <p className="mt-5 max-w-[760px] text-[16px] leading-[1.7] text-navy/75 dark:text-cream/75">{industry.intro}</p>
+        </Section>
+      )}
+
       {/* Sec 2 — Open roles. Heading + "View All Jobs" on one row, intro
           directly under the heading; job cards unchanged. */}
       <Section background="white" className="!border-t-0">
         <SectionLabel>Open Roles</SectionLabel>
         <div className="mt-5 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-          <TwoToneHeading lead={`Open ${industry.name} roles`} muted="hiring right now" />
+          <TwoToneHeading lead={`Open ${shortName} roles`} muted="hiring right now" />
           <ArrowLink href="/get-hired" className="flex-shrink-0">
             View All Jobs
           </ArrowLink>
         </div>
-        <p className="mt-5 max-w-[760px] text-[16px] leading-[1.7] text-navy/75 dark:text-cream/75">{industry.intro}</p>
+        {!industry.introHeading && (
+          <p className="mt-5 max-w-[760px] text-[16px] leading-[1.7] text-navy/75 dark:text-cream/75">{industry.intro}</p>
+        )}
         {openRoles.length > 0 ? (
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {openRoles.map((job) => (
@@ -230,7 +266,7 @@ export default async function IndustryPage({
         <div className="mt-5 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <TwoToneHeading lead={`Hiring ${industry.name},`} muted="explained in depth" />
           <ArrowLink href="/seek-talent/get-started" className="flex-shrink-0">
-            Hire {industry.name} Talent
+            {ctaLabel}
           </ArrowLink>
         </div>
 
@@ -253,7 +289,7 @@ export default async function IndustryPage({
                 total={all.length}
                 footerLabel={`Mintex · ${industry.name}`}
                 href="/seek-talent/get-started"
-                linkLabel={`Hire ${industry.name} talent: ${title}`}
+                linkLabel={`${ctaLabel}: ${title}`}
               >
                 {rest}
               </FeatureCard>
@@ -336,6 +372,29 @@ export default async function IndustryPage({
           </div>
         </div>
       </Section>
+
+      {/* Closing CTA — same layout as the /seek-talent service pages; only
+          shown when the industry has a closing CTA title set. */}
+      {industry.closingCta.title && (
+        <Section background="mist">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="font-heading text-[38px] font-bold leading-tight text-navy sm:text-[46px] dark:text-cream">
+              {industry.closingCta.title}
+            </h2>
+            {industry.closingCta.body && (
+              <p className="mt-4 text-[19px] leading-relaxed text-steel dark:text-steel-light">
+                {industry.closingCta.body}
+              </p>
+            )}
+            <div className="mt-8 flex justify-center">
+              <ButtonLink href="/seek-talent/get-started" variant="primary" className="inline-flex items-center gap-2">
+                {ctaLabel}
+                <IconArrowRight className="h-4 w-4" />
+              </ButtonLink>
+            </div>
+          </div>
+        </Section>
+      )}
     </>
   );
 }

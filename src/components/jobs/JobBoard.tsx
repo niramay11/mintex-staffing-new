@@ -20,7 +20,7 @@ import {
   remoteBadge,
 } from "./utils";
 import { IconArrowRight, IconBars, IconBell, IconBriefcase, IconCalendar, IconChevron, IconFlag, IconInfo, IconSearch } from "./icons";
-import { PRIMARY_BUTTON_COLORS } from "@/components/ui/Button";
+import { PRIMARY_BUTTON_COLORS, SECONDARY_BUTTON_COLORS } from "@/components/ui/Button";
 
 const PAGE_SIZE = 9; // 3 full rows of 3 on desktop
 
@@ -742,7 +742,7 @@ export default function JobBoard({ initialJobs, initialDescriptions }: JobBoardP
                       <div className="mt-auto flex items-center gap-2.5 pt-1">
                         <Link
                           href={`/get-hired/jobs/${jobUrlSlug(job)}`}
-                          className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-full px-4 py-2.5 text-[13.5px] font-semibold transition-all ${PRIMARY_BUTTON_COLORS}`}
+                          className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-full px-4 py-2.5 text-[13.5px] font-semibold transition-all ${SECONDARY_BUTTON_COLORS}`}
                         >
                           <IconInfo className="h-3.5 w-3.5" />
                           View details

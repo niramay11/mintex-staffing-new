@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import Section from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/Button";
 import FaqSplit from "@/components/ui/FaqSplit";
 import IndustriesShowcase from "@/components/home/IndustriesShowcase";
+import ServicePointRows, { PointList, PointTags } from "@/components/seek-talent/ServicePointRows";
 import { getHiringServiceBySlug } from "@/content/hiringServices";
 import { getSiteImages } from "@/lib/siteImages";
 import { pageMetadata } from "@/lib/pageMetadata";
@@ -115,12 +115,6 @@ function IconArrowRight({ className }: { className?: string }) {
   );
 }
 
-function Eyebrow({ children }: { children: string }) {
-  return (
-    <p className="text-[14.5px] font-semibold uppercase tracking-[0.14em] text-steel dark:text-steel-light">{children}</p>
-  );
-}
-
 export default async function ContractTalentPage() {
   const siteImages = await getSiteImages();
   const ServiceIcon = getHiringServiceBySlug("contract-talent")?.icon;
@@ -171,6 +165,7 @@ export default async function ContractTalentPage() {
           </ButtonLink>
           <ButtonLink
             href="/seek-talent"
+            variant="secondary"
             className="inline-flex items-center gap-2"
           >
             See all services
@@ -179,134 +174,78 @@ export default async function ContractTalentPage() {
         </div>
       </Section>
 
-      {/* Sec 2 — Definition (featured-snippet target: a self-contained
-          answer paragraph directly under the question H2) */}
-      <Section background="white">
-        <div className="mx-auto max-w-3xl">
-          <Eyebrow>Definition</Eyebrow>
-          <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
-            What is contract staffing?
-          </h2>
-          <p className="mt-5 text-[19px] leading-[1.8] text-navy/75 dark:text-cream/75">
-            Contract staffing means bringing in a skilled professional for a set period, such as a project, a
-            busy season or a leave of absence, without adding permanent headcount. Mintex finds, screens and
-            places the contractor. If the fit is right, many contracts convert to permanent hires.
-          </p>
-        </div>
-      </Section>
-
-      {/* Sec 3 — When to use it */}
-      <Section background="white">
-        <div className="mx-auto max-w-2xl text-center">
-          <Eyebrow>When to use it</Eyebrow>
-          <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
-            When contract talent makes sense
-          </h2>
-        </div>
-        <ul className="mx-auto mt-11 grid max-w-5xl gap-5 sm:grid-cols-2">
-          {USE_CASES.map((useCase) => (
-            <li
-              key={useCase.title}
-              className="rounded-2xl border border-navy/[0.08] bg-white p-7 shadow-[0_1px_3px_rgba(0,48,96,0.05)] transition-all duration-300 hover:-translate-y-1 hover:border-steel/40 hover:shadow-[0_20px_45px_-24px_rgba(1,35,64,0.3)] dark:border-white/10 dark:bg-navy-800"
-            >
-              <div className="h-[3px] w-6 bg-steel" />
-              <p className="mt-4 text-[17px] leading-[1.7] text-navy/70 dark:text-cream/70">
-                <strong className="font-semibold text-navy dark:text-cream">{useCase.title}</strong> {useCase.text}
+      {/* Sec 2 — Content in the original service-template design: one
+          photo + card row per topic (definition first: featured-snippet
+          target), "Let's talk" in the last card. */}
+      <ServicePointRows
+        slug="contract-talent"
+        siteImages={siteImages}
+        points={[
+          {
+            title: "What is contract staffing?",
+            imageAlt: "Mintex Staffing recruiter discussing a contract placement with a client",
+            body: (
+              <p>
+                Contract staffing means bringing in a skilled professional for a set period, such as a project, a
+                busy season or a leave of absence, without adding permanent headcount. Mintex finds, screens and
+                places the contractor. If the fit is right, many contracts convert to permanent hires.
               </p>
-            </li>
-          ))}
-        </ul>
-      </Section>
-
-      {/* Sec 4 — Contract-to-hire (anchor target from /seek-talent's model card) */}
-      <Section background="white" id="contract-to-hire" className="scroll-mt-24">
-        <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
-          <div>
-            <Eyebrow>Contract-to-hire</Eyebrow>
-            <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
-              Contract-to-hire: see the work before you make the offer
-            </h2>
-            <div className="mt-5 h-[3px] w-12 bg-steel" />
-            <p className="mt-6 text-[18px] leading-[1.85] text-navy/70 dark:text-cream/70">
-              Interviews tell you how someone talks about their work. A contract shows you the work.
-            </p>
-            <p className="mt-4 text-[18px] leading-[1.85] text-navy/70 dark:text-cream/70">
-              With contract-to-hire, your new team member starts on contract. You both get time to confirm the
-              fit. When you&apos;re ready, you convert them to a permanent employee, and we handle the
-              transition.
-            </p>
-          </div>
-
-          <div className="relative mx-auto w-full max-w-md">
-            <div aria-hidden="true" className="absolute -inset-3 rounded-[2rem] border border-navy/10 dark:border-white/10" />
-            <div className="relative aspect-[4/3] overflow-hidden rounded-[1.5rem] shadow-[0_20px_45px_-20px_rgba(0,48,96,0.25)]">
-              <Image
-                src={siteImages["seek-talent-service:contract-talent:point-3-visual"]}
-                alt="Contract hire working alongside a client team before converting to a permanent role"
-                fill
-                sizes="(min-width: 640px) 448px, 100vw"
-                className="object-cover"
+            ),
+          },
+          {
+            title: "When contract talent makes sense",
+            imageAlt: "Contract professional joining a client team for a project",
+            body: (
+              <PointList
+                items={USE_CASES.map((useCase) => (
+                  <>
+                    <strong>{useCase.title}</strong> {useCase.text}
+                  </>
+                ))}
               />
-            </div>
-          </div>
-        </div>
-      </Section>
+            ),
+          },
+          {
+            id: "contract-to-hire",
+            title: "Contract-to-hire: see the work before you make the offer",
+            imageAlt: "Contract hire working alongside a client team before converting to a permanent role",
+            body: (
+              <>
+                <p>Interviews tell you how someone talks about their work. A contract shows you the work.</p>
+                <p>
+                  With contract-to-hire, your new team member starts on contract. You both get time to confirm the
+                  fit. When you&apos;re ready, you convert them to a permanent employee, and we handle the
+                  transition.
+                </p>
+              </>
+            ),
+          },
+          {
+            title: "W-2, 1099 or corp-to-corp",
+            imageAlt: "Mintex Staffing team reviewing contractor engagement options",
+            body: (
+              <>
+                <p>
+                  Mintex started in IT staffing and has placed contractors under every common arrangement: W-2,
+                  1099, corp-to-corp (C2C) and full-time. We&apos;ll recommend the one that fits the role and your
+                  compliance requirements.
+                </p>
+                <PointTags items={ENGAGEMENT_TYPES} label="Arrangements we support" />
+              </>
+            ),
+          },
+          {
+            title: "What you get with Mintex contract staffing",
+            imageAlt: "Mintex Staffing recruiters reviewing candidates for contract talent placements",
+            body: <PointList items={INCLUDED} />,
+          },
+        ]}
+      />
 
-      {/* Sec 5 — Engagement types */}
-      <Section background="white">
-        <div className="mx-auto max-w-3xl text-center">
-          <Eyebrow>Engagement types</Eyebrow>
-          <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
-            W-2, 1099 or corp-to-corp
-          </h2>
-          <p className="mt-5 text-[18px] leading-[1.85] text-navy/70 dark:text-cream/70">
-            Mintex started in IT staffing and has placed contractors under every common arrangement: W-2, 1099,
-            corp-to-corp (C2C) and full-time. We&apos;ll recommend the one that fits the role and your compliance
-            requirements.
-          </p>
-          <ul aria-label="Arrangements we support" className="mt-7 flex flex-wrap justify-center gap-3">
-            {ENGAGEMENT_TYPES.map((type) => (
-              <li
-                key={type}
-                className="rounded-full border border-navy/10 bg-white px-5 py-2 text-[15px] font-semibold text-navy dark:border-white/10 dark:bg-navy-800 dark:text-cream"
-              >
-                {type}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </Section>
-
-      {/* Sec 6 — What's included */}
-      <Section background="white">
-        <div className="mx-auto max-w-2xl text-center">
-          <Eyebrow>What&apos;s included</Eyebrow>
-          <h2 className="mt-3.5 font-heading text-[32px] font-bold leading-tight text-navy sm:text-[36px] dark:text-cream">
-            What you get with Mintex contract staffing
-          </h2>
-        </div>
-        <ol className="mx-auto mt-11 max-w-3xl space-y-4">
-          {INCLUDED.map((item, index) => (
-            <li
-              key={item}
-              className="flex items-start gap-4 rounded-2xl border border-navy/[0.08] bg-white p-5 shadow-[0_1px_3px_rgba(0,48,96,0.05)] sm:p-6 dark:border-white/10 dark:bg-navy-800"
-            >
-              <span
-                aria-hidden="true"
-                className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-navy text-sm font-semibold text-white dark:bg-steel dark:text-navy-950"
-              >
-                {index + 1}
-              </span>
-              <p className="pt-0.5 text-[17px] leading-relaxed text-navy/70 dark:text-cream/70">{item}</p>
-            </li>
-          ))}
-        </ol>
-      </Section>
-
-      {/* Sec 7 — Industries: same card design as the homepage */}
+      {/* Sec 3 — Industries: same card design as the homepage */}
       <IndustriesShowcase title="Contract talent across {count} industries" />
 
-      {/* Sec 8 — FAQ (also feeds the FAQPage schema above) */}
+      {/* Sec 4 — FAQ (also feeds the FAQPage schema above) */}
       <Section background="white">
         <FaqSplit
           title="Contract staffing FAQ"
@@ -315,7 +254,7 @@ export default async function ContractTalentPage() {
         />
       </Section>
 
-      {/* Sec 9 — Closing CTA */}
+      {/* Sec 5 — Closing CTA */}
       <Section background="mist">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-heading text-[38px] font-bold leading-tight text-navy sm:text-[46px] dark:text-cream">

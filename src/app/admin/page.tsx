@@ -3146,6 +3146,25 @@ function slugify(title: string): string {
   return (meaningful.length > 0 ? meaningful : words).slice(0, SLUG_MAX_WORDS).join("-");
 }
 
+// Live formatting for a hand-typed or pasted slug: lowercase, spaces and
+// underscores become dashes, anything else that isn't a-z/0-9/dash is
+// dropped. A trailing dash is kept so the admin can keep typing the next
+// word; cleanSlug (on save) trims it. A pasted title like "The $100,000 H-1B
+// fee…" becomes "the-100000-h-1b-fee…" instead of a URL that 404s.
+function formatSlugInput(value: string): string {
+  return value
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\s_]+/g, "-")
+    .replace(/[^a-z0-9-]/g, "")
+    .replace(/-{2,}/g, "-")
+    .replace(/^-+/, "");
+}
+
+function cleanSlug(value: string): string {
+  return formatSlugInput(value).replace(/-+$/, "");
+}
+
 type InsightSourceRow = { label: string; url: string };
 
 type InsightDraft = {
@@ -3253,6 +3272,9 @@ function InsightsTab({ password }: { password: string }) {
   const [saving, setSaving]     = useState(false);
   const [saveError, setSaveError] = useState("");
   const [slugTouched, setSlugTouched] = useState(false);
+  // Symbols the admin typed/pasted into the Slug field that were stripped
+  // out, shown as a warning so the change isn't silent.
+  const [slugRemoved, setSlugRemoved] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const [uploadingAuthorPhoto, setUploadingAuthorPhoto] = useState(false);
@@ -3275,8 +3297,8 @@ function InsightsTab({ password }: { password: string }) {
   // The category is typed as free text in the editor; null means "not
   // edited yet — show the post's current category label".
   const [categoryText, setCategoryText] = useState<string | null>(null);
-  const openNew = () => { setSlugTouched(false); setSaveError(""); setCategoryText(""); setDraft(blankDraft("")); };
-  const openEdit = (post: InsightPost) => { setSlugTouched(true); setSaveError(""); setCategoryText(null); setDraft(toDraft(post)); };
+  const openNew = () => { setSlugTouched(false); setSlugRemoved(""); setSaveError(""); setCategoryText(""); setDraft(blankDraft("")); };
+  const openEdit = (post: InsightPost) => { setSlugTouched(true); setSlugRemoved(""); setSaveError(""); setCategoryText(null); setDraft(toDraft(post)); };
   const closeEditor = () => setDraft(null);
 
   const updateDraft = (patch: Partial<InsightDraft>) => setDraft((d) => (d ? { ...d, ...patch } : d));
@@ -3336,7 +3358,7 @@ function InsightsTab({ password }: { password: string }) {
     const sourcesLine = formatSourcesLine(draft.sources);
     if (sourcesLine) bodyParagraphs.push(sourcesLine);
     const payload = {
-      slug: draft.slug.trim() || slugify(draft.title),
+      slug: cleanSlug(draft.slug) || slugify(draft.title),
       category: categorySlug,
       title: draft.title.trim(),
       excerpt: draft.excerpt.trim(),
@@ -3495,8 +3517,25 @@ function InsightsTab({ password }: { password: string }) {
                 <div>
                   <label className="block text-xs font-semibold text-navy/60 mb-1">Slug</label>
                   <input required value={draft.slug}
-                    onChange={(e) => { setSlugTouched(true); updateDraft({ slug: e.target.value }); }}
+                    onChange={(e) => {
+                      const raw = e.target.value;
+                      const removed = [...new Set(raw.replace(/[A-Za-z0-9\s_-]/g, ""))].join(" ");
+                      if (removed) setSlugRemoved(removed);
+                      setSlugTouched(true);
+                      updateDraft({ slug: formatSlugInput(raw) });
+                    }}
+                    onBlur={() => updateDraft({ slug: cleanSlug(draft.slug) })}
+                    placeholder="e.g. h1b-fee-struck-down"
                     className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm font-mono focus:border-steel focus:outline-none" />
+                  <p className="text-xs text-navy/50 mt-1">
+                    The page URL. Use only lowercase letters, numbers and dashes (-). Symbols like $ , . &apos; ? # % &amp; and
+                    emoji are not allowed and are removed automatically; spaces become dashes. The post title can still use any symbol.
+                  </p>
+                  {slugRemoved && (
+                    <p className="mt-1.5 rounded-md bg-amber-50 px-2.5 py-1.5 text-xs font-medium text-amber-800">
+                      ⚠ Removed from the URL: <span className="font-mono">{slugRemoved}</span>. Symbols can&apos;t be used in a URL.
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-navy/60 mb-1">Category</label>
@@ -3661,17 +3700,18 @@ const CASE_STUDY_TYPES: { value: CaseStudyType; label: string }[] = [
 
 type CaseStudyDraft = {
   id?: string; type: CaseStudyType; title: string; quote: string;
-  author: string; role: string; video_url: string; thumbnail_url: string;
+  author: string; role: string; video_url: string; thumbnail_url: string; industry_slug: string;
 };
 
 const BLANK_CASE_STUDY: CaseStudyDraft = {
-  type: "client", title: "", quote: "", author: "", role: "", video_url: "", thumbnail_url: "",
+  type: "client", title: "", quote: "", author: "", role: "", video_url: "", thumbnail_url: "", industry_slug: "",
 };
 
 function toCaseStudyDraft(cs: CaseStudy): CaseStudyDraft {
   return {
     id: cs.id, type: cs.type, title: cs.title, quote: cs.quote, author: cs.author,
     role: cs.role ?? "", video_url: cs.video_url ?? "", thumbnail_url: cs.thumbnail_url ?? "",
+    industry_slug: cs.industry_slug ?? "",
   };
 }
 
@@ -3733,6 +3773,7 @@ function CaseStudiesTab({ password }: { password: string }) {
       role: draft.role.trim() || null,
       video_url: draft.video_url.trim() || null,
       thumbnail_url: draft.thumbnail_url.trim() || null,
+      industry_slug: draft.industry_slug.trim() || null,
     };
 
     const isEdit = Boolean(draft.id);
@@ -3916,6 +3957,14 @@ function CaseStudiesTab({ password }: { password: string }) {
                 <input value={draft.thumbnail_url} onChange={(e) => updateDraft({ thumbnail_url: e.target.value })}
                   placeholder="Leave blank to auto-use the YouTube thumbnail, if applicable"
                   className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-navy/60 mb-1">Industry page(s) (optional)</label>
+                <input value={draft.industry_slug} onChange={(e) => updateDraft({ industry_slug: e.target.value })}
+                  placeholder="Industry slug(s), comma separated, e.g. it-staffing"
+                  className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                <p className="text-xs text-navy/40 mt-1">For more than one page, separate slugs with commas (e.g. engineering-staffing, manufacturing-staffing). An industry page shows only its own tagged testimonials; one with none of its own shows only the untagged (general) ones.</p>
               </div>
 
               {saveError && <p className="text-red-600 text-sm">{saveError}</p>}
@@ -4221,6 +4270,13 @@ type IndustryDraft = {
   vettingProcess: string;
   marketContext: string;
   engagementModels: string;
+  metaDescription: string;
+  seoTitle: string;
+  shortName: string;
+  ctaLabel: string;
+  introHeading: string;
+  closingCtaTitle: string;
+  closingCtaBody: string;
 };
 
 const BLANK_INDUSTRY: IndustryDraft = {
@@ -4228,6 +4284,7 @@ const BLANK_INDUSTRY: IndustryDraft = {
   sectorInsightTitle: "", sectorInsightBody: "", workStyle: "",
   jobKeywordsText: "", faqs: [], stats: [], typicalRoles: "", vettingProcess: "",
   marketContext: "", engagementModels: "",
+  metaDescription: "", seoTitle: "", shortName: "", ctaLabel: "", introHeading: "", closingCtaTitle: "", closingCtaBody: "",
 };
 
 function toIndustryDraft(ind: Industry): IndustryDraft {
@@ -4240,6 +4297,8 @@ function toIndustryDraft(ind: Industry): IndustryDraft {
     stats: ind.stats.length > 0 ? ind.stats : [],
     typicalRoles: ind.typicalRoles, vettingProcess: ind.vettingProcess,
     marketContext: ind.marketContext, engagementModels: ind.engagementModels,
+    metaDescription: ind.metaDescription, seoTitle: ind.seoTitle, shortName: ind.shortName, ctaLabel: ind.ctaLabel, introHeading: ind.introHeading,
+    closingCtaTitle: ind.closingCta.title, closingCtaBody: ind.closingCta.body,
   };
 }
 
@@ -4403,6 +4462,13 @@ function IndustriesTab({ password }: { password: string }) {
       vettingProcess: draft.vettingProcess.trim(),
       marketContext: draft.marketContext.trim(),
       engagementModels: draft.engagementModels.trim(),
+      metaDescription: draft.metaDescription.trim(),
+      seoTitle: draft.seoTitle.trim(),
+      shortName: draft.shortName.trim(),
+      ctaLabel: draft.ctaLabel.trim(),
+      introHeading: draft.introHeading.trim(),
+      closingCtaTitle: draft.closingCtaTitle.trim(),
+      closingCtaBody: draft.closingCtaBody.trim(),
     };
 
     const isEdit = Boolean(draft.id);
@@ -4558,6 +4624,47 @@ function IndustriesTab({ password }: { password: string }) {
                 </div>
               </div>
 
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-navy/60 mb-1">Meta description (optional)</label>
+                  <textarea rows={2} value={draft.metaDescription} onChange={(e) => updateDraft({ metaDescription: e.target.value })}
+                    className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                  <p className="text-xs text-navy/40 mt-1">Google snippet, ~155 chars max ({draft.metaDescription.length} now). Empty = uses the SEO Subheading.</p>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-navy/60 mb-1">Button label (optional)</label>
+                  <input value={draft.ctaLabel} onChange={(e) => updateDraft({ ctaLabel: e.target.value })}
+                    placeholder={`Hire ${draft.name || "…"} Talent`}
+                    className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                  <p className="text-xs text-navy/40 mt-1">Hero and closing buttons. Empty = &quot;Hire {draft.name || "…"} Talent&quot;.</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-navy/60 mb-1">SEO title (optional)</label>
+                  <input value={draft.seoTitle} onChange={(e) => updateDraft({ seoTitle: e.target.value })}
+                    placeholder="e.g. Finance & Accounting Staffing Agency in NJ | Mintex"
+                    className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                  <p className="text-xs text-navy/40 mt-1">Exact browser/Google title, brand included, ~60 chars max ({draft.seoTitle.length} now). Empty = Hero Title + &quot;| Mintex Staffing&quot;.</p>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-navy/60 mb-1">Short name (optional)</label>
+                  <input value={draft.shortName} onChange={(e) => updateDraft({ shortName: e.target.value })}
+                    placeholder="e.g. finance and accounting"
+                    className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                  <p className="text-xs text-navy/40 mt-1">Used in headings like &quot;Open … roles&quot;. Empty = the name without &quot;Staffing&quot;.</p>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-navy/60 mb-1">Intro heading (optional)</label>
+                <input value={draft.introHeading} onChange={(e) => updateDraft({ introHeading: e.target.value })}
+                  placeholder="e.g. What does an IT staffing agency do?"
+                  className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                <p className="text-xs text-navy/40 mt-1">When set, the intro paragraph shows under this heading in its own section, above Open Roles.</p>
+              </div>
+
               <div>
                 <label className="block text-xs font-semibold text-navy/60 mb-1">Intro paragraph</label>
                 <textarea required rows={3} value={draft.intro} onChange={(e) => updateDraft({ intro: e.target.value })}
@@ -4581,6 +4688,21 @@ function IndustriesTab({ password }: { password: string }) {
                 <label className="block text-xs font-semibold text-navy/60 mb-1">Sector Insight — Body</label>
                 <textarea required rows={2} value={draft.sectorInsightBody} onChange={(e) => updateDraft({ sectorInsightBody: e.target.value })}
                   className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-navy/60 mb-1">Closing CTA — Title (optional)</label>
+                  <input value={draft.closingCtaTitle} onChange={(e) => updateDraft({ closingCtaTitle: e.target.value })}
+                    placeholder="e.g. Need an engineer who can start soon?"
+                    className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                  <p className="text-xs text-navy/40 mt-1">Empty = no closing CTA section at the bottom of the page.</p>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-navy/60 mb-1">Closing CTA — Text</label>
+                  <textarea rows={2} value={draft.closingCtaBody} onChange={(e) => updateDraft({ closingCtaBody: e.target.value })}
+                    className="w-full px-3 py-2 rounded-lg bg-white text-navy border border-navy/10 text-sm focus:border-steel focus:outline-none" />
+                </div>
               </div>
 
               <div>

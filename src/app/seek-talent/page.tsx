@@ -189,6 +189,7 @@ export default async function SeekTalentPage() {
               </ButtonLink>
               <ButtonLink
                 href="/seek-talent/how-we-work"
+                variant="secondary"
               >
                 See how we work
               </ButtonLink>
