@@ -157,7 +157,7 @@ export default async function IndustryPage({
       {/* Sec 1 — Hero: rounded photo banner, same look as /industries */}
       <Section background="white" className="!border-t-0 !pb-0 !pt-6 sm:!pt-8">
         <div className="relative overflow-hidden rounded-[28px] bg-navy-950">
-          <Image src={heroImage} alt="" fill priority sizes="100vw" className="object-cover" />
+          <Image src={heroImage} alt={`${industry.name}: professionals placed by Mintex Staffing`} fill priority sizes="100vw" className="object-cover" />
           <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-r from-navy-950/85 via-navy-950/55 to-navy-950/10" />
           <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-navy-950/50 via-transparent to-transparent" />
 
@@ -331,7 +331,7 @@ export default async function IndustryPage({
 
         <div className="mt-10 grid gap-8 lg:grid-cols-2 lg:gap-10">
           <div className="relative min-h-[320px] overflow-hidden rounded-[24px] bg-navy-950 lg:min-h-[480px]">
-            <Image src={faqImage} alt="" fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
+            <Image src={faqImage} alt={`Mintex Staffing recruiter helping a client with ${industry.name}`} fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
             <span className="absolute left-4 top-4 rounded-full bg-white/25 px-3 py-1.5 text-[12px] font-medium text-white backdrop-blur-md">
               Mintex · {industry.name}
             </span>

@@ -378,7 +378,7 @@ export default async function AboutPage() {
                     {member.photo_url ? (
                       <Image
                         src={member.photo_url}
-                        alt={member.name}
+                        alt={member.title ? `${member.name}, ${member.title} at Mintex Staffing` : `${member.name}, Mintex Staffing`}
                         fill
                         quality={95}
                         sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"

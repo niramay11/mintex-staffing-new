@@ -66,6 +66,7 @@ const tools = [
     image: "resources:hiring-cost-card",
     position: "50% 45%",
     title: "Hiring Cost Calculator",
+    imageAlt: "Hiring Cost Calculator: compare in-house, staffing agency and executive search hiring costs",
     description: "Estimate your true cost-per-hire across ad spend, agency fees, and internal time.",
     tags: ["Ad spend", "Agency fees", "Internal time"],
     audience: "For employers",
@@ -75,6 +76,7 @@ const tools = [
     image: "resources:ai-interview-card",
     position: "88% 30%",
     title: "AI Interview Question Generator",
+    imageAlt: "AI Interview Question Generator: tailored interview questions by industry and role level",
     description: "Generate tailored interview questions by industry and role level.",
     tags: ["IT", "Healthcare", "Engineering"],
     audience: "For job seekers",
@@ -162,7 +164,7 @@ export default async function ResourcesPage() {
               <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[20px] bg-mist dark:bg-navy-900">
                 <Image
                   src={siteImages[tool.image]}
-                  alt=""
+                  alt={tool.imageAlt}
                   fill
                   sizes="(min-width: 1024px) 40vw, (min-width: 640px) 50vw, 100vw"
                   style={{ objectPosition: tool.position }}

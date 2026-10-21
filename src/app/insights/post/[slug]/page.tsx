@@ -11,6 +11,7 @@ import type { InsightPost } from "@/content/types";
 import { pageMetadata } from "@/lib/pageMetadata";
 import { SITE_URL } from "@/lib/site";
 import { resolveCtaHref } from "@/lib/insightCtaRoutes";
+import { splitParagraphBreaks, toSiteRelativeHref } from "@/lib/insightBodyHtml";
 
 export const revalidate = 60;
 
@@ -121,6 +122,18 @@ function normalizeCtaButtons(html: string): string {
   });
 }
 
+// Two or more buttons in a row sit side by side (wrapping on narrow
+// screens) instead of stacking with a full paragraph gap between each.
+const CTA_BUTTON_PARAGRAPH = String.raw`<p[^>]*>\s*<a\b[^>]*\bclass="cta-button"[^>]*>(?:(?!<\/a>)[\s\S])*<\/a>\s*<\/p>\s*`;
+function groupCtaRows(html: string): string {
+  return html.replace(new RegExp(`(?:${CTA_BUTTON_PARAGRAPH}){2,}`, "g"), (run) => `<div class="cta-row">${run.trim()}</div>`);
+}
+
+function normalizeBodyHtml(html: string): string {
+  const relativeLinks = html.replace(/\bhref="([^"]*)"/g, (_m, href: string) => `href="${toSiteRelativeHref(href)}"`);
+  return groupCtaRows(normalizeCtaButtons(splitParagraphBreaks(relativeLinks)));
+}
+
 // Pulls a "Sources: <a>…</a> · <a>…</a>" paragraph out of the article body so
 // it renders in the footnote block under the article (with its links)
 // instead of as body text inside the last numbered section.
@@ -136,7 +149,7 @@ function extractSources(html: string): { html: string; sources: SourceLink[] } {
 }
 
 function prepareRichBody(html: string): { html: string; tocItems: { id: string; text: string }[]; sources: SourceLink[] } {
-  const extracted = extractSources(normalizeCtaButtons(html));
+  const extracted = extractSources(normalizeBodyHtml(html));
   // Some post bodies (pasted from Word/Docs) carry a literal <h1> — the page
   // already renders the real <h1> (the post title) above, so a surviving
   // <h1> in the body would give the page two. Same fix already applied to
@@ -161,7 +174,8 @@ const RICH_BODY_CLASSNAME =
   "[&_hr]:!my-8 [&_hr]:border-navy/10 dark:[&_hr]:border-white/10 " +
   "[&_strong]:font-semibold [&_strong]:text-navy dark:[&_strong]:text-cream " +
   "[&_a]:text-blue-600 [&_a]:underline [&_a]:decoration-blue-600/50 [&_a]:underline-offset-2 hover:[&_a]:text-blue-700 dark:[&_a]:text-blue-400 " +
-  "[&_a.cta-button]:!mt-8 [&_a.cta-button]:inline-flex [&_a.cta-button]:items-center [&_a.cta-button]:rounded-full [&_a.cta-button]:bg-navy [&_a.cta-button]:px-8 [&_a.cta-button]:py-4 [&_a.cta-button]:text-base [&_a.cta-button]:font-semibold [&_a.cta-button]:text-white [&_a.cta-button]:no-underline hover:[&_a.cta-button]:bg-navy-secondary dark:[&_a.cta-button]:bg-steel dark:[&_a.cta-button]:text-navy-950";
+  "[&_a.cta-button]:!mt-8 [&_a.cta-button]:inline-flex [&_a.cta-button]:items-center [&_a.cta-button]:rounded-full [&_a.cta-button]:bg-navy [&_a.cta-button]:px-8 [&_a.cta-button]:py-4 [&_a.cta-button]:text-base [&_a.cta-button]:font-semibold [&_a.cta-button]:text-white [&_a.cta-button]:no-underline hover:[&_a.cta-button]:bg-navy-secondary dark:[&_a.cta-button]:bg-steel dark:[&_a.cta-button]:text-navy-950 " +
+  "[&_.cta-row]:!mt-12 [&_.cta-row]:flex [&_.cta-row]:flex-wrap [&_.cta-row]:gap-3 [&_.cta-row_p]:!mt-0 [&_.cta-row_a.cta-button]:!mt-0";
 
 // The article is laid out as numbered sections (big sticky "01 / 02 / 03"
 // on the left, heading + body on the right), split at the post's own
@@ -314,8 +328,12 @@ export default async function InsightPostPage({
   // Linked sources pulled out of the rich body win over the plain-text
   // Sources line in `body` (which for those posts carries the labels only).
   const richSources = richBody?.sources ?? [];
+  // A disclaimer the rich body already shows in place isn't repeated below.
+  const richText = richBody ? stripTags(richBody.html).replace(/\s+/g, " ") : "";
   const footnoteLines = post.body.filter(
-    (p) => (isSourcesLine(p) && richSources.length === 0) || isDisclaimerLine(p)
+    (p) =>
+      (isSourcesLine(p) && richSources.length === 0) ||
+      (isDisclaimerLine(p) && !richText.includes(p.trim().replace(/\s+/g, " ")))
   );
 
   const rich = richBody ? splitRichSections(richBody.html) : null;
@@ -552,6 +570,7 @@ export default async function InsightPostPage({
                             {item.image_url ? (
                               <InsightImage
                                 src={item.image_url}
+                                alt={item.title}
                                 sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                                 className="transition-transform duration-500 group-hover:scale-105"
                               />

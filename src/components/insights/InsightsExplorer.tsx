@@ -26,6 +26,7 @@ function InsightCard({ post }: { post: InsightListItem }) {
           {post.imageUrl ? (
             <InsightImage
               src={post.imageUrl}
+              alt={post.title}
               sizes="(min-width: 1280px) 30vw, (min-width: 640px) 45vw, 100vw"
               className="transition-transform duration-500 group-hover:scale-105"
             />

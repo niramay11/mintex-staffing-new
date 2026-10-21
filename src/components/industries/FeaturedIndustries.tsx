@@ -47,7 +47,7 @@ export default function FeaturedIndustries({ items }: { items: IndustryListItem[
         >
           <Image
             src={item.imageSrc}
-            alt=""
+            alt={`${item.name} professionals placed by Mintex Staffing`}
             fill
             priority={i === 0}
             sizes="100vw"

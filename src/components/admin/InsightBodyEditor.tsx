@@ -6,6 +6,8 @@ import { DOMParser as PMDOMParser, DOMSerializer } from "@tiptap/pm/model";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import { resolveCtaHref } from "@/lib/insightCtaRoutes";
+import { splitParagraphBreaks, toSiteRelativeHref } from "@/lib/insightBodyHtml";
+import type { Node as PMNode } from "@tiptap/pm/model";
 
 // Real WYSIWYG replacement for the old plain-text-convention Body textarea
 // (short unpunctuated line = heading, "-> " = CTA button, etc). The admin
@@ -75,6 +77,7 @@ function stripLeadingPrefix(el: Element, prefix: RegExp) {
 }
 
 function autoFormatContainer(root: HTMLElement): HTMLElement {
+  root.innerHTML = splitParagraphBreaks(root.innerHTML);
   const out = document.createElement("div");
   let list: HTMLUListElement | null = null;
 
@@ -271,7 +274,7 @@ export default function InsightBodyEditor({
     // Preserve the cta-button class if the cursor is inside an existing
     // button — otherwise re-pointing a button's URL through this button
     // would silently demote it back to a plain text link.
-    editor.chain().focus().extendMarkRange("link").setLink({ href: url.trim(), class: (attrs.class as string) ?? null }).run();
+    editor.chain().focus().extendMarkRange("link").setLink({ href: toSiteRelativeHref(url), class: (attrs.class as string) ?? null }).run();
   };
 
   const insertCtaButton = (presetHref: string) => {
@@ -279,7 +282,7 @@ export default function InsightBodyEditor({
     if (href === "custom") {
       const url = window.prompt("Button destination (e.g. /seek-talent or https://...)");
       if (!url || !url.trim()) return;
-      href = url.trim();
+      href = toSiteRelativeHref(url);
     }
 
     // Inside an existing link/button, act on the whole link.
@@ -299,18 +302,56 @@ export default function InsightBodyEditor({
 
     // Cursor or selection inside a sentence: a button can't live mid-sentence,
     // so the selected words stay in the sentence as plain text and the button
-    // goes on its own line right after this paragraph (same as Auto-format).
+    // goes on its own line right after the line the cursor is on.
     if (paragraphText && !coversWholeParagraph) {
       const typed = selectedText ? selectedText : window.prompt("Button text", "Learn more")?.trim();
       if (!typed) return;
       const label = typed.charAt(0).toUpperCase() + typed.slice(1);
-      const after = $to.after();
+      const { schema } = editor;
+      const button = schema.nodes.paragraph.create(
+        null,
+        schema.text(label, [schema.marks.link.create({ href, class: "cta-button" })])
+      );
+
+      // Pasted text often keeps several "paragraphs" in one, separated by
+      // line breaks — the cursor's line ends at the next run of breaks, and
+      // the button goes there instead of after the whole block.
+      const para = $to.parent;
+      const paraStart = $to.start();
+      let breakFrom = -1;
+      let breakTo = -1;
+      for (let i = 0, offset = 0; i < para.childCount; offset += para.child(i).nodeSize, i++) {
+        const child = para.child(i);
+        const pos = paraStart + offset;
+        const isBreak = child.type.name === "hardBreak";
+        if (breakFrom < 0) {
+          if (isBreak && pos >= to) { breakFrom = pos; breakTo = pos + child.nodeSize; }
+        } else if (isBreak || (child.isText && !(child.text ?? "").trim())) {
+          breakTo = pos + child.nodeSize;
+        } else break;
+      }
+      const isButtonParagraph = (node: PMNode | null | undefined) =>
+        node?.type.name === "paragraph" &&
+        node.childCount === 1 &&
+        node.firstChild!.marks.some((m) => m.type.name === "link" && m.attrs.class === "cta-button");
+
       const chain = editor.chain().focus();
       if (state.link) chain.unsetLink();
       chain
-        .insertContentAt(after, {
-          type: "paragraph",
-          content: [{ type: "text", text: label, marks: [{ type: "link", attrs: { href, class: "cta-button" } }] }],
+        .command(({ tr }) => {
+          if (breakFrom >= 0 && breakTo < $to.end()) {
+            tr.delete(breakFrom, breakTo);
+            tr.split(breakFrom);
+            tr.insert(breakFrom + 1, button);
+            return true;
+          }
+          if (breakFrom >= 0) tr.delete(breakFrom, breakTo); // trailing breaks only
+          // After this paragraph — and after any buttons already placed
+          // there, so a second button lands next to the first, in order.
+          let at = tr.mapping.map($to.after());
+          while (isButtonParagraph(tr.doc.resolve(at).nodeAfter)) at += tr.doc.resolve(at).nodeAfter!.nodeSize;
+          tr.insert(at, button);
+          return true;
         })
         .run();
       return;
