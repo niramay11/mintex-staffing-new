@@ -11,7 +11,7 @@ import type { InsightPost } from "@/content/types";
 import { pageMetadata } from "@/lib/pageMetadata";
 import { SITE_URL } from "@/lib/site";
 import { resolveCtaHref } from "@/lib/insightCtaRoutes";
-import { splitParagraphBreaks, toSiteRelativeHref } from "@/lib/insightBodyHtml";
+import { parsePostNoteLine, splitParagraphBreaks, toSiteRelativeHref } from "@/lib/insightBodyHtml";
 
 export const revalidate = 60;
 
@@ -129,8 +129,24 @@ function groupCtaRows(html: string): string {
   return html.replace(new RegExp(`(?:${CTA_BUTTON_PARAGRAPH}){2,}`, "g"), (run) => `<div class="cta-row">${run.trim()}</div>`);
 }
 
+// Same cleanup the editor's Auto-format does (removeEmptyListItems), for
+// posts saved before it: an empty list item renders as a bare "1." / "•".
+function removeEmptyLists(html: string): string {
+  return html
+    .replace(/<li\b[^>]*>(?:\s|<br\s*\/?>|&nbsp;|<p[^>]*>(?:\s|<br\s*\/?>|&nbsp;)*<\/p>)*<\/li>/gi, "")
+    .replace(/<(ul|ol)\b[^>]*>\s*<\/\1>/gi, "");
+}
+
+// Publishing notes pasted into the body ("URL slug: …", "SEO title: …") and
+// saved before the editor started removing them — never article content.
+function removePostNotes(html: string): string {
+  return html.replace(/<(p|h[1-3])\b[^>]*>([\s\S]*?)<\/\1>/gi, (whole, _tag: string, inner: string) =>
+    parsePostNoteLine(stripTags(inner)) ? "" : whole
+  );
+}
+
 function normalizeBodyHtml(html: string): string {
-  const relativeLinks = html.replace(/\bhref="([^"]*)"/g, (_m, href: string) => `href="${toSiteRelativeHref(href)}"`);
+  const relativeLinks = removePostNotes(removeEmptyLists(html)).replace(/\bhref="([^"]*)"/g, (_m, href: string) => `href="${toSiteRelativeHref(href)}"`);
   return groupCtaRows(normalizeCtaButtons(splitParagraphBreaks(relativeLinks)));
 }
 
@@ -324,7 +340,7 @@ export default async function InsightPostPage({
     year: "numeric",
   });
 
-  const mainLines = post.body.filter((p) => !isSourcesLine(p) && !isDisclaimerLine(p));
+  const mainLines = post.body.filter((p) => !isSourcesLine(p) && !isDisclaimerLine(p) && !parsePostNoteLine(p));
   // Linked sources pulled out of the rich body win over the plain-text
   // Sources line in `body` (which for those posts carries the labels only).
   const richSources = richBody?.sources ?? [];

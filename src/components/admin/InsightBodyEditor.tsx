@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useEditor, useEditorState, EditorContent } from "@tiptap/react";
 import { DOMParser as PMDOMParser, DOMSerializer } from "@tiptap/pm/model";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import { resolveCtaHref } from "@/lib/insightCtaRoutes";
-import { splitParagraphBreaks, toSiteRelativeHref } from "@/lib/insightBodyHtml";
+import { parsePostNoteLine, splitParagraphBreaks, toSiteRelativeHref, type PostNotes } from "@/lib/insightBodyHtml";
 import type { Node as PMNode } from "@tiptap/pm/model";
 
 // Real WYSIWYG replacement for the old plain-text-convention Body textarea
@@ -76,12 +76,35 @@ function stripLeadingPrefix(el: Element, prefix: RegExp) {
   if (node) node.textContent = (node.textContent ?? "").replace(/^\s+/, "").replace(prefix, "");
 }
 
-function autoFormatContainer(root: HTMLElement): HTMLElement {
+// Section dividers in pasted copy ("---", a stray list marker) arrive as an
+// empty list item — confirmed live: 9 empty <ol><li><p></p></li></ol> in one
+// pasted post, each showing as a bare "1." above every heading. Drop list
+// items with no text, then any list left with no items.
+function removeEmptyListItems(root: HTMLElement) {
+  root.querySelectorAll("li").forEach((li) => {
+    if (!(li.textContent ?? "").trim()) li.remove();
+  });
+  root.querySelectorAll("ul, ol").forEach((list) => {
+    if (!list.querySelector("li")) list.remove();
+  });
+}
+
+// Publishing-note lines ("URL slug: …" etc.) are taken out of the body and
+// collected into `notes`, so the form can fill its own fields from them.
+function autoFormatContainer(root: HTMLElement, notes: PostNotes = {}): HTMLElement {
   root.innerHTML = splitParagraphBreaks(root.innerHTML);
+  removeEmptyListItems(root);
   const out = document.createElement("div");
   let list: HTMLUListElement | null = null;
 
   for (const child of Array.from(root.childNodes)) {
+    if (child instanceof Element && /^(P|H1|H2|H3)$/.test(child.tagName)) {
+      const note = parsePostNoteLine(child.textContent ?? "");
+      if (note) {
+        if (note.key && !notes[note.key]) notes[note.key] = note.value;
+        continue;
+      }
+    }
     if (!(child instanceof Element) || child.tagName !== "P") {
       list = null;
       if (child instanceof Element || (child.textContent ?? "").trim()) out.appendChild(child);
@@ -89,6 +112,9 @@ function autoFormatContainer(root: HTMLElement): HTMLElement {
     }
     const text = (child.textContent ?? "").trim();
     if (!text) { list = null; continue; } // drop empty spacer paragraphs
+    // "---" / "***" / "___" divider lines between sections — the headings
+    // already separate them, and a bare "---" would otherwise become an H2.
+    if (/^([-*_—–])\1{2,}$/.test(text.replace(/\s+/g, ""))) { list = null; continue; }
 
     if (BULLET_PREFIX.test(text)) {
       if (!list) { list = document.createElement("ul"); out.appendChild(list); }
@@ -151,10 +177,10 @@ function autoFormatContainer(root: HTMLElement): HTMLElement {
   return out;
 }
 
-function autoFormatHtml(html: string): string {
+function autoFormatHtml(html: string, notes: PostNotes): string {
   const root = document.createElement("div");
   root.innerHTML = html;
-  return autoFormatContainer(root).innerHTML;
+  return autoFormatContainer(root, notes).innerHTML;
 }
 
 function plainTextToParagraphs(text: string): string {
@@ -185,8 +211,24 @@ function ToolbarButton({
 }
 
 export default function InsightBodyEditor({
-  value, onChange,
-}: { value: string; onChange: (html: string) => void }) {
+  value, onChange, onPostNotes,
+}: {
+  value: string;
+  onChange: (html: string) => void;
+  // Called with the publishing notes ("URL slug: …" etc.) that a paste or
+  // Auto-format took out of the body.
+  onPostNotes?: (notes: PostNotes) => void;
+}) {
+  // handlePaste below is captured once when the editor is created, so it
+  // reads the latest callback through a ref.
+  const onPostNotesRef = useRef(onPostNotes);
+  useEffect(() => {
+    onPostNotesRef.current = onPostNotes;
+  }, [onPostNotes]);
+  const reportNotes = (notes: PostNotes) => {
+    if (Object.keys(notes).length > 0) onPostNotesRef.current?.(notes);
+  };
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({ heading: { levels: [2, 3] }, code: false, codeBlock: false, strike: false }),
@@ -230,8 +272,10 @@ export default function InsightBodyEditor({
         } else {
           dom.innerHTML = plainTextToParagraphs(text);
         }
-        const slice = parser.parseSlice(autoFormatContainer(dom), { preserveWhitespace: true });
+        const notes: PostNotes = {};
+        const slice = parser.parseSlice(autoFormatContainer(dom, notes), { preserveWhitespace: true });
         view.dispatch(view.state.tr.replaceSelection(slice));
+        reportNotes(notes);
         return true;
       },
     },
@@ -411,8 +455,10 @@ export default function InsightBodyEditor({
         <div className="mx-1 h-5 w-px bg-navy/10" />
         <ToolbarButton
           onClick={() => {
-            const next = autoFormatHtml(editor.getHTML());
+            const notes: PostNotes = {};
+            const next = autoFormatHtml(editor.getHTML(), notes);
             if (next !== editor.getHTML()) editor.chain().focus().setContent(next, { emitUpdate: true }).run();
+            reportNotes(notes);
           }}
           title="Auto-format: turn short title lines into headings, '→ ' lines into CTA buttons and '- ' lines into bullet lists (Ctrl+Z to undo)"
         >

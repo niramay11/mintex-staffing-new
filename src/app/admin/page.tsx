@@ -6,6 +6,7 @@ import type { InsightPost, InsightCategoryRow, CaseStudy, CaseStudyType, TeamMem
 import type { CalculatorBreakdownLine } from "@/lib/calculatorShare";
 import InsightBodyEditor from "@/components/admin/InsightBodyEditor";
 import { resolveCtaHref } from "@/lib/insightCtaRoutes";
+import { dateFromNote, slugFromNote, type PostNotes } from "@/lib/insightBodyHtml";
 
 const STORAGE_KEY = "mintex_admin_pw";
 const TABS = ["jobs", "clients", "social", "stories", "images", "messages", "resumes", "inquiries", "insights", "caseStudies", "team", "industries", "curation", "calculatorSaves"] as const;
@@ -3307,6 +3308,30 @@ function InsightsTab({ password }: { password: string }) {
     updateDraft({ title, ...(slugTouched ? {} : { slug: slugify(title) }) });
   };
 
+  // Publishing notes the editor took out of a pasted copy doc ("URL slug: …",
+  // "SEO title: …", "Meta description: …", "Post date: …") fill fields the
+  // admin hasn't filled yet — never one already set, so editing a live post
+  // can't silently change its URL, title or date.
+  const applyPostNotes = (notes: PostNotes) => {
+    if (!draft) return;
+    const patch: Partial<InsightDraft> = {};
+    const noteSlug = notes.slug ? cleanSlug(slugFromNote(notes.slug)) : "";
+    if (!draft.title.trim() && notes.title) {
+      patch.title = notes.title;
+      if (!slugTouched && !noteSlug) patch.slug = slugify(notes.title);
+    }
+    if (noteSlug && (!slugTouched || !draft.slug.trim())) {
+      patch.slug = noteSlug;
+      setSlugTouched(true);
+    }
+    if (!draft.excerpt.trim() && notes.excerpt) patch.excerpt = notes.excerpt;
+    // A new post's date field starts pre-filled with today, so "empty" here
+    // means "not saved yet".
+    const noteDate = notes.date ? dateFromNote(notes.date) : "";
+    if (!draft.id && noteDate) patch.published_at = noteDate;
+    if (Object.keys(patch).length > 0) updateDraft(patch);
+  };
+
   const uploadImage = async (file: File) => {
     setUploadError("");
     setUploadingImage(true);
@@ -3615,7 +3640,7 @@ function InsightsTab({ password }: { password: string }) {
                 <p className="text-[11px] text-navy/50 mb-1.5">
                   Select text and use the toolbar for headings, bold, links, lists, and CTA buttons.
                 </p>
-                <InsightBodyEditor value={draft.bodyHtml} onChange={(html) => updateDraft({ bodyHtml: html })} />
+                <InsightBodyEditor value={draft.bodyHtml} onChange={(html) => updateDraft({ bodyHtml: html })} onPostNotes={applyPostNotes} />
                 {(() => {
                   const plainText = draft.bodyHtml.replace(/<[^>]+>/g, " ").trim();
                   const wordCount = plainText ? plainText.split(/\s+/).length : 0;
